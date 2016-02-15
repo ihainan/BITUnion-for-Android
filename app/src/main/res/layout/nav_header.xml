@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="192dp"
+    android:background="@color/primary_dark"
+    android:theme="@style/ThemeOverlay.AppCompat.Dark">
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="centerCrop"
+        android:src="@drawable/nav_background"
+        android:visibility="visible" />
+
+    <ImageButton
+        android:id="@+id/nav_logout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginRight="16dp"
+        android:layout_marginTop="45dp"
+        android:background="?attr/selectableItemBackground"
+        android:src="@drawable/ic_exit_to_app_white_24dp" />
+
+    <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/nav_profile_image"
+        android:layout_width="75dp"
+        android:layout_height="75dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="50dp"
+        app:civ_border_color="#FFFFFFFF"
+        app:civ_border_width="2dp" />
+
+    <TextView
+        android:id="@+id/nav_user_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:padding="16dp"
+        android:text="ihainan"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+        android:textSize="20sp"
+        android:textStyle="bold" />
+
+</RelativeLayout>

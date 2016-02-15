@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?><!--<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"--><!--xmlns:card_view="http://schemas.android.com/apk/res-auto"--><!--android:layout_width="match_parent"--><!--android:layout_height="140dp"--><!--android:layout_marginBottom="5dp"--><!--android:layout_marginTop="5dp"--><!--card_view:cardCornerRadius="1dp"--><!--card_view:cardElevation="2dp">--><!-- Main Content View -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="130dp"
+    android:background="#FFFFFF">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ImageView
+            android:id="@+id/post_item_background"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop"
+            android:src="@drawable/nav_background" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="@dimen/activity_vertical_margin">
+
+            <TextView
+                android:id="@+id/thread_item_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:singleLine="true"
+                android:text="跌成这样子，楼主更疯了...楼主又来爆照了！"
+                android:textColor="@android:color/white"
+                android:textSize="15sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/thread_item_author"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_above="@id/thread_item_title"
+                android:layout_marginBottom="6dp"
+                android:text="傻瓜猪"
+                android:textColor="@android:color/white"
+                android:textSize="12sp" />
+
+
+            <TextView
+                android:id="@+id/thread_item_in"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_above="@id/thread_item_title"
+                android:layout_marginBottom="6dp"
+                android:layout_toRightOf="@id/thread_item_author"
+                android:text=" 在 "
+                android:textColor="@android:color/white"
+                android:textSize="12sp" />
+
+
+            <TextView
+                android:id="@+id/thread_item_forum"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_above="@id/thread_item_title"
+                android:layout_marginBottom="6dp"
+                android:layout_toRightOf="@id/thread_item_in"
+                android:text="个人展示区"
+                android:textColor="@android:color/white"
+                android:textSize="12sp" />
+
+            <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
+                android:id="@+id/thread_item_avatar"
+                android:layout_width="@dimen/avatar_size"
+                android:layout_height="@dimen/avatar_size"
+                android:layout_alignParentRight="true"
+                android:layout_marginBottom="10dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="10dp"
+                app:civ_border_color="@android:color/white"
+                app:civ_border_width="2dp" />
+
+            <TextView
+                android:id="@+id/thread_item_action"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_above="@id/thread_item_title"
+                android:layout_marginBottom="6dp"
+                android:layout_toRightOf="@id/thread_item_forum"
+                android:text=" 发布自拍"
+                android:textColor="@android:color/white"
+                android:textSize="12sp" />
+
+        </RelativeLayout>
+    </RelativeLayout>
+</LinearLayout><!--</android.support.v7.widget.CardView>-->

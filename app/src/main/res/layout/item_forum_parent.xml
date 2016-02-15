@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/item_forum_layout"
+    android:layout_width="match_parent"
+    android:layout_height="35dp"
+    android:orientation="vertical">
+
+    <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/item_forum_parent_icon_round"
+        android:layout_width="25dp"
+        android:layout_height="25dp"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="16dp"
+        android:src="@drawable/ic_event_seat_black_24dp"
+        app:civ_border_color="#FFFFFFFF"
+        app:civ_border_width="2dp" />
+
+    <TextView
+        android:id="@+id/item_forum_parent_forum_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@id/item_forum_parent_icon_round"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="60dp"
+        android:text="联盟公告板"
+        android:textSize="13sp"
+        android:textStyle="bold" />
+
+    <ImageButton
+        android:id="@+id/parent_list_item_expand_arrow"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:layout_margin="16dp"
+        android:background="?attr/selectableItemBackground"
+        android:src="@drawable/ic_keyboard_arrow_down_black_24dp" />
+
+</RelativeLayout>

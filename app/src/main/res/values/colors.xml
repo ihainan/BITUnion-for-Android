@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="primary">#006FDA</color>
+    <color name="primary_dark">#0056AF</color>
+    <color name="primary_light">#BBDEFB</color>
+    <color name="accent">#536DFE</color>
+    <color name="primary_text">#212121</color>
+    <color name="secondary_text">#727272</color>
+    <color name="icons">#FFFFFF</color>
+    <color name="divider">#B6B6B6</color>
+
+    <color name="background">#EBEAE6</color>
+    <color name="dark_gray">#E8E8E8</color>
+
+    <color name="hot_topic">#FF0000</color>
+</resources>
