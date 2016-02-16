@@ -24,6 +24,12 @@ An unofficial BITUnion client for Android based on [BITUnion Open API Project](h
 #### 首页
 ![home](screenshots/homepage.png)
 
+#### 帖子内容一
+![logo](screenshots/thread_detail_quote.png)
+
+#### 帖子内容二
+![logo](screenshots/thread_detail.png)
+
 #### 论坛列表
 
 ![logo](screenshots/forum_list.png)
@@ -33,9 +39,6 @@ An unofficial BITUnion client for Android based on [BITUnion Open API Project](h
 
 #### 帖子列表
 ![logo](screenshots/thread_list.png)
-
-#### 帖子内容
-![logo](screenshots/thread_detail.png)
 
 
 ## Known issues
