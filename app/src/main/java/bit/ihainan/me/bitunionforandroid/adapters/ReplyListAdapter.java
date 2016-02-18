@@ -3,7 +3,6 @@ package bit.ihainan.me.bitunionforandroid.adapters;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
@@ -12,7 +11,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebView;
-import android.webkit.WebViewClient;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -26,7 +24,8 @@ import java.util.List;
 
 import bit.ihainan.me.bitunionforandroid.R;
 import bit.ihainan.me.bitunionforandroid.models.ThreadReply;
-import bit.ihainan.me.bitunionforandroid.ui.assist.LoadingViewHolder;
+import bit.ihainan.me.bitunionforandroid.ui.viewholders.LoadingViewHolder;
+import bit.ihainan.me.bitunionforandroid.utils.BUWebViewClient;
 import bit.ihainan.me.bitunionforandroid.utils.CommonUtils;
 import bit.ihainan.me.bitunionforandroid.utils.Global;
 
@@ -80,7 +79,9 @@ public class ReplyListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             final long currentLevel = Global.increaseOrder ? (position + 1) : (mReplyCount - position);
             viewHolder.number.setText("# " + currentLevel);
 
-            LatestThreadListAdapter.setUserClickListener(mContext, viewHolder.avatar, -1, CommonUtils.decode(reply.author));
+            CommonUtils.setUserAvatarClickListener(mContext,
+                    viewHolder.avatar, -1,
+                    CommonUtils.decode(reply.author));
 
             if (reply.useMobile) viewHolder.useMobile.setVisibility(View.VISIBLE);
             else viewHolder.useMobile.setVisibility(View.INVISIBLE);
@@ -185,7 +186,7 @@ public class ReplyListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
     @Override
     public int getItemCount() {
-        return mList.size();
+        return mList == null ? 0 : mList.size();
     }
 
     public class ThreadReplyViewHolder extends RecyclerView.ViewHolder {
@@ -214,7 +215,7 @@ public class ReplyListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             message = (WebView) itemView.findViewById(R.id.thread_message);
             message.setScrollbarFadingEnabled(false);
             message.setBackgroundColor(Color.TRANSPARENT);
-            message.setWebViewClient(new MyWebViewClient());
+            message.setWebViewClient(new BUWebViewClient(mContext));
 
             attachmentLayout = (LinearLayout) itemView.findViewById(R.id.thread_attachment);
             attachmentImage = (ImageView) itemView.findViewById(R.id.thread_attachment_image);
@@ -223,36 +224,6 @@ public class ReplyListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             attachmentImageLayout = (RelativeLayout) itemView.findViewById(R.id.thread_attachment_image_layout);
 
             useMobile = (ImageView) itemView.findViewById(R.id.thread_from_mobile);
-        }
-    }
-
-    class MyWebViewClient extends WebViewClient {
-
-        @Override
-        public boolean shouldOverrideUrlLoading(WebView view, String url) {
-            // Otherwise, the link is not for a page on my site, so launch another Activity that handles URLs
-            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-            mContext.startActivity(intent);
-            return true;
-        }
-
-        @Override
-        public void onPageFinished(WebView view, String url) {
-
-            super.onPageFinished(view, url);
-        }
-
-        @Override
-        public void onPageStarted(WebView view, String url, Bitmap favicon) {
-
-            super.onPageStarted(view, url, favicon);
-        }
-
-        @Override
-        public void onLoadResource(WebView view, String url) {
-
-            super.onLoadResource(view, url);
-
         }
     }
 }

@@ -18,18 +18,6 @@ import java.net.InetAddress;
 public class RequestQueueManager {
     public final static String TAG = RequestQueueManager.class.getName();   // Default tag for one request
 
-    private final static String DNS_SERVER = "10.0.0.9";
-
-    public static boolean checkIfInSchool() {
-        try {
-            InetAddress in = InetAddress.getByName(DNS_SERVER);
-            return in.isReachable(300);
-        } catch (IOException e) {
-            Log.e(TAG, "Failed to check if in school", e);
-            return false;
-        }
-    }
-
     private RequestQueue mRequestQueue;
     private static RequestQueueManager mInstance;
     private static Context mContext;
@@ -79,7 +67,7 @@ public class RequestQueueManager {
             Log.d(TAG, "addToRequestQueue >> Making Request " + req.getUrl() + " With parameters " + new String(req.getBody()));
         } catch (AuthFailureError authFailureError) {
             authFailureError.printStackTrace();
-            Log.e(TAG, "addToRequestQueue >> " + authFailureError);
+            Log.e(TAG, "addToRequestQueue failed >> " + authFailureError);
         }
         // set the default tag if tag is empty
         req.setTag(TextUtils.isEmpty(tag) ? TAG : tag);

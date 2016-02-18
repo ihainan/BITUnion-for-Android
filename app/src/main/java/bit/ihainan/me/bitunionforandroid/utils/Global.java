@@ -34,7 +34,7 @@ public class Global extends Application {
     public final static String CACHE_USER_INFO = "CACHE_USER_INFO";
     public final static String CACHE_USER_SESSION = "CACHE_SESSION";
     public final static String CACHE_REPLY_CONTENT = "CACHE_REPLY_CONTENT";
-    public static int cacheDays = 1;
+    public static int cacheDays = 10;
 
     private synchronized static void initCache(Context context) {
         if (cache == null) cache = ACache.get(context);
@@ -46,6 +46,8 @@ public class Global extends Application {
     }
 
     /* 系统配置相关*/
+    public final static int MAX_USER_NAME_LENGTH = 7;
+    public final static String DNS_SERVER = "10.0.0.9";
     public final static int HOT_TOPIC_THREAD = 30; // 热门帖子阈值
     public final static int LOADING_COUNT = 10; // 一次最多 Loading 的帖子数目
     public final static int LOADING_REPLIES_COUNT = 10; // 一次最多 Loading 的回复数目
@@ -315,8 +317,10 @@ public class Global extends Application {
             }
         });
         Picasso built = builder.build();
-        // built.setIndicatorsEnabled(true);
-        // built.setLoggingEnabled(true);
+        if (debugMode) {
+            built.setIndicatorsEnabled(true);
+            built.setLoggingEnabled(true);
+        }
         Picasso.setSingletonInstance(built);
 
         // 论坛列表

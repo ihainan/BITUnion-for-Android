@@ -5,22 +5,16 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.View;
 import android.webkit.WebView;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
 import com.squareup.picasso.Picasso;
-
-import org.json.JSONObject;
 
 import bit.ihainan.me.bitunionforandroid.R;
 import bit.ihainan.me.bitunionforandroid.models.Member;
-import bit.ihainan.me.bitunionforandroid.utils.ACache;
-import bit.ihainan.me.bitunionforandroid.utils.Api;
+import bit.ihainan.me.bitunionforandroid.utils.BUWebViewClient;
 import bit.ihainan.me.bitunionforandroid.utils.CommonUtils;
 import bit.ihainan.me.bitunionforandroid.utils.Global;
 import bit.ihainan.me.bitunionforandroid.utils.HtmlUtil;
@@ -97,43 +91,15 @@ public class UserInfoActivity extends AppCompatActivity {
         mMember = (Member) Global.getCache(this)
                 .getAsObject(Global.CACHE_USER_INFO + mUsername);
 
-        // 数据已经存在
-        if (mMember != null) {
-            Log.i(TAG, "getUserInfo >> 从缓存中拿到用户数据 " + mMember);
-            fillViews();
-        } else {
-            // 不存在或者数据过期，重新拉取
-            Log.i(TAG, "getUserInfo >> 拉取用户数据");
-            Api.getUserInfo(this, mUid == null ? 0 : mUid, mUsername,
-                    new Response.Listener<JSONObject>() {
-                        @Override
-                        public void onResponse(JSONObject response) {
-                            if (Api.checkStatus(response)) {
-                                try {
-                                    mMember = Api.MAPPER.readValue(
-                                            response.getJSONObject("memberinfo").toString(),
-                                            Member.class);
-
-                                    // 将用户信息放入到缓存当中
-                                    Log.i(TAG, "getUserInfo >> 拉取得到用户数据，放入缓存：" + mMember);
-                                    Global.getCache(UserInfoActivity.this).put(
-                                            Global.CACHE_USER_INFO + mUsername,
-                                            mMember,
-                                            Global.cacheDays * ACache.TIME_DAY);
-
-                                    fillViews();
-                                } catch (Exception e) {
-                                    Log.e(TAG, getString(R.string.error_parse_json) + "\n" + response, e);
-                                }
-                            }
-                        }
-                    }, new Response.ErrorListener() {
-                        @Override
-                        public void onErrorResponse(VolleyError error) {
-                            Log.e(TAG, getString(R.string.error_network), error);
-                        }
-                    });
-        }
+        // 从缓存中获取用户头像
+        CommonUtils.getAndCacheUserInfo(this,
+                CommonUtils.decode(mUsername), new CommonUtils.UserInfoAndFillAvatarCallback() {
+            @Override
+            public void doSomethingIfHasCached(Member member) {
+                mMember = member;
+                fillViews();
+            }
+        });
     }
 
     private void fillViews() {
@@ -142,10 +108,10 @@ public class UserInfoActivity extends AppCompatActivity {
                 .error(R.drawable.default_avatar)
                 .into(mAvatar);
 
-        // mSignature.setText(Html.fromHtml(CommonUtils.decode(mMember.signature), new URLImageParser(mSignature, this), null));
         mSignature.setScrollbarFadingEnabled(false);
         mSignature.setBackgroundColor(Color.TRANSPARENT);
-        mSignature.loadDataWithBaseURL(null, new HtmlUtil(CommonUtils.decode(mMember.signature)).makeAll().replaceAll("\\+", " "), "text/html", "utf-8", null);
+        mSignature.setWebViewClient(new BUWebViewClient(this));
+        mSignature.loadDataWithBaseURL("file:///android_asset/", new HtmlUtil(CommonUtils.decode(mMember.signature)).makeAll(), "text/html", "utf-8", null);
 
         mUserId.setText(CommonUtils.decode("" + mMember.uid));
         mStatus.setText(CommonUtils.decode("" + mMember.status));

@@ -4,14 +4,12 @@ import android.content.Context;
 import android.util.Log;
 
 import com.android.volley.Response;
-import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -218,8 +216,8 @@ public class Api {
      * @param errorListener error 事件监听器
      */
     public static void getForumList(Context context,
-                                      Response.Listener<JSONObject> listener,
-                                      Response.ErrorListener errorListener) {
+                                    Response.Listener<JSONObject> listener,
+                                    Response.ErrorListener errorListener) {
 
         Map<String, String> parameters = new HashMap<String, String>();
         parameters.put("action", "forum");

@@ -1,12 +1,9 @@
 package bit.ihainan.me.bitunionforandroid.ui;
 
 import android.content.Intent;
-import android.content.res.Configuration;
 import android.os.Bundle;
-import android.os.PersistableBundle;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.NavigationView;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -21,13 +18,8 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
 import com.squareup.picasso.Picasso;
-
-import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
 
@@ -37,8 +29,6 @@ import bit.ihainan.me.bitunionforandroid.models.Member;
 import bit.ihainan.me.bitunionforandroid.ui.assist.AboutFragment;
 import bit.ihainan.me.bitunionforandroid.ui.assist.ForumFragment;
 import bit.ihainan.me.bitunionforandroid.ui.assist.HomePageFragment;
-import bit.ihainan.me.bitunionforandroid.utils.ACache;
-import bit.ihainan.me.bitunionforandroid.utils.Api;
 import bit.ihainan.me.bitunionforandroid.utils.CommonUtils;
 import bit.ihainan.me.bitunionforandroid.utils.Global;
 
@@ -152,9 +142,6 @@ public class MainActivity extends AppCompatActivity {
 
 
     private void getUserInfo() throws UnsupportedEncodingException {
-        Member member = (Member) Global.getCache(this)
-                .getAsObject(Global.CACHE_USER_INFO + Global.userSession.username);
-
         mNavProfileView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -165,56 +152,19 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-
-        // 数据已经存在
-        if (member != null) {
-            Log.i(TAG, "getUserInfo >> 从缓存中拿到用户数据 " + member);
-            mNavUsername.setText(CommonUtils.decode(member.username));
-            String avatarURL = CommonUtils.getRealImageURL(CommonUtils.decode(member.avatar));
-            Picasso.with(this).load(avatarURL)
-                    .error(R.drawable.default_avatar)
-                    .into(mNavProfileView);
-            return;
-        }
-
-        // 不存在或者数据过期，重新拉取
-        Log.i(TAG, "getUserInfo >> 拉取用户数据");
-        Api.getUserInfo(this, Global.userSession.uid, null,
-                new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        Log.d(TAG, response.toString());
-                        if (Api.checkStatus(response)) {
-                            try {
-                                Member member = Api.MAPPER.readValue(
-                                        response.getJSONObject("memberinfo").toString(),
-                                        Member.class);
-
-                                Global.userInfo = member;   // 存储用户信息
-
-                                mNavUsername.setText(member.username);
-                                String avatarURL = CommonUtils.getRealImageURL(CommonUtils.decode(member.avatar));
-                                Log.i(TAG, CommonUtils.decode(member.username) + " " + avatarURL);
-                                Picasso.with(MainActivity.this).load(avatarURL)
-                                        .into(mNavProfileView);
-
-                                // 将用户信息放入到缓存当中
-                                Log.i(TAG, "getUserInfo >> 拉取得到用户数据，放入缓存：" + member);
-                                Global.getCache(MainActivity.this).put(
-                                        Global.CACHE_USER_INFO + member.username,
-                                        member,
-                                        Global.cacheDays * ACache.TIME_DAY);
-                            } catch (Exception e) {
-                                Log.e(TAG, getString(R.string.error_parse_json) + "\n" + response, e);
-                            }
-                        }
-                    }
-                }, new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        Log.e(TAG, getString(R.string.error_network), error);
-                    }
-                });
+        // 从缓存中获取用户头像
+        CommonUtils.getAndCacheUserInfo(this,
+                CommonUtils.decode(Global.userSession.username),
+                new CommonUtils.UserInfoAndFillAvatarCallback() {
+            @Override
+            public void doSomethingIfHasCached(Member member) {
+                mNavUsername.setText(CommonUtils.decode(member.username));
+                String avatarURL = CommonUtils.getRealImageURL(CommonUtils.decode(member.avatar));
+                Picasso.with(MainActivity.this).load(avatarURL)
+                        .error(R.drawable.default_avatar)
+                        .into(mNavProfileView);
+            }
+        });
     }
 
     private void setupDrawerContent(final NavigationView navigationView) {

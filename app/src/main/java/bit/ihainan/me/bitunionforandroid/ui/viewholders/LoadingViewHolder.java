@@ -1,4 +1,4 @@
-package bit.ihainan.me.bitunionforandroid.ui.assist;
+package bit.ihainan.me.bitunionforandroid.ui.viewholders;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.View;

@@ -2,7 +2,6 @@ package bit.ihainan.me.bitunionforandroid.adapters;
 
 import android.content.Context;
 import android.content.Intent;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -60,7 +59,6 @@ public class SuperParentAdapter extends BaseExpandableListAdapter {
     // See: http://stackoverflow.com/questions/15286219/repeating-children-in-expandable-listview-android
     @Override
     public int getChildrenCount(int groupPosition) {
-        // return mForumListGroups.get(groupPosition).getChildItemList().size();
         return 1;
     }
 
@@ -71,7 +69,7 @@ public class SuperParentAdapter extends BaseExpandableListAdapter {
 
     @Override
     public int getGroupCount() {
-        return mForumListGroups.size();
+        return mForumListGroups == null ? 0 : mForumListGroups.size();
     }
 
     @Override
@@ -135,7 +133,7 @@ public class SuperParentAdapter extends BaseExpandableListAdapter {
 
         @Override
         public int getGroupCount() {
-            return mForumLists.size();
+            return mForumLists == null ? 0 : mForumLists.size();
         }
 
         @Override
@@ -240,7 +238,8 @@ public class SuperParentAdapter extends BaseExpandableListAdapter {
 
         @Override
         public int getChildrenCount(int groupPosition) {
-            return mForumLists.get(groupPosition).getChildItemList().size();
+            List<ForumListGroup.SubForum> subForum = mForumLists.get(groupPosition).getChildItemList();
+            return subForum == null ? 0 : subForum.size();
         }
 
         @Override

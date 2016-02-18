@@ -87,7 +87,7 @@ public class ThreadDetailActivity extends AppCompatActivity {
 
         mToolbarTitle = (TextView) findViewById(R.id.toolbar_title);
         mBigTitle = (TextView) findViewById(R.id.big_title);
-        mToolbarTitle.setText(mThreadName == null ? "" : mThreadName.length() > 5 ? mThreadName.substring(0, 5) + "…" : mThreadName);
+        mToolbarTitle.setText(CommonUtils.truncateString(mThreadName, 8));
         mBigTitle.setText(mThreadName == null ? "" : mThreadName);
         mAppbar = (AppBarLayout) findViewById(R.id.app_bar);
         mAppbar.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {

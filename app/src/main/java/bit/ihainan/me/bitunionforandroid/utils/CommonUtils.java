@@ -2,15 +2,28 @@ package bit.ihainan.me.bitunionforandroid.utils;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
+import android.view.View;
 
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+
+import org.json.JSONObject;
+
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.InetAddress;
 import java.net.URLDecoder;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+
+import bit.ihainan.me.bitunionforandroid.R;
+import bit.ihainan.me.bitunionforandroid.models.Member;
+import bit.ihainan.me.bitunionforandroid.ui.UserInfoActivity;
 
 /**
  * 通用工具类
@@ -35,6 +48,91 @@ public class CommonUtils {
                         dialog.dismiss();
                     }
                 }).show();
+    }
+
+    /**
+     * 设置用户头像点击事件，自动跳转到用户的个人页面
+     *
+     * @param context  上下文
+     * @param view     被点击的 View
+     * @param userId   用户 ID。若 userName != null 则无视 userId
+     * @param userName 用户名
+     */
+    public static void setUserAvatarClickListener(final Context context, View view, final long userId, final String userName) {
+        view.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(context, UserInfoActivity.class);
+                intent.putExtra(UserInfoActivity.USER_ID_TAG, userId);
+                intent.putExtra(UserInfoActivity.USER_NAME_TAG, userName);
+                context.startActivity(intent);
+            }
+        });
+    }
+
+    public static abstract class UserInfoAndFillAvatarCallback {
+        public abstract void doSomethingIfHasCached(Member member);
+
+        // 有需要的话进行 Overwrite
+        public void doSomethingIfHasNotCached(Member member) {
+            doSomethingIfHasCached(member);
+        }
+    }
+
+    /**
+     * 获取用户信息并执行特定操作，如果用户信息已经被缓存，则直接从缓存中获取，否则从服务器拉取并进行缓存
+     *
+     * @param context  上下文
+     * @param userName 用户名
+     * @param callback 包含回调函数
+     */
+    public static void getAndCacheUserInfo(final Context context, final String userName,
+                                           final UserInfoAndFillAvatarCallback callback) {
+        // 从缓存中获取用户信息
+        final Member member = (Member) Global.getCache(context)
+                .getAsObject(Global.CACHE_USER_INFO + userName);
+
+        if (member != null) {
+            Log.i(TAG, "从缓存 " + Global.CACHE_USER_INFO + userName + " 中获取用户 " + userName + " 的缓存数据");
+
+            // Do something HERE!!!
+            callback.doSomethingIfHasCached(member);
+        } else {
+            Log.i(TAG, "准备拉取用户 " + userName + " 的缓存数据");
+
+            // 从服务器拉取数据并写入到缓存当中
+            Api.getUserInfo(context, -1,
+                    userName,
+                    new Response.Listener<JSONObject>() {
+                        @Override
+                        public void onResponse(JSONObject response) {
+                            if (Api.checkStatus(response)) {
+                                try {
+                                    Member newMember = Api.MAPPER.readValue(
+                                            response.getJSONObject("memberinfo").toString(),
+                                            Member.class);
+
+                                    // Do something HERE!!!
+                                    callback.doSomethingIfHasNotCached(newMember);
+
+                                    // 将用户信息放入到缓存当中
+                                    Log.i(TAG, "拉取得到用户 " + userName + " 的数据，放入缓存 " + Global.CACHE_USER_INFO + userName + " 中：" + newMember);
+                                    Global.getCache(context).put(
+                                            Global.CACHE_USER_INFO + userName,
+                                            newMember,
+                                            Global.cacheDays * ACache.TIME_DAY);
+                                } catch (Exception e) {
+                                    Log.e(TAG, context.getString(R.string.error_parse_json) + "\n" + response, e);
+                                }
+                            }
+                        }
+                    }, new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            Log.e(TAG, context.getString(R.string.error_network), error);
+                        }
+                    });
+        }
     }
 
     /**
@@ -64,7 +162,6 @@ public class CommonUtils {
         else originalURL = Global.getBaseURL() + originalURL;
 
         originalURL = originalURL.replaceAll("(http://)?(www|v6|kiss|out).bitunion.org/", Global.getBaseURL());
-        // originalURL = originalURL.replace("//", "/");
         originalURL = originalURL.replaceAll("http://bitunion.org/", Global.getBaseURL());
 
         // 图片
@@ -102,6 +199,16 @@ public class CommonUtils {
      */
     public static String formatDateTime(Date date) {
         return (new SimpleDateFormat("yyyy-MM-dd hh:mm")).format(date);
+    }
+
+    public static boolean checkIfInSchool() {
+        try {
+            InetAddress in = InetAddress.getByName(Global.DNS_SERVER);
+            return in.isReachable(300);
+        } catch (IOException e) {
+            Log.e(TAG, "Failed to check if in school", e);
+            return false;
+        }
     }
 
     /**
@@ -155,5 +262,11 @@ public class CommonUtils {
      */
     public static Date unixTimeStampToDate(long timeStamp) {
         return new java.util.Date(timeStamp * 1000);
+    }
+
+    public static String truncateString(String str, int length) {
+        if (str == null) return "";
+        if (str.length() > length - 3) str = str.substring(0, length - 3) + "...";
+        return str;
     }
 }

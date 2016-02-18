@@ -27,8 +27,6 @@ import bit.ihainan.me.bitunionforandroid.models.LatestThread;
 import bit.ihainan.me.bitunionforandroid.models.Member;
 import bit.ihainan.me.bitunionforandroid.models.ThreadReply;
 import bit.ihainan.me.bitunionforandroid.ui.ThreadDetailActivity;
-import bit.ihainan.me.bitunionforandroid.ui.UserInfoActivity;
-import bit.ihainan.me.bitunionforandroid.utils.ACache;
 import bit.ihainan.me.bitunionforandroid.utils.Api;
 import bit.ihainan.me.bitunionforandroid.utils.CommonUtils;
 import bit.ihainan.me.bitunionforandroid.utils.Global;
@@ -110,8 +108,11 @@ public class LatestThreadListAdapter extends RecyclerView.Adapter<RecyclerView.V
             }
         });
 
+        // 发帖、回帖日期
         if (latestThread.lastreply != null)
             holder.date.setText(CommonUtils.decode(latestThread.lastreply.when));
+        else
+            holder.date.setText("未知次元未知时间");
 
         /* 发表新帖 */
         if (latestThread.lastreply == null || latestThread.tid_sum == 0) {
@@ -121,77 +122,55 @@ public class LatestThreadListAdapter extends RecyclerView.Adapter<RecyclerView.V
             holder.isNewOrHot.setTextColor(ContextCompat.getColor(mContext, R.color.primary));
 
             // 其他域
-            holder.authorName.setText(CommonUtils.decode(latestThread.author));
-            setUserClickListener(mContext, holder.avatar, -1, CommonUtils.decode(latestThread.lastreply.who));
+            holder.authorName.setText(
+                    CommonUtils.truncateString(
+                            CommonUtils.decode(latestThread.author),
+                            Global.MAX_USER_NAME_LENGTH));
+            CommonUtils.setUserAvatarClickListener(mContext,
+                    holder.avatar, -1,
+                    CommonUtils.decode(latestThread.lastreply.who));
             holder.forumName.setText(CommonUtils.decode(latestThread.fname));
             holder.action.setText(" 发表了新帖");
-            String avatarURL = CommonUtils.getRealImageURL(CommonUtils.decode(""));
+            String avatarURL = CommonUtils.getRealImageURL(CommonUtils.decode(latestThread.avatar));
             Picasso.with(mContext)
                     .load(avatarURL)
                     .error(R.drawable.default_avatar)
                     .into(holder.avatar);
         } else {
-            /* 回复旧帖 */
-            holder.isNewOrHot.setVisibility(View.INVISIBLE);
-            holder.authorName.setText(CommonUtils.decode(latestThread.lastreply.who));
-            holder.forumName.setText(CommonUtils.decode(latestThread.fname));
-            holder.action.setText(" 回复了 " + CommonUtils.decode(latestThread.author) + " 的帖子");
-            setUserClickListener(mContext, holder.avatar, -1, CommonUtils.decode(latestThread.lastreply.who));
-
-            // 热点（Hot）
+            // 热帖标志
             if (latestThread.tid_sum >= Global.HOT_TOPIC_THREAD) {
                 holder.isNewOrHot.setVisibility(View.VISIBLE);
                 holder.isNewOrHot.setText("  HOT");
                 holder.isNewOrHot.setTextColor(ContextCompat.getColor(mContext, R.color.hot_topic));
             }
 
-            // 从缓存中获取用户信息
-            final Member lastReplyMember = (Member) Global.getCache(mContext)
-                    .getAsObject(Global.CACHE_USER_INFO + latestThread.lastreply.who);
-            if (lastReplyMember == null) {
-                Log.i(TAG, "fillDefaultView >> 拉取用户数据");
+            /* 回复旧帖 */
+            holder.isNewOrHot.setVisibility(View.INVISIBLE);
+            holder.authorName.setText(
+                    CommonUtils.truncateString(
+                            CommonUtils.decode(latestThread.lastreply.who),
+                            Global.MAX_USER_NAME_LENGTH));
+            holder.forumName.setText(CommonUtils.decode(latestThread.fname));
+            holder.action.setText(" 回复了 " +
+                    CommonUtils.truncateString(
+                            CommonUtils.decode(latestThread.author),
+                            Global.MAX_USER_NAME_LENGTH) + " 的帖子");
+            CommonUtils.setUserAvatarClickListener(mContext,
+                    holder.avatar, -1,
+                    CommonUtils.decode(latestThread.lastreply.who));
 
-                // 从服务器拉取数据并写入到缓存当中
-                Api.getUserInfo(mContext, -1,
-                        CommonUtils.decode(latestThread.lastreply.who),
-                        new Response.Listener<JSONObject>() {
-                            @Override
-                            public void onResponse(JSONObject response) {
-                                if (Api.checkStatus(response)) {
-                                    try {
-                                        Member member = Api.MAPPER.readValue(
-                                                response.getJSONObject("memberinfo").toString(),
-                                                Member.class);
-                                        String avatarURL = CommonUtils.getRealImageURL(CommonUtils.decode(member.avatar));
-                                        Picasso.with(mContext).load(avatarURL)
-                                                .error(R.drawable.default_avatar)
-                                                .into(holder.avatar);
-
-                                        // 将用户信息放入到缓存当中
-                                        Log.i(TAG, "fillDefaultView >> 拉取得到用户数据，放入缓存：" + member);
-                                        Global.getCache(mContext).put(
-                                                Global.CACHE_USER_INFO + latestThread.lastreply.who,
-                                                member,
-                                                Global.cacheDays * ACache.TIME_DAY);
-                                    } catch (Exception e) {
-                                        Log.e(TAG, mContext.getString(R.string.error_parse_json) + "\n" + response, e);
-                                    }
-                                }
-                            }
-                        }, new Response.ErrorListener() {
-                            @Override
-                            public void onErrorResponse(VolleyError error) {
-                                Log.e(TAG, mContext.getString(R.string.error_network), error);
-                            }
-                        });
-
-            } else {
-                Log.i(TAG, "fillDefaultView >> 从缓存中拿到用户数据 " + lastReplyMember);
-                String avatarURL = CommonUtils.getRealImageURL(CommonUtils.decode(lastReplyMember.avatar));
-                Picasso.with(mContext).load(avatarURL)
-                        .error(R.drawable.default_avatar)
-                        .into(holder.avatar);
-            }
+            // 从缓存中获取用户头像
+            CommonUtils.getAndCacheUserInfo(mContext,
+                    CommonUtils.decode(latestThread.lastreply.who),
+                    new CommonUtils.UserInfoAndFillAvatarCallback() {
+                @Override
+                public void doSomethingIfHasCached(Member member) {
+                    String avatarURL = CommonUtils.getRealImageURL(CommonUtils.decode(member.avatar));
+                    Picasso.with(mContext).load(avatarURL)
+                            .error(R.drawable.default_avatar)
+                            .into(holder.avatar);
+                }
+            });
         }
     }
 
@@ -204,6 +183,8 @@ public class LatestThreadListAdapter extends RecyclerView.Adapter<RecyclerView.V
     private void fillSelfieView(final LatestThread latestThread, RecyclerView.ViewHolder viewHolder) {
         final SelfieViewHolder holder = (SelfieViewHolder) viewHolder;
 
+        // 标题
+        holder.title.setText(Html.fromHtml(CommonUtils.decode(latestThread.pname)));
         holder.title.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -218,8 +199,13 @@ public class LatestThreadListAdapter extends RecyclerView.Adapter<RecyclerView.V
 
         /* 发表新帖 */
         if (latestThread.lastreply == null || latestThread.tid_sum == 0) {
-            holder.authorName.setText(CommonUtils.decode(latestThread.author));
-            setUserClickListener(mContext, holder.avatar, -1, CommonUtils.decode(latestThread.author));
+            holder.authorName.setText(
+                    CommonUtils.truncateString(
+                            CommonUtils.decode(latestThread.author),
+                            Global.MAX_USER_NAME_LENGTH));
+            CommonUtils.setUserAvatarClickListener(mContext,
+                    holder.avatar, -1,
+                    CommonUtils.decode(latestThread.author));
             holder.action.setText(" 发布了自拍");
             String avatarURL = CommonUtils.getRealImageURL(CommonUtils.decode(latestThread.avatar));
             Picasso.with(mContext)
@@ -228,56 +214,31 @@ public class LatestThreadListAdapter extends RecyclerView.Adapter<RecyclerView.V
                     .into(holder.avatar);
         } else {
             /* 回复旧帖 */
-            holder.authorName.setText(CommonUtils.decode(latestThread.lastreply.who));
-            setUserClickListener(mContext, holder.avatar, -1, CommonUtils.decode(latestThread.lastreply.who));
-            holder.action.setText(" 评价了 " + CommonUtils.decode(latestThread.author) + " 的自拍");
+            holder.authorName.setText(
+                    CommonUtils.truncateString(
+                            CommonUtils.decode(latestThread.lastreply.who),
+                            Global.MAX_USER_NAME_LENGTH));
+            CommonUtils.setUserAvatarClickListener(mContext,
+                    holder.avatar, -1,
+                    CommonUtils.decode(latestThread.lastreply.who));
+            holder.action.setText(" 评价了 " +
+                    CommonUtils.truncateString(
+                            CommonUtils.decode(latestThread.author),
+                            Global.MAX_USER_NAME_LENGTH) + " 的自拍");
 
             // 从缓存中获取用户信息
-            Member lastReplyMember = (Member) Global.getCache(mContext)
-                    .getAsObject(Global.CACHE_USER_INFO + latestThread.lastreply.who);
-            if (lastReplyMember == null) {
-                // 从服务器拉取数据并写入到缓存当中
-                Log.i(TAG, "fillDefaultView >> 拉取用户数据");
-                Api.getUserInfo(mContext, -1,
-                        CommonUtils.decode(latestThread.lastreply.who),
-                        new Response.Listener<JSONObject>() {
-                            @Override
-                            public void onResponse(JSONObject response) {
-                                if (Api.checkStatus(response)) {
-                                    try {
-                                        Member member = Api.MAPPER.readValue(
-                                                response.getJSONObject("memberinfo").toString(),
-                                                Member.class);
-                                        String avatarURL = CommonUtils.getRealImageURL(CommonUtils.decode(member.avatar));
-                                        Picasso.with(mContext).load(avatarURL)
-                                                .error(R.drawable.default_avatar)
-                                                .into(holder.avatar);
-
-                                        // 将用户信息放入到缓存当中
-                                        Log.i(TAG, "fillSelfieView >> 拉取得到用户数据，放入缓存：" + member);
-                                        Global.getCache(mContext).put(
-                                                Global.CACHE_USER_INFO + latestThread.lastreply.who,
-                                                member,
-                                                Global.cacheDays * ACache.TIME_DAY);
-                                    } catch (Exception e) {
-                                        Log.e(TAG, mContext.getString(R.string.error_parse_json) + "\n" + response, e);
-                                    }
-                                }
-                            }
-                        }, new Response.ErrorListener() {
-                            @Override
-                            public void onErrorResponse(VolleyError error) {
-                                Log.e(TAG, mContext.getString(R.string.error_network), error);
-                            }
-                        });
-
-            } else {
-                Log.i(TAG, "fillSelfieView >> 从缓存中拿到用户数据 " + lastReplyMember);
-                String avatarURL = CommonUtils.getRealImageURL(CommonUtils.decode(lastReplyMember.avatar));
-                Picasso.with(mContext).load(avatarURL)
-                        .error(R.drawable.default_avatar)
-                        .into(holder.avatar);
-            }
+            // 从缓存中获取用户头像
+            CommonUtils.getAndCacheUserInfo(mContext,
+                    CommonUtils.decode(latestThread.lastreply.who),
+                    new CommonUtils.UserInfoAndFillAvatarCallback() {
+                @Override
+                public void doSomethingIfHasCached(Member member) {
+                    String avatarURL = CommonUtils.getRealImageURL(CommonUtils.decode(member.avatar));
+                    Picasso.with(mContext).load(avatarURL)
+                            .error(R.drawable.default_avatar)
+                            .into(holder.avatar);
+                }
+            });
         }
 
         // 获取背景图片
@@ -331,26 +292,8 @@ public class LatestThreadListAdapter extends RecyclerView.Adapter<RecyclerView.V
                         .into(holder.background);
             }
         }
-
-        // 标题
-        holder.title.setText(Html.fromHtml(CommonUtils.decode(latestThread.pname)));
     }
 
-    public static void setUserClickListener(final Context context, View view, final long userId, final String userName) {
-        view.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(context, UserInfoActivity.class);
-                intent.putExtra(UserInfoActivity.USER_ID_TAG, userId);
-                intent.putExtra(UserInfoActivity.USER_NAME_TAG, userName);
-                context.startActivity(intent);
-            }
-        });
-    }
-
-    public static void fillImageView(ImageView imageView, String imageUrl) {
-
-    }
 
     public static class SelfieViewHolder extends RecyclerView.ViewHolder {
         public TextView authorName;
