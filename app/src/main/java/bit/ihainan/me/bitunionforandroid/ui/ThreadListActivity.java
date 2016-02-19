@@ -16,6 +16,7 @@ import android.view.View;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.umeng.analytics.MobclickAgent;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -258,5 +259,21 @@ public class ThreadListActivity extends AppCompatActivity {
                         Log.e(TAG, getString(R.string.error_network), error);
                     }
                 });
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        // 友盟 SDK
+        MobclickAgent.onResume(this);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        // 友盟 SDK
+        MobclickAgent.onPause(this);
     }
 }

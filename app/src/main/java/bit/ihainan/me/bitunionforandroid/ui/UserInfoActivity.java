@@ -11,6 +11,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
+import com.umeng.analytics.MobclickAgent;
 
 import bit.ihainan.me.bitunionforandroid.R;
 import bit.ihainan.me.bitunionforandroid.models.Member;
@@ -123,5 +124,21 @@ public class UserInfoActivity extends AppCompatActivity {
         mPostCount.setText(CommonUtils.decode("" + mMember.postnum));
         mRegDate.setText(CommonUtils.formatDateTimeToDay(CommonUtils.unixTimeStampToDate(mMember.regdate)));
         mLastVisit.setText(CommonUtils.formatDateTimeToDay(CommonUtils.unixTimeStampToDate(mMember.lastvisit)));
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        // 友盟 SDK
+        MobclickAgent.onResume(this);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        // 友盟 SDK
+        MobclickAgent.onPause(this);
     }
 }

@@ -20,6 +20,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
+import com.umeng.analytics.MobclickAgent;
 
 import java.io.UnsupportedEncodingException;
 
@@ -156,15 +157,15 @@ public class MainActivity extends AppCompatActivity {
         CommonUtils.getAndCacheUserInfo(this,
                 CommonUtils.decode(Global.userSession.username),
                 new CommonUtils.UserInfoAndFillAvatarCallback() {
-            @Override
-            public void doSomethingIfHasCached(Member member) {
-                mNavUsername.setText(CommonUtils.decode(member.username));
-                String avatarURL = CommonUtils.getRealImageURL(CommonUtils.decode(member.avatar));
-                Picasso.with(MainActivity.this).load(avatarURL)
-                        .error(R.drawable.default_avatar)
-                        .into(mNavProfileView);
-            }
-        });
+                    @Override
+                    public void doSomethingIfHasCached(Member member) {
+                        mNavUsername.setText(CommonUtils.decode(member.username));
+                        String avatarURL = CommonUtils.getRealImageURL(CommonUtils.decode(member.avatar));
+                        Picasso.with(MainActivity.this).load(avatarURL)
+                                .error(R.drawable.default_avatar)
+                                .into(mNavProfileView);
+                    }
+                });
     }
 
     private void setupDrawerContent(final NavigationView navigationView) {
@@ -231,5 +232,21 @@ public class MainActivity extends AppCompatActivity {
                 return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        // 友盟 SDK
+        MobclickAgent.onResume(this);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        // 友盟 SDK
+        MobclickAgent.onPause(this);
     }
 }

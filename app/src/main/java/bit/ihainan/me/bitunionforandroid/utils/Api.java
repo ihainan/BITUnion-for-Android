@@ -6,6 +6,7 @@ import android.util.Log;
 import com.android.volley.Response;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.umeng.analytics.MobclickAgent;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -59,6 +60,7 @@ public class Api {
         parameters.put("action", "login");
         parameters.put("username", userName);
         parameters.put("password", password);
+        MobclickAgent.onProfileSignIn(CommonUtils.decode(userName));
         makeRequest(context, Global.getLoginURL(), "LOGIN", parameters, 0, listener, errorListener);
     }
 

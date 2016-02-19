@@ -4,6 +4,11 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
 
+    <!-- 友盟 SDK 要求权限 -->
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"></uses-permission>
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE"></uses-permission>
+
     <application
         android:name=".utils.Global"
         android:allowBackup="true"
@@ -41,6 +46,13 @@
             android:label="@string/title_activity_thread_detail"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".ui.TestActivity"></activity>
+
+        <meta-data
+            android:name="UMENG_APPKEY"
+            android:value="56c6af3767e58e1acb0011b3" />
+        <meta-data
+            android:name="UMENG_CHANNEL"
+            android:value="bitunion" />
     </application>
 
 </manifest>

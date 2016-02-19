@@ -29,6 +29,7 @@ import android.widget.TextView;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.umeng.analytics.MobclickAgent;
 
 import org.json.JSONObject;
 
@@ -285,5 +286,21 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                         android.R.layout.simple_dropdown_item_1line, emailAddressCollection);
 
         mUsername.setAdapter(adapter);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        // 友盟 SDK
+        MobclickAgent.onResume(this);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        // 友盟 SDK
+        MobclickAgent.onPause(this);
     }
 }
