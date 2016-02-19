@@ -163,14 +163,14 @@ public class LatestThreadListAdapter extends RecyclerView.Adapter<RecyclerView.V
             CommonUtils.getAndCacheUserInfo(mContext,
                     CommonUtils.decode(latestThread.lastreply.who),
                     new CommonUtils.UserInfoAndFillAvatarCallback() {
-                @Override
-                public void doSomethingIfHasCached(Member member) {
-                    String avatarURL = CommonUtils.getRealImageURL(CommonUtils.decode(member.avatar));
-                    Picasso.with(mContext).load(avatarURL)
-                            .error(R.drawable.default_avatar)
-                            .into(holder.avatar);
-                }
-            });
+                        @Override
+                        public void doSomethingIfHasCached(Member member) {
+                            String avatarURL = CommonUtils.getRealImageURL(CommonUtils.decode(member.avatar));
+                            Picasso.with(mContext).load(avatarURL)
+                                    .error(R.drawable.default_avatar)
+                                    .into(holder.avatar);
+                        }
+                    });
         }
     }
 
@@ -231,14 +231,14 @@ public class LatestThreadListAdapter extends RecyclerView.Adapter<RecyclerView.V
             CommonUtils.getAndCacheUserInfo(mContext,
                     CommonUtils.decode(latestThread.lastreply.who),
                     new CommonUtils.UserInfoAndFillAvatarCallback() {
-                @Override
-                public void doSomethingIfHasCached(Member member) {
-                    String avatarURL = CommonUtils.getRealImageURL(CommonUtils.decode(member.avatar));
-                    Picasso.with(mContext).load(avatarURL)
-                            .error(R.drawable.default_avatar)
-                            .into(holder.avatar);
-                }
-            });
+                        @Override
+                        public void doSomethingIfHasCached(Member member) {
+                            String avatarURL = CommonUtils.getRealImageURL(CommonUtils.decode(member.avatar));
+                            Picasso.with(mContext).load(avatarURL)
+                                    .error(R.drawable.default_avatar)
+                                    .into(holder.avatar);
+                        }
+                    });
         }
 
         // 获取背景图片

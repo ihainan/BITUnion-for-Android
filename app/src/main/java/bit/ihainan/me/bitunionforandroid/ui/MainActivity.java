@@ -18,9 +18,14 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 import com.umeng.analytics.MobclickAgent;
+import com.umeng.update.UmengUpdateAgent;
+import com.umeng.update.UmengUpdateListener;
+import com.umeng.update.UpdateResponse;
+import com.umeng.update.UpdateStatus;
 
 import java.io.UnsupportedEncodingException;
 
@@ -103,9 +108,12 @@ public class MainActivity extends AppCompatActivity {
                 FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                 fragmentTransaction.replace(R.id.flContent, mFragment).commit();
             }
+
+
+            // 检查新版本更新并安装
+            CommonUtils.updateVersion(this, true);
         }
     }
-
 
     // TODO: 退出 activity 时候保存当前的 Fragment，返回时候再恢复该 Fragment
 

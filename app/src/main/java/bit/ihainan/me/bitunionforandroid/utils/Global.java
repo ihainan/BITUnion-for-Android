@@ -7,12 +7,12 @@ import android.util.Log;
 
 import com.squareup.picasso.OkHttpDownloader;
 import com.squareup.picasso.Picasso;
+import com.umeng.update.UmengUpdateAgent;
+import com.umeng.update.UpdateConfig;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import bit.ihainan.me.bitunionforandroid.R;
 import bit.ihainan.me.bitunionforandroid.models.ForumListGroup;
 import bit.ihainan.me.bitunionforandroid.models.Member;
 import bit.ihainan.me.bitunionforandroid.models.Session;
@@ -46,6 +46,7 @@ public class Global extends Application {
     }
 
     /* 系统配置相关*/
+    public final static String UPDATE_JSON_URL = "http://vps.ihainan.me/bu/update.json";
     public final static int MAX_USER_NAME_LENGTH = 7;
     public final static String DNS_SERVER = "10.0.0.9";
     public final static int HOT_TOPIC_THREAD = 30; // 热门帖子阈值
@@ -53,7 +54,7 @@ public class Global extends Application {
     public final static int LOADING_REPLIES_COUNT = 10; // 一次最多 Loading 的回复数目
     public final static int RETRY_LIMIT = 3;    // 重新登录尝试次数
     public final static int SWIPE_LAYOUT_TRIGGER_DISTANCE = 400;    // 手指在屏幕下拉多少距离会触发下拉刷新
-    public static Boolean debugMode = true;
+    public static Boolean debugMode = false;
     public static Boolean increaseOrder = true;
 
     public enum NETWORK_TYPE {
@@ -82,14 +83,11 @@ public class Global extends Application {
         increaseOrder = (Boolean) Global.getCache(context).getAsObject(PREF_REPLY_ORDER);
         if (increaseOrder == null) increaseOrder = true;
 
-        Log.i(TAG, "readConfig >> " + userName + " " + (password == null ? "NULL" : "****") + " " + networkType + " " + userSession + " " + increaseOrder);
-
-//        if (userSession == null) try {
-//            Log.i(TAG, "readConfig >>  Session == null, 使用特定 Session 值： " + userSession);
-//            userSession = Api.MAPPER.readValue(SESSION_STR, Session.class);
-//        } catch (IOException e) {
-//            Log.e(TAG, "readConfig >> 解析服务器返回数据失败", e);
-//        }
+        Log.i(TAG, "readConfig >> " +
+                userName + " "
+                + (password == null ? "NULL" : "****")
+                + " " + networkType + " " + userSession
+                + " " + increaseOrder);
     }
 
     public static void saveConfig(Context context) {
@@ -303,6 +301,11 @@ public class Global extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+
+        // 自动更新配置
+        UmengUpdateAgent.setDeltaUpdate(true);  // 增量更新
+        if (debugMode) UpdateConfig.setDebug(true);
+        UmengUpdateAgent.setRichNotification(true);
 
         // 从缓存中读取数据
         readConfig(this);

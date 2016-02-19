@@ -113,15 +113,15 @@ public class ThreadListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             CommonUtils.getAndCacheUserInfo(mContext,
                     CommonUtils.decode(thread.author),
                     new CommonUtils.UserInfoAndFillAvatarCallback() {
-                @Override
-                public void doSomethingIfHasCached(Member member) {
-                    String avatarURL = CommonUtils.getRealImageURL(CommonUtils.decode(member.avatar));
-                    Picasso.with(mContext)
-                            .load(avatarURL)
-                            .error(R.drawable.default_avatar)
-                            .into(holder.avatar);
-                }
-            });
+                        @Override
+                        public void doSomethingIfHasCached(Member member) {
+                            String avatarURL = CommonUtils.getRealImageURL(CommonUtils.decode(member.avatar));
+                            Picasso.with(mContext)
+                                    .load(avatarURL)
+                                    .error(R.drawable.default_avatar)
+                                    .into(holder.avatar);
+                        }
+                    });
         } else {
             /* 回复旧帖 */
             holder.isNewOrHot.setVisibility(View.INVISIBLE);
@@ -145,14 +145,14 @@ public class ThreadListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             CommonUtils.getAndCacheUserInfo(mContext,
                     CommonUtils.decode(thread.author),
                     new CommonUtils.UserInfoAndFillAvatarCallback() {
-                @Override
-                public void doSomethingIfHasCached(Member member) {
-                    String avatarURL = CommonUtils.getRealImageURL(CommonUtils.decode(member.avatar));
-                    Picasso.with(mContext).load(avatarURL)
-                            .error(R.drawable.default_avatar)
-                            .into(holder.avatar);
-                }
-            });
+                        @Override
+                        public void doSomethingIfHasCached(Member member) {
+                            String avatarURL = CommonUtils.getRealImageURL(CommonUtils.decode(member.avatar));
+                            Picasso.with(mContext).load(avatarURL)
+                                    .error(R.drawable.default_avatar)
+                                    .into(holder.avatar);
+                        }
+                    });
         }
     }
 

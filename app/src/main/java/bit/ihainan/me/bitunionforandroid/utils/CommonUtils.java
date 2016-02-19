@@ -4,11 +4,17 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.view.ContextThemeWrapper;
 import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.umeng.update.UmengUpdateAgent;
+import com.umeng.update.UmengUpdateListener;
+import com.umeng.update.UpdateResponse;
+import com.umeng.update.UpdateStatus;
 
 import org.json.JSONObject;
 
@@ -48,6 +54,75 @@ public class CommonUtils {
                         dialog.dismiss();
                     }
                 }).show();
+    }
+
+    public static void updateVersion(final Context context, final boolean ifCheckIgnore) {
+        // 调用友盟接口实现自动更新
+        UmengUpdateAgent.setUpdateAutoPopup(false);
+        UmengUpdateAgent.setUpdateListener(new UmengUpdateListener() {
+            @Override
+            public void onUpdateReturned(int updateStatus, UpdateResponse updateInfo) {
+                switch (updateStatus) {
+                    case UpdateStatus.Yes: // has update
+                        if (Global.debugMode)
+                            Toast.makeText(context, "发现更新", Toast.LENGTH_SHORT).show();
+                        if (!ifCheckIgnore || !UmengUpdateAgent.isIgnore(context, updateInfo))
+                            CommonUtils.showUpdateDialog(context, updateInfo);
+                        break;
+                    case UpdateStatus.No: // has no update
+                        if (Global.debugMode)
+                            Toast.makeText(context, "没有更新", Toast.LENGTH_SHORT).show();
+                        break;
+                    case UpdateStatus.NoneWifi: // none wifi
+                        if (Global.debugMode)
+                            Toast.makeText(context, "没有 WiFi 连接， 只在 WiFi 环境下更新", Toast.LENGTH_SHORT).show();
+                        break;
+                    case UpdateStatus.Timeout: // time out
+                        if (Global.debugMode)
+                            Toast.makeText(context, "超时", Toast.LENGTH_SHORT).show();
+                        break;
+                }
+            }
+        });
+
+        UmengUpdateAgent.update(context);
+    }
+
+    public static void showUpdateDialog(final Context context, final UpdateResponse updateInfo) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(new ContextThemeWrapper(context, R.style.AlertDialogCustom));
+        builder.setTitle("发现新版本 version " + updateInfo.version);
+        builder.setMessage(updateInfo.updateLog);
+
+        builder.setPositiveButton("下次再说", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                if (Global.debugMode)
+                    Toast.makeText(context, "下次再说", Toast.LENGTH_LONG).show();
+                dialog.dismiss();
+            }
+        });
+
+        builder.setNegativeButton("现在更新", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                if (Global.debugMode)
+                    Toast.makeText(context, "现在更新", Toast.LENGTH_LONG).show();
+                UmengUpdateAgent.startDownload(context, updateInfo);
+                dialog.dismiss();
+            }
+        });
+
+        builder.setNeutralButton("不再提醒", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                if (Global.debugMode)
+                    Toast.makeText(context, "不再提醒", Toast.LENGTH_LONG).show();
+                UmengUpdateAgent.ignoreUpdate(context, updateInfo);
+                dialog.dismiss();
+            }
+        });
+
+        builder.create().show();
     }
 
     /**
@@ -156,7 +231,7 @@ public class CommonUtils {
             return "http:/out.bitunion.org/images/standard/noavatar.gif";
         }
 
-        // 完整地址和不完整地址
+        // 完整地址和不完整地址¡¡
         if (originalURL.startsWith("http"))
             originalURL = Global.isInSchool() ? originalURL : originalURL.replace("www", "out");
         else originalURL = Global.getBaseURL() + originalURL;

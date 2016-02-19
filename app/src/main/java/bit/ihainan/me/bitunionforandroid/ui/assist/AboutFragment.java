@@ -38,7 +38,7 @@ public class AboutFragment extends Fragment {
 
             // UI references
             mVersion = (TextView) mRootView.findViewById(R.id.version);
-            mVersion.setText("Version " + BuildConfig.VERSION_NAME + " (Code " + BuildConfig.VERSION_CODE + ")");
+            mVersion.setText("Version " + BuildConfig.VERSION_NAME + " (Version Code " + BuildConfig.VERSION_CODE + ")");
             mAuthor = (TextView) mRootView.findViewById(R.id.author);
             mAuthor.setText(Html.fromHtml("Author: <a href='http://github.com/ihainan'>@ihainan</a>"));
             mAuthor.setOnClickListener(new View.OnClickListener() {

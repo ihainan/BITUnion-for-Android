@@ -2,12 +2,16 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="bit.ihainan.me.bitunionforandroid">
 
+    <!-- 访问联盟服务器 -->
     <uses-permission android:name="android.permission.INTERNET" />
 
-    <!-- 友盟 SDK 要求权限 -->
+    <!-- 友盟统计 SDK 额外要求权限 -->
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"></uses-permission>
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE"></uses-permission>
+
+    <!-- 友盟自动更新 SDK 额外要求权限 -->
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"></uses-permission>
 
     <application
         android:name=".utils.Global"
@@ -53,6 +57,13 @@
         <meta-data
             android:name="UMENG_CHANNEL"
             android:value="bitunion" />
+
+        <service
+            android:name="com.umeng.update.net.DownloadingService"
+            android:process=":DownloadingService"></service>
+        <activity
+            android:name="com.umeng.update.UpdateDialogActivity"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar"></activity>
     </application>
 
 </manifest>
