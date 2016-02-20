@@ -9,14 +9,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.squareup.picasso.Picasso;
-
 import java.util.List;
 
 import bit.ihainan.me.bitunionforandroid.R;
 import bit.ihainan.me.bitunionforandroid.models.Member;
 import bit.ihainan.me.bitunionforandroid.models.Thread;
 import bit.ihainan.me.bitunionforandroid.ui.ThreadDetailActivity;
+import bit.ihainan.me.bitunionforandroid.ui.viewholders.DefaultViewHolder;
 import bit.ihainan.me.bitunionforandroid.ui.viewholders.LoadingViewHolder;
 import bit.ihainan.me.bitunionforandroid.utils.CommonUtils;
 import bit.ihainan.me.bitunionforandroid.utils.Global;
@@ -49,7 +48,7 @@ public class ThreadListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         View view;
         if (viewType == VIEW_TYPE_ITEM) {
             view = mLayoutInflater.inflate(R.layout.item_thread_item, parent, false);
-            return new LatestThreadListAdapter.DefaultViewHolder(view);
+            return new DefaultViewHolder(view);
         } else {
             view = mLayoutInflater.inflate(R.layout.listview_progress_bar, parent, false);
             return new LoadingViewHolder(view);
@@ -60,8 +59,8 @@ public class ThreadListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     public void onBindViewHolder(final RecyclerView.ViewHolder viewHolder, int position) {
         final Thread post = mPosts.get(position);
 
-        if (viewHolder instanceof LatestThreadListAdapter.DefaultViewHolder) {
-            fillDefaultView(post, (LatestThreadListAdapter.DefaultViewHolder) viewHolder);
+        if (viewHolder instanceof DefaultViewHolder) {
+            fillDefaultView(post, (DefaultViewHolder) viewHolder);
         } else if (viewHolder instanceof LoadingViewHolder) {
             LoadingViewHolder loadingViewHolder = (LoadingViewHolder) viewHolder;
             loadingViewHolder.progressBar.setIndeterminate(true);
@@ -69,8 +68,8 @@ public class ThreadListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     }
 
 
-    private void fillDefaultView(final Thread thread, LatestThreadListAdapter.DefaultViewHolder viewHolder) {
-        final LatestThreadListAdapter.DefaultViewHolder holder = viewHolder;
+    private void fillDefaultView(final Thread thread, DefaultViewHolder viewHolder) {
+        final DefaultViewHolder holder = viewHolder;
 
         // 不可见部分
         holder.placeHolderIn.setText("");
@@ -116,10 +115,8 @@ public class ThreadListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                         @Override
                         public void doSomethingIfHasCached(Member member) {
                             String avatarURL = CommonUtils.getRealImageURL(CommonUtils.decode(member.avatar));
-                            Picasso.with(mContext)
-                                    .load(avatarURL)
-                                    .error(R.drawable.default_avatar)
-                                    .into(holder.avatar);
+                            CommonUtils.setImageView(mContext, holder.avatar,
+                                    avatarURL, R.drawable.default_avatar);
                         }
                     });
         } else {
@@ -150,9 +147,8 @@ public class ThreadListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                         @Override
                         public void doSomethingIfHasCached(Member member) {
                             String avatarURL = CommonUtils.getRealImageURL(CommonUtils.decode(member.avatar));
-                            Picasso.with(mContext).load(avatarURL)
-                                    .error(R.drawable.default_avatar)
-                                    .into(holder.avatar);
+                            CommonUtils.setImageView(mContext, holder.avatar,
+                                    avatarURL, R.drawable.default_avatar);
                         }
                     });
         }

@@ -2,6 +2,7 @@ package bit.ihainan.me.bitunionforandroid.ui;
 
 import android.content.Intent;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -10,7 +11,6 @@ import android.webkit.WebView;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.squareup.picasso.Picasso;
 import com.umeng.analytics.MobclickAgent;
 
 import bit.ihainan.me.bitunionforandroid.R;
@@ -105,9 +105,8 @@ public class UserInfoActivity extends AppCompatActivity {
 
     private void fillViews() {
         String avatarURL = CommonUtils.getRealImageURL(CommonUtils.decode(mMember.avatar));
-        Picasso.with(this).load(avatarURL)
-                .error(R.drawable.default_avatar)
-                .into(mAvatar);
+        CommonUtils.setImageView(UserInfoActivity.this, mAvatar,
+                avatarURL, R.drawable.default_avatar);
 
         mSignature.setScrollbarFadingEnabled(false);
         mSignature.setBackgroundColor(Color.TRANSPARENT);
@@ -124,6 +123,28 @@ public class UserInfoActivity extends AppCompatActivity {
         mPostCount.setText(CommonUtils.decode("" + mMember.postnum));
         mRegDate.setText(CommonUtils.formatDateTimeToDay(CommonUtils.unixTimeStampToDate(mMember.regdate)));
         mLastVisit.setText(CommonUtils.formatDateTimeToDay(CommonUtils.unixTimeStampToDate(mMember.lastvisit)));
+
+        mWebsite.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (!"UNKNOWN".equals(mWebsite.getText())) {
+                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(mWebsite.getText().toString()));
+                    startActivity(intent);
+                }
+            }
+        });
+
+        mEmail.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (!"UNKNOWN".equals(mEmail.getText())) {
+                    Intent i = new Intent(Intent.ACTION_SEND);
+                    i.setType("message/rfc822");
+                    i.putExtra(Intent.EXTRA_EMAIL, new String[]{mEmail.getText().toString()});
+                    startActivity(Intent.createChooser(i, "Send mail..."));
+                }
+            }
+        });
     }
 
     @Override

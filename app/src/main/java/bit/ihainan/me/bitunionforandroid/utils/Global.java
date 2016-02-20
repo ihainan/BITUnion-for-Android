@@ -47,17 +47,17 @@ public class Global extends Application {
 
     /* 系统配置相关*/
     public final static String UPDATE_JSON_URL = "http://vps.ihainan.me/bu/update.json";
-    public final static int MAX_USER_NAME_LENGTH = 7;
+    public final static int MAX_USER_NAME_LENGTH = 10;  // 列表用户名最长显示的长度
     public final static String DNS_SERVER = "10.0.0.9";
     public final static int HOT_TOPIC_THREAD = 30; // 热门帖子阈值
     public final static int LOADING_COUNT = 10; // 一次最多 Loading 的帖子数目
     public final static int LOADING_REPLIES_COUNT = 10; // 一次最多 Loading 的回复数目
     public final static int RETRY_LIMIT = 3;    // 重新登录尝试次数
     public final static int SWIPE_LAYOUT_TRIGGER_DISTANCE = 400;    // 手指在屏幕下拉多少距离会触发下拉刷新
-    public static Boolean debugMode = true;
-    public static Boolean saveDataMode = false;
-    public static Boolean uploadData = true;
-    public static Boolean increaseOrder = true;
+    public static Boolean debugMode = true;  // 是否启动 debug 模式
+    public static Boolean saveDataMode = false; // 是否启动省流量模式
+    public static Boolean uploadData = true;    // 是否自动上传数据
+    public static Boolean increaseOrder = true; // 是否按照升序排序
 
     public enum NETWORK_TYPE {
         IN_SCHOOL,

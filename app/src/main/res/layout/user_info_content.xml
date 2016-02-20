@@ -166,7 +166,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="?attr/selectableItemBackground"
-            android:clickable="true"
+            android:clickable="false"
             android:padding="@dimen/activity_horizontal_margin">
 
             <ImageView
@@ -186,11 +186,13 @@
                 android:layout_marginStart="@dimen/activity_horizontal_margin"
                 android:layout_toEndOf="@id/profile_email_icon"
                 android:layout_toRightOf="@id/profile_email_icon"
+                android:clickable="true"
                 android:ellipsize="end"
                 android:maxLines="1"
                 android:text="UNKNOWN"
                 android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-                android:textColor="#212121" />
+                android:textColor="#212121"
+                android:textIsSelectable="false" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -212,7 +214,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="?attr/selectableItemBackground"
-            android:clickable="true"
+            android:clickable="false"
             android:padding="@dimen/activity_horizontal_margin">
 
             <ImageView
@@ -232,12 +234,14 @@
                 android:layout_marginStart="@dimen/activity_horizontal_margin"
                 android:layout_toEndOf="@id/profile_web_icon"
                 android:layout_toRightOf="@id/profile_web_icon"
+                android:clickable="true"
                 android:ellipsize="end"
                 android:maxLines="1"
                 android:singleLine="true"
                 android:text="UNKNOWN"
                 android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-                android:textColor="#212121" />
+                android:textColor="#212121"
+                android:textIsSelectable="false" />
 
             <TextView
                 android:layout_width="wrap_content"

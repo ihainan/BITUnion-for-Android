@@ -10,10 +10,14 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.view.ContextThemeWrapper;
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.squareup.picasso.Callback;
+import com.squareup.picasso.NetworkPolicy;
+import com.squareup.picasso.Picasso;
 import com.umeng.update.UmengUpdateAgent;
 import com.umeng.update.UmengUpdateListener;
 import com.umeng.update.UpdateResponse;
@@ -60,6 +64,13 @@ public class CommonUtils {
                 }).show();
     }
 
+    /**
+     * 更新版本
+     *
+     * @param context       上下文
+     * @param ifCheckIgnore 是否检查 ignore 标志，false 表示无视 ignore 标识继续升级
+     * @param dialog        检查升级前显示的加载对话框，可为 null
+     */
     public static void updateVersion(final Context context, final boolean ifCheckIgnore, final Dialog dialog) {
         // 调用友盟接口实现自动更新
         UmengUpdateAgent.setUpdateAutoPopup(false);
@@ -83,9 +94,9 @@ public class CommonUtils {
                         break;
                     case UpdateStatus.NoneWifi: // none wifi
                         if (Global.debugMode)
-                            Toast.makeText(context, "没有 WiFi 连接， 只在 WiFi 环境下更新", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(context, "只能在 Wi-Fi 环境下进行应用更新", Toast.LENGTH_SHORT).show();
                         if (dialog != null) {
-                            showDialog(context, "提醒", "没有 WiFi 连接， 只在 WiFi 环境下更新");
+                            showDialog(context, "提醒", "只能在 Wi-Fi 环境下进行应用更新");
                         }
                         break;
                     case UpdateStatus.Timeout: // time out
@@ -102,6 +113,12 @@ public class CommonUtils {
         UmengUpdateAgent.update(context);
     }
 
+    /**
+     * 显示升级对话框
+     *
+     * @param context    上下文
+     * @param updateInfo 升级信息
+     */
     public static void showUpdateDialog(final Context context, final UpdateResponse updateInfo) {
         AlertDialog.Builder builder = new AlertDialog.Builder(new ContextThemeWrapper(context, R.style.AlertDialogCustom));
         builder.setTitle("发现新版本 version " + updateInfo.version);
@@ -140,7 +157,12 @@ public class CommonUtils {
             builder.create().show();
     }
 
-
+    /**
+     * 判断 Context 对应的 Activity 是否仍处于运行状态
+     *
+     * @param ctx Context 对象
+     * @return 返回 True 说明仍在运行，否则已经停止
+     */
     public static boolean isRunning(Context ctx) {
         ActivityManager activityManager = (ActivityManager) ctx.getSystemService(Context.ACTIVITY_SERVICE);
         List<ActivityManager.RunningTaskInfo> tasks = activityManager.getRunningTasks(Integer.MAX_VALUE);
@@ -173,6 +195,46 @@ public class CommonUtils {
         });
     }
 
+    public static void setImageView(final Context context, final ImageView imageView, final String imageSrc, final int errorImageId) {
+        // 测试 Offline 模式是否能够正确加载图片
+        Picasso.with(context)
+                .load(imageSrc)
+                .error(errorImageId)
+                .networkPolicy(NetworkPolicy.OFFLINE)
+                .into(imageView, new Callback() {
+                    @Override
+                    public void onSuccess() {
+                        // 成功，那么啥也不用做
+                        Log.d(TAG, "setImageView >> 图片 " + imageSrc + " 已经被缓存");
+                    }
+
+                    @Override
+                    public void onError() {
+                        if (Global.saveDataMode) {
+                            // TODO: 以更友好的方式显示默认头像
+                            // 节省流量模式，不要下载图片
+                            Log.d(TAG, "setImageView >> 节省流量模式，不下载图片 " + imageSrc);
+                            Picasso.with(context)
+                                    .load(R.drawable.default_avatar)
+                                    .error(errorImageId)
+                                    .into(imageView);
+                            ;
+                        } else {
+                            // 非节省流量模式，下载并缓存图片
+                            Log.d(TAG, "setImageView >> 非节省流量模式，正常下载图片 " + imageSrc);
+                            Picasso.with(context)
+                                    .load(imageSrc)
+                                    .error(errorImageId)
+                                    .into(imageView);
+                            ;
+                        }
+                    }
+                });
+    }
+
+    /**
+     * 获取用户信息之后的 Callback 类，包含 doSomethingIfHasCached 和 doSomethingIfHasNotCached 两个成员函数
+     */
     public static abstract class UserInfoAndFillAvatarCallback {
         public abstract void doSomethingIfHasCached(Member member);
 
@@ -367,12 +429,24 @@ public class CommonUtils {
         return new java.util.Date(timeStamp * 1000);
     }
 
+    /**
+     * 截断字符串
+     *
+     * @param str    原始字符串
+     * @param length 截断字符串的最大长度
+     * @return 截断后的字符串
+     */
     public static String truncateString(String str, int length) {
         if (str == null) return "";
         if (str.length() > length - 3) str = str.substring(0, length - 3) + "...";
         return str;
     }
 
+    /**
+     * 获取当前设备名称
+     *
+     * @return 当前设备名称
+     */
     public static String getDeviceName() {
         String manufacturer = Build.MANUFACTURER;
         String model = Build.MODEL;
@@ -383,11 +457,9 @@ public class CommonUtils {
         }
     }
 
-
     private static String capitalize(String s) {
-        if (s == null || s.length() == 0) {
-            return "";
-        }
+        if (s == null || s.length() == 0) return "";
+
         char first = s.charAt(0);
         if (Character.isUpperCase(first)) {
             return s;

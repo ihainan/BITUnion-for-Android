@@ -186,7 +186,6 @@ public class SuperParentAdapter extends BaseExpandableListAdapter {
             CircleImageView icon = (CircleImageView) convertView.findViewById(R.id.item_forum_parent_icon_round);
             Picasso.with(mContext).load(forumList.getForumIcon())
                     .into(icon);
-            // icon.setImageDrawable(forumList.getForumIcon());
 
             return convertView;
         }

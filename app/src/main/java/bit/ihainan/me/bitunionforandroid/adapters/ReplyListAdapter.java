@@ -100,6 +100,7 @@ public class ReplyListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                 viewHolder.author.setText(CommonUtils.decode(reply.author));
             }
 
+
             viewHolder.subject.setText(CommonUtils.decode(reply.subject));
             viewHolder.message.loadDataWithBaseURL("file:///android_asset/", reply.message.replaceAll("\\+", " "), "text/html", "utf-8", null);
 
@@ -164,9 +165,6 @@ public class ReplyListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                                     });
                                 }
                             });
-
-//                    Picasso.with(mContext).load(imageURL)
-//                            .into(((ThreadReplyViewHolder) holder).attachmentImage);
                 } else {
                     viewHolder.attachmentImageLayout.setVisibility(View.GONE);
                 }
@@ -175,9 +173,13 @@ public class ReplyListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             viewHolder.date.setText(CommonUtils.formatDateTime(CommonUtils.unixTimeStampToDate(reply.dateline)));
 
             String avatarURL = CommonUtils.getRealImageURL(CommonUtils.decode(reply.avatar == null ? "" : reply.avatar));
+            CommonUtils.setImageView(mContext, viewHolder.avatar,
+                    avatarURL, R.drawable.default_avatar);
+            /*
             Picasso.with(mContext).load(avatarURL)
                     .error(R.drawable.default_avatar)
                     .into(viewHolder.avatar);
+                    */
         } else {
             LoadingViewHolder loadingViewHolder = (LoadingViewHolder) holder;
             loadingViewHolder.progressBar.setIndeterminate(true);
@@ -213,6 +215,12 @@ public class ReplyListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             });
 
             message = (WebView) itemView.findViewById(R.id.thread_message);
+            if (Global.saveDataMode){
+                Log.d(TAG, "ThreadReplyViewHolder >> 省流量模式，不显示网页中的图片");
+                message.getSettings().setLoadsImagesAutomatically(false);
+            } else {
+                message.getSettings().setLoadsImagesAutomatically(true);
+            }
             message.setScrollbarFadingEnabled(false);
             message.setBackgroundColor(Color.TRANSPARENT);
             message.setWebViewClient(new BUWebViewClient(mContext));

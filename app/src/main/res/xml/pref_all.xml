@@ -9,6 +9,7 @@
 
         <SwitchPreference
             android:key="pref_save_data"
+            android:summary="禁用图片下载（缓存图片正常显示）"
             android:title="省流量模式" />
     </PreferenceCategory>
 
@@ -17,7 +18,7 @@
         android:title="隐私">
         <SwitchPreference
             android:key="pref_upload_data"
-            android:summary="允许上传设备信息和错误异常供开发者参考"
+            android:summary="允许上传设备和异常等统计信息"
             android:title="数据上传" />
     </PreferenceCategory>
 
@@ -26,6 +27,7 @@
         android:title="开发">
         <SwitchPreference
             android:key="pref_enable_dev_mode"
+            android:summary="输出额外调试信息"
             android:title="调试模式" />
     </PreferenceCategory>
 

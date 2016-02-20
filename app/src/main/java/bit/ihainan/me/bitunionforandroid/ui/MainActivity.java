@@ -18,7 +18,6 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.squareup.picasso.Picasso;
 import com.umeng.analytics.MobclickAgent;
 
 import java.io.UnsupportedEncodingException;
@@ -169,10 +168,8 @@ public class MainActivity extends AppCompatActivity {
                     public void doSomethingIfHasCached(Member member) {
                         mNavUsername.setText(CommonUtils.decode(member.username));
                         String avatarURL = CommonUtils.getRealImageURL(CommonUtils.decode(member.avatar));
-                        Picasso.with(MainActivity.this).load(avatarURL)
-                                .placeholder(R.drawable.default_avatar)
-                                .error(R.drawable.default_avatar)
-                                .into(mNavProfileView);
+                        CommonUtils.setImageView(MainActivity.this, mNavProfileView,
+                                avatarURL, R.drawable.default_avatar);
                     }
                 });
     }
@@ -193,7 +190,7 @@ public class MainActivity extends AppCompatActivity {
                     public boolean onNavigationItemSelected(MenuItem menuItem) {
                         // Switch between fragments
                         int menuId = menuItem.getItemId();
-                        boolean setTitle = true;
+                        boolean setTitle = false;
                         switch (menuId) {
                             case R.id.nav_home:
                                 setTitle = true;
@@ -219,9 +216,6 @@ public class MainActivity extends AppCompatActivity {
                             case R.id.nav_setting:
                                 setTitle = true;
                                 mFragment = getSettingFragment();
-                                break;
-                            default:
-                                // fragment = new ForumFragment();
                                 break;
                         }
 
