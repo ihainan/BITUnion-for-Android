@@ -34,9 +34,6 @@
             android:name=".ui.LoginActivity"
             android:label="@string/title_activity_login" />
         <activity
-            android:name=".ui.SettingsActivity"
-            android:label="@string/title_activity_settings" />
-        <activity
             android:name=".ui.ThreadListActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:label="@string/title_activity_post_list"

@@ -50,6 +50,20 @@ public class ThreadDetailActivity extends AppCompatActivity {
     public final static String THREAD_AUTHOR_NAME_TAG = "THREAD_AUTHOR_NAME_TAG";
     public final static String THREAD_REPLY_COUNT_TAG = "THREAD_REPLY_COUNT_TAG";
 
+    private void getExtra() {
+        Intent intent = getIntent();
+        Bundle bundle = intent.getExtras();
+        mTid = bundle.getLong(THREAD_ID_TAG);
+        mThreadName = bundle.getString(THREAD_NAME_TAG);
+        mReplyCount = bundle.getLong(THREAD_REPLY_COUNT_TAG);
+        mAuthorName = bundle.getString(THREAD_AUTHOR_NAME_TAG);
+        if (mTid == null) {
+            Global.readConfig(this);
+            mTid = 10609296l;
+        }
+
+        // TODO: 如果 replyCount == null，则从服务器拉取
+    }
 
     // Data
     private Long mTid, mReplyCount;  // Thread ID
@@ -65,16 +79,7 @@ public class ThreadDetailActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         // Get thread name and id
-        Intent intent = getIntent();
-        Bundle bundle = intent.getExtras();
-        mTid = bundle.getLong(THREAD_ID_TAG);
-        mThreadName = bundle.getString(THREAD_NAME_TAG);
-        mReplyCount = bundle.getLong(THREAD_REPLY_COUNT_TAG);
-        mAuthorName = bundle.getString(THREAD_AUTHOR_NAME_TAG);
-        if (mTid == null) {
-            Global.readConfig(this);
-            mTid = 10609296l;
-        }
+        getExtra();
 
         // Toolbar
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -94,7 +99,7 @@ public class ThreadDetailActivity extends AppCompatActivity {
         mAppbar.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
             @Override
             public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
-                if (verticalOffset <= -toolbar.getHeight()) {
+                if (verticalOffset <= -(toolbar.getHeight())) {
                     mToolbarTitle.setVisibility(View.VISIBLE);
                 } else {
                     mToolbarTitle.setVisibility(View.INVISIBLE);
@@ -105,6 +110,8 @@ public class ThreadDetailActivity extends AppCompatActivity {
         // RecyclerView
         mRecyclerView = (RecyclerView) findViewById(R.id.home_recycler_view);
         mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.home_swipe_refresh_layout);
+        setupRecyclerView();
+        setupSwipeRefreshLayout();
 
         // Order Button
         mChangeOrder = (ImageButton) findViewById(R.id.order_button);
@@ -123,10 +130,6 @@ public class ThreadDetailActivity extends AppCompatActivity {
                 });
             }
         });
-
-
-        setupRecyclerView();
-        setupSwipeRefreshLayout();
     }
 
     private List<bit.ihainan.me.bitunionforandroid.models.ThreadReply> mThreadPostList = new ArrayList<>();
@@ -207,30 +210,6 @@ public class ThreadDetailActivity extends AppCompatActivity {
             Log.d(TAG, "reloadData => " + (mCurrentPosition < 0 ? 0 : mCurrentPosition) + " - " + (mCurrentPosition + Global.LOADING_REPLIES_COUNT));
             refreshData(mCurrentPosition < 0 ? 0 : mCurrentPosition, mCurrentPosition + Global.LOADING_REPLIES_COUNT);
         }
-    }
-
-    // TODO: 上滑，自动加载更多数据
-    private void loadAfterData(long from, long to) {
-        // 防止越界
-        if (from < 0) from = 0;
-        if (to > mReplyCount) to = mReplyCount;
-
-        refreshData(from, to);
-    }
-
-    private void loadBeforeData() {
-        // 下滑，自动加载更多数据
-    }
-
-    /**
-     * 获取上一次浏览的位置
-     *
-     * @return 上一次浏览的位置
-     */
-    private static int getStartPosition() {
-        // 第一次浏览的时候，StartPosition = 0，每浏览 Global.LOADING_REPLIES_COUNT 时候，记录一次位置，载入该位置
-
-        return 0;
     }
 
     /**

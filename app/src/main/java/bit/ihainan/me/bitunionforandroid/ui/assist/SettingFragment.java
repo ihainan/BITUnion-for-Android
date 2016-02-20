@@ -2,14 +2,11 @@ package bit.ihainan.me.bitunionforandroid.ui.assist;
 
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.SharedPreferences;
-import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.SwitchPreference;
 import android.util.Log;
-import android.widget.Toast;
 
 import bit.ihainan.me.bitunionforandroid.BuildConfig;
 import bit.ihainan.me.bitunionforandroid.R;

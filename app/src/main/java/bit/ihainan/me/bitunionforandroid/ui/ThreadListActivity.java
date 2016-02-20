@@ -52,22 +52,7 @@ public class ThreadListActivity extends AppCompatActivity {
     private Long mFid, mRepliesCount;
     private int mCurrentPosition = 0;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_thread_list);
-
-        // Setup toolbar
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
-
+    private void getExtra() {
         // Get mAction and forum id
         Intent intent = getIntent();
         Bundle bundle = intent.getExtras();
@@ -104,12 +89,31 @@ public class ThreadListActivity extends AppCompatActivity {
             setTitle(mMainForum.getForumName() + " - 主板块");
             mFid = mMainForum.getForumId();
         }
+    }
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_thread_list);
+
+        // Setup toolbar
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+
+        // Get Extra information from intent
+        getExtra();
 
         // UI references
         mRecyclerView = (RecyclerView) findViewById(R.id.home_recycler_view);
         mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.home_swipe_refresh_layout);
 
-        // Initialize views
         setupRecyclerView();
         setupSwipeRefreshLayout();
 
@@ -136,9 +140,7 @@ public class ThreadListActivity extends AppCompatActivity {
         final LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         mRecyclerView.setLayoutManager(layoutManager);
-
         mRecyclerView.addItemDecoration(new SimpleDividerItemDecoration(ThreadListActivity.this));
-
         mAdapter = new ThreadListAdapter(this, mThreadList);
         mRecyclerView.setAdapter(mAdapter);
 
@@ -152,10 +154,7 @@ public class ThreadListActivity extends AppCompatActivity {
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
 
-                // 由于不能拿到论坛帖子的总数，因此只能无限加载
                 int lastVisibleItem = layoutManager.findLastVisibleItemPosition();
-                // Log.d(TAG, "onScrolled >> lastVisibleItem = " + lastVisibleItem + " mThreadList.size() = " + mThreadList.size());
-                // Log.d(TAG, "onScrolled >> " + (dy > 0) + " " + (lastVisibleItem >= mThreadList.size() - 4) + " " + !mIsLoading);
                 if (dy > 0 && lastVisibleItem >= mThreadList.size() - 4 && !mIsLoading) {
                     // 拉取数据，显示进度
                     Log.i(TAG, "onScrolled >> 即将到底，准备请求新数据");

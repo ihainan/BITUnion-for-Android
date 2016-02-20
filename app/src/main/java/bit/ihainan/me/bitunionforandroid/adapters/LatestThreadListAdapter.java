@@ -95,6 +95,8 @@ public class LatestThreadListAdapter extends RecyclerView.Adapter<RecyclerView.V
         final DefaultViewHolder holder = (DefaultViewHolder) viewHolder;
 
         // 无差别区域
+        Picasso.with(mContext).load(R.drawable.empty_avatar)
+                .into(holder.avatar);
         holder.replyCount.setText(CommonUtils.decode("" + latestThread.tid_sum + " 回复"));
         holder.title.setText(Html.fromHtml(CommonUtils.decode(latestThread.pname)));
         holder.title.setOnClickListener(new View.OnClickListener() {
@@ -183,6 +185,8 @@ public class LatestThreadListAdapter extends RecyclerView.Adapter<RecyclerView.V
 
         // 标题
         holder.title.setText(Html.fromHtml(CommonUtils.decode(latestThread.pname)));
+        Picasso.with(mContext).load(R.drawable.empty_avatar)
+                .into(holder.avatar);
         holder.title.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -245,7 +249,7 @@ public class LatestThreadListAdapter extends RecyclerView.Adapter<RecyclerView.V
 
         // 获取背景图片
         ThreadReply reply = (ThreadReply) Global.getCache(mContext).getAsObject(Global.CACHE_REPLY_CONTENT + "_" + latestThread.tid);
-        Picasso.with(mContext).load(R.drawable.nav_background).into(holder.background);
+        Picasso.with(mContext).load(R.drawable.background).into(holder.background);
         if (reply == null) {
             Log.i(TAG, "fillDefaultView >> 拉取回复数据");
             Api.getPostReplies(mContext, latestThread.tid, 0, 1, new Response.Listener<JSONObject>() {
@@ -267,8 +271,8 @@ public class LatestThreadListAdapter extends RecyclerView.Adapter<RecyclerView.V
                                     // 缓存模式下不会进入本方法，所以直接显示图片
                                     String imageURL = CommonUtils.getRealImageURL(CommonUtils.decode(firstReply.attachment));
                                     Picasso.with(mContext).load(imageURL)
-                                            .placeholder(R.drawable.nav_background)
-                                            .error(R.drawable.nav_background)
+                                            .placeholder(R.drawable.background)
+                                            .error(R.drawable.background)
                                             .into(holder.background);
                                 }
                             }

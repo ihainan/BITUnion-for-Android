@@ -120,8 +120,8 @@ public class Global extends Application {
 
     public static void saveConfig(Context context) {
         if (userSession != null) Global.getCache(context).put(CONF_SESSION_STR, userSession);
-        if (userName != null) Global.getCache(context).put(PREF_USER_NAME, userName);
-        if (password != null) Global.getCache(context).put(PREF_PASSWORD, password);
+        Global.getCache(context).put(PREF_USER_NAME, Global.userName == null ? "" : Global.userName);
+        Global.getCache(context).put(PREF_PASSWORD, Global.password == null ? "" : Global.password);
         if (increaseOrder != null) Global.getCache(context).put(PREF_REPLY_ORDER, increaseOrder);
         if (networkType != null)
             Global.getCache(context).put(PREF_NETWORK_TYPE, networkType.toString());

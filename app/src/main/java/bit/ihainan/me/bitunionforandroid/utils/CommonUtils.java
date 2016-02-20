@@ -33,7 +33,9 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import bit.ihainan.me.bitunionforandroid.R;
 import bit.ihainan.me.bitunionforandroid.models.Member;
@@ -80,14 +82,12 @@ public class CommonUtils {
                 if (dialog != null) dialog.dismiss();
                 switch (updateStatus) {
                     case UpdateStatus.Yes: // has update
-                        if (Global.debugMode)
-                            Toast.makeText(context, "发现更新", Toast.LENGTH_SHORT).show();
+                        debugToast(context, "");
                         if (!ifCheckIgnore || !UmengUpdateAgent.isIgnore(context, updateInfo))
                             CommonUtils.showUpdateDialog(context, updateInfo);
                         break;
                     case UpdateStatus.No: // has no update
-                        if (Global.debugMode)
-                            Toast.makeText(context, "没有更新", Toast.LENGTH_SHORT).show();
+
                         if (dialog != null) {
                             showDialog(context, "提醒", "没有检查到更新");
                         }
@@ -111,6 +111,17 @@ public class CommonUtils {
         });
 
         UmengUpdateAgent.update(context);
+    }
+
+    /**
+     * 输出 Debug 用途的 Toast 信息
+     *
+     * @param context 上下文
+     * @param message 输出信息
+     */
+    public static void debugToast(Context context, String message) {
+        if (Global.debugMode)
+            Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
     }
 
     /**
@@ -199,6 +210,7 @@ public class CommonUtils {
         // 测试 Offline 模式是否能够正确加载图片
         Picasso.with(context)
                 .load(imageSrc)
+                .placeholder(R.drawable.empty_avatar)
                 .error(errorImageId)
                 .networkPolicy(NetworkPolicy.OFFLINE)
                 .into(imageView, new Callback() {
@@ -224,6 +236,7 @@ public class CommonUtils {
                             Log.d(TAG, "setImageView >> 非节省流量模式，正常下载图片 " + imageSrc);
                             Picasso.with(context)
                                     .load(imageSrc)
+                                    .placeholder(R.drawable.empty_avatar)
                                     .error(errorImageId)
                                     .into(imageView);
                             ;
@@ -450,15 +463,29 @@ public class CommonUtils {
     public static String getDeviceName() {
         String manufacturer = Build.MANUFACTURER;
         String model = Build.MODEL;
+        String deviceName;
+
         if (model.startsWith(manufacturer)) {
-            return capitalize(model);
+            deviceName = capitalize(model);
         } else {
-            return capitalize(manufacturer) + " " + model;
+            deviceName = capitalize(manufacturer) + " " + model;
         }
+
+        if (realDeviceName.get(deviceName) == null)
+            return deviceName;
+        else return realDeviceName.get(deviceName);
+    }
+
+    private static Map<String, String> realDeviceName = new HashMap<>();
+
+    static {
+        realDeviceName.put("Sony E6683", "Sony Xperia Z5");
+        // TODO: 添加其他设备信息
     }
 
     private static String capitalize(String s) {
         if (s == null || s.length() == 0) return "";
+
 
         char first = s.charAt(0);
         if (Character.isUpperCase(first)) {

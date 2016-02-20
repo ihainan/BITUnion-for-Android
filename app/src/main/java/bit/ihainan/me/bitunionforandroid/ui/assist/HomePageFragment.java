@@ -50,18 +50,15 @@ public class HomePageFragment extends Fragment {
             mRootView = inflater.inflate(R.layout.fragment_home_page, container, false);
 
             // UI references
-            mRecyclerView = (RecyclerView) mRootView.findViewById(R.id.home_recycler_view);
-
             final LinearLayoutManager layoutManager = new LinearLayoutManager(mContext);
             layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
 
+            mRecyclerView = (RecyclerView) mRootView.findViewById(R.id.home_recycler_view);
             mRecyclerView.setLayoutManager(layoutManager);
             mRecyclerView.addItemDecoration(new SimpleDividerItemDecoration(mContext));
 
             mAdapter = new LatestThreadListAdapter(mContext, mLatestThreads);
             mRecyclerView.setAdapter(mAdapter);
-
-            // Click
 
             // Swipe Refresh Layout
             mSwipeRefreshLayout = (SwipeRefreshLayout) mRootView.findViewById(R.id.home_swipe_refresh_layout);

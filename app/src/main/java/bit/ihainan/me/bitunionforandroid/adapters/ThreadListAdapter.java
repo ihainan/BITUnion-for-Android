@@ -9,6 +9,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.squareup.picasso.Picasso;
+
 import java.util.List;
 
 import bit.ihainan.me.bitunionforandroid.R;
@@ -70,6 +72,8 @@ public class ThreadListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
     private void fillDefaultView(final Thread thread, DefaultViewHolder viewHolder) {
         final DefaultViewHolder holder = viewHolder;
+        Picasso.with(mContext).load(R.drawable.empty_avatar)
+                .into(holder.avatar);
 
         // 不可见部分
         holder.placeHolderIn.setText("");

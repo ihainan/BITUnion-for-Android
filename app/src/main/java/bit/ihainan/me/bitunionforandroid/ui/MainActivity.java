@@ -44,12 +44,11 @@ public class MainActivity extends AppCompatActivity {
     private ImageButton mNavExit;
     private AppBarLayout mAppBarLayout;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
 
+        // 防止某些 launcher 内部 bug 导致每次返回 activity 都会重启整个应用
         if (!isTaskRoot()) {
             final Intent intent = getIntent();
             if (intent.hasCategory(Intent.CATEGORY_LAUNCHER) && Intent.ACTION_MAIN.equals(intent.getAction())) {
@@ -59,11 +58,16 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
+        setContentView(R.layout.activity_main);
+
         // Toolbar
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(mToolbar);
+        final ActionBar ab = getSupportActionBar();
+        ab.setHomeAsUpIndicator(R.drawable.ic_menu_white_24dp);
+        ab.setDisplayHomeAsUpEnabled(true);
 
-        // Navigation view setup
+        // Navigation view
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mNavHead = navigationView.getHeaderView(0);
@@ -72,13 +76,9 @@ public class MainActivity extends AppCompatActivity {
         mNavExit = (ImageButton) mNavHead.findViewById(R.id.nav_logout);
         mAppBarLayout = (AppBarLayout) findViewById(R.id.app_bar_layout);
 
-        final ActionBar ab = getSupportActionBar();
-        ab.setHomeAsUpIndicator(R.drawable.ic_menu_white_24dp);
-        ab.setDisplayHomeAsUpEnabled(true);
-
         // Get user info
         Global.readConfig(this);
-        if (Global.userName == null || Global.password == null) {
+        if ("".equals(Global.userName) || "".equals(Global.password) || Global.userName == null || Global.password == null) {
             Log.i(TAG, "MainActivity >> 尚未登录，返回登录界面");
             Intent intent = new Intent(this, LoginActivity.class);
             startActivity(intent);
@@ -87,15 +87,13 @@ public class MainActivity extends AppCompatActivity {
             // 检查新版本更新并安装
             CommonUtils.updateVersion(this, true, null);
 
+            // 配置 Navigation Layout
             if (navigationView != null) {
                 setupDrawerContent(navigationView);
             }
 
-            try {
-                getUserInfo();
-            } catch (UnsupportedEncodingException e) {
-                Log.e(TAG, getString(R.string.error_parse_json), e);
-            }
+            // 用户用户信息
+            getUserInfo();
 
             // Activity content
             if (mFragment == null) {
@@ -108,12 +106,8 @@ public class MainActivity extends AppCompatActivity {
 
     // TODO: 退出 activity 时候保存当前的 Fragment，返回时候再恢复该 Fragment
 
-    @Override
-    protected void onStop() {
-        super.onStop();
-    }
-
     private Fragment mFragment;
+
     private Fragment homeFragment;
 
     private Fragment getHomeFragment() {
@@ -148,8 +142,7 @@ public class MainActivity extends AppCompatActivity {
         return aboutFragment;
     }
 
-
-    private void getUserInfo() throws UnsupportedEncodingException {
+    private void getUserInfo() {
         mNavProfileView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -178,9 +171,11 @@ public class MainActivity extends AppCompatActivity {
         mNavExit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                finish();
+                Global.password = null;
+                Global.saveConfig(MainActivity.this);
                 Intent intent = new Intent(MainActivity.this, LoginActivity.class);
                 startActivity(intent);
+                finish();
             }
         });
 
@@ -200,6 +195,14 @@ public class MainActivity extends AppCompatActivity {
                                 setTitle = true;
                                 mFragment = getForumFragment();
                                 break;
+                            case R.id.nav_about:
+                                setTitle = true;
+                                mFragment = getAboutFragment();
+                                break;
+                            case R.id.nav_setting:
+                                setTitle = true;
+                                mFragment = getSettingFragment();
+                                break;
                             case R.id.nav_feedback:
                                 setTitle = false;
                                 Intent i = new Intent(Intent.ACTION_SEND);
@@ -209,15 +212,9 @@ public class MainActivity extends AppCompatActivity {
                                 i.putExtra(Intent.EXTRA_TEXT, "\n---\n当前版本：" + BuildConfig.VERSION_NAME);
                                 startActivity(Intent.createChooser(i, "Send mail..."));
                                 break;
-                            case R.id.nav_about:
-                                setTitle = true;
-                                mFragment = getAboutFragment();
-                                break;
-                            case R.id.nav_setting:
-                                setTitle = true;
-                                mFragment = getSettingFragment();
-                                break;
                         }
+
+                        mDrawerLayout.closeDrawers();
 
                         if (setTitle) {
                             navigationView.setCheckedItem(menuId);
@@ -225,10 +222,10 @@ public class MainActivity extends AppCompatActivity {
                             fragmentTransaction.replace(R.id.flContent, mFragment).commit();
                             mToolbar.setTitle(menuItem.getTitle());
                             menuItem.setChecked(true);
+                            return true;
                         }
 
-                        mDrawerLayout.closeDrawers();
-                        return true;
+                        return false;
                     }
                 });
     }

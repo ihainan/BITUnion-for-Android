@@ -1,17 +1,8 @@
 package bit.ihainan.me.bitunionforandroid.ui;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
-import android.annotation.TargetApi;
-import android.app.LoaderManager.LoaderCallbacks;
-import android.content.CursorLoader;
+import android.app.ProgressDialog;
 import android.content.Intent;
-import android.content.Loader;
-import android.database.Cursor;
-import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
-import android.provider.ContactsContract;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SwitchCompat;
 import android.text.TextUtils;
@@ -20,7 +11,6 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.inputmethod.EditorInfo;
-import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.CompoundButton;
@@ -34,27 +24,23 @@ import com.umeng.analytics.MobclickAgent;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 import bit.ihainan.me.bitunionforandroid.R;
 import bit.ihainan.me.bitunionforandroid.models.Session;
-import bit.ihainan.me.bitunionforandroid.utils.ACache;
 import bit.ihainan.me.bitunionforandroid.utils.Api;
 import bit.ihainan.me.bitunionforandroid.utils.Global;
 
 /**
  * A login screen that offers login via username / password.
  */
-public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<Cursor> {
+public class LoginActivity extends AppCompatActivity {
     public final static String TAG = LoginActivity.class.getSimpleName();
 
     // UI references.
     private AutoCompleteTextView mUsername;
     private EditText mPassword;
     private SwitchCompat mSwitchCompatOutNetwork;
-    private View mProgressView;
-    private View mLoginFormView;
+    ProgressDialog mDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,11 +51,11 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         mUsername = (AutoCompleteTextView) findViewById(R.id.user_name);
         mPassword = (EditText) findViewById(R.id.password);
         mSwitchCompatOutNetwork = (SwitchCompat) findViewById(R.id.switch_compat_out_network);
-        mLoginFormView = findViewById(R.id.login_form);
-        mProgressView = findViewById(R.id.login_progress);
 
         // 读取配置全局配置信息
         Global.readConfig(this);
+
+        // 自动填充，并设置最原始的登录节点
         if (Global.userName != null && Global.networkType != null) {
             mUsername.setText(Global.userName);
             mPassword.setText(Global.password);
@@ -126,38 +112,31 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         String username = mUsername.getText().toString();
         String password = mPassword.getText().toString();
 
-        boolean cancel = false;
-        View focusView = null;
-
-        // Check whether the password is empty
-        if (TextUtils.isEmpty(password)) {
-            mPassword.setError(getString(R.string.error_field_required));
-            focusView = mPassword;
-            cancel = true;
-        }
-
         // Check whether the username is empty
         if (TextUtils.isEmpty(username)) {
             mUsername.setError(getString(R.string.error_field_required));
-            focusView = mUsername;
-            cancel = true;
+            return;
         }
 
-        if (cancel) {
-            // There was an error; don't attempt login and focus the first
-            // form field with an error.
-            focusView.requestFocus();
-        } else {
-            // Show a progress spinner, and kick off a background task to
-            // perform the user login attempt.
-            showProgress(true);
-            checkPassword(username, password);
+        // Check whether the password is empty
+        if (TextUtils.isEmpty(password)) {
+            mPassword.setError(getString(R.string.error_invalid_password));
+            return;
         }
+
+        // showProgress(true);
+        mDialog = ProgressDialog.show(this, "",
+                "正在登录", false);
+        mDialog.show();
+
+        checkPassword(username, password);
     }
+
 
     /**
      * Shows the progress UI and hides the login form.
      */
+    /*
     @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
     private void showProgress(final boolean show) {
         // On Honeycomb MR2 we have the ViewPropertyAnimator APIs, which allow
@@ -189,51 +168,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
             mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
         }
-    }
-
-    @Override
-    public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
-        return new CursorLoader(this,
-                // Retrieve data rows for the device user's 'profile' contact.
-                Uri.withAppendedPath(ContactsContract.Profile.CONTENT_URI,
-                        ContactsContract.Contacts.Data.CONTENT_DIRECTORY), ProfileQuery.PROJECTION,
-
-                // Select only email addresses.
-                ContactsContract.Contacts.Data.MIMETYPE +
-                        " = ?", new String[]{ContactsContract.CommonDataKinds.Email
-                .CONTENT_ITEM_TYPE},
-
-                // Show primary email addresses first. Note that there won't be
-                // a primary email address if the user hasn't specified one.
-                ContactsContract.Contacts.Data.IS_PRIMARY + " DESC");
-    }
-
-    @Override
-    public void onLoadFinished(Loader<Cursor> cursorLoader, Cursor cursor) {
-        List<String> emails = new ArrayList<>();
-        cursor.moveToFirst();
-        while (!cursor.isAfterLast()) {
-            emails.add(cursor.getString(ProfileQuery.ADDRESS));
-            cursor.moveToNext();
-        }
-
-        addEmailsToAutoComplete(emails);
-    }
-
-    @Override
-    public void onLoaderReset(Loader<Cursor> cursorLoader) {
-
-    }
-
-    private interface ProfileQuery {
-        String[] PROJECTION = {
-                ContactsContract.CommonDataKinds.Email.ADDRESS,
-                ContactsContract.CommonDataKinds.Email.IS_PRIMARY,
-        };
-
-        int ADDRESS = 0;
-        int IS_PRIMARY = 1;
-    }
+    }*/
 
     /**
      * 连接服务器检查用户密码是否正确，若正确则跳转到首页，否则报错
@@ -247,7 +182,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                     @Override
                     public void onResponse(JSONObject response) {
                         Global.userName = mUsername.getText().toString();
-                        showProgress(false);
+                        if (mDialog != null) mDialog.dismiss();
+                        // showProgress(false);
                         if (Api.checkStatus(response)) {
                             try {
                                 Global.userSession = Api.MAPPER.readValue(response.toString(), Session.class);
@@ -262,6 +198,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                                 return;
                             }
                         } else {
+                            if (mDialog != null) mDialog.dismiss();
+                            mUsername.setError(getString(R.string.error_wrong_password));
                             Global.saveConfig(LoginActivity.this);
                             mUsername.setError(getString(R.string.error_wrong_password));
                             return;
@@ -271,21 +209,12 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        showProgress(false);
+                        if (mDialog != null) mDialog.dismiss();
+                        // showProgress(false);
                         mUsername.setError(getString(R.string.error_network));
                         Log.e(TAG, getString(R.string.error_network), error);
                     }
                 });
-    }
-
-
-    private void addEmailsToAutoComplete(List<String> emailAddressCollection) {
-        // Create adapter to tell the AutoCompleteTextView what to show in its dropdown list.
-        ArrayAdapter<String> adapter =
-                new ArrayAdapter<>(LoginActivity.this,
-                        android.R.layout.simple_dropdown_item_1line, emailAddressCollection);
-
-        mUsername.setAdapter(adapter);
     }
 
     @Override

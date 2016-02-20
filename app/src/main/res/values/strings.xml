@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">BITUnion for Android</string>
+    <string name="app_name">BITUnion</string>
     <string name="action_settings">设置</string>
     <string name="action_home">首页</string>
     <string name="action_forum">论坛列表</string>
@@ -13,7 +13,7 @@
     <string name="prompt_username">用户名</string>
     <string name="prompt_password">密码</string>
     <string name="action_sign_in_short">登录</string>
-    <string name="login_page_title">北理工 FTP 联盟</string>
+    <string name="login_page_title">北理 FTP 联盟</string>
     <string name="error_incorrect_password">This password is incorrect</string>
     <string name="permission_rationale">"Contacts permissions are needed for providing email completions."</string>
     <string name="access_from_out_school">外网访问</string>
