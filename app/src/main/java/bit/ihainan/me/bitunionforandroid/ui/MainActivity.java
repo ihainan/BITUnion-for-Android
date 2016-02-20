@@ -254,7 +254,8 @@ public class MainActivity extends AppCompatActivity {
         super.onResume();
 
         // 友盟 SDK
-        MobclickAgent.onResume(this);
+        if (Global.uploadData)
+            MobclickAgent.onResume(this);
     }
 
     @Override
@@ -262,6 +263,7 @@ public class MainActivity extends AppCompatActivity {
         super.onPause();
 
         // 友盟 SDK
-        MobclickAgent.onPause(this);
+        if (Global.uploadData)
+            MobclickAgent.onPause(this);
     }
 }

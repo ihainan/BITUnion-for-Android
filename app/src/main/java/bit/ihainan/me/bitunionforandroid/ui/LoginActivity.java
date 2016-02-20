@@ -293,7 +293,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         super.onResume();
 
         // 友盟 SDK
-        MobclickAgent.onResume(this);
+        if (Global.uploadData)
+            MobclickAgent.onResume(this);
     }
 
     @Override
@@ -301,6 +302,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         super.onPause();
 
         // 友盟 SDK
-        MobclickAgent.onPause(this);
+        if (Global.uploadData)
+            MobclickAgent.onPause(this);
     }
 }

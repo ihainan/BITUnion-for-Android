@@ -95,12 +95,12 @@ public class UserInfoActivity extends AppCompatActivity {
         // 从缓存中获取用户头像
         CommonUtils.getAndCacheUserInfo(this,
                 CommonUtils.decode(mUsername), new CommonUtils.UserInfoAndFillAvatarCallback() {
-            @Override
-            public void doSomethingIfHasCached(Member member) {
-                mMember = member;
-                fillViews();
-            }
-        });
+                    @Override
+                    public void doSomethingIfHasCached(Member member) {
+                        mMember = member;
+                        fillViews();
+                    }
+                });
     }
 
     private void fillViews() {
@@ -131,7 +131,8 @@ public class UserInfoActivity extends AppCompatActivity {
         super.onResume();
 
         // 友盟 SDK
-        MobclickAgent.onResume(this);
+        if (Global.uploadData)
+            MobclickAgent.onResume(this);
     }
 
     @Override
@@ -139,6 +140,7 @@ public class UserInfoActivity extends AppCompatActivity {
         super.onPause();
 
         // 友盟 SDK
-        MobclickAgent.onPause(this);
+        if (Global.uploadData)
+            MobclickAgent.onPause(this);
     }
 }
