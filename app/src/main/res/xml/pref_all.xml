@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory
+        android:key="pref_key_network_settings"
+        android:title="网络">
+        <SwitchPreference
+            android:key="pref_out_school"
+            android:title="外网访问" />
+
+        <SwitchPreference
+            android:key="pref_save_data"
+            android:title="省流量模式" />
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:key="pref_key_privacy_settings"
+        android:title="隐私">
+        <SwitchPreference
+            android:key="pref_upload_data"
+            android:summary="允许上传设备信息和错误异常供开发者参考"
+            android:title="数据上传" />
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:key="pref_key_development_settings"
+        android:title="开发">
+        <SwitchPreference
+            android:key="pref_enable_dev_mode"
+            android:title="调试模式" />
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:key="pref_key_about_settings"
+        android:title="关于">
+        <Preference
+            android:key="pref_version"
+            android:summary="0.1.1"
+            android:title="版本" />
+
+        <Preference
+            android:key="pref_device_name"
+            android:summary="Sony Xperia Z5 Dual"
+            android:title="设备" />
+
+        <Preference
+            android:key="pref_check_update"
+            android:title="检查更新" />
+    </PreferenceCategory>
+</PreferenceScreen>

@@ -54,7 +54,9 @@ public class Global extends Application {
     public final static int LOADING_REPLIES_COUNT = 10; // 一次最多 Loading 的回复数目
     public final static int RETRY_LIMIT = 3;    // 重新登录尝试次数
     public final static int SWIPE_LAYOUT_TRIGGER_DISTANCE = 400;    // 手指在屏幕下拉多少距离会触发下拉刷新
-    public static Boolean debugMode = false;
+    public static Boolean debugMode = true;
+    public static Boolean saveDataMode = false;
+    public static Boolean uploadData = true;
     public static Boolean increaseOrder = true;
 
     public enum NETWORK_TYPE {
@@ -73,21 +75,47 @@ public class Global extends Application {
     public final static String PREF_PASSWORD = "PREF_PASSWORD";
     public final static String PREF_NETWORK_TYPE = "PREF_NETWORK_TYPE";
     public final static String PREF_REPLY_ORDER = "PREF_REPLY_ORDER";
+    public final static String PREF_SAVE_DATA = "PREF_SAVE_DATA";
+    public final static String PREF_DEBUG_MODE = "PREF_DEBUG_MODE";
+    public final static String PREF_UPLOAD_DATA = "PREF_UPLOAD_DATA";
+
 
     public static void readConfig(Context context) {
         userName = Global.getCache(context).getAsString(PREF_USER_NAME);
+
         userSession = (Session) Global.getCache(context).getAsObject(CONF_SESSION_STR);
+
         password = Global.getCache(context).getAsString(PREF_PASSWORD);
+
         String networkTypeStr = Global.getCache(context).getAsString(PREF_NETWORK_TYPE);
         networkType = networkTypeStr == null ? NETWORK_TYPE.OUT_SCHOOL : NETWORK_TYPE.valueOf(networkTypeStr);
+        currentEndPoint = networkType == NETWORK_TYPE.OUT_SCHOOL ? Global.OUT_SCHOOL_ENDPOINT : Global.IN_SCHOOL_ENDPOINT;
+
         increaseOrder = (Boolean) Global.getCache(context).getAsObject(PREF_REPLY_ORDER);
         if (increaseOrder == null) increaseOrder = true;
 
-        Log.i(TAG, "readConfig >> " +
-                userName + " "
-                + (password == null ? "NULL" : "****")
-                + " " + networkType + " " + userSession
-                + " " + increaseOrder);
+        uploadData = (Boolean) Global.getCache(context).getAsObject(PREF_UPLOAD_DATA);
+        if (uploadData == null) uploadData = true;
+
+        saveDataMode = (Boolean) Global.getCache(context).getAsObject(PREF_SAVE_DATA);
+        if (saveDataMode == null) saveDataMode = false;
+
+        debugMode = (Boolean) Global.getCache(context).getAsObject(PREF_DEBUG_MODE);
+        if (debugMode == null) debugMode = false;
+
+        printConf();
+    }
+
+    public static void printConf() {
+        Log.d(TAG, "printConf >> User Name：" + userName);
+        Log.d(TAG, "printConf >> User Session：" + userSession);
+        Log.d(TAG, "printConf >> Password：" + (password == null ? "NULL" : "****"));
+        Log.d(TAG, "printConf >> Network Type：" + networkType);
+        Log.d(TAG, "printConf >> Increase Order：" + increaseOrder);
+        Log.d(TAG, "printConf >> Upload Data：" + uploadData);
+        Log.d(TAG, "printConf >> Save Data Mode：" + saveDataMode);
+        Log.d(TAG, "printConf >> Debug Mode：" + debugMode);
+
     }
 
     public static void saveConfig(Context context) {
@@ -97,8 +125,11 @@ public class Global extends Application {
         if (increaseOrder != null) Global.getCache(context).put(PREF_REPLY_ORDER, increaseOrder);
         if (networkType != null)
             Global.getCache(context).put(PREF_NETWORK_TYPE, networkType.toString());
+        if (saveDataMode != null) Global.getCache(context).put(PREF_SAVE_DATA, saveDataMode);
+        if (uploadData != null) Global.getCache(context).put(PREF_UPLOAD_DATA, uploadData);
+        if (debugMode != null) Global.getCache(context).put(PREF_DEBUG_MODE, debugMode);
 
-        Log.i(TAG, "saveConfig >> " + userName + " " + (password == null ? "NULL" : "****") + " " + networkType + " " + userSession + " " + increaseOrder);
+        printConf();
     }
 
     // END POINT

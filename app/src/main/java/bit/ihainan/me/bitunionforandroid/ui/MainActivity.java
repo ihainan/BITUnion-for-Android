@@ -1,12 +1,11 @@
 package bit.ihainan.me.bitunionforandroid.ui;
 
+import android.app.Fragment;
+import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.NavigationView;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
@@ -18,14 +17,9 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 import com.umeng.analytics.MobclickAgent;
-import com.umeng.update.UmengUpdateAgent;
-import com.umeng.update.UmengUpdateListener;
-import com.umeng.update.UpdateResponse;
-import com.umeng.update.UpdateStatus;
 
 import java.io.UnsupportedEncodingException;
 
@@ -35,6 +29,7 @@ import bit.ihainan.me.bitunionforandroid.models.Member;
 import bit.ihainan.me.bitunionforandroid.ui.assist.AboutFragment;
 import bit.ihainan.me.bitunionforandroid.ui.assist.ForumFragment;
 import bit.ihainan.me.bitunionforandroid.ui.assist.HomePageFragment;
+import bit.ihainan.me.bitunionforandroid.ui.assist.SettingFragment;
 import bit.ihainan.me.bitunionforandroid.utils.CommonUtils;
 import bit.ihainan.me.bitunionforandroid.utils.Global;
 
@@ -90,6 +85,8 @@ public class MainActivity extends AppCompatActivity {
             startActivity(intent);
             finish();
         } else {
+            // 检查新版本更新并安装
+            CommonUtils.updateVersion(this, true, null);
 
             if (navigationView != null) {
                 setupDrawerContent(navigationView);
@@ -104,14 +101,9 @@ public class MainActivity extends AppCompatActivity {
             // Activity content
             if (mFragment == null) {
                 mFragment = getHomeFragment();
-                FragmentManager fragmentManager = getSupportFragmentManager();
-                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
                 fragmentTransaction.replace(R.id.flContent, mFragment).commit();
             }
-
-
-            // 检查新版本更新并安装
-            CommonUtils.updateVersion(this, true);
         }
     }
 
@@ -138,6 +130,14 @@ public class MainActivity extends AppCompatActivity {
         mAppBarLayout.setExpanded(true);
         if (forumFragment == null) forumFragment = new ForumFragment();
         return forumFragment;
+    }
+
+    private Fragment settingFragment;
+
+    public Fragment getSettingFragment() {
+        setTitle(R.string.action_settings);
+        if (settingFragment == null) settingFragment = new SettingFragment();
+        return settingFragment;
     }
 
     private Fragment aboutFragment;
@@ -170,6 +170,7 @@ public class MainActivity extends AppCompatActivity {
                         mNavUsername.setText(CommonUtils.decode(member.username));
                         String avatarURL = CommonUtils.getRealImageURL(CommonUtils.decode(member.avatar));
                         Picasso.with(MainActivity.this).load(avatarURL)
+                                .placeholder(R.drawable.default_avatar)
                                 .error(R.drawable.default_avatar)
                                 .into(mNavProfileView);
                     }
@@ -195,9 +196,11 @@ public class MainActivity extends AppCompatActivity {
                         boolean setTitle = true;
                         switch (menuId) {
                             case R.id.nav_home:
+                                setTitle = true;
                                 mFragment = getHomeFragment();
                                 break;
                             case R.id.nav_forum:
+                                setTitle = true;
                                 mFragment = getForumFragment();
                                 break;
                             case R.id.nav_feedback:
@@ -210,7 +213,12 @@ public class MainActivity extends AppCompatActivity {
                                 startActivity(Intent.createChooser(i, "Send mail..."));
                                 break;
                             case R.id.nav_about:
+                                setTitle = true;
                                 mFragment = getAboutFragment();
+                                break;
+                            case R.id.nav_setting:
+                                setTitle = true;
+                                mFragment = getSettingFragment();
                                 break;
                             default:
                                 // fragment = new ForumFragment();
@@ -219,8 +227,7 @@ public class MainActivity extends AppCompatActivity {
 
                         if (setTitle) {
                             navigationView.setCheckedItem(menuId);
-                            FragmentManager fragmentManager = getSupportFragmentManager();
-                            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                            FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
                             fragmentTransaction.replace(R.id.flContent, mFragment).commit();
                             mToolbar.setTitle(menuItem.getTitle());
                             menuItem.setChecked(true);

@@ -1,8 +1,11 @@
 package bit.ihainan.me.bitunionforandroid.utils;
 
+import android.app.ActivityManager;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.Build;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.view.ContextThemeWrapper;
 import android.util.Log;
@@ -26,6 +29,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 import bit.ihainan.me.bitunionforandroid.R;
 import bit.ihainan.me.bitunionforandroid.models.Member;
@@ -56,12 +60,13 @@ public class CommonUtils {
                 }).show();
     }
 
-    public static void updateVersion(final Context context, final boolean ifCheckIgnore) {
+    public static void updateVersion(final Context context, final boolean ifCheckIgnore, final Dialog dialog) {
         // 调用友盟接口实现自动更新
         UmengUpdateAgent.setUpdateAutoPopup(false);
         UmengUpdateAgent.setUpdateListener(new UmengUpdateListener() {
             @Override
             public void onUpdateReturned(int updateStatus, UpdateResponse updateInfo) {
+                if (dialog != null) dialog.dismiss();
                 switch (updateStatus) {
                     case UpdateStatus.Yes: // has update
                         if (Global.debugMode)
@@ -72,14 +77,23 @@ public class CommonUtils {
                     case UpdateStatus.No: // has no update
                         if (Global.debugMode)
                             Toast.makeText(context, "没有更新", Toast.LENGTH_SHORT).show();
+                        if (dialog != null) {
+                            showDialog(context, "提醒", "没有检查到更新");
+                        }
                         break;
                     case UpdateStatus.NoneWifi: // none wifi
                         if (Global.debugMode)
                             Toast.makeText(context, "没有 WiFi 连接， 只在 WiFi 环境下更新", Toast.LENGTH_SHORT).show();
+                        if (dialog != null) {
+                            showDialog(context, "提醒", "没有 WiFi 连接， 只在 WiFi 环境下更新");
+                        }
                         break;
                     case UpdateStatus.Timeout: // time out
                         if (Global.debugMode)
                             Toast.makeText(context, "超时", Toast.LENGTH_SHORT).show();
+                        if (dialog != null) {
+                            showDialog(context, "提醒", "检查更新超时");
+                        }
                         break;
                 }
             }
@@ -97,7 +111,7 @@ public class CommonUtils {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 if (Global.debugMode)
-                    Toast.makeText(context, "下次再说", Toast.LENGTH_LONG).show();
+                    Toast.makeText(context, "下次再说", Toast.LENGTH_SHORT).show();
                 dialog.dismiss();
             }
         });
@@ -106,7 +120,7 @@ public class CommonUtils {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 if (Global.debugMode)
-                    Toast.makeText(context, "现在更新", Toast.LENGTH_LONG).show();
+                    Toast.makeText(context, "现在更新", Toast.LENGTH_SHORT).show();
                 UmengUpdateAgent.startDownload(context, updateInfo);
                 dialog.dismiss();
             }
@@ -116,13 +130,27 @@ public class CommonUtils {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 if (Global.debugMode)
-                    Toast.makeText(context, "不再提醒", Toast.LENGTH_LONG).show();
+                    Toast.makeText(context, "不再提醒", Toast.LENGTH_SHORT).show();
                 UmengUpdateAgent.ignoreUpdate(context, updateInfo);
                 dialog.dismiss();
             }
         });
 
-        builder.create().show();
+        if (isRunning(context))
+            builder.create().show();
+    }
+
+
+    public static boolean isRunning(Context ctx) {
+        ActivityManager activityManager = (ActivityManager) ctx.getSystemService(Context.ACTIVITY_SERVICE);
+        List<ActivityManager.RunningTaskInfo> tasks = activityManager.getRunningTasks(Integer.MAX_VALUE);
+
+        for (ActivityManager.RunningTaskInfo task : tasks) {
+            if (ctx.getPackageName().equalsIgnoreCase(task.baseActivity.getPackageName()))
+                return true;
+        }
+
+        return false;
     }
 
     /**
@@ -343,5 +371,28 @@ public class CommonUtils {
         if (str == null) return "";
         if (str.length() > length - 3) str = str.substring(0, length - 3) + "...";
         return str;
+    }
+
+    public static String getDeviceName() {
+        String manufacturer = Build.MANUFACTURER;
+        String model = Build.MODEL;
+        if (model.startsWith(manufacturer)) {
+            return capitalize(model);
+        } else {
+            return capitalize(manufacturer) + " " + model;
+        }
+    }
+
+
+    private static String capitalize(String s) {
+        if (s == null || s.length() == 0) {
+            return "";
+        }
+        char first = s.charAt(0);
+        if (Character.isUpperCase(first)) {
+            return s;
+        } else {
+            return Character.toUpperCase(first) + s.substring(1);
+        }
     }
 }

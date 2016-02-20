@@ -234,9 +234,14 @@ public class LatestThreadListAdapter extends RecyclerView.Adapter<RecyclerView.V
                         @Override
                         public void doSomethingIfHasCached(Member member) {
                             String avatarURL = CommonUtils.getRealImageURL(CommonUtils.decode(member.avatar));
-                            Picasso.with(mContext).load(avatarURL)
-                                    .error(R.drawable.default_avatar)
-                                    .into(holder.avatar);
+                            if (avatarURL.endsWith("/images/standard/noavatar.gif"))
+                                Picasso.with(mContext).load(R.drawable.default_avatar)
+                                        .error(R.drawable.default_avatar)
+                                        .into(holder.avatar);
+                            else
+                                Picasso.with(mContext).load(avatarURL)
+                                        .error(R.drawable.default_avatar)
+                                        .into(holder.avatar);
                         }
                     });
         }
