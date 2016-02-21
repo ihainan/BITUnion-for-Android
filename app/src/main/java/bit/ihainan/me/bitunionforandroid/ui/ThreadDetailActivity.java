@@ -10,6 +10,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
+import android.widget.Adapter;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
@@ -26,6 +27,7 @@ import java.util.Collections;
 import java.util.List;
 
 import bit.ihainan.me.bitunionforandroid.R;
+import bit.ihainan.me.bitunionforandroid.adapters.PostListAdapter;
 import bit.ihainan.me.bitunionforandroid.adapters.ReplyListAdapter;
 import bit.ihainan.me.bitunionforandroid.models.*;
 import bit.ihainan.me.bitunionforandroid.ui.assist.SimpleDividerItemDecoration;
@@ -93,7 +95,7 @@ public class ThreadDetailActivity extends AppCompatActivity {
 
         mToolbarTitle = (TextView) findViewById(R.id.toolbar_title);
         mBigTitle = (TextView) findViewById(R.id.big_title);
-        mToolbarTitle.setText(CommonUtils.truncateString(mThreadName, 8));
+        mToolbarTitle.setText(CommonUtils.truncateString(mThreadName, 15));
         mBigTitle.setText(mThreadName == null ? "" : mThreadName);
         mAppbar = (AppBarLayout) findViewById(R.id.app_bar);
         mAppbar.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
@@ -133,7 +135,7 @@ public class ThreadDetailActivity extends AppCompatActivity {
     }
 
     private List<bit.ihainan.me.bitunionforandroid.models.ThreadReply> mThreadPostList = new ArrayList<>();
-    private ReplyListAdapter mAdapter;
+    private PostListAdapter mAdapter;
 
     private void setupRecyclerView() {
         final LinearLayoutManager layoutManager = new LinearLayoutManager(this);
@@ -142,7 +144,7 @@ public class ThreadDetailActivity extends AppCompatActivity {
 
         mRecyclerView.addItemDecoration(new SimpleDividerItemDecoration(ThreadDetailActivity.this));
 
-        mAdapter = new ReplyListAdapter(this, mThreadPostList, mAuthorName, mReplyCount);
+        mAdapter = new PostListAdapter(this, mThreadPostList, mAuthorName, mReplyCount);
         mRecyclerView.setAdapter(mAdapter);
 
         // 自动加载

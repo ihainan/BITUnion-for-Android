@@ -133,9 +133,7 @@ public class ThreadListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                     holder.avatar, -1,
                     CommonUtils.decode(thread.lastposter));
 
-            holder.action.setText(" 回复了 " + CommonUtils.truncateString(
-                    CommonUtils.decode(thread.author),
-                    Global.MAX_USER_NAME_LENGTH) + " 的帖子");
+            holder.action.setText(" 回复了帖子");
 
             // 热点（Hot）
             if (thread.replies >= Global.HOT_TOPIC_THREAD) {
@@ -146,7 +144,7 @@ public class ThreadListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
             // 从缓存中获取用户信息
             CommonUtils.getAndCacheUserInfo(mContext,
-                    CommonUtils.decode(thread.author),
+                    CommonUtils.decode(thread.lastposter),
                     new CommonUtils.UserInfoAndFillAvatarCallback() {
                         @Override
                         public void doSomethingIfHasCached(Member member) {

@@ -68,7 +68,6 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="center_vertical"
-                    android:maxLength="10"
                     android:singleLine="true"
                     android:text="[求助]跪下我的膝盖，只为挺起脊梁——一个尿毒症晩期小伙的恳求的恳求的恳求的恳求的恳求"
                     android:textColor="@android:color/white"

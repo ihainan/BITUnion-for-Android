@@ -143,19 +143,17 @@ public class LatestThreadListAdapter extends RecyclerView.Adapter<RecyclerView.V
                 holder.isNewOrHot.setVisibility(View.VISIBLE);
                 holder.isNewOrHot.setText("  HOT");
                 holder.isNewOrHot.setTextColor(ContextCompat.getColor(mContext, R.color.hot_topic));
+            } else {
+                holder.isNewOrHot.setVisibility(View.INVISIBLE);
             }
 
             /* 回复旧帖 */
-            holder.isNewOrHot.setVisibility(View.INVISIBLE);
             holder.authorName.setText(
                     CommonUtils.truncateString(
                             CommonUtils.decode(latestThread.lastreply.who),
                             Global.MAX_USER_NAME_LENGTH));
             holder.forumName.setText(CommonUtils.decode(latestThread.fname));
-            holder.action.setText(" 回复了 " +
-                    CommonUtils.truncateString(
-                            CommonUtils.decode(latestThread.author),
-                            Global.MAX_USER_NAME_LENGTH) + " 的帖子");
+            holder.action.setText(" 回复了帖子");
             CommonUtils.setUserAvatarClickListener(mContext,
                     holder.avatar, -1,
                     CommonUtils.decode(latestThread.lastreply.who));

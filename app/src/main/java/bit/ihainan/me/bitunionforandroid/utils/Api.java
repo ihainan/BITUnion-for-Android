@@ -180,7 +180,7 @@ public class Api {
                                    Response.ErrorListener errorListener) {
         Map<String, String> parameters = new HashMap<String, String>();
         parameters.put("action", "profile");
-        parameters.put("username", Global.userSession.username);
+        parameters.put("username", Global.userName);
         parameters.put("session", Global.userSession.session);
         if (username != null) parameters.put("queryusername", username);
         else parameters.put("uid", "" + uid);

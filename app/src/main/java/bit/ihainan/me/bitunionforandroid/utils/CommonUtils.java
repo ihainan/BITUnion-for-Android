@@ -82,26 +82,25 @@ public class CommonUtils {
                 if (dialog != null) dialog.dismiss();
                 switch (updateStatus) {
                     case UpdateStatus.Yes: // has update
-                        debugToast(context, "");
+                        debugToast(context, "发现更新，当前状态 ifCheckIgnore = "
+                                + ifCheckIgnore + " isIgnore = " + UmengUpdateAgent.isIgnore(context, updateInfo));
                         if (!ifCheckIgnore || !UmengUpdateAgent.isIgnore(context, updateInfo))
                             CommonUtils.showUpdateDialog(context, updateInfo);
                         break;
                     case UpdateStatus.No: // has no update
-
+                        debugToast(context, "没有检查到更新，当前 dialog = " + dialog);
                         if (dialog != null) {
                             showDialog(context, "提醒", "没有检查到更新");
                         }
                         break;
                     case UpdateStatus.NoneWifi: // none wifi
-                        if (Global.debugMode)
-                            Toast.makeText(context, "只能在 Wi-Fi 环境下进行应用更新", Toast.LENGTH_SHORT).show();
+                        debugToast(context, "只能在 Wi-Fi 环境下进行应用更新 | dialog = " + dialog);
                         if (dialog != null) {
                             showDialog(context, "提醒", "只能在 Wi-Fi 环境下进行应用更新");
                         }
                         break;
                     case UpdateStatus.Timeout: // time out
-                        if (Global.debugMode)
-                            Toast.makeText(context, "超时", Toast.LENGTH_SHORT).show();
+                        debugToast(context, "连接服务器超时 | dialog = " + dialog);
                         if (dialog != null) {
                             showDialog(context, "提醒", "检查更新超时");
                         }
@@ -479,7 +478,7 @@ public class CommonUtils {
     private static Map<String, String> realDeviceName = new HashMap<>();
 
     static {
-        realDeviceName.put("Sony E6683", "Sony Xperia Z5");
+        realDeviceName.put("Sony E6683", "Sony Xperia Z5 Dual");
         // TODO: 添加其他设备信息
     }
 

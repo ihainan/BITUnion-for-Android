@@ -47,7 +47,7 @@ public class Global extends Application {
 
     /* 系统配置相关*/
     public final static String UPDATE_JSON_URL = "http://vps.ihainan.me/bu/update.json";
-    public final static int MAX_USER_NAME_LENGTH = 10;  // 列表用户名最长显示的长度
+    public final static int MAX_USER_NAME_LENGTH = 15;  // 列表用户名最长显示的长度
     public final static String DNS_SERVER = "10.0.0.9";
     public final static int HOT_TOPIC_THREAD = 30; // 热门帖子阈值
     public final static int LOADING_COUNT = 10; // 一次最多 Loading 的帖子数目

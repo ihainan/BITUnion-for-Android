@@ -10,13 +10,15 @@ body {
     hyphens: auto;
     line-height: 1.6
 }
+
 blockquote {
     background: #f9f9f9;
     border-left: 7px solid #ccc;
-    margin: 1.5em 0px;
+    margin: 0.7em 0px;
     padding: .5em 10px;
     quotes: "\201C""\201D""\2018""\2019"
 }
+
 blockquote:before {
     color: #006FDA;
     content: open-quote;
@@ -25,9 +27,12 @@ blockquote:before {
     margin-right: .25em;
     vertical-align: -.4em
 }
+
 blockquote p {
     display: inline
 }
+
+
 blockquote cite {
     color: #006FDA;
     font-weight: 700
@@ -42,4 +47,10 @@ img {
     width: 20px;
     margin-left: 2.5px;
     margin-right: 2.5px;
+}
+
+br {
+    content: "";
+    margin: 0.8em;
+    display: block;
 }

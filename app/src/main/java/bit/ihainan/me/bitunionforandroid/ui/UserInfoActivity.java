@@ -104,9 +104,16 @@ public class UserInfoActivity extends AppCompatActivity {
     }
 
     private void fillViews() {
-        String avatarURL = CommonUtils.getRealImageURL(CommonUtils.decode(mMember.avatar));
+        final String avatarURL = CommonUtils.getRealImageURL(CommonUtils.decode(mMember.avatar));
         CommonUtils.setImageView(UserInfoActivity.this, mAvatar,
                 avatarURL, R.drawable.default_avatar);
+        mAvatar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(avatarURL));
+                startActivity(intent);
+            }
+        });
 
         mSignature.setScrollbarFadingEnabled(false);
         mSignature.setBackgroundColor(Color.TRANSPARENT);

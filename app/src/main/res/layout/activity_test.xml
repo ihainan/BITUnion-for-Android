@@ -9,10 +9,12 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="bit.ihainan.me.bitunionforandroid.ui.TestActivity">
 
-    <WebView
+    <TextView
         android:id="@+id/thread_message"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="12dp" />
+        android:layout_height="match_parent"
+        android:text="Hello World\nHello World "
+        android:textColor="@android:color/black"
+        android:textSize="16sp" />
 
 </RelativeLayout>

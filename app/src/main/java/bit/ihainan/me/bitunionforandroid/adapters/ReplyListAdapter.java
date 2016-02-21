@@ -215,7 +215,7 @@ public class ReplyListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             });
 
             message = (WebView) itemView.findViewById(R.id.thread_message);
-            if (Global.saveDataMode){
+            if (Global.saveDataMode) {
                 Log.d(TAG, "ThreadReplyViewHolder >> 省流量模式，不显示网页中的图片");
                 message.getSettings().setLoadsImagesAutomatically(false);
             } else {

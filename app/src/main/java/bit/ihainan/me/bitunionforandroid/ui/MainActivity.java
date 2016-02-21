@@ -78,8 +78,9 @@ public class MainActivity extends AppCompatActivity {
 
         // Get user info
         Global.readConfig(this);
-        if ("".equals(Global.userName) || "".equals(Global.password) || Global.userName == null || Global.password == null) {
+        if (Global.userSession == null || "".equals(Global.userName) || "".equals(Global.password) || Global.userName == null || Global.password == null) {
             Log.i(TAG, "MainActivity >> 尚未登录，返回登录界面");
+            CommonUtils.debugToast(this, "尚未登录，返回登录界面");
             Intent intent = new Intent(this, LoginActivity.class);
             startActivity(intent);
             finish();
@@ -155,7 +156,7 @@ public class MainActivity extends AppCompatActivity {
 
         // 从缓存中获取用户头像
         CommonUtils.getAndCacheUserInfo(this,
-                CommonUtils.decode(Global.userSession.username),
+                CommonUtils.decode(Global.userName),
                 new CommonUtils.UserInfoAndFillAvatarCallback() {
                     @Override
                     public void doSomethingIfHasCached(Member member) {
@@ -183,6 +184,8 @@ public class MainActivity extends AppCompatActivity {
                 new NavigationView.OnNavigationItemSelectedListener() {
                     @Override
                     public boolean onNavigationItemSelected(MenuItem menuItem) {
+                        mDrawerLayout.closeDrawers();
+
                         // Switch between fragments
                         int menuId = menuItem.getItemId();
                         boolean setTitle = false;
@@ -214,7 +217,6 @@ public class MainActivity extends AppCompatActivity {
                                 break;
                         }
 
-                        mDrawerLayout.closeDrawers();
 
                         if (setTitle) {
                             navigationView.setCheckedItem(menuId);
