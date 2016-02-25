@@ -178,17 +178,17 @@ public class Global extends Application {
 
         // 系统管理区
         List<ForumListGroup.ForumList> forumLists = new ArrayList<>();
-        ForumListGroup.ForumList forumList = new ForumListGroup.ForumList("联盟公告板", 3, CommonUtils.getRealImageURL("images/forumicon/announce.gif"));
+        ForumListGroup.ForumList forumList = new ForumListGroup.ForumList("联盟公告板", 3, "file:///android_asset/forumicon/announce.gif");
         forumLists.add(forumList);
 
-        forumList = new ForumListGroup.ForumList("联盟意见箱", 4, CommonUtils.getRealImageURL("images/forumicon/chest.gif"));
+        forumList = new ForumListGroup.ForumList("联盟意见箱", 4, "file:///android_asset/forumicon/chest.gif");
         forumList.addSubForum(new ForumListGroup.SubForum("处罚通告", 121));
         forumLists.add(forumList);
 
-        forumList = new ForumListGroup.ForumList("后台管理区", 170, CommonUtils.getRealImageURL("attachments/forumid_92/z/h/zhPg_aW1nNDE=.jpg"));
+        forumList = new ForumListGroup.ForumList("后台管理区", 170, "file:///android_asset/forumicon/zhPg_aW1nNDE=.jpg");
         forumLists.add(forumList);
 
-        forumList = new ForumListGroup.ForumList("新手交流区", 92, CommonUtils.getRealImageURL("images/forumicon/newbie.gif"));
+        forumList = new ForumListGroup.ForumList("新手交流区", 92, "file:///android_asset/forumicon/newbie.gif");
         forumList.addSubForum(new ForumListGroup.SubForum("积分恢复申请", 120));
         forumLists.add(forumList);
 
@@ -197,27 +197,27 @@ public class Global extends Application {
 
         // 直通理工区
         forumLists = new ArrayList<>();
-        forumList = new ForumListGroup.ForumList("校园求助热线", 108, CommonUtils.getRealImageURL("images/forumicon/handshake.gif"));
+        forumList = new ForumListGroup.ForumList("校园求助热线", 108, "file:///android_asset/forumicon/handshake.gif");
         forumLists.add(forumList);
 
-        forumList = new ForumListGroup.ForumList("叫卖场", 59, CommonUtils.getRealImageURL("http://out.bitunion.org/images/forumicon/money.gif"));
+        forumList = new ForumListGroup.ForumList("叫卖场", 59, "file:///android_asset/forumicon/money.gif");
         forumList.addSubForum(new ForumListGroup.SubForum("联盟旺铺", 114));
         forumList.addSubForum(new ForumListGroup.SubForum("团购专区", 145));
         forumList.addSubForum(new ForumListGroup.SubForum("已完成交易记录", 93));
         forumLists.add(forumList);
 
-        forumList = new ForumListGroup.ForumList("前程似锦", 83, CommonUtils.getRealImageURL("http://out.bitunion.org/images/forumicon/scroll.gif"));
+        forumList = new ForumListGroup.ForumList("前程似锦", 83, "file:///android_asset/forumicon/scroll.gif");
         forumList.addSubForum(new ForumListGroup.SubForum("考研兄弟连", 117));
         forumList.addSubForum(new ForumListGroup.SubForum("兼职信息", 153));
         forumLists.add(forumList);
 
-        forumList = new ForumListGroup.ForumList("海外BITer", 150, CommonUtils.getRealImageURL("images/forumicon/graduation.gif"));
+        forumList = new ForumListGroup.ForumList("海外BITer", 150, "file:///android_asset/forumicon/graduation.gif");
         forumLists.add(forumList);
 
-        forumList = new ForumListGroup.ForumList("外语园地", 89, CommonUtils.getRealImageURL("images/forumicon/locale.gif"));
+        forumList = new ForumListGroup.ForumList("外语园地", 89, "file:///android_asset/forumicon/locale.gif");
         forumLists.add(forumList);
 
-        forumList = new ForumListGroup.ForumList("知识海报", 151, CommonUtils.getRealImageURL("images/bz/93.gif"));
+        forumList = new ForumListGroup.ForumList("知识海报", 151, "file:///android_asset/forumicon/93.gif");
         forumLists.add(forumList);
 
         forumListGroup = new ForumListGroup(forumLists, "直通理工区");
@@ -226,22 +226,22 @@ public class Global extends Application {
         // 时尚生活区
         forumLists = new ArrayList<>();
 
-        forumList = new ForumListGroup.ForumList("购前咨询", 167, CommonUtils.getRealImageURL("attachments/forumid_81/C/Q/CQMr_aGVscDE=.jpg"));
+        forumList = new ForumListGroup.ForumList("购前咨询", 167, "file:///android_asset/forumicon/CQMr_aGVscDE=.jpg");
         forumLists.add(forumList);
 
-        forumList = new ForumListGroup.ForumList("硬件与数码时尚", 80, CommonUtils.getRealImageURL("images/forumicon/hwinfo.gif"));
+        forumList = new ForumListGroup.ForumList("硬件与数码时尚", 80, "file:///android_asset/forumicon/hwinfo.gif");
         forumLists.add(forumList);
 
-        forumList = new ForumListGroup.ForumList("驴游四海", 168, CommonUtils.getRealImageURL("attachments/forumid_81/t/n/tnT6_MTMxMDEy.jpg"));
+        forumList = new ForumListGroup.ForumList("驴游四海", 168, "file:///android_asset/forumicon/tnT6_MTMxMDEy.jpg");
         forumLists.add(forumList);
 
-        forumList = new ForumListGroup.ForumList("摄影与艺术", 116, CommonUtils.getRealImageURL("images/forumicon/cam.gif"));
+        forumList = new ForumListGroup.ForumList("摄影与艺术", 116, "file:///android_asset/forumicon/cam.gif");
         forumLists.add(forumList);
 
-        forumList = new ForumListGroup.ForumList("车行天下", 140, CommonUtils.getRealImageURL("attachments/forumid_81/t/z/tzQr_Mjk3NTk3M18xNDQwMzcwNzFfMg==.jpg"));
+        forumList = new ForumListGroup.ForumList("车行天下", 140, "file:///android_asset/forumicon/tzQr_Mjk3NTk3M18xNDQwMzcwNzFfMg==.jpg");
         forumLists.add(forumList);
 
-        forumList = new ForumListGroup.ForumList("生活会馆", 96, CommonUtils.getRealImageURL("images/forumicon/cookie.gif"));
+        forumList = new ForumListGroup.ForumList("生活会馆", 96, "file:///android_asset/forumicon/cookie.gif");
         forumLists.add(forumList);
 
         forumListGroup = new ForumListGroup(forumLists, "时尚生活区");
@@ -249,20 +249,20 @@ public class Global extends Application {
 
         // 技术讨论区
         forumLists = new ArrayList<>();
-        forumList = new ForumListGroup.ForumList("网络技术与信息", 10, CommonUtils.getRealImageURL("images/forumicon/browser.gif"));
+        forumList = new ForumListGroup.ForumList("网络技术与信息", 10, "file:///android_asset/forumicon/browser.gif");
         forumLists.add(forumList);
 
-        forumList = new ForumListGroup.ForumList("GNU/Linux 交流区", 84, CommonUtils.getRealImageURL("images/forumicon/linux.gif"));
+        forumList = new ForumListGroup.ForumList("GNU/Linux 交流区", 84, "file:///android_asset/forumicon/linux.gif");
         forumLists.add(forumList);
 
-        forumList = new ForumListGroup.ForumList("嵌入式开发技术", 101, CommonUtils.getRealImageURL("images/forumicon/embedded.png"));
+        forumList = new ForumListGroup.ForumList("嵌入式开发技术", 101, "file:///android_asset/forumicon/embedded.png");
         forumList.addSubForum(new ForumListGroup.SubForum("嵌入式 LiNUX 开发", 113));
         forumLists.add(forumList);
 
-        forumList = new ForumListGroup.ForumList("程序员集中营", 32, CommonUtils.getRealImageURL("images/forumicon/text_color.gif"));
+        forumList = new ForumListGroup.ForumList("程序员集中营", 32, "file:///android_asset/forumicon/text_color.gif");
         forumLists.add(forumList);
 
-        forumList = new ForumListGroup.ForumList("软件使用与交流", 21, CommonUtils.getRealImageURL("images/forumicon/software.gif"));
+        forumList = new ForumListGroup.ForumList("软件使用与交流", 21, "file:///android_asset/forumicon/software.gif");
         forumList.addSubForum(new ForumListGroup.SubForum("新软交流区", 107));
         forumLists.add(forumList);
 
@@ -271,16 +271,16 @@ public class Global extends Application {
 
         // 苦中作乐区
         forumLists = new ArrayList<>();
-        forumList = new ForumListGroup.ForumList("游戏人生", 22, CommonUtils.getRealImageURL("images/forumicon/game.gif"));
+        forumList = new ForumListGroup.ForumList("游戏人生", 22, "file:///android_asset/forumicon/game.gif");
         forumLists.add(forumList);
 
-        forumList = new ForumListGroup.ForumList("影视天地", 23, CommonUtils.getRealImageURL("images/forumicon/movie.gif"));
+        forumList = new ForumListGroup.ForumList("影视天地", 23, "file:///android_asset/forumicon/movie.gif");
         forumLists.add(forumList);
 
-        forumList = new ForumListGroup.ForumList("音乐殿堂", 25, CommonUtils.getRealImageURL("images/forumicon/music.gif"));
+        forumList = new ForumListGroup.ForumList("音乐殿堂", 25, "file:///android_asset/forumicon/music.gif");
         forumLists.add(forumList);
 
-        forumList = new ForumListGroup.ForumList("灌水乐园", 14, CommonUtils.getRealImageURL("images/forumicon/water.gif"));
+        forumList = new ForumListGroup.ForumList("灌水乐园", 14, "file:///android_asset/forumicon/water.gif");
         forumList.addSubForum(new ForumListGroup.SubForum("站庆专版", 65));
         forumList.addSubForum(new ForumListGroup.SubForum("导师风采", 175));
         forumList.addSubForum(new ForumListGroup.SubForum("个人展示区", 106));
@@ -288,20 +288,20 @@ public class Global extends Application {
         forumList.addSubForum(new ForumListGroup.SubForum("原创文学", 66));
         forumLists.add(forumList);
 
-        forumList = new ForumListGroup.ForumList("贴图欣赏", 24, CommonUtils.getRealImageURL("images/forumicon/image.gif"));
+        forumList = new ForumListGroup.ForumList("贴图欣赏", 24, "file:///android_asset/forumicon/image.gif");
         forumLists.add(forumList);
 
-        forumList = new ForumListGroup.ForumList("动漫天空", 27, CommonUtils.getRealImageURL("images/forumicon/mascot.gif"));
+        forumList = new ForumListGroup.ForumList("动漫天空", 27, "file:///android_asset/forumicon/mascot.gif");
         forumList.addSubForum(new ForumListGroup.SubForum("动漫美图", 63));
         forumList.addSubForum(new ForumListGroup.SubForum("日语学习交流版", 110));
         forumLists.add(forumList);
 
-        forumList = new ForumListGroup.ForumList("体坛风云", 115, CommonUtils.getRealImageURL("images/forumicon/run.gif"));
+        forumList = new ForumListGroup.ForumList("体坛风云", 115, "file:///android_asset/forumicon/run.gif");
         forumList.addSubForum(new ForumListGroup.SubForum("舞动桑巴", 102));
         forumList.addSubForum(new ForumListGroup.SubForum("菠菜组内部版面", 143));
         forumLists.add(forumList);
 
-        forumList = new ForumListGroup.ForumList("职场生涯", 124, CommonUtils.getRealImageURL("images/forumicon/businessmen.gif"));
+        forumList = new ForumListGroup.ForumList("职场生涯", 124, "file:///android_asset/forumicon/businessmen.gif");
         forumLists.add(forumList);
 
         forumListGroup = new ForumListGroup(forumLists, "苦中作乐区");
@@ -310,7 +310,7 @@ public class Global extends Application {
         // 联盟交流区
         forumLists = new ArrayList<>();
 
-        forumList = new ForumListGroup.ForumList("资源分享区", 171, CommonUtils.getRealImageURL("attachments/forumid_92/D/b/Dbfr_z8LU2DE=.jpg"));
+        forumList = new ForumListGroup.ForumList("资源分享区", 171, "file:///android_asset/forumicon/Dbfr_z8LU2DE=.jpg");
         forumList.addSubForum(new ForumListGroup.SubForum("联盟 FTP 专版", 79));
         forumList.addSubForum(new ForumListGroup.SubForum("分享专版", 174));
         forumList.addSubForum(new ForumListGroup.SubForum("索档专版", 15));

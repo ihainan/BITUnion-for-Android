@@ -15,13 +15,11 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
-import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.umeng.analytics.MobclickAgent;
 
-import bit.ihainan.me.bitunionforandroid.BuildConfig;
 import bit.ihainan.me.bitunionforandroid.R;
 import bit.ihainan.me.bitunionforandroid.models.Member;
 import bit.ihainan.me.bitunionforandroid.ui.assist.CustomSpan;
@@ -181,12 +179,27 @@ public class UserInfoActivity extends SwipeActivity {
 
         registerForContextMenu(mEmailLayout);
         registerForContextMenu(mWebsiteLayout);
+
+        addOnClickListener();
     }
 
+    /**
+     * 添加弹出菜单事件
+     */
+    private void addOnClickListener()
+    {
+        View.OnClickListener onClickListener = new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                v.showContextMenu();
+            }
+        };
+
+        mEmailLayout.setOnClickListener(onClickListener);
+        mWebsiteLayout.setOnClickListener(onClickListener);
+    }
 
     // 菜单
-
-
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
         // super.onCreateContextMenu(menu, v, menuInfo);
