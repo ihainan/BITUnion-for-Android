@@ -1,5 +1,6 @@
 package bit.ihainan.me.bitunionforandroid.ui.assist;
 
+import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
 import android.os.Bundle;
@@ -47,5 +48,17 @@ public class ForumFragment extends Fragment {
         }
 
         return mRootView;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        ((Activity) mContext).getWindow().getDecorView().findViewById(R.id.toolbar).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mExpandableListView.smoothScrollToPosition(0);
+            }
+        });
     }
 }

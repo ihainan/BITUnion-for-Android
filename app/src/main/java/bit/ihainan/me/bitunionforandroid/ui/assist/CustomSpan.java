@@ -19,7 +19,6 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import bit.ihainan.me.bitunionforandroid.R;
 
@@ -75,7 +74,6 @@ public class CustomSpan {
             p.setColor(color);
         }
     }
-
 
     public static class CustomLinkSpan extends ClickableSpan {
         private final int mNormalTextColor;

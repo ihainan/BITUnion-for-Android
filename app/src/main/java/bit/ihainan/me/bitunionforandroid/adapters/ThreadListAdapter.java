@@ -100,7 +100,7 @@ public class ThreadListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             // 新帖子标志
             holder.isNewOrHot.setVisibility(View.VISIBLE);
             holder.isNewOrHot.setText("  NEW");
-            holder.isNewOrHot.setTextColor(ContextCompat.getColor(mContext, R.color.primary));
+            holder.isNewOrHot.setTextColor(ContextCompat.getColor(mContext, R.color.primary_dark));
 
             // 其他域
             holder.authorName.setText(CommonUtils.truncateString(
@@ -119,7 +119,7 @@ public class ThreadListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                         @Override
                         public void doSomethingIfHasCached(Member member) {
                             String avatarURL = CommonUtils.getRealImageURL(CommonUtils.decode(member.avatar));
-                            CommonUtils.setImageView(mContext, holder.avatar,
+                            CommonUtils.setAvatarImageView(mContext, holder.avatar,
                                     avatarURL, R.drawable.default_avatar);
                         }
                     });
@@ -149,7 +149,7 @@ public class ThreadListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                         @Override
                         public void doSomethingIfHasCached(Member member) {
                             String avatarURL = CommonUtils.getRealImageURL(CommonUtils.decode(member.avatar));
-                            CommonUtils.setImageView(mContext, holder.avatar,
+                            CommonUtils.setAvatarImageView(mContext, holder.avatar,
                                     avatarURL, R.drawable.default_avatar);
                         }
                     });

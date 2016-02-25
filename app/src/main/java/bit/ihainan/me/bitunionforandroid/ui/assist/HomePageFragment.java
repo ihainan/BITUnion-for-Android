@@ -1,9 +1,11 @@
 package bit.ihainan.me.bitunionforandroid.ui.assist;
 
+import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -26,7 +28,6 @@ import bit.ihainan.me.bitunionforandroid.R;
 import bit.ihainan.me.bitunionforandroid.adapters.LatestThreadListAdapter;
 import bit.ihainan.me.bitunionforandroid.models.LatestThread;
 import bit.ihainan.me.bitunionforandroid.utils.Api;
-import bit.ihainan.me.bitunionforandroid.utils.CommonUtils;
 import bit.ihainan.me.bitunionforandroid.utils.Global;
 
 /**
@@ -53,7 +54,7 @@ public class HomePageFragment extends Fragment {
             final LinearLayoutManager layoutManager = new LinearLayoutManager(mContext);
             layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
 
-            mRecyclerView = (RecyclerView) mRootView.findViewById(R.id.home_recycler_view);
+            mRecyclerView = (RecyclerView) mRootView.findViewById(R.id.detail_recycler_view);
             mRecyclerView.setLayoutManager(layoutManager);
             mRecyclerView.addItemDecoration(new SimpleDividerItemDecoration(mContext));
 
@@ -66,6 +67,17 @@ public class HomePageFragment extends Fragment {
         }
 
         return mRootView;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        ((Activity) mContext).getWindow().getDecorView().findViewById(R.id.toolbar).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mRecyclerView.smoothScrollToPosition(0);
+            }
+        });
     }
 
     private void setupSwipeRefreshLayout() {
@@ -108,9 +120,7 @@ public class HomePageFragment extends Fragment {
                         mAdapter.notifyDataSetChanged();
                     } catch (Exception e) {
                         mSwipeRefreshLayout.setRefreshing(false);
-                        CommonUtils.showDialog(mContext,
-                                getString(R.string.error_title),
-                                getString(R.string.error_parse_json));
+                        showSnackbar(getString(R.string.error_parse_json));
                         Log.e(TAG, getString(R.string.error_parse_json) + "\n" + response, e);
                     }
                 }
@@ -119,11 +129,25 @@ public class HomePageFragment extends Fragment {
             @Override
             public void onErrorResponse(VolleyError error) {
                 mSwipeRefreshLayout.setRefreshing(false);
-                CommonUtils.showDialog(mContext,
-                        getString(R.string.error_title),
-                        getString(R.string.error_network));
+                showSnackbar(getString(R.string.error_network));
                 Log.e(TAG, getString(R.string.error_network), error);
             }
         });
+    }
+
+    private void showSnackbar(String showMessage) {
+        Snackbar.make(mRecyclerView, showMessage, Snackbar.LENGTH_LONG)
+                .setAction("Retry", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        mSwipeRefreshLayout.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                mSwipeRefreshLayout.setRefreshing(true);
+                                refreshData();
+                            }
+                        });
+                    }
+                }).show();
     }
 }

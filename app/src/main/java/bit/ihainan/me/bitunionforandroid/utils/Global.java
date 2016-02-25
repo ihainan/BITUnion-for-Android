@@ -11,7 +11,9 @@ import com.umeng.update.UmengUpdateAgent;
 import com.umeng.update.UpdateConfig;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import bit.ihainan.me.bitunionforandroid.models.ForumListGroup;
 import bit.ihainan.me.bitunionforandroid.models.Member;
@@ -337,6 +339,7 @@ public class Global extends Application {
         UmengUpdateAgent.setDeltaUpdate(true);  // 增量更新
         if (debugMode) UpdateConfig.setDebug(true);
         UmengUpdateAgent.setRichNotification(true);
+        UmengUpdateAgent.setUpdateOnlyWifi(false);
 
         // 从缓存中读取数据
         readConfig(this);
@@ -361,4 +364,6 @@ public class Global extends Application {
         // TODO: 从服务器获取
         // makeForumGroupList(getApplicationContext());
     }
+
+    public final static Map<String, Boolean> badImages = new HashMap<>();
 }

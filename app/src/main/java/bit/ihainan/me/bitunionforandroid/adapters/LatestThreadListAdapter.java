@@ -18,7 +18,9 @@ import com.squareup.picasso.Picasso;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import bit.ihainan.me.bitunionforandroid.R;
 import bit.ihainan.me.bitunionforandroid.models.LatestThread;
@@ -119,10 +121,14 @@ public class LatestThreadListAdapter extends RecyclerView.Adapter<RecyclerView.V
 
         /* 发表新帖 */
         if (latestThread.lastreply == null || latestThread.tid_sum == 0) {
+            String avatarURL = CommonUtils.getRealImageURL(CommonUtils.decode(latestThread.avatar));
+            CommonUtils.setAvatarImageView(mContext, holder.avatar,
+                    avatarURL, R.drawable.default_avatar);
+
             // 新帖子标志
             holder.isNewOrHot.setVisibility(View.VISIBLE);
             holder.isNewOrHot.setText("  NEW");
-            holder.isNewOrHot.setTextColor(ContextCompat.getColor(mContext, R.color.primary));
+            holder.isNewOrHot.setTextColor(ContextCompat.getColor(mContext, R.color.primary_dark));
 
             // 其他域
             holder.authorName.setText(
@@ -134,10 +140,19 @@ public class LatestThreadListAdapter extends RecyclerView.Adapter<RecyclerView.V
                     CommonUtils.decode(latestThread.lastreply.who));
             holder.forumName.setText(CommonUtils.decode(latestThread.fname));
             holder.action.setText(" 发表了新帖");
-            String avatarURL = CommonUtils.getRealImageURL(CommonUtils.decode(latestThread.avatar));
-            CommonUtils.setImageView(mContext, holder.avatar,
-                    avatarURL, R.drawable.default_avatar);
         } else {
+            // 从缓存中获取用户头像
+            CommonUtils.getAndCacheUserInfo(mContext,
+                    CommonUtils.decode(latestThread.lastreply.who),
+                    new CommonUtils.UserInfoAndFillAvatarCallback() {
+                        @Override
+                        public void doSomethingIfHasCached(Member member) {
+                            String avatarURL = CommonUtils.getRealImageURL(CommonUtils.decode(member.avatar));
+                            CommonUtils.setAvatarImageView(mContext, holder.avatar,
+                                    avatarURL, R.drawable.default_avatar);
+                        }
+                    });
+
             // 热帖标志
             if (latestThread.tid_sum >= Global.HOT_TOPIC_THREAD) {
                 holder.isNewOrHot.setVisibility(View.VISIBLE);
@@ -157,18 +172,6 @@ public class LatestThreadListAdapter extends RecyclerView.Adapter<RecyclerView.V
             CommonUtils.setUserAvatarClickListener(mContext,
                     holder.avatar, -1,
                     CommonUtils.decode(latestThread.lastreply.who));
-
-            // 从缓存中获取用户头像
-            CommonUtils.getAndCacheUserInfo(mContext,
-                    CommonUtils.decode(latestThread.lastreply.who),
-                    new CommonUtils.UserInfoAndFillAvatarCallback() {
-                        @Override
-                        public void doSomethingIfHasCached(Member member) {
-                            String avatarURL = CommonUtils.getRealImageURL(CommonUtils.decode(member.avatar));
-                            CommonUtils.setImageView(mContext, holder.avatar,
-                                    avatarURL, R.drawable.default_avatar);
-                        }
-                    });
         }
     }
 
@@ -208,7 +211,7 @@ public class LatestThreadListAdapter extends RecyclerView.Adapter<RecyclerView.V
                     CommonUtils.decode(latestThread.author));
             holder.action.setText(" 发布了自拍");
             String avatarURL = CommonUtils.getRealImageURL(CommonUtils.decode(latestThread.avatar));
-            CommonUtils.setImageView(mContext, holder.avatar,
+            CommonUtils.setAvatarImageView(mContext, holder.avatar,
                     avatarURL, R.drawable.default_avatar);
         } else {
             /* 回复旧帖 */

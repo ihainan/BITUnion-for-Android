@@ -158,7 +158,7 @@ public class SuperParentAdapter extends BaseExpandableListAdapter {
             else
                 expandableButton.setVisibility(View.VISIBLE);
 
-            convertView.setOnClickListener(new View.OnClickListener() {
+            View.OnClickListener onClickListener = new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     if (forumList.getChildItemList() == null || forumList.getChildItemList().size() == 0) {
@@ -176,7 +176,10 @@ public class SuperParentAdapter extends BaseExpandableListAdapter {
                         expandableButton.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_keyboard_arrow_up_black_24dp));
                     }
                 }
-            });
+            };
+
+            expandableButton.setOnClickListener(onClickListener);
+            convertView.setOnClickListener(onClickListener);
 
             // 论坛名
             TextView forumName = (TextView) convertView.findViewById(R.id.item_forum_parent_forum_name);
@@ -210,7 +213,10 @@ public class SuperParentAdapter extends BaseExpandableListAdapter {
                 convertView = inflater.inflate(R.layout.item_forum_parent, null);
             }
 
-            convertView.setOnClickListener(new View.OnClickListener() {
+            final ImageButton expandableButton = (ImageButton) convertView.findViewById(R.id.parent_list_item_expand_arrow);
+            expandableButton.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_keyboard_arrow_right_black_24dp));
+
+            View.OnClickListener onClickListener = new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     Intent intent = new Intent(mContext, ThreadListActivity.class);
@@ -219,14 +225,13 @@ public class SuperParentAdapter extends BaseExpandableListAdapter {
                     intent.putExtra(ThreadListActivity.SUB_FORUM_TAG, subForum);
                     mContext.startActivity(intent);
                 }
-            });
+            };
 
+            expandableButton.setOnClickListener(onClickListener);
+            convertView.setOnClickListener(onClickListener);
 
             CircleImageView icon = (CircleImageView) convertView.findViewById(R.id.item_forum_parent_icon_round);
             icon.setVisibility(View.INVISIBLE);
-
-            ImageButton expandableButton = (ImageButton) convertView.findViewById(R.id.parent_list_item_expand_arrow);
-            expandableButton.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_keyboard_arrow_right_black_24dp));
 
 
             TextView subForumName = (TextView) convertView.findViewById(R.id.item_forum_parent_forum_name);

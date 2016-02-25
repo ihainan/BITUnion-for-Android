@@ -31,17 +31,14 @@
         android:checkableBehavior="single">
         <item
             android:id="@+id/nav_setting"
-            android:icon="@drawable/ic_settings_white_24dp"
             android:title="@string/action_settings" />
 
         <item
             android:id="@+id/nav_feedback"
-            android:icon="@drawable/ic_feedback_white_24dp"
             android:title="@string/action_feedback" />
 
         <item
             android:id="@+id/nav_about"
-            android:icon="@drawable/ic_info_black_24dp"
             android:title="@string/action_about" />
     </group>
 

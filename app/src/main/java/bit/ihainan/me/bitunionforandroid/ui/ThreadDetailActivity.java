@@ -3,14 +3,13 @@ package bit.ihainan.me.bitunionforandroid.ui;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.Snackbar;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
-import android.widget.Adapter;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
@@ -28,15 +27,15 @@ import java.util.List;
 
 import bit.ihainan.me.bitunionforandroid.R;
 import bit.ihainan.me.bitunionforandroid.adapters.PostListAdapter;
-import bit.ihainan.me.bitunionforandroid.adapters.ReplyListAdapter;
-import bit.ihainan.me.bitunionforandroid.models.*;
+import bit.ihainan.me.bitunionforandroid.models.ThreadReply;
 import bit.ihainan.me.bitunionforandroid.ui.assist.SimpleDividerItemDecoration;
+import bit.ihainan.me.bitunionforandroid.ui.assist.SwipeActivity;
 import bit.ihainan.me.bitunionforandroid.utils.Api;
 import bit.ihainan.me.bitunionforandroid.utils.CommonUtils;
 import bit.ihainan.me.bitunionforandroid.utils.Global;
 import bit.ihainan.me.bitunionforandroid.utils.HtmlUtil;
 
-public class ThreadDetailActivity extends AppCompatActivity {
+public class ThreadDetailActivity extends SwipeActivity {
     private final static String TAG = ThreadDetailActivity.class.getSimpleName();
 
     // UI references
@@ -110,8 +109,14 @@ public class ThreadDetailActivity extends AppCompatActivity {
         });
 
         // RecyclerView
-        mRecyclerView = (RecyclerView) findViewById(R.id.home_recycler_view);
+        mRecyclerView = (RecyclerView) findViewById(R.id.detail_recycler_view);
         mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.home_swipe_refresh_layout);
+        toolbar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mRecyclerView.smoothScrollToPosition(0);
+            }
+        });
         setupRecyclerView();
         setupSwipeRefreshLayout();
 
@@ -121,26 +126,32 @@ public class ThreadDetailActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Log.i(TAG, "mChangeOrder >> 变换顺序 " + Global.increaseOrder + " -> " + !Global.increaseOrder);
+
                 Global.increaseOrder = !Global.increaseOrder;
                 Global.saveConfig(ThreadDetailActivity.this);
 
-                mSwipeRefreshLayout.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        reloadData(true);
-                    }
-                });
+                Collections.reverse(mThreadPostList);
+                mAdapter.notifyDataSetChanged();
+                if (Global.increaseOrder)
+                    mRecyclerView.scrollToPosition(mThreadPostList.size() - mLastVisibleItem);
+                else
+                    mRecyclerView.scrollToPosition(mThreadPostList.size() - mLastVisibleItem + 2);
             }
         });
+
+        setSwipeAnyWhere(false);
     }
 
     private List<bit.ihainan.me.bitunionforandroid.models.ThreadReply> mThreadPostList = new ArrayList<>();
     private PostListAdapter mAdapter;
 
+    private LinearLayoutManager mLayoutManager = new LinearLayoutManager(this);
+    private int currentX = 0, currentY = 0;
+    private int mLastVisibleItem;
+
     private void setupRecyclerView() {
-        final LinearLayoutManager layoutManager = new LinearLayoutManager(this);
-        layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-        mRecyclerView.setLayoutManager(layoutManager);
+        mLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+        mRecyclerView.setLayoutManager(mLayoutManager);
 
         mRecyclerView.addItemDecoration(new SimpleDividerItemDecoration(ThreadDetailActivity.this));
 
@@ -158,25 +169,32 @@ public class ThreadDetailActivity extends AppCompatActivity {
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
 
+                currentX += dx;
+                currentY += dy;
+
                 // 由于不能拿到论坛帖子的总数，因此只能无限加载
-                int lastVisibleItem = layoutManager.findLastVisibleItemPosition();
+                mLastVisibleItem = mLayoutManager.findLastVisibleItemPosition();
                 // Log.d(TAG, "onScrolled >> lastVisibleItem = " + lastVisibleItem + " mThreadPostList.size() = " + mThreadPostList.size());
-                if (dy > 0 && lastVisibleItem >= mThreadPostList.size() - 2 && !mIsLoading) {
-                    // 拉取数据，显示进度
-                    Log.i(TAG, "onScrolled >> 即将到底，准备请求新数据");
-                    mThreadPostList.add(null);
-                    mAdapter.notifyItemInserted(mThreadPostList.size() - 1);
-
-                    if (!Global.increaseOrder) {
-                        refreshData(mCurrentPosition < 0 ? 0 : mCurrentPosition, mCurrentPosition + Global.LOADING_REPLIES_COUNT);
-                    } else {
-                        refreshData(mCurrentPosition, mCurrentPosition + Global.LOADING_REPLIES_COUNT);
-                    }
-
-                    mIsLoading = true;
+                if (dy > 0 && mLastVisibleItem >= mThreadPostList.size() - 2 && !mIsLoading) {
+                    loadMore();
                 }
             }
         });
+    }
+
+    private void loadMore() {
+        // 拉取数据，显示进度
+        Log.i(TAG, "onScrolled >> 即将到底，准备请求新数据");
+        mThreadPostList.add(null);
+        mAdapter.notifyItemInserted(mThreadPostList.size() - 1);
+
+        if (!Global.increaseOrder) {
+            refreshData(mCurrentPosition < 0 ? 0 : mCurrentPosition, mCurrentPosition + Global.LOADING_REPLIES_COUNT);
+        } else {
+            refreshData(mCurrentPosition, mCurrentPosition + Global.LOADING_REPLIES_COUNT);
+        }
+
+        mIsLoading = true;
     }
 
     private void setupSwipeRefreshLayout() {
@@ -285,9 +303,12 @@ public class ThreadDetailActivity extends AppCompatActivity {
                         }
 
                         mSwipeRefreshLayout.setRefreshing(false);
-                        CommonUtils.showDialog(ThreadDetailActivity.this,
-                                getString(R.string.error_title),
-                                getString(R.string.error_network));
+                        Snackbar.make(mRecyclerView, getString(R.string.error_network), Snackbar.LENGTH_LONG).setAction("RETRY", new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                loadMore();
+                            }
+                        }).show();
                         Log.e(TAG, getString(R.string.error_network), error);
                     }
                 });

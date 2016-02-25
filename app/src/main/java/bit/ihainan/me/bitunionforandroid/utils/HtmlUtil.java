@@ -51,9 +51,9 @@ public class HtmlUtil {
 
     public String makeAll() {
         processBody();
-        // addCss("body{overflow-wrap:break-word;word-wrap:break-word;-ms-word-break:break-all;word-break:break-all;word-break:break-word;-ms-hyphens:auto;-moz-hyphens:auto;-webkit-hyphens:auto;hyphens:auto;line-height:1.6}blockquote{background:#f9f9f9;border-left:10px solid #ccc;margin:1.5em 0px;padding:.5em 10px;quotes:\"\\201C\"\"\\201D\"\"\\2018\"\"\\2019\"}blockquote:before{color:#006FDA;content:open-quote;font-size:4em;line-height:.1em;margin-right:.25em;vertical-align:-.4em}blockquote p{display:inline}blockquote cite{color:#006FDA;font-weight:700} img{width:100%;height:auto}");
-        // addHead(getCss());
-        // addHead("<link rel=\"stylesheet\" type=\"text/css\" href=\"css/style.css\" />");
+//         addCss("body{overflow-wrap:break-word;word-wrap:break-word;-ms-word-break:break-all;word-break:break-all;word-break:break-word;-ms-hyphens:auto;-moz-hyphens:auto;-webkit-hyphens:auto;hyphens:auto;line-height:1.6}blockquote{background:#f9f9f9;border-left:10px solid #ccc;margin:1.5em 0px;padding:.5em 10px;quotes:\"\\201C\"\"\\201D\"\"\\2018\"\"\\2019\"}blockquote:before{color:#006FDA;content:open-quote;font-size:4em;line-height:.1em;margin-right:.25em;vertical-align:-.4em}blockquote p{display:inline}blockquote cite{color:#006FDA;font-weight:700} img{width:100%;height:auto}");
+//         addHead(getCss());
+        addHead("<link rel=\"stylesheet\" type=\"text/css\" href=\"css/style.css\" />");
         // addJavascript("");
         // addHead(getJavascript());
         return mHtmlAll.append(getHead()).append(mBody).append("</body></html>").toString();

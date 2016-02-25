@@ -5,6 +5,8 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Build;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.view.ContextThemeWrapper;
@@ -28,6 +30,7 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
+import java.net.NetworkInterface;
 import java.net.URLDecoder;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -55,15 +58,16 @@ public class CommonUtils {
      * @param message 弹窗信息
      */
     public static void showDialog(Context context, String title, String message) {
-        (new AlertDialog.Builder(context))
-                .setTitle(title)
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setTitle(title)
                 .setMessage(message)
                 .setPositiveButton("确定", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.dismiss();
                     }
-                }).show();
+                });
+        if (isRunning(context)) builder.show();
     }
 
     /**
@@ -78,25 +82,28 @@ public class CommonUtils {
         UmengUpdateAgent.setUpdateAutoPopup(false);
         UmengUpdateAgent.setUpdateListener(new UmengUpdateListener() {
             @Override
-            public void onUpdateReturned(int updateStatus, UpdateResponse updateInfo) {
+            public void onUpdateReturned(int updateStatus, final UpdateResponse updateInfo) {
                 if (dialog != null) dialog.dismiss();
                 switch (updateStatus) {
+                    case UpdateStatus.NoneWifi: // none wifi
                     case UpdateStatus.Yes: // has update
                         debugToast(context, "发现更新，当前状态 ifCheckIgnore = "
-                                + ifCheckIgnore + " isIgnore = " + UmengUpdateAgent.isIgnore(context, updateInfo));
-                        if (!ifCheckIgnore || !UmengUpdateAgent.isIgnore(context, updateInfo))
-                            CommonUtils.showUpdateDialog(context, updateInfo);
+                                + ifCheckIgnore + " isIgnore = "
+                                + ifCheckIgnore
+                                + " iSWiFi = " + isWifi(context));
+                        // 如果
+                        Log.d(TAG, "发现更新，当前状态 ifCheckIgnore = "
+                                + ifCheckIgnore + " isIgnore = "
+                                + UmengUpdateAgent.isIgnore(context, updateInfo)
+                                + " iSWiFi = " + isWifi(context));
+                        if (!ifCheckIgnore || !UmengUpdateAgent.isIgnore(context, updateInfo)) {
+                            CommonUtils.showUpdateDialog(context, updateInfo, dialog == null);
+                        }
                         break;
                     case UpdateStatus.No: // has no update
                         debugToast(context, "没有检查到更新，当前 dialog = " + dialog);
                         if (dialog != null) {
                             showDialog(context, "提醒", "没有检查到更新");
-                        }
-                        break;
-                    case UpdateStatus.NoneWifi: // none wifi
-                        debugToast(context, "只能在 Wi-Fi 环境下进行应用更新 | dialog = " + dialog);
-                        if (dialog != null) {
-                            showDialog(context, "提醒", "只能在 Wi-Fi 环境下进行应用更新");
                         }
                         break;
                     case UpdateStatus.Timeout: // time out
@@ -129,7 +136,7 @@ public class CommonUtils {
      * @param context    上下文
      * @param updateInfo 升级信息
      */
-    public static void showUpdateDialog(final Context context, final UpdateResponse updateInfo) {
+    public static void showUpdateDialog(final Context context, final UpdateResponse updateInfo, boolean showIgnore) {
         AlertDialog.Builder builder = new AlertDialog.Builder(new ContextThemeWrapper(context, R.style.AlertDialogCustom));
         builder.setTitle("发现新版本 version " + updateInfo.version);
         builder.setMessage(updateInfo.updateLog);
@@ -148,20 +155,41 @@ public class CommonUtils {
             public void onClick(DialogInterface dialog, int which) {
                 if (Global.debugMode)
                     Toast.makeText(context, "现在更新", Toast.LENGTH_SHORT).show();
-                UmengUpdateAgent.startDownload(context, updateInfo);
+
+                // 非 Wi-Fi 条件下给出提醒
+                if (!isWifi(context)) {
+                    final AlertDialog.Builder builder = new AlertDialog.Builder(new ContextThemeWrapper(context, R.style.AlertDialogCustom));
+                    builder.setTitle("提醒").setMessage("正在使用移动数据流量，是否仍然更新？").setPositiveButton("YES", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            UmengUpdateAgent.startDownload(context, updateInfo);
+                        }
+                    }).setNegativeButton("NO", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface innerDialog, int which) {
+                            innerDialog.dismiss();
+                        }
+                    }).show();
+                } else {
+                    // Wi-Fi 条件，直接下载
+                    UmengUpdateAgent.startDownload(context, updateInfo);
+                }
+
                 dialog.dismiss();
             }
         });
 
-        builder.setNeutralButton("不再提醒", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                if (Global.debugMode)
-                    Toast.makeText(context, "不再提醒", Toast.LENGTH_SHORT).show();
-                UmengUpdateAgent.ignoreUpdate(context, updateInfo);
-                dialog.dismiss();
-            }
-        });
+        if (showIgnore) {
+            builder.setNeutralButton("不再提醒", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    if (Global.debugMode)
+                        Toast.makeText(context, "不再提醒", Toast.LENGTH_SHORT).show();
+                    UmengUpdateAgent.ignoreUpdate(context, updateInfo);
+                    dialog.dismiss();
+                }
+            });
+        }
 
         if (isRunning(context))
             builder.create().show();
@@ -205,6 +233,17 @@ public class CommonUtils {
         });
     }
 
+    public static void setAvatarImageView(final Context context, final ImageView imageView, final String imageSrc, final int errorImageId) {
+        if (Global.badImages.get(imageSrc) != null) {
+            Log.d(TAG, "图片在黑名单中 " + imageSrc);
+            Picasso.with(context)
+                    .load(R.drawable.default_avatar)
+                    .into(imageView);
+        } else {
+            setImageView(context, imageView, imageSrc, errorImageId);
+        }
+    }
+
     public static void setImageView(final Context context, final ImageView imageView, final String imageSrc, final int errorImageId) {
         // 测试 Offline 模式是否能够正确加载图片
         Picasso.with(context)
@@ -221,10 +260,10 @@ public class CommonUtils {
 
                     @Override
                     public void onError() {
-                        if (Global.saveDataMode) {
+                        if (!CommonUtils.isWifi(context) && Global.saveDataMode) {
                             // TODO: 以更友好的方式显示默认头像
                             // 节省流量模式，不要下载图片
-                            Log.d(TAG, "setImageView >> 节省流量模式，不下载图片 " + imageSrc);
+                            Log.d(TAG, "setImageView >> 节省流量模式且非 Wi-Fi 环境，不下载图片 " + imageSrc);
                             Picasso.with(context)
                                     .load(R.drawable.default_avatar)
                                     .error(errorImageId)
@@ -232,12 +271,24 @@ public class CommonUtils {
                             ;
                         } else {
                             // 非节省流量模式，下载并缓存图片
-                            Log.d(TAG, "setImageView >> 非节省流量模式，正常下载图片 " + imageSrc);
+                            Log.d(TAG, "setImageView >> 非节省流量模式或者 Wi-Fi 环境，正常下载图片 " + imageSrc);
                             Picasso.with(context)
                                     .load(imageSrc)
                                     .placeholder(R.drawable.empty_avatar)
                                     .error(errorImageId)
-                                    .into(imageView);
+                                    .into(imageView, new Callback() {
+                                        @Override
+                                        public void onSuccess() {
+
+                                        }
+
+                                        @Override
+                                        public void onError() {
+                                            // 放入黑名单
+                                            Log.d(TAG, "图片加入到黑名单中 " + imageSrc);
+                                            Global.badImages.put(imageSrc, true);
+                                        }
+                                    });
                             ;
                         }
                     }
@@ -492,5 +543,11 @@ public class CommonUtils {
         } else {
             return Character.toUpperCase(first) + s.substring(1);
         }
+    }
+
+    public static boolean isWifi(Context context) {
+        ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
+        return networkInfo != null && networkInfo.getType() == ConnectivityManager.TYPE_WIFI;
     }
 }

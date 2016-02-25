@@ -82,29 +82,30 @@
                 android:textSize="17sp"
                 android:textStyle="bold" />
 
+            <TextView
+                android:id="@+id/thread_message"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_below="@id/thread_subject"
+                android:layout_marginTop="12dp"
+                android:text="姑娘详情：软妹子，1992年北京大兴人，首经贸本科毕业，在创业企业认真做品牌，不给国家添乱，身高160的小型美女，体重分分钟浮动20斤跟玩似的，太瘦了卖不上价钱。 "
+                android:textColor="@android:color/black"
+                android:textIsSelectable="true"
+                android:textSize="16sp" />
+
             <LinearLayout
-                android:id="@+id/thread_message_layout"
+                android:id="@+id/thread_attachment_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/thread_subject"
-                android:layout_marginTop="14dp">
-
-                <TextView
-                    android:id="@+id/thread_message"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:text="姑娘详情：软妹子，1992年北京大兴人，首经贸本科毕业，在创业企业认真做品牌，不给国家添乱，身高160的小型美女，体重分分钟浮动20斤跟玩似的，太瘦了卖不上价钱。 "
-                    android:textColor="@android:color/black"
-                    android:textIsSelectable="true"
-                    android:textSize="16sp" />
-            </LinearLayout>
-
+                android:layout_below="@id/thread_message"
+                android:layout_marginTop="10dp"
+                android:orientation="vertical" />
 
             <View xmlns:android="http://schemas.android.com/apk/res/android"
                 android:id="@+id/divider"
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:layout_below="@id/thread_message_layout"
+                android:layout_below="@id/thread_attachment_layout"
                 android:layout_marginBottom="5dp"
                 android:layout_marginTop="15dp"
                 android:background="@color/dark_gray" />

@@ -1,31 +1,43 @@
 package bit.ihainan.me.bitunionforandroid.ui;
 
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Intent;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.Html;
+import android.text.SpannableString;
+import android.view.ContextMenu;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
-import android.webkit.WebView;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.umeng.analytics.MobclickAgent;
 
+import bit.ihainan.me.bitunionforandroid.BuildConfig;
 import bit.ihainan.me.bitunionforandroid.R;
 import bit.ihainan.me.bitunionforandroid.models.Member;
-import bit.ihainan.me.bitunionforandroid.utils.BUWebViewClient;
+import bit.ihainan.me.bitunionforandroid.ui.assist.CustomSpan;
+import bit.ihainan.me.bitunionforandroid.ui.assist.SwipeActivity;
 import bit.ihainan.me.bitunionforandroid.utils.CommonUtils;
 import bit.ihainan.me.bitunionforandroid.utils.Global;
-import bit.ihainan.me.bitunionforandroid.utils.HtmlUtil;
+import bit.ihainan.me.bitunionforandroid.utils.PicassoImageGetter;
 
-public class UserInfoActivity extends AppCompatActivity {
+public class UserInfoActivity extends SwipeActivity {
 
     // UI references
     private TextView mUserId, mStatus, mCredit, mBday, mEmail, mWebsite, mThreadCount, mPostCount, mToolbarTitle, mRegDate, mLastVisit;
-    private WebView mSignature;
+    private TextView mSignature;
     private ImageView mAvatar;
+    private LinearLayout mContactLayout, mSignatureLayout, mBdayLayout;
+    private RelativeLayout mEmailLayout, mWebsiteLayout;
 
     // TAGS
     public static final String TAG = UserInfoActivity.class.getSimpleName();
@@ -66,7 +78,7 @@ public class UserInfoActivity extends AppCompatActivity {
         }
 
         // UI references
-        mSignature = (WebView) findViewById(R.id.profile_signature);
+        mSignature = (TextView) findViewById(R.id.profile_signature);
         mAvatar = (ImageView) findViewById(R.id.profile_image);
         mUserId = (TextView) findViewById(R.id.profile_user_id);
         mStatus = (TextView) findViewById(R.id.profile_status);
@@ -79,11 +91,18 @@ public class UserInfoActivity extends AppCompatActivity {
         mToolbarTitle = (TextView) findViewById(R.id.toolbar_title);
         mRegDate = (TextView) findViewById(R.id.profile_regdate);
         mLastVisit = (TextView) findViewById(R.id.profile_lastvisit);
+        mContactLayout = (LinearLayout) findViewById(R.id.profile_contact_layout);
+        mEmailLayout = (RelativeLayout) findViewById(R.id.profile_email_layout);
+        mWebsiteLayout = (RelativeLayout) findViewById(R.id.profile_website_layout);
 
+        mSignatureLayout = (LinearLayout) findViewById(R.id.profile_signature_layout);
+        mBdayLayout = (LinearLayout) findViewById(R.id.profile_bday_layout);
 
-        mToolbarTitle.setText(mUsername);
+        mToolbarTitle.setText(CommonUtils.decode(mUsername));
 
         getUserInfo();
+
+        setSwipeAnyWhere(false);
     }
 
     private Member mMember;
@@ -104,6 +123,7 @@ public class UserInfoActivity extends AppCompatActivity {
     }
 
     private void fillViews() {
+        // 头像
         final String avatarURL = CommonUtils.getRealImageURL(CommonUtils.decode(mMember.avatar));
         CommonUtils.setImageView(UserInfoActivity.this, mAvatar,
                 avatarURL, R.drawable.default_avatar);
@@ -115,43 +135,105 @@ public class UserInfoActivity extends AppCompatActivity {
             }
         });
 
-        mSignature.setScrollbarFadingEnabled(false);
-        mSignature.setBackgroundColor(Color.TRANSPARENT);
-        mSignature.setWebViewClient(new BUWebViewClient(this));
-        mSignature.loadDataWithBaseURL("file:///android_asset/", new HtmlUtil(CommonUtils.decode(mMember.signature)).makeAll(), "text/html", "utf-8", null);
+        // 签名
+        if (mMember.signature == null
+                || "".equals(mMember.signature)) mSignatureLayout.setVisibility(View.GONE);
+        else {
+            mSignature.setMovementMethod(new CustomSpan.LinkTouchMovementMethod());
+            mSignature.setLineSpacing(6, 1.2f);
+            SpannableString spannableString = new SpannableString(
+                    Html.fromHtml(
+                            CommonUtils.decode(mMember.signature),
+                            new PicassoImageGetter(this, mSignature),
+                            null));
+            CustomSpan.replaceQuoteSpans(this, spannableString);
+            CustomSpan.replaceClickableSpan(this, spannableString);
+            mSignature.setText(spannableString);
+        }
 
         mUserId.setText(CommonUtils.decode("" + mMember.uid));
         mStatus.setText(CommonUtils.decode("" + mMember.status));
         mCredit.setText(CommonUtils.decode("" + mMember.credit));
-        mBday.setText(CommonUtils.decode("" + mMember.bday).equals("0000-00-00") ? "UNKNOWN" : CommonUtils.decode("" + mMember.bday));
-        mEmail.setText(CommonUtils.decode(CommonUtils.decode("" + mMember.email).equals("") ? "UNKNOWN" : CommonUtils.decode("" + mMember.email)));
-        mWebsite.setText(CommonUtils.decode("" + mMember.site).equals("") ? "UNKNOWN" : CommonUtils.decode("" + mMember.site));
+
+        // 生日
+        if (mMember.bday == null || "".equals(mMember.bday)
+                || CommonUtils.decode(mMember.bday).equals("0000-00-00")) {
+            mBdayLayout.setVisibility(View.INVISIBLE);
+        } else mBday.setText(CommonUtils.decode(mMember.bday));
+
+        // 联系方式
+        if ((mMember.email == null || "".equals(mMember.email)) && (mMember.site == null || "".equals(mMember.site))) {
+            mContactLayout.setVisibility(View.GONE);
+        } else {
+            if (mMember.email == null || "".equals(mMember.email))
+                mEmailLayout.setVisibility(View.GONE);
+            else mEmail.setText(CommonUtils.decode(mMember.email));
+
+            if (mMember.site == null || "".equals(mMember.site))
+                mWebsiteLayout.setVisibility(View.GONE);
+            else mWebsite.setText(CommonUtils.decode("" + mMember.site));
+        }
+
         mThreadCount.setText(CommonUtils.decode("" + mMember.threadnum));
         mPostCount.setText(CommonUtils.decode("" + mMember.postnum));
         mRegDate.setText(CommonUtils.formatDateTimeToDay(CommonUtils.unixTimeStampToDate(mMember.regdate)));
         mLastVisit.setText(CommonUtils.formatDateTimeToDay(CommonUtils.unixTimeStampToDate(mMember.lastvisit)));
 
-        mWebsite.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (!"UNKNOWN".equals(mWebsite.getText())) {
-                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(mWebsite.getText().toString()));
-                    startActivity(intent);
-                }
-            }
-        });
+        registerForContextMenu(mEmailLayout);
+        registerForContextMenu(mWebsiteLayout);
+    }
 
-        mEmail.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (!"UNKNOWN".equals(mEmail.getText())) {
-                    Intent i = new Intent(Intent.ACTION_SEND);
+
+    // 菜单
+
+
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        // super.onCreateContextMenu(menu, v, menuInfo);
+        if (v.equals(mEmailLayout)) {
+            menu.add(0, 1, Menu.NONE, "发送邮件…");
+            menu.add(0, 2, Menu.NONE, "复制地址");
+        } else if (v.equals(mWebsiteLayout)) {
+            menu.add(1, 1, Menu.NONE, "打开链接…");
+            menu.add(1, 2, Menu.NONE, "复制地址");
+        }
+    }
+
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        Intent i;
+        ClipboardManager clipboardManager = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
+        if (item.getGroupId() == 0) {
+            // Email
+            switch (item.getItemId()) {
+                case 1:
+                    i = new Intent(Intent.ACTION_SEND);
                     i.setType("message/rfc822");
-                    i.putExtra(Intent.EXTRA_EMAIL, new String[]{mEmail.getText().toString()});
+                    i.putExtra(Intent.EXTRA_EMAIL, new String[]{CommonUtils.decode(mMember.email)});
                     startActivity(Intent.createChooser(i, "Send mail..."));
-                }
+                    break;
+                case 2:
+                    ClipData clipData = ClipData.newPlainText("Email", CommonUtils.decode(mMember.email));
+                    clipboardManager.setPrimaryClip(clipData);
+                    Toast.makeText(this, "复制成功", Toast.LENGTH_SHORT).show();
+                    break;
             }
-        });
+        } else {
+            switch (item.getItemId()) {
+                case 1:
+                    i = new Intent(Intent.ACTION_VIEW);
+                    i.setData(Uri.parse(CommonUtils.decode(mMember.site)));
+                    startActivity(i);
+                    break;
+                case 2:
+                    ClipData clipData = ClipData.newPlainText("Website", CommonUtils.decode(mMember.site));
+                    clipboardManager.setPrimaryClip(clipData);
+                    Toast.makeText(this, "复制成功", Toast.LENGTH_SHORT).show();
+                    break;
+            }
+        }
+
+        return true;
     }
 
     @Override

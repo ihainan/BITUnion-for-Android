@@ -20,8 +20,8 @@ public class ThreadReply implements Serializable {
     public long tid;
     public long aid;
     public String icon;
-    public String author;
-    public long authorid;
+    public String author;   // 和 username 区别在于
+    public long authorid;   // 和 uid 的区别在于？
     public String subject;
     public long dateline;
     public String message;
@@ -33,7 +33,7 @@ public class ThreadReply implements Serializable {
     public long rate;
     public long ratetimes;
     public long pstatus;
-    public String lastedit;
+    public String lastedit; // 最后一次编辑时间
     public String postsource;
     public String aaid;
     public String creditsrequire;
@@ -41,7 +41,7 @@ public class ThreadReply implements Serializable {
     public String filename;
     public String attachment;
     public String filesize;
-    public String downloads;
+    public String downloads;    // 附件下载次数
     public long uid;
     public String username;
     public String avatar;
@@ -50,7 +50,7 @@ public class ThreadReply implements Serializable {
     public String attachext;
     public String attachsize;
     public String attachimg;
-    public String exif;
+    public String exif; // EXIF 信息
 
     @Override
     public String toString() {

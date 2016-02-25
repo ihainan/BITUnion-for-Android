@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -29,11 +28,11 @@ import bit.ihainan.me.bitunionforandroid.adapters.ThreadListAdapter;
 import bit.ihainan.me.bitunionforandroid.models.ForumListGroup;
 import bit.ihainan.me.bitunionforandroid.models.Thread;
 import bit.ihainan.me.bitunionforandroid.ui.assist.SimpleDividerItemDecoration;
+import bit.ihainan.me.bitunionforandroid.ui.assist.SwipeActivity;
 import bit.ihainan.me.bitunionforandroid.utils.Api;
-import bit.ihainan.me.bitunionforandroid.utils.CommonUtils;
 import bit.ihainan.me.bitunionforandroid.utils.Global;
 
-public class ThreadListActivity extends AppCompatActivity {
+public class ThreadListActivity extends SwipeActivity {
     private final static String TAG = ThreadListActivity.class.getSimpleName();
 
     // UI references
@@ -111,9 +110,14 @@ public class ThreadListActivity extends AppCompatActivity {
         getExtra();
 
         // UI references
-        mRecyclerView = (RecyclerView) findViewById(R.id.home_recycler_view);
+        mRecyclerView = (RecyclerView) findViewById(R.id.detail_recycler_view);
         mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.home_swipe_refresh_layout);
-
+        toolbar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mRecyclerView.smoothScrollToPosition(0);
+            }
+        });
         setupRecyclerView();
         setupSwipeRefreshLayout();
 
@@ -122,10 +126,12 @@ public class ThreadListActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "开发者拼死拼活实现该功能中 T T", Snackbar.LENGTH_LONG)
+                Snackbar.make(view, getString(R.string.error_not_implement), Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
             }
         });
+
+        setSwipeAnyWhere(false);
     }
 
     @Override
@@ -189,7 +195,7 @@ public class ThreadListActivity extends AppCompatActivity {
         });
     }
 
-    private List<Thread> mThreadList = new ArrayList<Thread>();
+    private List<Thread> mThreadList = new ArrayList<>();
     private ThreadListAdapter mAdapter;
 
     /**
@@ -252,9 +258,7 @@ public class ThreadListActivity extends AppCompatActivity {
                             mAdapter.notifyItemRemoved(mThreadList.size());
                         }
                         mSwipeRefreshLayout.setRefreshing(false);
-                        CommonUtils.showDialog(ThreadListActivity.this,
-                                getString(R.string.error_title),
-                                getString(R.string.error_network));
+                        showSnackbar(getString(R.string.error_network));
                         Log.e(TAG, getString(R.string.error_network), error);
                     }
                 });
@@ -276,5 +280,21 @@ public class ThreadListActivity extends AppCompatActivity {
         // 友盟 SDK
         if (Global.uploadData)
             MobclickAgent.onPause(this);
+    }
+
+    private void showSnackbar(String showMessage) {
+        Snackbar.make(mRecyclerView, showMessage, Snackbar.LENGTH_LONG)
+                .setAction("Retry", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        mSwipeRefreshLayout.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                mSwipeRefreshLayout.setRefreshing(true);
+                                refreshData(mCurrentPosition, Global.LOADING_COUNT);
+                            }
+                        });
+                    }
+                }).show();
     }
 }
