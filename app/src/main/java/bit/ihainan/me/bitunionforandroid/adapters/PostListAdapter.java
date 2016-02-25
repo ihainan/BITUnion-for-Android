@@ -104,8 +104,7 @@ public class PostListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                             reply.message,
                             new PicassoImageGetter(mContext, viewHolder.message),
                             null));
-            CustomSpan.replaceQuoteSpans(mContext, spannableString);
-            CustomSpan.replaceClickableSpan(mContext, spannableString);
+            CustomSpan.setUpAllSpans(mContext, spannableString);
             viewHolder.message.setText(spannableString);
 
             // 日期

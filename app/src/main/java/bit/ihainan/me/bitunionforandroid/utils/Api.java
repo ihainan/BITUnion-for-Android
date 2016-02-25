@@ -2,6 +2,7 @@ package bit.ihainan.me.bitunionforandroid.utils;
 
 import android.content.Context;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.android.volley.Response;
 import com.android.volley.toolbox.JsonObjectRequest;
@@ -127,6 +128,7 @@ public class Api {
                                                     try {
                                                         Global.userSession = Api.MAPPER.readValue(response.toString(), Session.class);
                                                         Global.saveConfig(context);
+                                                        CommonUtils.debugToast(context, "makeRequest >> 成功拿到新 Session " + Global.userSession);
                                                         Log.i(TAG, "makeRequest >> 成功拿到新 Session " + Global.userSession);
                                                         parameters.put("session", Global.userSession.session);
                                                         Global.saveConfig(context);

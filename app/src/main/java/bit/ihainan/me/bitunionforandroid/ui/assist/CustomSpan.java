@@ -1,9 +1,11 @@
 package bit.ihainan.me.bitunionforandroid.ui.assist;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Typeface;
+import android.net.Uri;
 import android.support.v4.content.ContextCompat;
 import android.text.Layout;
 import android.text.Selection;
@@ -15,12 +17,17 @@ import android.text.style.ClickableSpan;
 import android.text.style.LeadingMarginSpan;
 import android.text.style.LineBackgroundSpan;
 import android.text.style.QuoteSpan;
+import android.text.style.URLSpan;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import bit.ihainan.me.bitunionforandroid.R;
+import bit.ihainan.me.bitunionforandroid.ui.UserInfoActivity;
+import bit.ihainan.me.bitunionforandroid.utils.CommonUtils;
+import bit.ihainan.me.bitunionforandroid.utils.Global;
 
 /**
  * Custom Span
@@ -79,12 +86,15 @@ public class CustomSpan {
         private final int mNormalTextColor;
         private final int mPressedTextColor;
         private final int mBackgroundColor;
+        private final String mUrl;
+        private final Context mContext;
 
-
-        public CustomLinkSpan(int normalTextColor, int pressedTextColor, int backgroundColor) {
+        public CustomLinkSpan(Context context, int normalTextColor, int pressedTextColor, int backgroundColor, String url) {
             super();
-            this.mNormalTextColor = normalTextColor;
-            this.mPressedTextColor = pressedTextColor;
+            mContext = context;
+            mNormalTextColor = normalTextColor;
+            mPressedTextColor = pressedTextColor;
+            mUrl = url;
             mBackgroundColor = backgroundColor;
         }
 
@@ -96,11 +106,19 @@ public class CustomSpan {
 
         @Override
         public void onClick(View widget) {
-            if (widget instanceof TextView) {
-                Spanned spanned = (Spanned) ((TextView) widget).getText();
-                int start = spanned.getSpanStart(this);
-                int end = spanned.getSpanEnd(this);
-                Log.d(TAG, "OnClick [ " + spanned.subSequence(start, end) + " ]");
+            if (mUrl == null) return;
+            if (mUrl.startsWith(Global.IN_SCHOOL_BASE_URL)
+                    || mUrl.startsWith(Global.OUT_SCHOOL_BASE_URL)
+                    || mUrl.startsWith("/profile-username-")) {
+                String newUrl = mUrl.replace(Global.IN_SCHOOL_BASE_URL, "/");
+                newUrl = mUrl.replace(Global.OUT_SCHOOL_BASE_URL, "/");
+                String userName = CommonUtils.decode(newUrl.substring("/profile-username-".length(), mUrl.length() - 5), "GBK");
+                Intent intent = new Intent(mContext, UserInfoActivity.class);
+                intent.putExtra(UserInfoActivity.USER_NAME_TAG, userName);
+                mContext.startActivity(intent);
+            } else {
+                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(mUrl));
+                mContext.startActivity(intent);
             }
         }
 
@@ -127,8 +145,6 @@ public class CustomSpan {
 
                 if (mPressedSpan != null) {
                     mPressedSpan.setPressed(true);
-                    Selection.setSelection(spannable, spannable.getSpanStart(mPressedSpan),
-                            spannable.getSpanEnd(mPressedSpan));
                 }
             } else if (event.getAction() == MotionEvent.ACTION_MOVE) {
                 // 移动到其他位置
@@ -136,7 +152,6 @@ public class CustomSpan {
                 if (mPressedSpan != null && customLinkSpan != mPressedSpan) {
                     mPressedSpan.setPressed(false);
                     mPressedSpan = null;
-                    Selection.removeSelection(spannable);
                 }
             } else {
                 // 离开
@@ -145,10 +160,10 @@ public class CustomSpan {
                     super.onTouchEvent(textView, spannable, event);
                 }
                 mPressedSpan = null;
-                Selection.removeSelection(spannable);
             }
 
-            return super.onTouchEvent(textView, spannable, event);
+            return true;
+            // return super.onTouchEvent(textView, spannable, event);
         }
 
         private CustomLinkSpan getPressedSpan(TextView textView, Spannable spannable, MotionEvent event) {
@@ -173,16 +188,18 @@ public class CustomSpan {
     }
 
     public static void replaceClickableSpan(Context context, Spannable spannable) {
-        ClickableSpan[] clickableSpans = spannable.getSpans(0, spannable.length(), ClickableSpan.class);
-        for (ClickableSpan clickableSpan : clickableSpans) {
+        URLSpan[] urlSpans = spannable.getSpans(0, spannable.length(), URLSpan.class);
+        // ClickableSpan[] clickableSpans = spannable.getSpans(0, spannable.length(), ClickableSpan.class);
+        for (final URLSpan clickableSpan : urlSpans) {
             int start = spannable.getSpanStart(clickableSpan);
             int end = spannable.getSpanEnd(clickableSpan);
             int flags = spannable.getSpanFlags(clickableSpan);
             Log.d(TAG, start + " " + end + " " + flags);
             spannable.removeSpan(clickableSpan);
-            spannable.setSpan(new CustomLinkSpan(ContextCompat.getColor(context, R.color.primary),
+            spannable.setSpan(new CustomLinkSpan(context,
+                            ContextCompat.getColor(context, R.color.primary),
                             ContextCompat.getColor(context, R.color.primary_dark),
-                            ContextCompat.getColor(context, R.color.link_background)),
+                            ContextCompat.getColor(context, R.color.link_background), clickableSpan.getURL()),
                     start, end, flags);
         }
     }
@@ -199,5 +216,10 @@ public class CustomSpan {
                             10.0f, 50.0f),
                     start, end, flags);
         }
+    }
+
+    public static void setUpAllSpans(Context context, Spannable spannable) {
+        replaceQuoteSpans(context, spannable);
+        replaceClickableSpan(context, spannable);
     }
 }

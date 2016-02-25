@@ -13,6 +13,9 @@
     <!-- 友盟自动更新 SDK 额外要求权限 -->
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
+    <!-- 获取更为准确的设备名称 -->
+    <uses-permission android:name="android.permission.BLUETOOTH"/>
+
     <application
         android:name=".utils.Global"
         android:allowBackup="true"
@@ -46,7 +49,9 @@
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:label="@string/title_activity_thread_detail"
             android:theme="@style/AppTheme.SwipeTheme" />
-        <activity android:name=".ui.TestActivity"></activity>
+        <activity android:name=".ui.TestActivity">
+
+        </activity>
 
         <meta-data
             android:name="UMENG_APPKEY"

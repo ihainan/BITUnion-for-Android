@@ -1,41 +1,13 @@
 package bit.ihainan.me.bitunionforandroid.ui;
 
-import android.content.res.Resources;
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.Paint;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.text.Editable;
 import android.text.Html;
-import android.text.Layout;
-import android.text.Spannable;
 import android.text.SpannableString;
-import android.text.Spanned;
-import android.text.method.LinkMovementMethod;
-import android.text.method.MovementMethod;
-import android.text.style.ForegroundColorSpan;
-import android.text.style.LeadingMarginSpan;
-import android.text.style.LineBackgroundSpan;
-import android.text.style.QuoteSpan;
-import android.util.Log;
-import android.view.KeyEvent;
-import android.view.MotionEvent;
-import android.widget.ImageView;
 import android.widget.TextView;
-
-import com.squareup.picasso.Picasso;
-import com.squareup.picasso.Target;
-
-import org.xml.sax.XMLReader;
 
 import bit.ihainan.me.bitunionforandroid.R;
 import bit.ihainan.me.bitunionforandroid.ui.assist.CustomSpan;
 import bit.ihainan.me.bitunionforandroid.ui.assist.SwipeActivity;
-import bit.ihainan.me.bitunionforandroid.utils.CommonUtils;
 import bit.ihainan.me.bitunionforandroid.utils.HtmlUtil;
 import bit.ihainan.me.bitunionforandroid.utils.PicassoImageGetter;
 
@@ -59,10 +31,7 @@ public class TestActivity extends SwipeActivity {
                 null));
         message.setLineSpacing(5, 1.2f);
         message.setMovementMethod(new CustomSpan.LinkTouchMovementMethod());
-        CustomSpan.replaceQuoteSpans(this, spannableString);
-        CustomSpan.replaceClickableSpan(this, spannableString);
+        CustomSpan.setUpAllSpans(this, spannableString);
         message.setText(spannableString);
-
-        setSwipeAnyWhere(true);
     }
 }

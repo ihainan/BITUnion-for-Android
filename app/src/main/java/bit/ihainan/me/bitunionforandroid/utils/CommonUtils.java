@@ -2,6 +2,7 @@ package bit.ihainan.me.bitunionforandroid.utils;
 
 import android.app.ActivityManager;
 import android.app.Dialog;
+import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -408,6 +409,22 @@ public class CommonUtils {
      * 将字符转换成 utf-8 编码
      *
      * @param originalStr 原始字符串
+     * @param encode      编码类型
+     * @return 转换后得到的 utf-8 编码字符串
+     */
+    public static String decode(String originalStr, String encode) {
+        try {
+            return URLDecoder.decode(originalStr, encode);
+        } catch (UnsupportedEncodingException e) {
+            Log.e(TAG, "Unsupported Encoding", e);
+            return originalStr;
+        }
+    }
+
+    /**
+     * 将字符转换成 utf-8 编码
+     *
+     * @param originalStr 原始字符串
      * @return 转换后得到的 utf-8 编码字符串
      */
     public static String decode(String originalStr) {
@@ -511,6 +528,10 @@ public class CommonUtils {
      * @return 当前设备名称
      */
     public static String getDeviceName() {
+        BluetoothAdapter myDevice = BluetoothAdapter.getDefaultAdapter();
+        String deviceName = myDevice.getName();
+        return deviceName;
+        /*
         String manufacturer = Build.MANUFACTURER;
         String model = Build.MODEL;
         String deviceName;
@@ -524,6 +545,7 @@ public class CommonUtils {
         if (realDeviceName.get(deviceName) == null)
             return deviceName;
         else return realDeviceName.get(deviceName);
+        */
     }
 
     private static Map<String, String> realDeviceName = new HashMap<>();
