@@ -47,6 +47,7 @@ import bit.ihainan.me.bitunionforandroid.utils.Api;
 import bit.ihainan.me.bitunionforandroid.utils.CommonUtils;
 import bit.ihainan.me.bitunionforandroid.utils.Global;
 import bit.ihainan.me.bitunionforandroid.utils.HtmlUtil;
+import jp.wasabeef.picasso.transformations.BlurTransformation;
 
 public class ThreadDetailActivity extends SwipeActivity {
     private final static String TAG = ThreadDetailActivity.class.getSimpleName();
@@ -136,7 +137,7 @@ public class ThreadDetailActivity extends SwipeActivity {
     }
 
     private void fillBackdrop() {
-        if (CommonUtils.isWifi(this) || !Global.saveDataMode) {
+        if (!Global.ascendingOrder && CommonUtils.isWifi(this) || !Global.saveDataMode) {
             Api.getPostReplies(this, mTid, 0, 1, new Response.Listener<JSONObject>() {
                 @Override
                 public void onResponse(JSONObject response) {
@@ -154,7 +155,7 @@ public class ThreadDetailActivity extends SwipeActivity {
                                 if (firstReply.attachext != null && Integer.valueOf(firstReply.filesize) / 1000 <= 300 && (firstReply.attachext.equals("png") || firstReply.attachext.equals("jpg")
                                         || firstReply.attachext.equals("jpeg"))) {
                                     String imageURL = CommonUtils.getRealImageURL(CommonUtils.decode(firstReply.attachment));
-                                    Picasso.with(ThreadDetailActivity.this).load(imageURL).into(mBackdrop);
+                                    Picasso.with(ThreadDetailActivity.this).load(imageURL).transform(new BlurTransformation(ThreadDetailActivity.this)).into(mBackdrop);
                                 }
                             }
                         } catch (Exception e) {
