@@ -9,21 +9,31 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.text.Html;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.squareup.picasso.Picasso;
 import com.umeng.analytics.MobclickAgent;
 
+import net.opacapp.multilinecollapsingtoolbar.CollapsingToolbarLayout;
+
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -42,13 +52,12 @@ public class ThreadDetailActivity extends SwipeActivity {
     private final static String TAG = ThreadDetailActivity.class.getSimpleName();
 
     // UI references
-    private TextView mToolbarTitle, mBigTitle;
     private AppBarLayout mAppbar;
     private RecyclerView mRecyclerView;
     private SwipeRefreshLayout mSwipeRefreshLayout;
-    private ImageButton mChangeOrder;
-    private TextView mChangeOrderNew;
     private LinearLayoutManager mLayoutManager = new LinearLayoutManager(this);
+    private CollapsingToolbarLayout mCollapsingToolbar;
+    private ImageView mBackdrop;
 
     // Bundle tags
     public final static String THREAD_ID_TAG = "THREAD_ID_TAG";
@@ -77,7 +86,6 @@ public class ThreadDetailActivity extends SwipeActivity {
     private List<bit.ihainan.me.bitunionforandroid.models.ThreadReply> mThreadPostList = new ArrayList<>();
     private PostListAdapter mAdapter;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -96,29 +104,20 @@ public class ThreadDetailActivity extends SwipeActivity {
                 finish();
             }
         });
-        setTitle("");
 
-        mToolbarTitle = (TextView) findViewById(R.id.toolbar_title);
-        mToolbarTitle.setText(CommonUtils.truncateString(mThreadName, 15));
-        mBigTitle = (TextView) findViewById(R.id.big_title);
-        mBigTitle.setText(mThreadName == null ? "" : mThreadName);
-        mAppbar = (AppBarLayout) findViewById(R.id.app_bar);
-        mAppbar.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
-            @Override
-            public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
-                if (verticalOffset <= -(toolbar.getHeight())) {
-                    mToolbarTitle.setVisibility(View.VISIBLE);
-                } else {
-                    mToolbarTitle.setVisibility(View.INVISIBLE);
-                }
-            }
-        });
+        // Title
+        mCollapsingToolbar = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
+        mCollapsingToolbar.setTitle(Html.fromHtml(mThreadName));
+        mCollapsingToolbar.setExpandedTitleTextAppearance(R.style.ExpandedAppBar);
 
         if (mThreadName == null || mReplyCount == null) {
             // TODO: 获取标题信息和回复数目信息
         } else {
         }
 
+        // Cover
+        mBackdrop = (ImageView) findViewById(R.id.backdrop);
+        fillBackdrop();
 
         // Setup RecyclerView
         mRecyclerView = (RecyclerView) findViewById(R.id.detail_recycler_view);
@@ -136,6 +135,45 @@ public class ThreadDetailActivity extends SwipeActivity {
         setSwipeAnyWhere(false);
     }
 
+    private void fillBackdrop() {
+        if (CommonUtils.isWifi(this) || !Global.saveDataMode) {
+            Api.getPostReplies(this, mTid, 0, 1, new Response.Listener<JSONObject>() {
+                @Override
+                public void onResponse(JSONObject response) {
+                    if (Api.checkStatus(response)) {
+
+                        try {
+                            JSONArray newListJson = response.getJSONArray("postlist");
+
+                            List<bit.ihainan.me.bitunionforandroid.models.ThreadReply> threads = Api.MAPPER.readValue(newListJson.toString(),
+                                    new TypeReference<List<ThreadReply>>() {
+                                    });
+
+                            if (threads.size() > 0) {
+                                ThreadReply firstReply = threads.get(0);
+                                if (firstReply.attachext != null && Integer.valueOf(firstReply.filesize) / 1000 <= 300 && (firstReply.attachext.equals("png") || firstReply.attachext.equals("jpg")
+                                        || firstReply.attachext.equals("jpeg"))) {
+                                    String imageURL = CommonUtils.getRealImageURL(CommonUtils.decode(firstReply.attachment));
+                                    Picasso.with(ThreadDetailActivity.this).load(imageURL).into(mBackdrop);
+                                }
+                            }
+                        } catch (Exception e) {
+                            String message = getString(R.string.error_parse_json) + "\n" + response;
+                            Log.e(TAG, message, e);
+                            CommonUtils.debugToast(ThreadDetailActivity.this, message);
+                        }
+                    }
+                }
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    String message = getString(R.string.error_network);
+                    Log.e(TAG, message, error);
+                    CommonUtils.debugToast(ThreadDetailActivity.this, message);
+                }
+            });
+        }
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

@@ -46,5 +46,6 @@ dependencies {
     compile 'com.github.ivbaranov:materialfavoritebutton:0.1.2'
     compile 'com.umeng.analytics:analytics:latest.integration'
     compile files('libs/umeng-update-v2.6.0.1.jar')
-    compile 'com.nshmura:recyclertablayout:0.1.3'
+    compile 'com.getbase:floatingactionbutton:1.10.1'
+    compile 'net.opacapp:multiline-collapsingtoolbar:1.0.0'
 }

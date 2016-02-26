@@ -68,8 +68,11 @@ public class PicassoImageGetter implements Html.ImageGetter {
     }
 
     @Override
-    public Drawable getDrawable(final String source) {
+    public Drawable getDrawable(String source) {
         final BitmapDrawablePlaceHolder result = new BitmapDrawablePlaceHolder();
+
+        source = CommonUtils.getRealImageURL(source);
+
         loadImage(source, result);
 
         return result;

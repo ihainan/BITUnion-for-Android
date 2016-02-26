@@ -116,6 +116,7 @@ public class Api {
                             if (Api.checkStatus(response)) {
                                 listener.onResponse(response);
                             } else {
+                                Log.d(TAG, "failed to make request " + response);
                                 // 妈蛋，又过期了，有病呀这 API！！
                                 // 尝试重新登录
                                 Log.i(TAG, "makeRequest >> Session 过期，尝试重新登录 " + retryLimit + " " + url);

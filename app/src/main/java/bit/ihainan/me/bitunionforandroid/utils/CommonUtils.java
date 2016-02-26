@@ -214,7 +214,7 @@ public class CommonUtils {
 
         return false;
     }
-    
+
     /**
      * 设置用户头像点击事件，自动跳转到用户的个人页面
      *
@@ -372,9 +372,13 @@ public class CommonUtils {
      * @return 图片的真实 URL
      */
     public static String getRealImageURL(String originalURL) {
+        // TODO: ../images/cf/b.gif
+
+
         String ori = originalURL;
 
         originalURL = originalURL.replaceAll("^images/", Global.getBaseURL() + "images/");
+        originalURL = originalURL.replaceAll("^../images", Global.getBaseURL() + "images/");
 
         // 回帖头像
         if (ori.startsWith("<embed src=") || ori.startsWith("<img src=")) {

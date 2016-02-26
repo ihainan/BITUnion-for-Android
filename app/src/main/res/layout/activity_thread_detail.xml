@@ -5,81 +5,42 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/background"
-    android:fitsSystemWindows="true"
-    app:expandedTitleMarginEnd="64dp"
-    app:expandedTitleMarginStart="48dp">
+    android:fitsSystemWindows="true">
 
     <android.support.design.widget.AppBarLayout
         android:id="@+id/app_bar"
         android:layout_width="match_parent"
-        android:layout_height="218dp"
+        android:layout_height="180dp"
         android:fitsSystemWindows="true"
-        android:theme="@style/AppTheme.AppBarOverlay">
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
 
-        <android.support.design.widget.CollapsingToolbarLayout
-            android:id="@+id/toolbar_layout"
+        <net.opacapp.multilinecollapsingtoolbar.CollapsingToolbarLayout
+            android:id="@+id/collapsing_toolbar"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:fitsSystemWindows="true"
             app:contentScrim="?attr/colorPrimary"
-            app:expandedTitleGravity="bottom|center_horizontal"
-            app:layout_scrollFlags="scroll|enterAlways|enterAlwaysCollapsed">
+            app:expandedTitleMarginEnd="64dp"
+            app:expandedTitleMarginStart="48dp"
+            app:layout_scrollFlags="scroll|exitUntilCollapsed"
+            app:title="Loading...">
 
-            <RelativeLayout
+            <ImageView
+                android:id="@+id/backdrop"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:adjustViewBounds="true"
-                android:background="@color/primary"
-                app:layout_collapseMode="parallax"
-                app:layout_collapseParallaxMultiplier="0.7">
-
-                <ImageView
-                    android:id="@+id/thread_item_conver"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:scaleType="fitXY"
-                    android:src="@drawable/nav_background"
-                    android:visibility="invisible" />
-
-                <TextView xmlns:app="http://schemas.android.com/apk/res-auto"
-                    android:id="@+id/big_title"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_centerInParent="true"
-                    android:gravity="center"
-                    android:lineSpacingExtra="5dp"
-                    android:maxLines="3"
-                    android:paddingBottom="30dp"
-                    android:paddingLeft="30dp"
-                    android:paddingRight="30dp"
-                    android:text="[求助]跪下我的膝盖，只为挺起脊梁——一个尿毒症晩期小伙的恳求的恳求的恳求的恳求的恳求"
-                    android:textColor="@android:color/white"
-                    android:textSize="22sp"
-                    android:textStyle="bold" />
-            </RelativeLayout>
+                android:layout_height="match_parent"
+                android:fitsSystemWindows="true"
+                android:scaleType="centerCrop"
+                android:visibility="visible"
+                app:layout_collapseMode="parallax" />
 
             <android.support.v7.widget.Toolbar
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
-                android:title=""
                 app:layout_collapseMode="pin"
-                app:popupTheme="@style/AppTheme.PopupOverlay">
-
-                <TextView
-                    android:id="@+id/toolbar_title"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
-                    android:singleLine="true"
-                    android:text="[求助]跪下我的膝盖，只为挺起脊梁——一个尿毒症晩期小伙的恳求的恳求的恳求的恳求的恳求"
-                    android:textColor="@android:color/white"
-                    android:textSize="18sp"
-                    android:visibility="visible" />
-            </android.support.v7.widget.Toolbar>
-
-
-        </android.support.design.widget.CollapsingToolbarLayout>
+                app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
+        </net.opacapp.multilinecollapsingtoolbar.CollapsingToolbarLayout>
     </android.support.design.widget.AppBarLayout>
 
     <FrameLayout
@@ -105,5 +66,6 @@
 
         </android.support.v4.widget.SwipeRefreshLayout>
     </FrameLayout>
+
 
 </android.support.design.widget.CoordinatorLayout>
