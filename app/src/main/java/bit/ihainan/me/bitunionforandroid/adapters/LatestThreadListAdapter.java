@@ -18,9 +18,7 @@ import com.squareup.picasso.Picasso;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import bit.ihainan.me.bitunionforandroid.R;
 import bit.ihainan.me.bitunionforandroid.models.LatestThread;
@@ -101,6 +99,14 @@ public class LatestThreadListAdapter extends RecyclerView.Adapter<RecyclerView.V
                 .into(holder.avatar);
         holder.replyCount.setText(CommonUtils.decode("" + latestThread.tid_sum + " 回复"));
         holder.title.setText(Html.fromHtml(CommonUtils.decode(latestThread.pname)));
+        holder.title.post(new Runnable() {
+            @Override
+            public void run() {
+                if (holder.title.getLineCount() == 1)
+                    holder.title.setText(holder.title.getText() + "\n     ");
+            }
+        });
+
         holder.title.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

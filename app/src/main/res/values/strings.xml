@@ -1,5 +1,7 @@
 <resources>
     <string name="app_name">BITUnion</string>
+
+    <!-- Navigation Drawable -->
     <string name="action_settings">设置</string>
     <string name="action_home">首页</string>
     <string name="action_forum">论坛列表</string>
@@ -29,11 +31,15 @@
     <string name="error_network">连接服务器发生异常</string>
     <string name="error_unsupported_encoding">不支持的编码格式</string>
     <string name="error_parse_json">解析服务器返回数据失败</string>
+    <string name="error_reach_bottom">底部所有帖子已经加载完毕啦</string>
+    <string name="error_reach_top">顶部所有帖子已经加载完毕啦</string>
+    <string name="error_unknown_json">服务器返回了未知格式的数据</string>
     <string name="title_activity_settings">Settings</string>
     <string name="error_not_implement">然而程序猴子还没有开发此功能</string>
     <string name="warning_not_new_data">然而并没有任何更新</string>
 
-    <!-- Strings related to Settings -->
+    <!-- Menu -->
+    <string name="menu_change_order">排序</string>
 
     <!-- Example General settings -->
     <string name="pref_header_general">General</string>
@@ -92,4 +98,6 @@
     <string name="pref_title_vibrate">Vibrate</string>
     <string name="title_activity_post_list">PostListActivity</string>
     <string name="title_activity_thread_detail">ThreadDetailActivity</string>
+    <string name="title_activity_thread_detail_with_tab_layout">ThreadDetailWithTabLayoutActivity
+    </string>
 </resources>

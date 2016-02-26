@@ -76,17 +76,8 @@
                     android:textColor="@android:color/white"
                     android:textSize="18sp"
                     android:visibility="visible" />
-
-                <ImageButton
-                    android:id="@+id/order_button"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="end"
-                    android:background="?attr/selectableItemBackground"
-                    android:onClick="uphandler"
-                    android:paddingRight="16dp"
-                    android:src="@drawable/ic_low_priority_white_24dp" />
             </android.support.v7.widget.Toolbar>
+
 
         </android.support.design.widget.CollapsingToolbarLayout>
     </android.support.design.widget.AppBarLayout>

@@ -14,6 +14,7 @@ import android.support.v7.view.ContextThemeWrapper;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.Response;
@@ -89,14 +90,14 @@ public class CommonUtils {
                     case UpdateStatus.NoneWifi: // none wifi
                     case UpdateStatus.Yes: // has update
                         debugToast(context, "发现更新，当前状态 ifCheckIgnore = "
-                                + ifCheckIgnore + " isIgnore = "
+                                + ifCheckIgnore + "; isIgnore = "
                                 + ifCheckIgnore
-                                + " iSWiFi = " + isWifi(context));
+                                + "' isWiFi = " + isWifi(context));
                         // 如果
                         Log.d(TAG, "发现更新，当前状态 ifCheckIgnore = "
-                                + ifCheckIgnore + " isIgnore = "
-                                + UmengUpdateAgent.isIgnore(context, updateInfo)
-                                + " iSWiFi = " + isWifi(context));
+                                + ifCheckIgnore + "; isIgnore = "
+                                + ifCheckIgnore
+                                + "' isWiFi = " + isWifi(context));
                         if (!ifCheckIgnore || !UmengUpdateAgent.isIgnore(context, updateInfo)) {
                             CommonUtils.showUpdateDialog(context, updateInfo, dialog == null);
                         }
@@ -108,7 +109,7 @@ public class CommonUtils {
                         }
                         break;
                     case UpdateStatus.Timeout: // time out
-                        debugToast(context, "连接服务器超时 | dialog = " + dialog);
+                        debugToast(context, "连接服务器超时; dialog = " + dialog);
                         if (dialog != null) {
                             showDialog(context, "提醒", "检查更新超时");
                         }
@@ -213,7 +214,7 @@ public class CommonUtils {
 
         return false;
     }
-
+    
     /**
      * 设置用户头像点击事件，自动跳转到用户的个人页面
      *
@@ -531,21 +532,6 @@ public class CommonUtils {
         BluetoothAdapter myDevice = BluetoothAdapter.getDefaultAdapter();
         String deviceName = myDevice.getName();
         return deviceName;
-        /*
-        String manufacturer = Build.MANUFACTURER;
-        String model = Build.MODEL;
-        String deviceName;
-
-        if (model.startsWith(manufacturer)) {
-            deviceName = capitalize(model);
-        } else {
-            deviceName = capitalize(manufacturer) + " " + model;
-        }
-
-        if (realDeviceName.get(deviceName) == null)
-            return deviceName;
-        else return realDeviceName.get(deviceName);
-        */
     }
 
     private static Map<String, String> realDeviceName = new HashMap<>();

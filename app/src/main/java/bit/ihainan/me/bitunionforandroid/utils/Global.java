@@ -2,6 +2,7 @@ package bit.ihainan.me.bitunionforandroid.utils;
 
 import android.app.Application;
 import android.content.Context;
+import android.graphics.Typeface;
 import android.net.Uri;
 import android.util.Log;
 
@@ -59,7 +60,7 @@ public class Global extends Application {
     public static Boolean debugMode = true;  // 是否启动 debug 模式
     public static Boolean saveDataMode = false; // 是否启动省流量模式
     public static Boolean uploadData = true;    // 是否自动上传数据
-    public static Boolean increaseOrder = true; // 是否按照升序排序
+    public static Boolean ascendingOrder = true; // 是否按照升序排序
 
     public enum NETWORK_TYPE {
         IN_SCHOOL,
@@ -93,8 +94,8 @@ public class Global extends Application {
         networkType = networkTypeStr == null ? NETWORK_TYPE.OUT_SCHOOL : NETWORK_TYPE.valueOf(networkTypeStr);
         currentEndPoint = networkType == NETWORK_TYPE.OUT_SCHOOL ? Global.OUT_SCHOOL_ENDPOINT : Global.IN_SCHOOL_ENDPOINT;
 
-        increaseOrder = (Boolean) Global.getCache(context).getAsObject(PREF_REPLY_ORDER);
-        if (increaseOrder == null) increaseOrder = true;
+        ascendingOrder = (Boolean) Global.getCache(context).getAsObject(PREF_REPLY_ORDER);
+        if (ascendingOrder == null) ascendingOrder = true;
 
         uploadData = (Boolean) Global.getCache(context).getAsObject(PREF_UPLOAD_DATA);
         if (uploadData == null) uploadData = true;
@@ -113,7 +114,7 @@ public class Global extends Application {
         Log.d(TAG, "printConf >> User Session：" + userSession);
         Log.d(TAG, "printConf >> Password：" + (password == null ? "NULL" : "****"));
         Log.d(TAG, "printConf >> Network Type：" + networkType);
-        Log.d(TAG, "printConf >> Increase Order：" + increaseOrder);
+        Log.d(TAG, "printConf >> Increase Order：" + ascendingOrder);
         Log.d(TAG, "printConf >> Upload Data：" + uploadData);
         Log.d(TAG, "printConf >> Save Data Mode：" + saveDataMode);
         Log.d(TAG, "printConf >> Debug Mode：" + debugMode);
@@ -124,7 +125,7 @@ public class Global extends Application {
         if (userSession != null) Global.getCache(context).put(CONF_SESSION_STR, userSession);
         Global.getCache(context).put(PREF_USER_NAME, Global.userName == null ? "" : Global.userName);
         Global.getCache(context).put(PREF_PASSWORD, Global.password == null ? "" : Global.password);
-        if (increaseOrder != null) Global.getCache(context).put(PREF_REPLY_ORDER, increaseOrder);
+        if (ascendingOrder != null) Global.getCache(context).put(PREF_REPLY_ORDER, ascendingOrder);
         if (networkType != null)
             Global.getCache(context).put(PREF_NETWORK_TYPE, networkType.toString());
         if (saveDataMode != null) Global.getCache(context).put(PREF_SAVE_DATA, saveDataMode);
@@ -331,6 +332,8 @@ public class Global extends Application {
         }
     }
 
+    public final static Map<String, Boolean> badImages = new HashMap<>();
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -364,6 +367,4 @@ public class Global extends Application {
         // TODO: 从服务器获取
         // makeForumGroupList(getApplicationContext());
     }
-
-    public final static Map<String, Boolean> badImages = new HashMap<>();
 }

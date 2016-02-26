@@ -23,6 +23,7 @@ android {
         versionCode 1
         versionName "0.1"
     }
+
     buildTypes {
         release {
             minifyEnabled false
@@ -45,4 +46,5 @@ dependencies {
     compile 'com.github.ivbaranov:materialfavoritebutton:0.1.2'
     compile 'com.umeng.analytics:analytics:latest.integration'
     compile files('libs/umeng-update-v2.6.0.1.jar')
+    compile 'com.nshmura:recyclertablayout:0.1.3'
 }

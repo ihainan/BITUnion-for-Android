@@ -80,7 +80,7 @@ public class MainActivity extends AppCompatActivity {
         Global.readConfig(this);
         if (Global.userSession == null || "".equals(Global.userName) || "".equals(Global.password) || Global.userName == null || Global.password == null) {
             Log.i(TAG, "MainActivity >> 尚未登录，返回登录界面");
-            CommonUtils.debugToast(this, "尚未登录，返回登录界面");
+            CommonUtils.debugToast(this, "尚未登录，即将返回登录界面");
             Intent intent = new Intent(this, LoginActivity.class);
             startActivity(intent);
             finish();

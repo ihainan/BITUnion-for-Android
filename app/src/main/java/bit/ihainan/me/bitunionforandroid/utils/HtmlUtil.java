@@ -70,8 +70,8 @@ public class HtmlUtil {
         Matcher m = p.matcher(imgUrl);
         if (m.find()) {
             // Use local assets for emotions
-            Log.d(TAG, "parseLocalImage >> " + imgUrl + " - " + "file:///android_asset/" + m.group(1) + "_" + m.group(2) + ".gif");
-            imgUrl = "file:///android_asset/" + m.group(1) + "_" + m.group(2) + ".gif";
+            Log.d(TAG, "parseLocalImage >> " + imgUrl + " - " + "file:///android_asset/faces/" + m.group(1) + "_" + m.group(2) + ".gif");
+            imgUrl = "file:///android_asset/faces/" + m.group(1) + "_" + m.group(2) + ".gif";
         }
         return imgUrl;
     }

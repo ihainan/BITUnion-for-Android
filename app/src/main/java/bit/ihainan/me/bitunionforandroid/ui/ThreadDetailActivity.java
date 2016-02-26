@@ -1,6 +1,7 @@
 package bit.ihainan.me.bitunionforandroid.ui;
 
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.Snackbar;
@@ -9,6 +10,8 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
@@ -44,6 +47,8 @@ public class ThreadDetailActivity extends SwipeActivity {
     private RecyclerView mRecyclerView;
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private ImageButton mChangeOrder;
+    private TextView mChangeOrderNew;
+    private LinearLayoutManager mLayoutManager = new LinearLayoutManager(this);
 
     // Bundle tags
     public final static String THREAD_ID_TAG = "THREAD_ID_TAG";
@@ -62,15 +67,16 @@ public class ThreadDetailActivity extends SwipeActivity {
             Global.readConfig(this);
             mTid = 10609296l;
         }
-
-        // TODO: 如果 replyCount == null，则从服务器拉取
     }
 
     // Data
-    private Long mTid, mReplyCount;  // Thread ID
-    private String mThreadName, mAuthorName;  // Thread name
+    private Long mTid, mReplyCount;
+    private String mThreadName, mAuthorName;
     private long mCurrentPosition = 0;
     private boolean mIsLoading = false;
+    private List<bit.ihainan.me.bitunionforandroid.models.ThreadReply> mThreadPostList = new ArrayList<>();
+    private PostListAdapter mAdapter;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,8 +99,8 @@ public class ThreadDetailActivity extends SwipeActivity {
         setTitle("");
 
         mToolbarTitle = (TextView) findViewById(R.id.toolbar_title);
-        mBigTitle = (TextView) findViewById(R.id.big_title);
         mToolbarTitle.setText(CommonUtils.truncateString(mThreadName, 15));
+        mBigTitle = (TextView) findViewById(R.id.big_title);
         mBigTitle.setText(mThreadName == null ? "" : mThreadName);
         mAppbar = (AppBarLayout) findViewById(R.id.app_bar);
         mAppbar.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
@@ -108,7 +114,13 @@ public class ThreadDetailActivity extends SwipeActivity {
             }
         });
 
-        // RecyclerView
+        if (mThreadName == null || mReplyCount == null) {
+            // TODO: 获取标题信息和回复数目信息
+        } else {
+        }
+
+
+        // Setup RecyclerView
         mRecyclerView = (RecyclerView) findViewById(R.id.detail_recycler_view);
         mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.home_swipe_refresh_layout);
         toolbar.setOnClickListener(new View.OnClickListener() {
@@ -120,41 +132,47 @@ public class ThreadDetailActivity extends SwipeActivity {
         setupRecyclerView();
         setupSwipeRefreshLayout();
 
-        // Order Button
-        mChangeOrder = (ImageButton) findViewById(R.id.order_button);
-        mChangeOrder.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.i(TAG, "mChangeOrder >> 变换顺序 " + Global.increaseOrder + " -> " + !Global.increaseOrder);
-
-                Global.increaseOrder = !Global.increaseOrder;
-                Global.saveConfig(ThreadDetailActivity.this);
-
-                Collections.reverse(mThreadPostList);
-                mAdapter.notifyDataSetChanged();
-                if (Global.increaseOrder)
-                    mRecyclerView.scrollToPosition(mThreadPostList.size() - mLastVisibleItem);
-                else
-                    mRecyclerView.scrollToPosition(mThreadPostList.size() - mLastVisibleItem + 2);
-            }
-        });
-
+        // Swipe to back
         setSwipeAnyWhere(false);
     }
 
-    private List<bit.ihainan.me.bitunionforandroid.models.ThreadReply> mThreadPostList = new ArrayList<>();
-    private PostListAdapter mAdapter;
 
-    private LinearLayoutManager mLayoutManager = new LinearLayoutManager(this);
-    private int currentX = 0, currentY = 0;
-    private int mLastVisibleItem;
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.thread_detail_menu, menu);
+        setMenuIcon(menu.findItem(R.id.change_order));
+        return true;
+    }
+
+    private void setMenuIcon(MenuItem menuItem) {
+        if (Global.ascendingOrder)
+            menuItem.setIcon(R.drawable.ic_low_priority_white_24dp);
+        else
+            menuItem.setIcon(R.drawable.ic_high_priority_white_24dp);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.change_order:
+                Global.ascendingOrder = !Global.ascendingOrder;
+                setMenuIcon(item);
+                Snackbar.make(mRecyclerView, (Global.ascendingOrder ? "升序" : "降序") + "显示回帖列表", Snackbar.LENGTH_SHORT).show();
+                Global.saveConfig(ThreadDetailActivity.this);
+
+                reloadData();
+                break;
+        }
+
+        return true;
+    }
 
     private void setupRecyclerView() {
+        mRecyclerView.addItemDecoration(new SimpleDividerItemDecoration(ThreadDetailActivity.this));
         mLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         mRecyclerView.setLayoutManager(mLayoutManager);
 
-        mRecyclerView.addItemDecoration(new SimpleDividerItemDecoration(ThreadDetailActivity.this));
-
+        // Adapter
         mAdapter = new PostListAdapter(this, mThreadPostList, mAuthorName, mReplyCount);
         mRecyclerView.setAdapter(mAdapter);
 
@@ -169,32 +187,12 @@ public class ThreadDetailActivity extends SwipeActivity {
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
 
-                currentX += dx;
-                currentY += dy;
-
-                // 由于不能拿到论坛帖子的总数，因此只能无限加载
-                mLastVisibleItem = mLayoutManager.findLastVisibleItemPosition();
-                // Log.d(TAG, "onScrolled >> lastVisibleItem = " + lastVisibleItem + " mThreadPostList.size() = " + mThreadPostList.size());
+                int mLastVisibleItem = mLayoutManager.findLastVisibleItemPosition();
                 if (dy > 0 && mLastVisibleItem >= mThreadPostList.size() - 2 && !mIsLoading) {
-                    loadMore();
+                    loadMore(true);
                 }
             }
         });
-    }
-
-    private void loadMore() {
-        // 拉取数据，显示进度
-        Log.i(TAG, "onScrolled >> 即将到底，准备请求新数据");
-        mThreadPostList.add(null);
-        mAdapter.notifyItemInserted(mThreadPostList.size() - 1);
-
-        if (!Global.increaseOrder) {
-            refreshData(mCurrentPosition < 0 ? 0 : mCurrentPosition, mCurrentPosition + Global.LOADING_REPLIES_COUNT);
-        } else {
-            refreshData(mCurrentPosition, mCurrentPosition + Global.LOADING_REPLIES_COUNT);
-        }
-
-        mIsLoading = true;
     }
 
     private void setupSwipeRefreshLayout() {
@@ -203,8 +201,8 @@ public class ThreadDetailActivity extends SwipeActivity {
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                // 重新加载
-                reloadData(false);
+                // 重新加载数据
+                reloadData();
             }
         });
 
@@ -212,32 +210,41 @@ public class ThreadDetailActivity extends SwipeActivity {
             @Override
             public void run() {
                 // 第一次加载数据
-                reloadData(false);
+                reloadData();
             }
         });
     }
 
-    private void reloadData(boolean notifyChange) {
+    /**
+     * 重新拉取数据
+     */
+    private void reloadData() {
+        mIsLoading = true;
         mSwipeRefreshLayout.setRefreshing(true);
         mThreadPostList.clear();
-        if (notifyChange) mAdapter.notifyDataSetChanged();
-        if (Global.increaseOrder) {
-            Log.d(TAG, "reloadData => 0 - " + Global.LOADING_REPLIES_COUNT);
-            mCurrentPosition = 0;
-            refreshData(0, Global.LOADING_REPLIES_COUNT);
-        } else {
-            mCurrentPosition = mReplyCount - Global.LOADING_REPLIES_COUNT + 1; // 起始的 mCurrentPosition
-            Log.d(TAG, "reloadData => " + (mCurrentPosition < 0 ? 0 : mCurrentPosition) + " - " + (mCurrentPosition + Global.LOADING_REPLIES_COUNT));
-            refreshData(mCurrentPosition < 0 ? 0 : mCurrentPosition, mCurrentPosition + Global.LOADING_REPLIES_COUNT);
+        mCurrentPosition = Global.ascendingOrder ? 0 : mReplyCount - Global.LOADING_REPLIES_COUNT;
+        loadMore(false);
+    }
+
+    private void loadMore(boolean isAddProgressBar) {
+        // 拉取数据，显示进度
+        Log.i(TAG, "onScrolled >> 即将到底，准备请求新数据");
+        if (isAddProgressBar) {
+            mThreadPostList.add(null);
+            mAdapter.notifyItemInserted(mThreadPostList.size() - 1);
+            mIsLoading = true;
         }
+
+        refreshData(mCurrentPosition, mCurrentPosition + Global.LOADING_REPLIES_COUNT - 1); // 0 - 9, 10 - 19
     }
 
     /**
      * 更新列表数据
      */
-    private void refreshData(final long from, long to) {
-        Log.d(TAG, "refreshData >> FROM " + from + " TO " + to);
-        Api.getPostReplies(this, mTid, from, to,
+    private void refreshData(final long from, final long to) {
+        long newFrom = from < 0 ? 0 : from;
+        long newTo = to > mReplyCount - 1 ? mReplyCount - 1 : to;
+        Api.getPostReplies(this, mTid, newFrom, newTo + 1,
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
@@ -256,6 +263,9 @@ public class ThreadDetailActivity extends SwipeActivity {
                                     mAdapter.notifyItemRemoved(mThreadPostList.size());
                                 }
 
+                                CommonUtils.debugToast(ThreadDetailActivity.this, "Loaded " + newThreads.size() + " more item(s)");
+
+                                // 处理数据
                                 for (ThreadReply reply : newThreads) {
                                     String body = CommonUtils.decode(reply.message);
                                     reply.useMobile = body.contains("From BIT-Union Open API Project");
@@ -264,51 +274,61 @@ public class ThreadDetailActivity extends SwipeActivity {
                                 }
 
                                 // 更新 RecyclerView
-                                if (!Global.increaseOrder) Collections.reverse(newThreads); // 倒序
-                                mCurrentPosition += (Global.increaseOrder ? Global.LOADING_REPLIES_COUNT : -Global.LOADING_REPLIES_COUNT);
+                                if (!Global.ascendingOrder) Collections.reverse(newThreads); // 倒序
+                                mCurrentPosition += (Global.ascendingOrder ? Global.LOADING_REPLIES_COUNT : -Global.LOADING_REPLIES_COUNT);
                                 mThreadPostList.addAll(newThreads);
                                 mAdapter.notifyDataSetChanged();
 
-                                // 更新标志
-                                // 正序的情况下直接变成 false，倒序的情况下需要在 from > 0 的时候才变，== 0 说明已经没有更多数据了
-                                if (Global.increaseOrder || from > 0)
+                                // 判断是否到头
+                                if (!(Global.ascendingOrder && to >= mReplyCount - 1
+                                        || !Global.ascendingOrder && from <= 0)) {
                                     mIsLoading = false;
+                                }
                             } catch (Exception e) {
-                                // 解析失败的话，说明到头了，移除标志，不允许再次更新（mIsLoading 始终为 true）
+                                Log.e(TAG, getString(R.string.error_parse_json) + "\n" + response, e);
+
                                 if (mThreadPostList.size() > 0) {
-                                    Log.d(TAG, "refreshData >> 到头了 " + response);
                                     mThreadPostList.remove(mThreadPostList.size() - 1);
                                     mAdapter.notifyItemRemoved(mThreadPostList.size());
                                 }
 
-                                e.printStackTrace();
-                                Log.e(TAG, getString(R.string.error_parse_json) + "\n" + response, e);
+                                Snackbar.make(mRecyclerView, getString(R.string.error_parse_json),
+                                        Snackbar.LENGTH_INDEFINITE).setAction("RETRY", new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        loadMore(true);
+                                    }
+                                }).show();
                             }
                         } else {
-                            Log.i(TAG, "refreshData >> 服务器返回错误信息 " + response);
+                            Log.i(TAG, "refreshData >> " + getString(R.string.error_unknown_json) + "" + response);
+
                             if (mThreadPostList.size() > 0) {
-                                Log.d(TAG, "refreshData >> 到头了 " + response);
                                 mThreadPostList.remove(mThreadPostList.size() - 1);
                                 mAdapter.notifyItemRemoved(mThreadPostList.size());
                             }
+
+                            Snackbar.make(mRecyclerView, getString(R.string.error_unknown_json), Snackbar.LENGTH_LONG).show();
                         }
                     }
                 }, new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        // 服务器请求失败，说明网络不好，移除标志，不允许再次发送请求（待定）
+                        // 服务器请求失败，说明网络不好，只能通过 RETRY 来重新拉取数据
                         if (mThreadPostList.size() > 0) {
                             mThreadPostList.remove(mThreadPostList.size() - 1);
                             mAdapter.notifyItemRemoved(mThreadPostList.size());
                         }
 
                         mSwipeRefreshLayout.setRefreshing(false);
-                        Snackbar.make(mRecyclerView, getString(R.string.error_network), Snackbar.LENGTH_LONG).setAction("RETRY", new View.OnClickListener() {
+
+                        Snackbar.make(mRecyclerView, getString(R.string.error_network), Snackbar.LENGTH_INDEFINITE).setAction("RETRY", new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                                loadMore();
+                                loadMore(true);
                             }
                         }).show();
+
                         Log.e(TAG, getString(R.string.error_network), error);
                     }
                 });

@@ -72,7 +72,7 @@ public class PostListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             viewHolder.attachmentLayout.removeAllViews();
 
             // 楼层
-            final long currentLevel = Global.increaseOrder ? (position + 1) : (mReplyCount - position + 2);
+            final long currentLevel = Global.ascendingOrder ? position : mReplyCount - position - 1;
             viewHolder.number.setText("# " + currentLevel);
 
             // 头像
@@ -123,6 +123,7 @@ public class PostListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             loadingViewHolder.progressBar.setIndeterminate(true);
         }
     }
+
 
     private void showAttachmentView(LinearLayout linearLayout, final ThreadReply reply) {
         LayoutInflater inflater = LayoutInflater.from(mContext);
@@ -204,7 +205,7 @@ public class PostListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         View view;
         if (viewType == VIEW_TYPE_ITEM) {
             view = mLayoutInflater.inflate(R.layout.item_thread_detail_new, parent, false);
-            return new PostViewHolder(view);
+            return new PostViewHolder(view, mContext);
         } else {
             view = mLayoutInflater.inflate(R.layout.listview_progress_bar, parent, false);
             return new LoadingViewHolder(view);
@@ -222,7 +223,7 @@ public class PostListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         public TextView message;
         public LinearLayout attachmentLayout;
 
-        public PostViewHolder(View itemView) {
+        public PostViewHolder(View itemView, final Context context) {
             super(itemView);
 
             avatar = (ImageView) itemView.findViewById(R.id.thread_author_avatar);
@@ -235,7 +236,7 @@ public class PostListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             reply.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Snackbar.make(mRecyclerView, mContext.getString(R.string.error_not_implement), Snackbar.LENGTH_LONG).show();
+                    Snackbar.make(mRecyclerView, context.getString(R.string.error_not_implement), Snackbar.LENGTH_LONG).show();
                 }
             });
 

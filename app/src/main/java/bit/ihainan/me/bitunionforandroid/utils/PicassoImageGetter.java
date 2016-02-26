@@ -70,48 +70,7 @@ public class PicassoImageGetter implements Html.ImageGetter {
     @Override
     public Drawable getDrawable(final String source) {
         final BitmapDrawablePlaceHolder result = new BitmapDrawablePlaceHolder();
-
         loadImage(source, result);
-
-        /*
-        new AsyncTask<Void, Void, Bitmap>() {
-
-            @Override
-            protected Bitmap doInBackground(Void... params) {
-                // TODO: 测试图片是否已经被缓存
-                // 获取图片
-                try {
-                    return Picasso.with(mContext).load(source).get();
-                } catch (Downloader.ResponseException e) {
-                    // Offline
-                    Log.d(TAG, "getDrawable >> 图片尚未被缓存");
-                    if (Global.saveDataMode) {
-                        Log.d(TAG, "getDrawable >> 离线模式，返回空");
-                        return null;
-                    } else try {
-                        Log.d(TAG, "getDrawable >> 非离线模式，正常下载");
-                        return Picasso.with(mContext).load(source).get();
-                    } catch (IOException e1) {
-                        Log.e(TAG, "getDrawable >> failed to load image for IOException " + source);
-                    }
-                } catch (IOException e) {
-                    Log.e(TAG, "getDrawable >> failed to load image for IOException " + source);
-                }
-
-                return null;
-            }
-
-            @Override
-            protected void onPostExecute(Bitmap bitmap) {
-                final BitmapDrawable drawable = new BitmapDrawable(resources, bitmap);
-                drawable.setBounds(0, 0, drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight());
-                result.setDrawable(drawable);
-                result.setBounds(0, 0, drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight());
-
-                textView.setText(textView.getText());
-            }
-        }.execute((Void) null);
-        */
 
         return result;
     }
