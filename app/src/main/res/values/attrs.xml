@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <attr name="NewPostDivider" format="color" />
+    <attr name="NewPostBackground" format="color" />
+    <attr name="NewPostBottom" format="color" />
+    <attr name="NewPostForeground" format="color" />
+    <declare-styleable name="TintImageView">
+        <attr name="tintColor" format="color" />
+    </declare-styleable>>
+</resources>

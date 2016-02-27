@@ -26,6 +26,7 @@ import java.util.List;
 
 import bit.ihainan.me.bitunionforandroid.R;
 import bit.ihainan.me.bitunionforandroid.models.ThreadReply;
+import bit.ihainan.me.bitunionforandroid.ui.PostOrReplyActivity;
 import bit.ihainan.me.bitunionforandroid.ui.assist.CustomSpan;
 import bit.ihainan.me.bitunionforandroid.ui.viewholders.LoadingViewHolder;
 import bit.ihainan.me.bitunionforandroid.utils.CommonUtils;
@@ -236,7 +237,9 @@ public class PostListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             reply.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Snackbar.make(mRecyclerView, context.getString(R.string.error_not_implement), Snackbar.LENGTH_LONG).show();
+                    // Snackbar.make(mRecyclerView, context.getString(R.string.error_not_implement), Snackbar.LENGTH_LONG).show();
+                    Intent intent = new Intent(mContext, PostOrReplyActivity.class);
+                    mContext.startActivity(intent);
                 }
             });
 

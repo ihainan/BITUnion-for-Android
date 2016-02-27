@@ -27,11 +27,7 @@
             android:name=".ui.MainActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:theme="@style/AppTheme.NoActionBar">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
         <activity
             android:name=".ui.LoginActivity"
@@ -49,7 +45,7 @@
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:label="@string/title_activity_thread_detail"
             android:theme="@style/AppTheme.SwipeTheme" />
-        <activity android:name=".ui.TestActivity"></activity>
+        <activity android:name=".ui.TestActivity" />
 
         <meta-data
             android:name="UMENG_APPKEY"
@@ -67,9 +63,16 @@
             android:theme="@android:style/Theme.Translucent.NoTitleBar" />
         <activity android:name=".ui.assist.SwipeActivity" />
         <activity
-            android:name=".ui.ThreadDetailWithTabLayoutActivity"
-            android:label="@string/title_activity_thread_detail_with_tab_layout"
-            android:theme="@style/AppTheme.SwipeTheme"></activity>
+            android:name=".ui.PostOrReplyActivity"
+            android:label="@string/title_activity_post_or_reply"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="adjustResize">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>
