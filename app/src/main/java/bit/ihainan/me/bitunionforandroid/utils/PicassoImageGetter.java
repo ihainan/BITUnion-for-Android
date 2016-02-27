@@ -44,7 +44,11 @@ public class PicassoImageGetter implements Html.ImageGetter {
                     if (CommonUtils.isWifi(mContext) || !Global.saveDataMode) {
                         Log.d(TAG, "loadImage >> 非节省流量模式或者 Wi-Fi 环境，正常下载图片 " + source);
                         Picasso picasso = Picasso.with(mContext);
-                        return picasso.load(source).get();
+                        if (source.startsWith("file:///android_asset/faces/s"))
+                            return picasso.load(source).resize(CommonUtils.getFontHeight(mContext, 18),
+                                    CommonUtils.getFontHeight(mContext, 18)).get();
+                        else
+                            return picasso.load(source).get();
                     } else {
                         Log.d(TAG, "loadImage >> 节省流量模式且非 Wi-Fi 环境，不下载图片 " + source);
                         return null;

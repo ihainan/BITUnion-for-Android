@@ -50,13 +50,14 @@ public class HtmlUtil {
     private StringBuilder mHtmlAll = new StringBuilder("<html>");
 
     public String makeAll() {
+        Log.d(TAG, "Body = " + mBody);
         processBody();
 //         addCss("body{overflow-wrap:break-word;word-wrap:break-word;-ms-word-break:break-all;word-break:break-all;word-break:break-word;-ms-hyphens:auto;-moz-hyphens:auto;-webkit-hyphens:auto;hyphens:auto;line-height:1.6}blockquote{background:#f9f9f9;border-left:10px solid #ccc;margin:1.5em 0px;padding:.5em 10px;quotes:\"\\201C\"\"\\201D\"\"\\2018\"\"\\2019\"}blockquote:before{color:#006FDA;content:open-quote;font-size:4em;line-height:.1em;margin-right:.25em;vertical-align:-.4em}blockquote p{display:inline}blockquote cite{color:#006FDA;font-weight:700} img{width:100%;height:auto}");
 //         addHead(getCss());
         addHead("<link rel=\"stylesheet\" type=\"text/css\" href=\"css/style.css\" />");
         // addJavascript("");
         // addHead(getJavascript());
-        return mHtmlAll.append(getHead()).append(mBody).append("</body></html>").toString();
+        return mHtmlAll.append(getHead()).append("<body>" + mBody).append("</body></html>").toString();
     }
 
     private static final String QUOTE_HEAD = "<br><br><center><table[^>]+><tr><td>&nbsp;&nbsp;引用(?:\\[<a href='[\\w\\.&\\?=]+?'>查看原帖</a>])*?.</td></tr><tr><td><table.{101,102}bgcolor='ALTBG2'>";
@@ -85,7 +86,10 @@ public class HtmlUtil {
             mBody = mBody.replaceAll("<br/><span id='id_open_api_label'>..:: <a href=http://www.bitunion.org>From BIT-Union Open API Project</a> ::..<br/>", "");
 
         // 换行
-        mBody = mBody.replaceAll("<br />\r\n<br />", "<br />").replaceAll("<br />", "<br /><br />");
+        // mBody = mBody.replaceAll("<br />\r\n<br />", "<br />").replaceAll("<br />", "<br /><br />");
+        mBody = mBody.replaceAll("\r\n", "");
+        mBody = mBody.replaceAll("(<br>|<br\\s*/>){2}", "<br>");
+        mBody = mBody.replaceAll("<br>", "<br /><br />");
 
         // 图片
         Pattern p = Pattern.compile("<img src='([^>']+)'[^>]*(width>)?[^>]*'>");
@@ -108,9 +112,6 @@ public class HtmlUtil {
             mBody = mBody.replace(m.group(0), "<blockquote>" + m.group(1).trim() + "</blockquote>");
             m = p.matcher(mBody);
         }
-
-        // 测试
-        // mBody = mBody + "<blockquote>校再见吧，我现在真的对你没什么感情，不爱你也不恨你，我会想念我的同学朋友们，但我真的对你没感觉。贵校再见吧，我现在真的对你没什么感情，不爱你也不恨你，我会想念我的同学朋友们，但我真的对你没感觉。 <cite> &emsp;&emsp;——lanqiang</cite>";
     }
 
     // TODO: 处理原始文本和 UBB Code
@@ -118,8 +119,49 @@ public class HtmlUtil {
         String result = ubbStr.replace("\n", "<br>");
         result = result.replaceAll("\\[b\\]", "<b>");
         result = result.replaceAll("\\[/b\\]", "</b>");
+
         result = result.replaceAll("\\[quote\\]", "<blockquote>");
         result = result.replaceAll("\\[/quote\\]", "</blockquote>");
+
+        result = result.replaceAll("\\[i\\]", "<i>");
+        result = result.replaceAll("\\[/i\\]", "</i>");
+
+        result = result.replaceAll("\\[u\\]", "<u>");
+        result = result.replaceAll("\\[/u\\]", "</u>");
+
+        // 链接
+        result = replaceUrl(result);
+
+        // 替换表情
+        result = replaceEmotion(result);
+
+        return result;
+    }
+
+    private static String replaceUrl(String result) {
+        String regex = "\\[url=(.+?)\\](.+?)\\[/url\\]";
+        Pattern pattern = Pattern.compile(regex);
+        Matcher m = pattern.matcher(result);
+        while (m.find()) {
+            result = result.replace(m.group(0), "<a href='" + m.group(1) + "'>" + m.group(2) + "</a>");
+        }
+        return result;
+    }
+
+    private static String replaceEmotion(String result) {
+        String regex = ":(\\S{1,10}?):";
+        Pattern pattern = Pattern.compile(regex);
+        Matcher m = pattern.matcher(result);
+        while (m.find()) {
+            System.out.println("Match \"" + m.group() +
+                    "\"at positions " +
+                    m.start() + " - " + (m.end() - 1));
+            if (Emoticons.EMOTICONS.get(m.group(0)).startsWith("smilies_"))
+                result = result.replace(m.group(0), "<img src=\"../images/smilies/" + Emoticons.EMOTICONS.get(m.group(0)).substring(8) + "\" align=\"absmiddle\" border=\"0\">");
+            else if (Emoticons.EMOTICONS.get(m.group(0)).startsWith("bz_"))
+                result = result.replace(m.group(0), "<img src=\"../images/bz/" + Emoticons.EMOTICONS.get(m.group(0)).substring(3) + "\" align=\"absmiddle\" border=\"0\">");
+        }
+
         return result;
     }
 }

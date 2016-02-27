@@ -6,6 +6,7 @@ import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Paint;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
@@ -377,6 +378,11 @@ public class CommonUtils {
 
         String ori = originalURL;
 
+        if (originalURL.startsWith("file:///android_asset")){
+            Log.d(TAG, "getRealImageURL >> " + ori + " - " + ori);
+            return ori;
+        }
+
         originalURL = originalURL.replaceAll("^images/", Global.getBaseURL() + "images/");
         originalURL = originalURL.replaceAll("^../images", Global.getBaseURL() + "images/");
 
@@ -561,5 +567,16 @@ public class CommonUtils {
         ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
         return networkInfo != null && networkInfo.getType() == ConnectivityManager.TYPE_WIFI;
+    }
+
+    public static int getFontHeight(Context context, float fontSize) {
+        // Convert Dp To Px
+        float px = context.getResources().getDisplayMetrics().density * fontSize + 0.5f;
+
+        // Use Paint to get font height
+        Paint p = new Paint();
+        p.setTextSize(px);
+        Paint.FontMetrics fm = p.getFontMetrics();
+        return (int) Math.ceil(fm.descent - fm.ascent);
     }
 }

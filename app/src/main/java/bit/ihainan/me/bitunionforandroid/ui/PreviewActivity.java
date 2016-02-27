@@ -25,7 +25,7 @@ public class PreviewActivity extends SwipeActivity {
     public final static String MESSAGE_CONTENT = "MESSAGE_CONTENT";
 
     // UI References
-    private TextView mMessage;
+    private TextView mMessage, mSubject;
     private Button mSubmit;
 
     // Data
@@ -35,7 +35,7 @@ public class PreviewActivity extends SwipeActivity {
         Bundle bundle = getIntent().getExtras();
         mMessageContent = bundle.getString(MESSAGE_CONTENT);
         if (mMessageContent != null) {
-            mMessageContent += "\n\n\n[b]发自 " + CommonUtils.getDeviceName() + " @BITUnion for Android[/b]";
+            // mMessageContent += "\n\n\n[b]发自 " + CommonUtils.getDeviceName() + " @BITUnion for Android[/b]";
             mMessageHtmlContent = new HtmlUtil(HtmlUtil.ubbToHtml(mMessageContent)).makeAll();
         }
     }
@@ -88,6 +88,9 @@ public class PreviewActivity extends SwipeActivity {
                 Toast.makeText(PreviewActivity.this, mMessageHtmlContent, Toast.LENGTH_LONG).show();
             }
         });
+
+        mSubject = (TextView) findViewById(R.id.thread_subject);
+        mSubject.setVisibility(View.GONE);
     }
 
 }
