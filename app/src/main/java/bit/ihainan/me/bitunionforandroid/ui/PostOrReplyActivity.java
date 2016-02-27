@@ -1,21 +1,31 @@
 package bit.ihainan.me.bitunionforandroid.ui;
 
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
-import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
-import android.widget.TextView;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 
 import bit.ihainan.me.bitunionforandroid.R;
+import bit.ihainan.me.bitunionforandroid.utils.EditTextUndoRedo;
+import bit.ihainan.me.bitunionforandroid.utils.Global;
 
 public class PostOrReplyActivity extends AppCompatActivity {
 
     // UI References
     private EditText mMessage;
+    private ImageView boldAction, quoteAction, undoAction, redoAction, testAction;
+
+    private EditTextUndoRedo editTextUndoRedo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,7 +54,98 @@ public class PostOrReplyActivity extends AppCompatActivity {
 
         mMessage = (EditText) findViewById(R.id.new_post_message);
         mMessage.setLineSpacing(10, 1.3f);
-        mMessage.setText("本科我宿舍的一个是国防生，本科毕业就去了保定徐水的38军某防空团了，到现在差不多有7年多的时间，刚进去时是一毛二（硕士进去的话是一毛三），现在是两毛一，之前是在带兵，现在进团部当作训参谋了。这个军衔上升的时间段供你参考。部队现在说实话待遇也是一般，但相比以前是好一些了，也让用手机了（必须要用国产的手机），平时也严禁喝酒什么的了，其实主要是将来看你能不能承受得住那里的环境，一年得有半年的驻外拉练，冬天就住单层的单兵帐篷啥的。两毛三以下的都会面临转业的问题，现在说实话想转个好单位到时候还得找关系，所以这点你也得想清楚。总而言之，我把我能知道的这些都告诉你了，决定权还是在你。\n\n 转业的话就要面临二次就业的问题，这个在我30多岁的时候身边的人都已经稳定下来了，而我很有可能从头再来，所以说这个是比较困难的。在基层部队训练带兵也是一件很苦的事情，学的东西完全没有用，而且还不如军校生，但是现在退出的后果又比较严重，选择两难啊 \n 转业的话就要面临二次就业的问题，这个在我30多岁的时候身边的人都已经稳定下来了，而我很有可能从头再来，所以说这个是比较困难的。在基层部队训练带兵也是一件很苦的事情，学的东西完全没有用，而且还不如军校生，但是现在退出的后果又比较严重，选择两难啊");
+        mMessage.setText("本科我宿舍的一个是国防生，本科毕业就去了保定徐水的38军某防空团了，到现在差不多有7年多的时间\n\n到现在差不多有7年多的时间\n本科我宿舍的一个是国防生，本科毕业就去了保定徐水的38军某防空团了，到现在差不多有7年多的时间\n到现在差不多有7年多的时间" + "本科我宿舍的一个是国防生，本科毕业就去了保定徐水的38军某防空团了，到现在差不多有7年多的时间\n\n到现在差不多有7年多的时间\n本科我宿舍的一个是国防生，本科毕业就去了保定徐水的38军某防空团了，到现在差不多有7年多的时间\n到现在差不多有7年多的时间" + "本科我宿舍的一个是国防生，本科毕业就去了保定徐水的38军某防空团了，到现在差不多有7年多的时间\n\n到现在差不多有7年多的时间\n本科我宿舍的一个是国防生，本科毕业就去了保定徐水的38军某防空团了，到现在差不多有7年多的时间\n到现在差不多有7年多的时间");
+        editTextUndoRedo = new EditTextUndoRedo(mMessage);
+
+        // Buttons
+        boldAction = (ImageView) findViewById(R.id.bold_action);
+        undoAction = (ImageView) findViewById(R.id.undo_action);
+        redoAction = (ImageView) findViewById(R.id.redo_action);
+        quoteAction = (ImageView) findViewById(R.id.quote_action);
+        testAction = (ImageView) findViewById(R.id.test_action);
+        setUpActions();
+    }
+
+    private void setUpActions() {
+        quoteAction.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                addTag("quote", false);
+            }
+        });
+
+
+        boldAction.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                addTag("b", false);
+            }
+        });
+
+        undoAction.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // mMessage.
+                editTextUndoRedo.undo();
+            }
+        });
+
+        redoAction.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                editTextUndoRedo.redo();
+            }
+        });
+
+        testAction.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                View view = getCurrentFocus();
+                ((InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE))
+                        .hideSoftInputFromWindow(view.getWindowToken(), 0);
+                Intent intent = new Intent(PostOrReplyActivity.this, PreviewActivity.class);
+                intent.putExtra(PreviewActivity.MESSAGE_CONTENT, mMessage.getText().toString());
+                startActivity(intent);
+            }
+        });
+    }
+
+    private void addTag(String tag, boolean isWrapLine) {
+        int startSelection = mMessage.getSelectionStart();
+        int endSelection = mMessage.getSelectionEnd();
+        String wrapLine = isWrapLine ? "\n" : "";
+        String before = wrapLine + "[" + tag + "]";
+        String after = "[/" + tag + "]" + wrapLine;
+        String selectedStr = mMessage.getText().subSequence(startSelection, endSelection).toString();
+        String replaceStr = before + selectedStr + after;
+        mMessage.getText().replace(Math.min(startSelection, endSelection), Math.max(startSelection, endSelection),
+                replaceStr, 0, replaceStr.length());
+
+        if (startSelection == endSelection) mMessage.setSelection(startSelection + before.length());
+        ((InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE))
+                .showSoftInput(mMessage, InputMethodManager.SHOW_FORCED);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.new_post_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.send:
+                View view = getCurrentFocus();
+                ((InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE))
+                        .hideSoftInputFromWindow(view.getWindowToken(), 0);
+                Intent intent = new Intent(PostOrReplyActivity.this, PreviewActivity.class);
+                intent.putExtra(PreviewActivity.MESSAGE_CONTENT, mMessage.getText().toString());
+                startActivity(intent);
+                break;
+        }
+
+        return true;
     }
 
 }

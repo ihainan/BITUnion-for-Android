@@ -112,4 +112,14 @@ public class HtmlUtil {
         // 测试
         // mBody = mBody + "<blockquote>校再见吧，我现在真的对你没什么感情，不爱你也不恨你，我会想念我的同学朋友们，但我真的对你没感觉。贵校再见吧，我现在真的对你没什么感情，不爱你也不恨你，我会想念我的同学朋友们，但我真的对你没感觉。 <cite> &emsp;&emsp;——lanqiang</cite>";
     }
+
+    // TODO: 处理原始文本和 UBB Code
+    public static String ubbToHtml(String ubbStr) {
+        String result = ubbStr.replace("\n", "<br>");
+        result = result.replaceAll("\\[b\\]", "<b>");
+        result = result.replaceAll("\\[/b\\]", "</b>");
+        result = result.replaceAll("\\[quote\\]", "<blockquote>");
+        result = result.replaceAll("\\[/quote\\]", "</blockquote>");
+        return result;
+    }
 }

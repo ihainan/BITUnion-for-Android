@@ -5,4 +5,5 @@
     <dimen name="fab_margin">16dp</dimen>
     <dimen name="avatar_size">50dp</dimen>
     <dimen name="reply_height">100dp</dimen>
+    <dimen name="bottom_icon_padding">15dp</dimen>
 </resources>

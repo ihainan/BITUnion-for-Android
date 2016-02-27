@@ -31,22 +31,27 @@
                     android:orientation="vertical"
                     android:paddingLeft="1dp">
 
-                    <EditText
-                        android:id="@+id/new_post_message"
+                    <ScrollView
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:layout_weight="0.9"
-                        android:background="@null"
-                        android:clipToPadding="false"
-                        android:focusable="true"
-                        android:focusableInTouchMode="true"
-                        android:gravity="top"
-                        android:inputType="textMultiLine"
-                        android:paddingBottom="10dp"
-                        android:paddingLeft="20dp"
-                        android:paddingRight="10dp"
-                        android:paddingTop="20dp"
-                        android:textSize="16sp" />
+                        android:layout_weight="0.9">
+
+                        <EditText
+                            android:id="@+id/new_post_message"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:background="@null"
+                            android:clipToPadding="false"
+                            android:focusable="true"
+                            android:focusableInTouchMode="true"
+                            android:gravity="top"
+                            android:inputType="textMultiLine"
+                            android:paddingBottom="10dp"
+                            android:paddingLeft="20dp"
+                            android:paddingRight="10dp"
+                            android:paddingTop="20dp"
+                            android:textSize="16sp" />
+                    </ScrollView>
 
 
                     <HorizontalScrollView
@@ -65,27 +70,85 @@
                             android:orientation="horizontal">
 
                             <ImageView
-                                style="?android:attr/buttonBarButtonStyle"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
+                                android:id="@+id/undo_action"
+                                android:layout_width="50dp"
+                                android:layout_height="50dp"
+                                android:padding="@dimen/bottom_icon_padding"
+                                android:src="@drawable/ic_undo_black_24dp" />
+
+                            <ImageView
+                                android:id="@+id/redo_action"
+                                android:layout_width="50dp"
+                                android:layout_height="50dp"
+                                android:padding="@dimen/bottom_icon_padding"
+                                android:src="@drawable/ic_redo_black_24dp" />
+
+                            <ImageView
+                                android:id="@+id/emoji_action"
+                                android:layout_width="50dp"
+                                android:layout_height="50dp"
+                                android:padding="@dimen/bottom_icon_padding"
+                                android:src="@drawable/ic_emoji" />
+
+
+                            <ImageView
+                                android:id="@+id/attachment_action"
+                                android:layout_width="50dp"
+                                android:layout_height="50dp"
+                                android:padding="@dimen/bottom_icon_padding"
                                 android:src="@drawable/ic_attachment_black_24dp" />
 
                             <ImageView
-                                style="?android:attr/buttonBarButtonStyle"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
+                                android:id="@+id/img_action"
+                                android:layout_width="50dp"
+                                android:layout_height="50dp"
+                                android:padding="@dimen/bottom_icon_padding"
                                 android:src="@drawable/ic_photo_black_24dp" />
 
                             <ImageView
-                                style="?android:attr/buttonBarButtonStyle"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:src="@drawable/ic_reply_black_24dp" />
+                                android:id="@+id/quote_action"
+                                android:layout_width="50dp"
+                                android:layout_height="50dp"
+                                android:padding="@dimen/bottom_icon_padding"
+                                android:src="@drawable/ic_quote_2" />
 
+                            <ImageView
+                                android:id="@+id/bold_action"
+                                android:layout_width="50dp"
+                                android:layout_height="50dp"
+                                android:padding="@dimen/bottom_icon_padding"
+                                android:src="@drawable/ic_bold" />
 
+                            <ImageView
+                                android:id="@+id/italic_action"
+                                android:layout_width="50dp"
+                                android:layout_height="50dp"
+                                android:padding="@dimen/bottom_icon_padding"
+                                android:src="@drawable/ic_italic" />
+
+                            <ImageView
+                                android:id="@+id/link_action"
+                                android:layout_width="50dp"
+                                android:layout_height="50dp"
+                                android:padding="@dimen/bottom_icon_padding"
+                                android:src="@drawable/ic_link_black_24dp" />
+
+                            <ImageView
+                                android:id="@+id/at_action"
+                                android:layout_width="50dp"
+                                android:layout_height="50dp"
+                                android:padding="@dimen/bottom_icon_padding"
+                                android:src="@drawable/ic_at" />
+
+                            <ImageView
+                                android:id="@+id/test_action"
+                                android:layout_width="50dp"
+                                android:layout_height="50dp"
+                                android:padding="@dimen/bottom_icon_padding"
+                                android:src="@drawable/ic_smartphone_black_24dp"
+                                android:visibility="gone" />
                         </LinearLayout>
                     </HorizontalScrollView>
-
                 </LinearLayout>
 
                 <de.hdodenhof.circleimageview.CircleImageView
@@ -98,6 +161,12 @@
                     android:layout_marginTop="20dp"
                     android:src="@drawable/avatar" />
             </RelativeLayout>
+
+            <FrameLayout
+                android:id="@+id/post_emoticons"
+                android:layout_width="240dp"
+                android:layout_height="match_parent"
+                android:layout_gravity="end" />
         </android.support.v4.widget.DrawerLayout>
     </FrameLayout>
 </RelativeLayout>
