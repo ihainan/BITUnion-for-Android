@@ -51,9 +51,10 @@ public class HtmlUtil {
 
     public String makeAll() {
         processBody();
-        addHead("<link rel=\"stylesheet\" type=\"text/css\" href=\"css/style.css\" />");
+        // addHead("<link rel=\"stylesheet\" type=\"text/css\" href=\"css/style.css\" />");
         Log.d(TAG, "Body After = " + mBody);
-        return mHtmlAll.append(getHead()).append("<body>" + mBody).append("</body></html>").toString();
+        // return mHtmlAll.append(getHead()).append("<body>" + mBody).append("</body></html>").toString();
+        return mBody;
     }
 
     private static final String QUOTE_HEAD = "<br><br><center><table[^>]+><tr><td>&nbsp;&nbsp;引用(?:\\[<a href='[\\w\\.&\\?=]+?'>查看原帖</a>])*?.</td></tr><tr><td><table.{101,102}bgcolor='ALTBG2'>";
@@ -118,11 +119,24 @@ public class HtmlUtil {
         while (m.find()) {
             str = str.replace(m.group(0), "<blockquote>" + m.group(1).trim() + "</blockquote>");
             m = p.matcher(str);
+
         }
 
         // 多余的换行
         str = str.replaceAll("</blockquote>(\\s)*(<br>)+", "</blockquote>");
         return str;
+    }
+
+    private static String replaceDel(String result) {
+        String regex = "\\[s\\](.*?)\\[/s\\]";
+        Pattern pattern = Pattern.compile(regex);
+        Matcher m = pattern.matcher(result);
+        while (m.find()) {
+            System.out.println(m.group());
+            result = result.replace(m.group(0), "<u>" + m.group(1) + "</u>");
+        }
+
+        return result;
     }
 
     private static String replaceLastEdit(String str) {
@@ -143,6 +157,7 @@ public class HtmlUtil {
 
     private void processBody() {
         mBody = replaceBase(mBody); // 基本替换，如换行，br 等
+        mBody = replaceDel(mBody);  // 特殊处理 [s] 标签
         mBody = replaceImage(mBody);    // 替换图片地址
         mBody = replaceQuote(mBody);    // 替换引用
         mBody = replaceLastEdit(mBody); // 删除 Last Edit

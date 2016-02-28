@@ -242,6 +242,15 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+
+    private final static String MAIN_ACTIVITY_LIST = "MAIN_ACTIVITY_LIST";
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        // Global.getCache(this).put(MAIN_ACTIVITY_LIST, );
+    }
+
     @Override
     protected void onResume() {
         super.onResume();

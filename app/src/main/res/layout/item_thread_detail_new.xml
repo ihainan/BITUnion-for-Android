@@ -48,13 +48,28 @@
                     android:text="ihainan"
                     android:textStyle="bold" />
 
-                <ImageView
-                    android:id="@+id/thread_from_mobile"
-                    android:layout_width="15dp"
-                    android:layout_height="15dp"
+                <TextView
+                    android:id="@+id/device_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="13dp"
                     android:layout_alignParentRight="true"
                     android:layout_marginTop="7dp"
+                    android:ellipsize="end"
+                    android:gravity="center"
+                    android:maxLength="20"
+                    android:text="Sony Xperia Z5"
+                    android:textSize="10sp"
+                    android:textStyle="bold" />
+
+                <ImageView
+                    android:id="@+id/thread_from_mobile"
+                    android:layout_width="13dp"
+                    android:layout_height="13dp"
+                    android:layout_marginRight="2dp"
+                    android:layout_marginTop="7dp"
+                    android:layout_toLeftOf="@id/device_name"
                     android:src="@drawable/ic_smartphone_black_24dp" />
+
 
                 <TextView
                     android:id="@+id/thread_date"
@@ -69,6 +84,7 @@
                     android:textSize="10sp" />
 
             </RelativeLayout>
+
 
             <TextView
                 android:id="@+id/thread_subject"

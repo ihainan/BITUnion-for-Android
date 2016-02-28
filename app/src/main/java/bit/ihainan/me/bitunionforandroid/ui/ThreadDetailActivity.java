@@ -25,6 +25,7 @@ import com.android.volley.VolleyError;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.deser.DataFormatReaders;
 import com.squareup.picasso.Picasso;
 import com.umeng.analytics.MobclickAgent;
 
@@ -38,6 +39,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import bit.ihainan.me.bitunionforandroid.R;
 import bit.ihainan.me.bitunionforandroid.adapters.PostListAdapter;
@@ -308,10 +311,14 @@ public class ThreadDetailActivity extends SwipeActivity {
 
                                 // 处理数据
                                 for (ThreadReply reply : newThreads) {
+                                    // 处理正文
                                     String body = CommonUtils.decode(reply.message);
                                     reply.useMobile = body.contains("From BIT-Union Open API Project");
                                     HtmlUtil htmlUtil = new HtmlUtil(CommonUtils.decode(reply.message));
                                     reply.message = htmlUtil.makeAll();
+
+                                    // 获取设备信息
+                                    getDeviceName(reply);
                                 }
 
                                 // 更新 RecyclerView
@@ -373,6 +380,25 @@ public class ThreadDetailActivity extends SwipeActivity {
                         Log.e(TAG, getString(R.string.error_network), error);
                     }
                 });
+    }
+
+
+    private void getDeviceName(ThreadReply reply) {
+        // Log.d(TAG, "getDeviceName >> " + reply.message);
+        String[] regexStrArray = new String[]{"<a .*?>\\.\\.::发自(.*?)::\\.\\.</a>$",
+                "<br><br>发送自 <a href='.*?' target='_blank'><b>(.*?) @BUApp</b></a>"};
+        for (String regex : regexStrArray) {
+            Pattern pattern = Pattern.compile(regex);
+            Matcher matcher = pattern.matcher(reply.message);
+            while (matcher.find()) {
+                // 找到啦！
+                reply.deviceName = matcher.group(1);
+                reply.message = reply.message.replace(matcher.group(0), "");
+                return;
+            }
+        }
+
+        reply.deviceName = "";
     }
 
     @Override

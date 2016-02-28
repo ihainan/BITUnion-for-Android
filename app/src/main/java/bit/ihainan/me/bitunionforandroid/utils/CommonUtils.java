@@ -38,6 +38,7 @@ import java.net.URLDecoder;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -378,7 +379,7 @@ public class CommonUtils {
 
         String ori = originalURL;
 
-        if (originalURL.startsWith("file:///android_asset")){
+        if (originalURL.startsWith("file:///android_asset")) {
             Log.d(TAG, "getRealImageURL >> " + ori + " - " + ori);
             return ori;
         }
@@ -457,6 +458,16 @@ public class CommonUtils {
         return (new SimpleDateFormat("yyyy-MM-dd hh:mm")).format(date);
     }
 
+    /**
+     * 格式化日期为标准时间格式（hh:mm"）
+     *
+     * @param date 需要格式化的日期
+     * @return 格式化后的时间字符串
+     */
+    public static String formatTime(Date date) {
+        return (new SimpleDateFormat("hh:mm")).format(date);
+    }
+
     public static boolean checkIfInSchool() {
         try {
             InetAddress in = InetAddress.getByName(Global.DNS_SERVER);
@@ -518,6 +529,15 @@ public class CommonUtils {
      */
     public static Date unixTimeStampToDate(long timeStamp) {
         return new java.util.Date(timeStamp * 1000);
+    }
+
+    public static boolean isSameDay(Date date1, Date date2) {
+        Calendar cal1 = Calendar.getInstance();
+        Calendar cal2 = Calendar.getInstance();
+        cal1.setTime(date1);
+        cal2.setTime(date2);
+        return cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR) &&
+                cal1.get(Calendar.DAY_OF_YEAR) == cal2.get(Calendar.DAY_OF_YEAR);
     }
 
     /**

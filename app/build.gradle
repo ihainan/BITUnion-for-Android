@@ -6,6 +6,9 @@ android {
 
     repositories {
         mavenCentral()
+        flatDir {
+            dirs 'libs'
+        }
     }
 
     packagingOptions {

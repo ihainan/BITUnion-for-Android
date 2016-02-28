@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
-import android.support.design.widget.Snackbar;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.text.SpannableString;
@@ -22,6 +21,7 @@ import com.squareup.picasso.Callback;
 import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 
+import java.util.Date;
 import java.util.List;
 
 import bit.ihainan.me.bitunionforandroid.R;
@@ -109,16 +109,29 @@ public class PostListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             viewHolder.message.setText(spannableString);
 
             // 日期
-            String dateStr = CommonUtils.formatDateTime(CommonUtils.unixTimeStampToDate(reply.dateline));
-            String lastEdit = CommonUtils.formatDateTime(CommonUtils.unixTimeStampToDate(Long.valueOf(reply.lastedit)));
-            if (!dateStr.equals(lastEdit))
-                dateStr += " (edited at " + CommonUtils.formatDateTime(CommonUtils.unixTimeStampToDate(Long.valueOf(reply.lastedit))) + ")";
+            Date datePost = CommonUtils.unixTimeStampToDate(reply.dateline);
+            Date dateEdit = CommonUtils.unixTimeStampToDate(Long.valueOf(reply.lastedit));
+            String datePostStr = CommonUtils.formatDateTime(datePost);
+            String dateEditStr = CommonUtils.formatDateTime(dateEdit);
+            if (!datePostStr.equals(dateEditStr)) {
+                if (CommonUtils.isSameDay(datePost, dateEdit)) {
+                    datePostStr += " (edited at " + CommonUtils.formatTime(dateEdit) + ")";
+                } else {
+                    datePostStr += " (edited at " + CommonUtils.formatDateTime(dateEdit) + ")";
+                }
+            }
 
-            viewHolder.date.setText(dateStr);
+            viewHolder.date.setText(datePostStr);
 
             // 移动端
-            if (reply.useMobile) viewHolder.useMobile.setVisibility(View.VISIBLE);
-            else viewHolder.useMobile.setVisibility(View.INVISIBLE);
+            if (reply.useMobile) {
+                viewHolder.deviceName.setVisibility(View.VISIBLE);
+                viewHolder.deviceName.setText(reply.deviceName);
+                viewHolder.useMobile.setVisibility(View.VISIBLE);
+            } else {
+                viewHolder.deviceName.setVisibility(View.INVISIBLE);
+                viewHolder.useMobile.setVisibility(View.INVISIBLE);
+            }
 
             // 附件
             if (!(reply.attachment == null || reply.attachment.equals(""))) {
@@ -226,7 +239,7 @@ public class PostListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     public class PostViewHolder extends RecyclerView.ViewHolder {
         public ImageView avatar, reply, useMobile;
         public TextView author, subject, date, number;
-        public TextView message;
+        public TextView message, deviceName;
         public LinearLayout attachmentLayout;
 
         public PostViewHolder(View itemView, final Context context) {
@@ -253,6 +266,7 @@ public class PostListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             message.setLineSpacing(6, 1.2f);
 
             useMobile = (ImageView) itemView.findViewById(R.id.thread_from_mobile);
+            deviceName = (TextView) itemView.findViewById(R.id.device_name);
 
             attachmentLayout = (LinearLayout) itemView.findViewById(R.id.thread_attachment_layout);
         }
