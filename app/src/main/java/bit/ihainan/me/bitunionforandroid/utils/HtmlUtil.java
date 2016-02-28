@@ -50,13 +50,9 @@ public class HtmlUtil {
     private StringBuilder mHtmlAll = new StringBuilder("<html>");
 
     public String makeAll() {
-        Log.d(TAG, "Body = " + mBody);
         processBody();
-//         addCss("body{overflow-wrap:break-word;word-wrap:break-word;-ms-word-break:break-all;word-break:break-all;word-break:break-word;-ms-hyphens:auto;-moz-hyphens:auto;-webkit-hyphens:auto;hyphens:auto;line-height:1.6}blockquote{background:#f9f9f9;border-left:10px solid #ccc;margin:1.5em 0px;padding:.5em 10px;quotes:\"\\201C\"\"\\201D\"\"\\2018\"\"\\2019\"}blockquote:before{color:#006FDA;content:open-quote;font-size:4em;line-height:.1em;margin-right:.25em;vertical-align:-.4em}blockquote p{display:inline}blockquote cite{color:#006FDA;font-weight:700} img{width:100%;height:auto}");
-//         addHead(getCss());
         addHead("<link rel=\"stylesheet\" type=\"text/css\" href=\"css/style.css\" />");
-        // addJavascript("");
-        // addHead(getJavascript());
+        Log.d(TAG, "Body After = " + mBody);
         return mHtmlAll.append(getHead()).append("<body>" + mBody).append("</body></html>").toString();
     }
 
@@ -65,7 +61,26 @@ public class HtmlUtil {
     private static final String QUOTE_REGEX = QUOTE_HEAD
             + "(((?!<br><br><center><table border=)[\\w\\W])*?)" + QUOTE_TAIL;
 
-    private String parseLocalImage(String imgUrl) {
+    private static String replaceImage(String str) {
+        // 图片
+        Pattern p = Pattern.compile("<img src='([^>']+)'[^>]*(width>)?[^>]*'>");
+        Matcher m = p.matcher(str);
+        while (m.find()) {
+            String url = parseLocalImage(m.group(1));
+            if (url.contains("file:///android_asset/"))
+                url = "<img id = 'face' src='" + url + "'>";
+            else
+                url = "<img src='" + url + "'>";
+            str = str.replace(m.group(0), url);
+            m = p.matcher(str);
+        }
+
+        // 删除前后的 br
+        str = str.replaceAll("(<br>)+<img", "<br><img");
+        return str;
+    }
+
+    private static String parseLocalImage(String imgUrl) {
         // 检查是否为本地表情文件
         Pattern p = Pattern.compile("\\.\\./images/(smilies|bz)/(.+?)\\.gif$");
         Matcher m = p.matcher(imgUrl);
@@ -77,41 +92,61 @@ public class HtmlUtil {
         return imgUrl;
     }
 
-    private void processBody() {
+    private static String replaceBase(String str) {
         // 单引号双引号
-        mBody = mBody.replaceAll("\"", "'");
+        str = str.replaceAll("\"", "'");
 
         // Open API 标志
-        if (mBody.contains("From BIT-Union Open API Project"))
-            mBody = mBody.replaceAll("<br/><span id='id_open_api_label'>..:: <a href=http://www.bitunion.org>From BIT-Union Open API Project</a> ::..<br/>", "");
+        if (str.contains("From BIT-Union Open API Project"))
+            str = str.replaceAll("<br/><span id='id_open_api_label'>..:: <a href=http://www.bitunion.org>From BIT-Union Open API Project</a> ::..<br/>", "");
 
         // 换行
-        // mBody = mBody.replaceAll("<br />\r\n<br />", "<br />").replaceAll("<br />", "<br /><br />");
-        mBody = mBody.replaceAll("\r\n", "");
-        mBody = mBody.replaceAll("(<br>|<br\\s*/>){2}", "<br>");
-        mBody = mBody.replaceAll("<br>", "<br /><br />");
+        str = str.replaceAll("\r\n", "");
+        str = str.replaceAll("\n", "");
+        Log.d(TAG, "Body Before = " + str);
+        str = str.replaceAll("<br />", "<br>");
+        str = str.replaceAll("<br/>", "<br>");
+        str = str.replaceAll("(<br>){2,}", "<br>");
+        str = str.replaceAll("<br>", "<br><br>");
 
-        // 图片
-        Pattern p = Pattern.compile("<img src='([^>']+)'[^>]*(width>)?[^>]*'>");
-        Matcher m = p.matcher(mBody);
+        return str;
+    }
+
+    private static String replaceQuote(String str) {
+        Pattern p = Pattern.compile(QUOTE_REGEX);
+        Matcher m = p.matcher(str);
         while (m.find()) {
-            String url = parseLocalImage(m.group(1));
-            if (url.contains("file:///android_asset/"))
-                url = "<img id = 'face' src='" + url + "'>";
-            else
-                url = "<img src='" + url + "'>";
-            mBody = mBody.replace(m.group(0), url);
-            m = p.matcher(mBody);
+            str = str.replace(m.group(0), "<blockquote>" + m.group(1).trim() + "</blockquote>");
+            m = p.matcher(str);
         }
 
+        // 多余的换行
+        str = str.replaceAll("</blockquote>(\\s)*(<br>)+", "</blockquote>");
+        return str;
+    }
 
-        // 引用，参考 BUapp
-        p = Pattern.compile(QUOTE_REGEX);
-        m = p.matcher(mBody);
+    private static String replaceLastEdit(String str) {
+        // Last Edit
+        Pattern p = Pattern.compile("(<br>)*\\[ Last edited by (.*?) on (.*?) at (.*?) \\]");
+        Matcher m = p.matcher(str);
         while (m.find()) {
-            mBody = mBody.replace(m.group(0), "<blockquote>" + m.group(1).trim() + "</blockquote>");
-            m = p.matcher(mBody);
+            str = str.replace(m.group(0), "");
         }
+
+        return str;
+    }
+
+    private static String replaceOther(String str) {
+        str = str.replaceAll("(<br>)*$", "");
+        return str;
+    }
+
+    private void processBody() {
+        mBody = replaceBase(mBody); // 基本替换，如换行，br 等
+        mBody = replaceImage(mBody);    // 替换图片地址
+        mBody = replaceQuote(mBody);    // 替换引用
+        mBody = replaceLastEdit(mBody); // 删除 Last Edit
+        mBody = replaceOther(mBody);    // 剩余内容
     }
 
     // TODO: 处理原始文本和 UBB Code

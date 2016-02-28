@@ -99,7 +99,7 @@ public class PostListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             } else {
                 viewHolder.subject.setVisibility(View.VISIBLE);
             }
-            viewHolder.subject.setText(CommonUtils.decode(reply.subject));
+            viewHolder.subject.setText(Html.fromHtml(CommonUtils.decode(reply.subject)));
             SpannableString spannableString = new SpannableString(
                     Html.fromHtml(
                             reply.message,
@@ -109,7 +109,12 @@ public class PostListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             viewHolder.message.setText(spannableString);
 
             // 日期
-            viewHolder.date.setText(CommonUtils.formatDateTime(CommonUtils.unixTimeStampToDate(reply.dateline)));
+            String dateStr = CommonUtils.formatDateTime(CommonUtils.unixTimeStampToDate(reply.dateline));
+            String lastEdit = CommonUtils.formatDateTime(CommonUtils.unixTimeStampToDate(Long.valueOf(reply.lastedit)));
+            if (!dateStr.equals(lastEdit))
+                dateStr += " (edited at " + CommonUtils.formatDateTime(CommonUtils.unixTimeStampToDate(Long.valueOf(reply.lastedit))) + ")";
+
+            viewHolder.date.setText(dateStr);
 
             // 移动端
             if (reply.useMobile) viewHolder.useMobile.setVisibility(View.VISIBLE);

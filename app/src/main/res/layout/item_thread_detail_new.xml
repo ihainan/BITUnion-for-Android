@@ -107,7 +107,7 @@
                 android:layout_height="1dp"
                 android:layout_below="@id/thread_attachment_layout"
                 android:layout_marginBottom="5dp"
-                android:layout_marginTop="15dp"
+                android:layout_marginTop="10dp"
                 android:background="@color/dark_gray" />
 
             <RelativeLayout
