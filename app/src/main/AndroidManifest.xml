@@ -16,6 +16,9 @@
     <!-- 获取更为准确的设备名称 -->
     <uses-permission android:name="android.permission.BLUETOOTH" />
 
+    <!-- 适配低版本 Android -->
+    <uses-permission android:name="android.permission.GET_TASKS" />
+
     <application
         android:name=".utils.Global"
         android:allowBackup="true"

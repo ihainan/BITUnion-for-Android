@@ -6,7 +6,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Convert HTML to View
+ * HTML Util
  */
 public class HtmlUtil {
     public final static String TAG = HtmlUtil.class.getSimpleName();
@@ -62,7 +62,7 @@ public class HtmlUtil {
     private static final String QUOTE_REGEX = QUOTE_HEAD
             + "(((?!<br><br><center><table border=)[\\w\\W])*?)" + QUOTE_TAIL;
 
-    private static String replaceImage(String str) {
+    public static String replaceImage(String str) {
         // 图片
         Pattern p = Pattern.compile("<img src='([^>']+)'[^>]*(width>)?[^>]*'>");
         Matcher m = p.matcher(str);
@@ -81,7 +81,7 @@ public class HtmlUtil {
         return str;
     }
 
-    private static String parseLocalImage(String imgUrl) {
+    public static String parseLocalImage(String imgUrl) {
         // 检查是否为本地表情文件
         Pattern p = Pattern.compile("\\.\\./images/(smilies|bz)/(.+?)\\.gif$");
         Matcher m = p.matcher(imgUrl);
@@ -93,7 +93,7 @@ public class HtmlUtil {
         return imgUrl;
     }
 
-    private static String replaceBase(String str) {
+    public static String replaceBase(String str) {
         // 单引号双引号
         str = str.replaceAll("\"", "'");
 
@@ -113,7 +113,7 @@ public class HtmlUtil {
         return str;
     }
 
-    private static String replaceQuote(String str) {
+    public static String replaceQuote(String str) {
         Pattern p = Pattern.compile(QUOTE_REGEX);
         Matcher m = p.matcher(str);
         while (m.find()) {
@@ -127,7 +127,7 @@ public class HtmlUtil {
         return str;
     }
 
-    private static String replaceDel(String result) {
+    public static String replaceDel(String result) {
         String regex = "\\[s\\](.*?)\\[/s\\]";
         Pattern pattern = Pattern.compile(regex);
         Matcher m = pattern.matcher(result);
@@ -139,7 +139,7 @@ public class HtmlUtil {
         return result;
     }
 
-    private static String replaceLastEdit(String str) {
+    public static String replaceLastEdit(String str) {
         // Last Edit
         Pattern p = Pattern.compile("(<br>)*\\[ Last edited by (.*?) on (.*?) at (.*?) \\]");
         Matcher m = p.matcher(str);
@@ -150,7 +150,7 @@ public class HtmlUtil {
         return str;
     }
 
-    private static String replaceOther(String str) {
+    public static String replaceOther(String str) {
         str = str.replaceAll("(<br>)*$", "");
         return str;
     }
@@ -188,7 +188,7 @@ public class HtmlUtil {
         return result;
     }
 
-    private static String replaceUrl(String result) {
+    public static String replaceUrl(String result) {
         String regex = "\\[url=(.+?)\\](.+?)\\[/url\\]";
         Pattern pattern = Pattern.compile(regex);
         Matcher m = pattern.matcher(result);
@@ -198,18 +198,20 @@ public class HtmlUtil {
         return result;
     }
 
-    private static String replaceEmotion(String result) {
+    public static String replaceEmotion(String result) {
         String regex = ":(\\S{1,10}?):";
         Pattern pattern = Pattern.compile(regex);
         Matcher m = pattern.matcher(result);
         while (m.find()) {
-            System.out.println("Match \"" + m.group() +
-                    "\"at positions " +
-                    m.start() + " - " + (m.end() - 1));
-            if (Emoticons.EMOTICONS.get(m.group(0)).startsWith("smilies_"))
-                result = result.replace(m.group(0), "<img src=\"../images/smilies/" + Emoticons.EMOTICONS.get(m.group(0)).substring(8) + "\" align=\"absmiddle\" border=\"0\">");
-            else if (Emoticons.EMOTICONS.get(m.group(0)).startsWith("bz_"))
-                result = result.replace(m.group(0), "<img src=\"../images/bz/" + Emoticons.EMOTICONS.get(m.group(0)).substring(3) + "\" align=\"absmiddle\" border=\"0\">");
+            if (Emoticons.EMOTICONS.keySet().contains(m.group(0))) {
+                System.out.println("Match \"" + m.group() +
+                        "\"at positions " +
+                        m.start() + " - " + (m.end() - 1));
+                if (Emoticons.EMOTICONS.get(m.group(0)).startsWith("smilies_"))
+                    result = result.replace(m.group(0), "<img src=\"../images/smilies/" + Emoticons.EMOTICONS.get(m.group(0)).substring(8) + "\" align=\"absmiddle\" border=\"0\">");
+                else if (Emoticons.EMOTICONS.get(m.group(0)).startsWith("bz_"))
+                    result = result.replace(m.group(0), "<img src=\"../images/bz/" + Emoticons.EMOTICONS.get(m.group(0)).substring(3) + "\" align=\"absmiddle\" border=\"0\">");
+            }
         }
 
         return result;
