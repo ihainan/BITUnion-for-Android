@@ -13,9 +13,6 @@
     <!-- 友盟自动更新 SDK 额外要求权限 -->
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
-    <!-- 获取更为准确的设备名称 -->
-    <uses-permission android:name="android.permission.BLUETOOTH" />
-
     <!-- 适配低版本 Android -->
     <uses-permission android:name="android.permission.GET_TASKS" />
 

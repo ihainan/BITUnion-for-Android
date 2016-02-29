@@ -559,9 +559,17 @@ public class CommonUtils {
      * @return 当前设备名称
      */
     public static String getDeviceName() {
-        BluetoothAdapter myDevice = BluetoothAdapter.getDefaultAdapter();
-        String deviceName = myDevice.getName();
-        return deviceName;
+        String manufacturer = Build.MANUFACTURER;
+        String model = Build.MODEL;
+        String deviceName;
+        if (model.startsWith(manufacturer)) {
+            deviceName = capitalize(model);
+        } else {
+            deviceName = capitalize(manufacturer) + " " + model;
+        }
+        if (realDeviceName.get(deviceName) == null)
+            return deviceName;
+        else return realDeviceName.get(deviceName);
     }
 
     private static Map<String, String> realDeviceName = new HashMap<>();

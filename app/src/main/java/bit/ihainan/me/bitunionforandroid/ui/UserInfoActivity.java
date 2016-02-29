@@ -5,6 +5,9 @@ import android.content.ClipboardManager;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.v4.widget.NestedScrollView;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.Toolbar;
 import android.text.Html;
 import android.text.SpannableString;
@@ -19,6 +22,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.umeng.analytics.MobclickAgent;
+
 
 import bit.ihainan.me.bitunionforandroid.R;
 import bit.ihainan.me.bitunionforandroid.models.Member;
@@ -36,6 +40,9 @@ public class UserInfoActivity extends SwipeActivity {
     private ImageView mAvatar;
     private LinearLayout mContactLayout, mSignatureLayout, mBdayLayout;
     private RelativeLayout mEmailLayout, mWebsiteLayout;
+    private CollapsingToolbarLayout mCollapsingToolbar;
+    private NestedScrollView mProfileLayout;
+    private SwipeRefreshLayout mSwipeRefreshLayout;
 
     // TAGS
     public static final String TAG = UserInfoActivity.class.getSimpleName();
@@ -96,16 +103,45 @@ public class UserInfoActivity extends SwipeActivity {
         mSignatureLayout = (LinearLayout) findViewById(R.id.profile_signature_layout);
         mBdayLayout = (LinearLayout) findViewById(R.id.profile_bday_layout);
 
-        mToolbarTitle.setText(CommonUtils.decode(mUsername));
+        mCollapsingToolbar = (CollapsingToolbarLayout) findViewById(R.id.toolbar_layout);
 
-        getUserInfo();
+        mToolbarTitle.setText(CommonUtils.decode(mUsername));
+        mCollapsingToolbar.setTitle(CommonUtils.decode(mUsername));
+
+        mProfileLayout = (NestedScrollView) findViewById(R.id.profile_layout);
+        mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh_layout);
+        setupSwipeRefreshLayout();
 
         setSwipeAnyWhere(false);
+    }
+
+    private void setupSwipeRefreshLayout() {
+        mSwipeRefreshLayout.setDistanceToTriggerSync(Global.SWIPE_LAYOUT_TRIGGER_DISTANCE);
+        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                // 重新加载数据
+                Global.getCache(UserInfoActivity.this)
+                        .remove(Global.CACHE_USER_INFO + mUsername);
+                getUserInfo();
+            }
+        });
+
+        mSwipeRefreshLayout.post(new Runnable() {
+            @Override
+            public void run() {
+                // 第一次加载数据
+                mProfileLayout.setVisibility(View.INVISIBLE);
+                getUserInfo();
+            }
+        });
     }
 
     private Member mMember;
 
     private void getUserInfo() {
+        mSwipeRefreshLayout.setRefreshing(true);
+
         mMember = (Member) Global.getCache(this)
                 .getAsObject(Global.CACHE_USER_INFO + mUsername);
 
@@ -181,13 +217,15 @@ public class UserInfoActivity extends SwipeActivity {
         registerForContextMenu(mWebsiteLayout);
 
         addOnClickListener();
+
+        mProfileLayout.setVisibility(View.VISIBLE);
+        mSwipeRefreshLayout.setRefreshing(false);
     }
 
     /**
      * 添加弹出菜单事件
      */
-    private void addOnClickListener()
-    {
+    private void addOnClickListener() {
         View.OnClickListener onClickListener = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
