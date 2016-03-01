@@ -47,6 +47,9 @@ public class PicassoImageGetter implements Html.ImageGetter {
                         if (source.startsWith("file:///android_asset/faces/s"))
                             return picasso.load(source).resize(CommonUtils.getFontHeight(mContext, 18),
                                     CommonUtils.getFontHeight(mContext, 18)).get();
+                        else if (source.startsWith("file:///android_asset/faces/bz"))
+                            return picasso.load(source).resize(CommonUtils.getFontHeight(mContext, 35),
+                                    CommonUtils.getFontHeight(mContext, 35)).get();
                         else
                             return picasso.load(source).get();
                     } else {
@@ -62,9 +65,10 @@ public class PicassoImageGetter implements Html.ImageGetter {
             @Override
             protected void onPostExecute(Bitmap bitmap) {
                 final BitmapDrawable drawable = new BitmapDrawable(resources, bitmap);
-                drawable.setBounds(0, 0, drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight());
+                int left = source.startsWith("file:///android_asset/faces/") ? 5 : 0;
+                drawable.setBounds(left, 0, drawable.getIntrinsicWidth() + left, drawable.getIntrinsicHeight());
                 result.setDrawable(drawable);
-                result.setBounds(0, 0, drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight());
+                result.setBounds(left, 0, drawable.getIntrinsicWidth() + left, drawable.getIntrinsicHeight());
 
                 textView.setText(textView.getText());
             }

@@ -386,7 +386,10 @@ public class ThreadDetailActivity extends SwipeActivity {
     private void getDeviceName(ThreadReply reply) {
         // Log.d(TAG, "getDeviceName >> " + reply.message);
         String[] regexStrArray = new String[]{"<a .*?>\\.\\.::发自(.*?)::\\.\\.</a>$",
-                "<br><br>发送自 <a href='.*?' target='_blank'><b>(.*?) @BUApp</b></a>"};
+                "<br><br>发送自 <a href='.*?' target='_blank'><b>(.*?) @BUApp</b></a>",
+                "<i>来自傲立独行的(.*?)客户端</i>"};
+        if (reply.message.contains("客户端") || reply.message.contains("发自"))
+            Log.d(TAG, "getDeviceName >> " + reply.message);
         for (String regex : regexStrArray) {
             Pattern pattern = Pattern.compile(regex);
             Matcher matcher = pattern.matcher(reply.message);
@@ -394,6 +397,7 @@ public class ThreadDetailActivity extends SwipeActivity {
                 // 找到啦！
                 reply.deviceName = matcher.group(1);
                 reply.message = reply.message.replace(matcher.group(0), "");
+                reply.message = HtmlUtil.replaceOther(reply.message);
                 return;
             }
         }
