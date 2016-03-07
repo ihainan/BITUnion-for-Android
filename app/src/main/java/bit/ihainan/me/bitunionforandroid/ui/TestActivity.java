@@ -9,13 +9,22 @@ import android.widget.Toast;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonMappingException;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
+import java.util.List;
+
 import bit.ihainan.me.bitunionforandroid.R;
+import bit.ihainan.me.bitunionforandroid.models.Favorite;
+import bit.ihainan.me.bitunionforandroid.models.ThreadReply;
 import bit.ihainan.me.bitunionforandroid.ui.assist.CustomSpan;
 import bit.ihainan.me.bitunionforandroid.ui.assist.SwipeActivity;
+import bit.ihainan.me.bitunionforandroid.utils.network.BUApi;
 import bit.ihainan.me.bitunionforandroid.utils.network.ExtraApi;
 import bit.ihainan.me.bitunionforandroid.utils.ui.HtmlUtil;
 import bit.ihainan.me.bitunionforandroid.utils.ui.PicassoImageGetter;
@@ -45,6 +54,7 @@ public class TestActivity extends SwipeActivity {
         message.setText(spannableString);
         */
 
+        /*
         ExtraApi.addFavorite(this, 123, "主题", "ihainan", new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
@@ -58,6 +68,87 @@ public class TestActivity extends SwipeActivity {
                 } catch (JSONException e) {
                     e.printStackTrace();
                     Toast.makeText(TestActivity.this, "添加收藏失败 - 无法解析 JSON 数据", Toast.LENGTH_LONG).show();
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                error.printStackTrace();
+                Toast.makeText(TestActivity.this, "连接服务器失败 " + error, Toast.LENGTH_LONG).show();
+            }
+        }); */
+
+        /*
+        ExtraApi.delFavorite(this, 123, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                try {
+                    Log.d(TAG, "addFvorite >> " + response.toString());
+                    if (response.getInt("code") == 0) {
+                        Toast.makeText(TestActivity.this, "删除收藏成功", Toast.LENGTH_LONG).show();
+                    } else {
+                        Toast.makeText(TestActivity.this, "删除收藏失败", Toast.LENGTH_LONG).show();
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    Toast.makeText(TestActivity.this, "删除收藏失败 - 无法解析 JSON 数据", Toast.LENGTH_LONG).show();
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                error.printStackTrace();
+                Toast.makeText(TestActivity.this, "连接服务器失败 " + error, Toast.LENGTH_LONG).show();
+            }
+        }); */
+
+        /*
+        ExtraApi.getFavoriteStatus(this, 3, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                try {
+                    Log.d(TAG, "addFvorite >> " + response.toString());
+                    if (response.getInt("code") == 0) {
+                        Toast.makeText(TestActivity.this, "收藏状态 " + response.getBoolean("data"), Toast.LENGTH_LONG).show();
+                    } else {
+                        Toast.makeText(TestActivity.this, "获取收藏状态失败", Toast.LENGTH_LONG).show();
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    Toast.makeText(TestActivity.this, "获取收藏状态失败 - 无法解析 JSON 数据", Toast.LENGTH_LONG).show();
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                error.printStackTrace();
+                Toast.makeText(TestActivity.this, "连接服务器失败 " + error, Toast.LENGTH_LONG).show();
+            }
+        }); */
+
+        ExtraApi.getFavoriteList(this, "ihainan", 0, 10, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                try {
+                    Log.d(TAG, "getFavoriteList >> " + response.toString());
+                    if (response.getInt("code") == 0) {
+                        Toast.makeText(TestActivity.this, "收藏状态 " + response.get("data"), Toast.LENGTH_LONG).show();
+                        List<Favorite> favoriteList = BUApi.MAPPER.readValue(response.get("data").toString(),
+                                new TypeReference<List<Favorite>>() {
+                                });
+                        Log.d(TAG, favoriteList.toString());
+                    } else {
+                        Toast.makeText(TestActivity.this, "获取收藏状态失败", Toast.LENGTH_LONG).show();
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    Toast.makeText(TestActivity.this, "获取收藏状态失败 - 无法解析 JSON 数据", Toast.LENGTH_LONG).show();
+                } catch (JsonMappingException e) {
+                    Toast.makeText(TestActivity.this, "获取收藏状态失败 - 无法解析 JSON 数据", Toast.LENGTH_LONG).show();
+                } catch (JsonParseException e) {
+                    Toast.makeText(TestActivity.this, "获取收藏状态失败 - 无法解析 JSON 数据", Toast.LENGTH_LONG).show();
+                } catch (IOException e) {
+                    Toast.makeText(TestActivity.this, "获取收藏状态失败 - 无法解析 JSON 数据", Toast.LENGTH_LONG).show();
                 }
             }
         }, new Response.ErrorListener() {

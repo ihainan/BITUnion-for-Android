@@ -19,7 +19,7 @@ import bit.ihainan.me.bitunionforandroid.utils.Global;
  */
 public class ExtraApi {
     public final static String TAG = ExtraApi.class.getSimpleName();
-    public final static String BASE_API = "http://ali.ihainan.me:8080/api/";
+    public final static String BASE_API = "http://192.168.31.115:8080/api/";
     public final static String VERSION = "v1";
     public final static String ENDPOINT = BASE_API + VERSION;
 
@@ -39,7 +39,7 @@ public class ExtraApi {
     public final static void addFavorite(Context context, long tid, String subject, String author,
                                          Response.Listener<JSONObject> listener,
                                          Response.ErrorListener errorListener) {
-        Map<String, Object> parameters = new HashMap<String, Object>();
+        Map<String, Object> parameters = new HashMap();
         parameters.put("app", context.getString(R.string.app_name));
         parameters.put("version", BuildConfig.VERSION_NAME);
         parameters.put("username", Global.userSession.username);
@@ -47,13 +47,61 @@ public class ExtraApi {
         parameters.put("subject", subject);
         parameters.put("author", author);
 
-        makeRequest(Request.Method.POST, context, "http://192.168.31.115:8080/api/v1/favorite",
+        makeRequest(Request.Method.POST, context, ADD_FAVORITE_ENDPOINT,
                 "ADD_FAVOR", parameters, listener, errorListener);
     }
 
-    // TODO: 删除收藏
-    // TODO: 获取收藏列表
-    // TODO: 获取收藏状态
+    /**
+     * 删除帖子
+     *
+     * @param context       上下文
+     * @param tid           贴子 ID
+     * @param listener      response 事件监听器
+     * @param errorListener error 事件监听器
+     */
+    public final static void delFavorite(Context context, long tid,
+                                         Response.Listener<JSONObject> listener,
+                                         Response.ErrorListener errorListener) {
+        Map<String, Object> parameters = new HashMap();
+        makeRequest(Request.Method.DELETE, context, ADD_FAVORITE_ENDPOINT + "/" + Global.userName + "/" + tid,
+                "DELETE_FAVOR", parameters, listener, errorListener);
+    }
+
+
+    /**
+     * 获取收藏列表
+     *
+     * @param context       上下文
+     * @param username      用户名
+     * @param listener      response 事件监听器
+     * @param errorListener error 事件监听器
+     */
+    public final static void getFavoriteList(Context context, String username,
+                                             long from, long to,
+                                             Response.Listener<JSONObject> listener,
+                                             Response.ErrorListener errorListener) {
+        Map<String, Object> parameters = new HashMap();
+        makeRequest(Request.Method.GET, context, ADD_FAVORITE_ENDPOINT + "/list/" + username + "?from=" + from + "&to=" + to,
+                "GET_FAVOR_STATUS", parameters, listener, errorListener);
+    }
+
+
+    /**
+     * 删除收藏状态
+     *
+     * @param context       上下文
+     * @param tid           贴子 ID
+     * @param listener      response 事件监听器
+     * @param errorListener error 事件监听器
+     */
+    public final static void getFavoriteStatus(Context context, long tid,
+                                               Response.Listener<JSONObject> listener,
+                                               Response.ErrorListener errorListener) {
+        Map<String, Object> parameters = new HashMap();
+        makeRequest(Request.Method.GET, context, ADD_FAVORITE_ENDPOINT + "/status/" + Global.userName + "/" + tid,
+                "GET_FAVOR_STATUS", parameters, listener, errorListener);
+    }
+
 
     /**
      * @param requestMethod 请求方法
