@@ -25,10 +25,10 @@ import java.util.List;
 import bit.ihainan.me.bitunionforandroid.R;
 import bit.ihainan.me.bitunionforandroid.adapters.PostListAdapter;
 import bit.ihainan.me.bitunionforandroid.models.ThreadReply;
-import bit.ihainan.me.bitunionforandroid.utils.Api;
+import bit.ihainan.me.bitunionforandroid.utils.network.BUApi;
 import bit.ihainan.me.bitunionforandroid.utils.CommonUtils;
 import bit.ihainan.me.bitunionforandroid.utils.Global;
-import bit.ihainan.me.bitunionforandroid.utils.HtmlUtil;
+import bit.ihainan.me.bitunionforandroid.utils.ui.HtmlUtil;
 
 public class ReplyListFragment extends Fragment {
     private final static String TAG = ReplyListFragment.class.getSimpleName();
@@ -140,16 +140,16 @@ public class ReplyListFragment extends Fragment {
         if (to > mReplyCount) to = mReplyCount - 1;
         Log.d(TAG, "refreshData >> FROM " + from + " TO " + to);
 
-        Api.getPostReplies(mContext, mTid, from, to,
+        BUApi.getPostReplies(mContext, mTid, from, to,
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
                         mSwipeRefreshLayout.setRefreshing(false);
 
-                        if (Api.checkStatus(response)) {
+                        if (BUApi.checkStatus(response)) {
                             try {
                                 JSONArray newListJson = response.getJSONArray("postlist");
-                                List<bit.ihainan.me.bitunionforandroid.models.ThreadReply> newThreads = Api.MAPPER.readValue(newListJson.toString(),
+                                List<bit.ihainan.me.bitunionforandroid.models.ThreadReply> newThreads = BUApi.MAPPER.readValue(newListJson.toString(),
                                         new TypeReference<List<ThreadReply>>() {
                                         });
 

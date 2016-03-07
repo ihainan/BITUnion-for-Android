@@ -1,7 +1,6 @@
 package bit.ihainan.me.bitunionforandroid.ui;
 
 import android.content.Intent;
-import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.Snackbar;
@@ -11,31 +10,22 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.Html;
 import android.util.Log;
-import android.view.ActionMode;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.deser.DataFormatReaders;
 import com.squareup.picasso.Picasso;
 import com.umeng.analytics.MobclickAgent;
 
 import net.opacapp.multilinecollapsingtoolbar.CollapsingToolbarLayout;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -47,10 +37,10 @@ import bit.ihainan.me.bitunionforandroid.adapters.PostListAdapter;
 import bit.ihainan.me.bitunionforandroid.models.ThreadReply;
 import bit.ihainan.me.bitunionforandroid.ui.assist.SimpleDividerItemDecoration;
 import bit.ihainan.me.bitunionforandroid.ui.assist.SwipeActivity;
-import bit.ihainan.me.bitunionforandroid.utils.Api;
+import bit.ihainan.me.bitunionforandroid.utils.network.BUApi;
 import bit.ihainan.me.bitunionforandroid.utils.CommonUtils;
 import bit.ihainan.me.bitunionforandroid.utils.Global;
-import bit.ihainan.me.bitunionforandroid.utils.HtmlUtil;
+import bit.ihainan.me.bitunionforandroid.utils.ui.HtmlUtil;
 import jp.wasabeef.picasso.transformations.BlurTransformation;
 
 public class ThreadDetailActivity extends SwipeActivity {
@@ -143,15 +133,15 @@ public class ThreadDetailActivity extends SwipeActivity {
 
     private void fillBackdrop() {
         if (!Global.ascendingOrder && CommonUtils.isWifi(this) || !Global.saveDataMode) {
-            Api.getPostReplies(this, mTid, 0, 1, new Response.Listener<JSONObject>() {
+            BUApi.getPostReplies(this, mTid, 0, 1, new Response.Listener<JSONObject>() {
                 @Override
                 public void onResponse(JSONObject response) {
-                    if (Api.checkStatus(response)) {
+                    if (BUApi.checkStatus(response)) {
 
                         try {
                             JSONArray newListJson = response.getJSONArray("postlist");
 
-                            List<bit.ihainan.me.bitunionforandroid.models.ThreadReply> threads = Api.MAPPER.readValue(newListJson.toString(),
+                            List<bit.ihainan.me.bitunionforandroid.models.ThreadReply> threads = BUApi.MAPPER.readValue(newListJson.toString(),
                                     new TypeReference<List<ThreadReply>>() {
                                     });
 
@@ -288,16 +278,16 @@ public class ThreadDetailActivity extends SwipeActivity {
     private void refreshData(final long from, final long to) {
         long newFrom = from < 0 ? 0 : from;
         long newTo = to > mReplyCount - 1 ? mReplyCount - 1 : to;
-        Api.getPostReplies(this, mTid, newFrom, newTo + 1,
+        BUApi.getPostReplies(this, mTid, newFrom, newTo + 1,
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
                         mSwipeRefreshLayout.setRefreshing(false);
 
-                        if (Api.checkStatus(response)) {
+                        if (BUApi.checkStatus(response)) {
                             try {
                                 JSONArray newListJson = response.getJSONArray("postlist");
-                                List<bit.ihainan.me.bitunionforandroid.models.ThreadReply> newThreads = Api.MAPPER.readValue(newListJson.toString(),
+                                List<bit.ihainan.me.bitunionforandroid.models.ThreadReply> newThreads = BUApi.MAPPER.readValue(newListJson.toString(),
                                         new TypeReference<List<ThreadReply>>() {
                                         });
 

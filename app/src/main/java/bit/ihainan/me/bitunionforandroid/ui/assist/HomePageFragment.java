@@ -27,7 +27,7 @@ import java.util.List;
 import bit.ihainan.me.bitunionforandroid.R;
 import bit.ihainan.me.bitunionforandroid.adapters.LatestThreadListAdapter;
 import bit.ihainan.me.bitunionforandroid.models.LatestThread;
-import bit.ihainan.me.bitunionforandroid.utils.Api;
+import bit.ihainan.me.bitunionforandroid.utils.network.BUApi;
 import bit.ihainan.me.bitunionforandroid.utils.Global;
 
 /**
@@ -105,14 +105,14 @@ public class HomePageFragment extends Fragment {
      * 更新列表数据
      */
     private void refreshData() {
-        Api.getHomePage(mContext, new Response.Listener<JSONObject>() {
+        BUApi.getHomePage(mContext, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
-                if (Api.checkStatus(response)) {
+                if (BUApi.checkStatus(response)) {
                     mSwipeRefreshLayout.setRefreshing(false);
                     try {
                         JSONArray newListJson = response.getJSONArray("newlist");
-                        List<LatestThread> newThreads = Api.MAPPER.readValue(newListJson.toString(),
+                        List<LatestThread> newThreads = BUApi.MAPPER.readValue(newListJson.toString(),
                                 new TypeReference<List<LatestThread>>() {
                                 });
                         mLatestThreads.clear();

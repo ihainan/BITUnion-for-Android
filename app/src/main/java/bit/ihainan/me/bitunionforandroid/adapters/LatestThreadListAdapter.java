@@ -27,7 +27,7 @@ import bit.ihainan.me.bitunionforandroid.models.ThreadReply;
 import bit.ihainan.me.bitunionforandroid.ui.ThreadDetailActivity;
 import bit.ihainan.me.bitunionforandroid.ui.viewholders.DefaultViewHolder;
 import bit.ihainan.me.bitunionforandroid.ui.viewholders.SelfieViewHolder;
-import bit.ihainan.me.bitunionforandroid.utils.Api;
+import bit.ihainan.me.bitunionforandroid.utils.network.BUApi;
 import bit.ihainan.me.bitunionforandroid.utils.CommonUtils;
 import bit.ihainan.me.bitunionforandroid.utils.Global;
 
@@ -259,13 +259,13 @@ public class LatestThreadListAdapter extends RecyclerView.Adapter<RecyclerView.V
         Picasso.with(mContext).load(R.drawable.background).into(holder.background);
         if (reply == null) {
             Log.i(TAG, "fillDefaultView >> 拉取回复数据");
-            Api.getPostReplies(mContext, latestThread.tid, 0, 1, new Response.Listener<JSONObject>() {
+            BUApi.getPostReplies(mContext, latestThread.tid, 0, 1, new Response.Listener<JSONObject>() {
                 @Override
                 public void onResponse(JSONObject response) {
                     try {
-                        if (Api.checkStatus(response)) {
+                        if (BUApi.checkStatus(response)) {
                             JSONArray newListJson = response.getJSONArray("postlist");
-                            List<ThreadReply> postReplies = Api.MAPPER.readValue(newListJson.toString(),
+                            List<ThreadReply> postReplies = BUApi.MAPPER.readValue(newListJson.toString(),
                                     new TypeReference<List<ThreadReply>>() {
                                     });
                             if (postReplies != null && postReplies.size() > 0) {

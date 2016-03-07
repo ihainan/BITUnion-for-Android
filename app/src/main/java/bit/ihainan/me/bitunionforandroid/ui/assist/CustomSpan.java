@@ -8,9 +8,7 @@ import android.graphics.Typeface;
 import android.net.Uri;
 import android.support.v4.content.ContextCompat;
 import android.text.Layout;
-import android.text.Selection;
 import android.text.Spannable;
-import android.text.Spanned;
 import android.text.TextPaint;
 import android.text.method.LinkMovementMethod;
 import android.text.style.ClickableSpan;
@@ -22,12 +20,11 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import bit.ihainan.me.bitunionforandroid.R;
 import bit.ihainan.me.bitunionforandroid.ui.UserInfoActivity;
+import bit.ihainan.me.bitunionforandroid.utils.network.BUApi;
 import bit.ihainan.me.bitunionforandroid.utils.CommonUtils;
-import bit.ihainan.me.bitunionforandroid.utils.Global;
 
 /**
  * Custom Span
@@ -107,11 +104,11 @@ public class CustomSpan {
         @Override
         public void onClick(View widget) {
             if (mUrl == null) return;
-            if (mUrl.startsWith(Global.IN_SCHOOL_BASE_URL)
-                    || mUrl.startsWith(Global.OUT_SCHOOL_BASE_URL)
+            if (mUrl.startsWith(BUApi.IN_SCHOOL_BASE_URL)
+                    || mUrl.startsWith(BUApi.OUT_SCHOOL_BASE_URL)
                     || mUrl.startsWith("/profile-username-")) {
-                String newUrl = mUrl.replace(Global.IN_SCHOOL_BASE_URL, "/");
-                newUrl = mUrl.replace(Global.OUT_SCHOOL_BASE_URL, "/");
+                String newUrl = mUrl.replace(BUApi.IN_SCHOOL_BASE_URL, "/");
+                newUrl = mUrl.replace(BUApi.OUT_SCHOOL_BASE_URL, "/");
                 String userName = CommonUtils.decode(newUrl.substring("/profile-username-".length(), mUrl.length() - 5), "GBK");
                 Intent intent = new Intent(mContext, UserInfoActivity.class);
                 intent.putExtra(UserInfoActivity.USER_NAME_TAG, userName);

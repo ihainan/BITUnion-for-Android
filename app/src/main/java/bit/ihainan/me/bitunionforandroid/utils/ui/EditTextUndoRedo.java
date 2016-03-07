@@ -1,4 +1,4 @@
-package bit.ihainan.me.bitunionforandroid.utils;
+package bit.ihainan.me.bitunionforandroid.utils.ui;
 
 
 import android.content.SharedPreferences;

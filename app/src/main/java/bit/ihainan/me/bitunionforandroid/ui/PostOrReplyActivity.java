@@ -18,7 +18,7 @@ import android.widget.ImageView;
 
 import bit.ihainan.me.bitunionforandroid.R;
 import bit.ihainan.me.bitunionforandroid.ui.assist.EmoticonFragment;
-import bit.ihainan.me.bitunionforandroid.utils.EditTextUndoRedo;
+import bit.ihainan.me.bitunionforandroid.utils.ui.EditTextUndoRedo;
 
 public class PostOrReplyActivity extends AppCompatActivity {
 

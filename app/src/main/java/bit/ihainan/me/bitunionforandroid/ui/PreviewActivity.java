@@ -3,7 +3,6 @@ package bit.ihainan.me.bitunionforandroid.ui;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Html;
 import android.text.SpannableString;
@@ -15,9 +14,8 @@ import android.widget.Toast;
 import bit.ihainan.me.bitunionforandroid.R;
 import bit.ihainan.me.bitunionforandroid.ui.assist.CustomSpan;
 import bit.ihainan.me.bitunionforandroid.ui.assist.SwipeActivity;
-import bit.ihainan.me.bitunionforandroid.utils.CommonUtils;
-import bit.ihainan.me.bitunionforandroid.utils.HtmlUtil;
-import bit.ihainan.me.bitunionforandroid.utils.PicassoImageGetter;
+import bit.ihainan.me.bitunionforandroid.utils.ui.HtmlUtil;
+import bit.ihainan.me.bitunionforandroid.utils.ui.PicassoImageGetter;
 
 public class PreviewActivity extends SwipeActivity {
     // TAG

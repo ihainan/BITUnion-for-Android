@@ -29,9 +29,10 @@ import bit.ihainan.me.bitunionforandroid.models.ThreadReply;
 import bit.ihainan.me.bitunionforandroid.ui.PostOrReplyActivity;
 import bit.ihainan.me.bitunionforandroid.ui.assist.CustomSpan;
 import bit.ihainan.me.bitunionforandroid.ui.viewholders.LoadingViewHolder;
+import bit.ihainan.me.bitunionforandroid.utils.network.BUApi;
 import bit.ihainan.me.bitunionforandroid.utils.CommonUtils;
 import bit.ihainan.me.bitunionforandroid.utils.Global;
-import bit.ihainan.me.bitunionforandroid.utils.PicassoImageGetter;
+import bit.ihainan.me.bitunionforandroid.utils.ui.PicassoImageGetter;
 
 /**
  * Just for test
@@ -161,7 +162,7 @@ public class PostListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         attachmentName.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String url = Global.getBaseURL() + CommonUtils.decode(reply.attachment);
+                String url = BUApi.getBaseURL() + CommonUtils.decode(reply.attachment);
                 Intent i = new Intent(Intent.ACTION_VIEW);
                 i.setData(Uri.parse(url));
                 mContext.startActivity(i);

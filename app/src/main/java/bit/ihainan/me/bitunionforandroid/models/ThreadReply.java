@@ -6,7 +6,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 import java.io.Serializable;
 
-import bit.ihainan.me.bitunionforandroid.utils.Api;
+import bit.ihainan.me.bitunionforandroid.utils.network.BUApi;
 
 /**
  * 回帖模型
@@ -56,7 +56,7 @@ public class ThreadReply implements Serializable {
     @Override
     public String toString() {
         try {
-            return Api.MAPPER.writeValueAsString(this);
+            return BUApi.MAPPER.writeValueAsString(this);
         } catch (JsonProcessingException e) {
             Log.e(TAG, "Failed to convert object to JSON string", e);
             return null;

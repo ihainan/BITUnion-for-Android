@@ -27,7 +27,7 @@ import java.io.IOException;
 
 import bit.ihainan.me.bitunionforandroid.R;
 import bit.ihainan.me.bitunionforandroid.models.Session;
-import bit.ihainan.me.bitunionforandroid.utils.Api;
+import bit.ihainan.me.bitunionforandroid.utils.network.BUApi;
 import bit.ihainan.me.bitunionforandroid.utils.Global;
 
 /**
@@ -63,10 +63,10 @@ public class LoginActivity extends AppCompatActivity {
                 mSwitchCompatOutNetwork.setChecked(true);
             else mSwitchCompatOutNetwork.setChecked(false);
         } else {
-            Global.currentEndPoint =
+            BUApi.currentEndPoint =
                     mSwitchCompatOutNetwork.isChecked() ?
-                            Global.OUT_SCHOOL_ENDPOINT :
-                            Global.IN_SCHOOL_ENDPOINT;
+                            BUApi.OUT_SCHOOL_ENDPOINT :
+                            BUApi.IN_SCHOOL_ENDPOINT;
         }
 
         mPassword.setOnEditorActionListener(new TextView.OnEditorActionListener() {
@@ -83,7 +83,7 @@ public class LoginActivity extends AppCompatActivity {
         mSwitchCompatOutNetwork.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                Global.currentEndPoint = isChecked ? Global.OUT_SCHOOL_ENDPOINT : Global.IN_SCHOOL_ENDPOINT;
+                BUApi.currentEndPoint = isChecked ? BUApi.OUT_SCHOOL_ENDPOINT : BUApi.IN_SCHOOL_ENDPOINT;
                 Global.networkType = isChecked ? Global.NETWORK_TYPE.OUT_SCHOOL : Global.NETWORK_TYPE.IN_SCHOOL;
                 Global.saveConfig(LoginActivity.this);
             }
@@ -177,16 +177,16 @@ public class LoginActivity extends AppCompatActivity {
      * @param password 密码
      */
     private void checkPassword(final String userName, final String password) {
-        Api.tryLogin(this, userName, password,
+        BUApi.tryLogin(this, userName, password,
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
                         Global.userName = mUsername.getText().toString();
                         if (mDialog != null) mDialog.dismiss();
                         // showProgress(false);
-                        if (Api.checkStatus(response)) {
+                        if (BUApi.checkStatus(response)) {
                             try {
-                                Global.userSession = Api.MAPPER.readValue(response.toString(), Session.class);
+                                Global.userSession = BUApi.MAPPER.readValue(response.toString(), Session.class);
                                 Global.password = mPassword.getText().toString();
                                 Global.saveConfig(LoginActivity.this);
                                 Intent intent = new Intent(LoginActivity.this, MainActivity.class);

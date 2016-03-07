@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.Map;
 
 import bit.ihainan.me.bitunionforandroid.R;
-import bit.ihainan.me.bitunionforandroid.utils.Emoticons;
+import bit.ihainan.me.bitunionforandroid.utils.ui.Emoticons;
 
 /**
  * Emoticon Adapter.

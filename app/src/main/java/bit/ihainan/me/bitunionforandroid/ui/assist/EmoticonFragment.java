@@ -10,7 +10,7 @@ import android.widget.GridView;
 
 import bit.ihainan.me.bitunionforandroid.R;
 import bit.ihainan.me.bitunionforandroid.adapters.EmoticonAdapter;
-import bit.ihainan.me.bitunionforandroid.utils.Emoticons;
+import bit.ihainan.me.bitunionforandroid.utils.ui.Emoticons;
 
 /**
  * Emoticon Fragment

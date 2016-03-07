@@ -30,7 +30,7 @@ import bit.ihainan.me.bitunionforandroid.ui.assist.CustomSpan;
 import bit.ihainan.me.bitunionforandroid.ui.assist.SwipeActivity;
 import bit.ihainan.me.bitunionforandroid.utils.CommonUtils;
 import bit.ihainan.me.bitunionforandroid.utils.Global;
-import bit.ihainan.me.bitunionforandroid.utils.PicassoImageGetter;
+import bit.ihainan.me.bitunionforandroid.utils.ui.PicassoImageGetter;
 
 public class UserInfoActivity extends SwipeActivity {
 

@@ -29,7 +29,7 @@ import bit.ihainan.me.bitunionforandroid.models.ForumListGroup;
 import bit.ihainan.me.bitunionforandroid.models.Thread;
 import bit.ihainan.me.bitunionforandroid.ui.assist.SimpleDividerItemDecoration;
 import bit.ihainan.me.bitunionforandroid.ui.assist.SwipeActivity;
-import bit.ihainan.me.bitunionforandroid.utils.Api;
+import bit.ihainan.me.bitunionforandroid.utils.network.BUApi;
 import bit.ihainan.me.bitunionforandroid.utils.Global;
 
 public class ThreadListActivity extends SwipeActivity {
@@ -202,16 +202,16 @@ public class ThreadListActivity extends SwipeActivity {
      * 更新列表数据
      */
     private void refreshData(final int from, int to) {
-        Api.getForumThreads(this, mFid, from, to,
+        BUApi.getForumThreads(this, mFid, from, to,
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
-                        if (Api.checkStatus(response)) {
+                        if (BUApi.checkStatus(response)) {
                             mSwipeRefreshLayout.setRefreshing(false);
 
                             try {
                                 JSONArray newListJson = response.getJSONArray("threadlist");
-                                List<bit.ihainan.me.bitunionforandroid.models.Thread> newThreads = Api.MAPPER.readValue(newListJson.toString(),
+                                List<bit.ihainan.me.bitunionforandroid.models.Thread> newThreads = BUApi.MAPPER.readValue(newListJson.toString(),
                                         new TypeReference<List<Thread>>() {
                                         });
 

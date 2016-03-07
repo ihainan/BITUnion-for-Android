@@ -1,4 +1,4 @@
-package bit.ihainan.me.bitunionforandroid.utils;
+package bit.ihainan.me.bitunionforandroid.utils.ui;
 
 import android.content.Context;
 import android.content.res.AssetManager;
@@ -7,11 +7,11 @@ import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.util.Log;
 
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 
 import bit.ihainan.me.bitunionforandroid.adapters.EmoticonAdapter;
+import bit.ihainan.me.bitunionforandroid.utils.CommonUtils;
 
 /**
  * This class maps emoticon strings to asset images

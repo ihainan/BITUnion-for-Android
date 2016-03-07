@@ -1,4 +1,4 @@
-package bit.ihainan.me.bitunionforandroid.utils;
+package bit.ihainan.me.bitunionforandroid.utils.ui;
 
 import android.content.Context;
 import android.content.res.Resources;
@@ -9,14 +9,14 @@ import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.text.Html;
 import android.util.Log;
-import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.squareup.picasso.Callback;
-import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 
 import java.io.IOException;
+
+import bit.ihainan.me.bitunionforandroid.utils.CommonUtils;
+import bit.ihainan.me.bitunionforandroid.utils.Global;
 
 /**
  * Picasso Image Getter

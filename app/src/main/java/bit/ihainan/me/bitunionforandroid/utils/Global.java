@@ -2,7 +2,6 @@ package bit.ihainan.me.bitunionforandroid.utils;
 
 import android.app.Application;
 import android.content.Context;
-import android.graphics.Typeface;
 import android.net.Uri;
 import android.util.Log;
 
@@ -19,6 +18,7 @@ import java.util.Map;
 import bit.ihainan.me.bitunionforandroid.models.ForumListGroup;
 import bit.ihainan.me.bitunionforandroid.models.Member;
 import bit.ihainan.me.bitunionforandroid.models.Session;
+import bit.ihainan.me.bitunionforandroid.utils.network.BUApi;
 
 /**
  * 系统设置与全局变量
@@ -92,7 +92,7 @@ public class Global extends Application {
 
         String networkTypeStr = Global.getCache(context).getAsString(PREF_NETWORK_TYPE);
         networkType = networkTypeStr == null ? NETWORK_TYPE.OUT_SCHOOL : NETWORK_TYPE.valueOf(networkTypeStr);
-        currentEndPoint = networkType == NETWORK_TYPE.OUT_SCHOOL ? Global.OUT_SCHOOL_ENDPOINT : Global.IN_SCHOOL_ENDPOINT;
+        BUApi.currentEndPoint = networkType == NETWORK_TYPE.OUT_SCHOOL ? BUApi.OUT_SCHOOL_ENDPOINT : BUApi.IN_SCHOOL_ENDPOINT;
 
         ascendingOrder = (Boolean) Global.getCache(context).getAsObject(PREF_REPLY_ORDER);
         if (ascendingOrder == null) ascendingOrder = true;
@@ -118,7 +118,6 @@ public class Global extends Application {
         Log.d(TAG, "printConf >> Upload Data：" + uploadData);
         Log.d(TAG, "printConf >> Save Data Mode：" + saveDataMode);
         Log.d(TAG, "printConf >> Debug Mode：" + debugMode);
-
     }
 
     public static void saveConfig(Context context) {
@@ -135,45 +134,10 @@ public class Global extends Application {
         printConf();
     }
 
-    // END POINT
-    public final static String IN_SCHOOL_BASE_URL = "http://www.bitunion.org/";
-    public final static String OUT_SCHOOL_BASE_URL = "http://out.bitunion.org/";
-    public final static String IN_SCHOOL_ENDPOINT = IN_SCHOOL_BASE_URL + "open_api/";
-    public final static String OUT_SCHOOL_ENDPOINT = OUT_SCHOOL_BASE_URL + "open_api/";
-    public static String currentEndPoint = OUT_SCHOOL_ENDPOINT;
-
-    public static String getBaseURL() {
-        if (currentEndPoint.startsWith(IN_SCHOOL_ENDPOINT)) return IN_SCHOOL_BASE_URL;
-        else return OUT_SCHOOL_BASE_URL;
-    }
-
-    public static String getLoginURL() {
-        return Global.currentEndPoint + "bu_logging.php";
-    }
-
-    public static String getHomePageURL() {
-        return Global.currentEndPoint + "bu_home.php";
-    }
-
-    public static String getUserInfoURL() {
-        return Global.currentEndPoint + "bu_profile.php";
-    }
-
-    public static String getThreadDetailURL() {
-        return Global.currentEndPoint + "bu_post.php";
-    }
-
-    public static String getThreadListURL() {
-        return Global.currentEndPoint + "bu_thread.php";
-    }
-
-    public static String getForumListURL() {
-        return Global.currentEndPoint + "bu_thread.php";
-    }
-
-    public static List<ForumListGroup> forumListGroupList;
 
     /* 论坛列表相关 */
+    public static List<ForumListGroup> forumListGroupList;
+
     public static void makeForumGroupList(Context context) {
         forumListGroupList = new ArrayList<ForumListGroup>();
 

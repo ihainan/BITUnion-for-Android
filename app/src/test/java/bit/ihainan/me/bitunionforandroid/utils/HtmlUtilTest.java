@@ -2,6 +2,8 @@ package bit.ihainan.me.bitunionforandroid.utils;
 
 import org.junit.Test;
 
+import bit.ihainan.me.bitunionforandroid.utils.ui.HtmlUtil;
+
 import static org.junit.Assert.*;
 
 public class HtmlUtilTest {

@@ -10,6 +10,7 @@ import android.util.Log;
 
 import bit.ihainan.me.bitunionforandroid.BuildConfig;
 import bit.ihainan.me.bitunionforandroid.R;
+import bit.ihainan.me.bitunionforandroid.utils.network.BUApi;
 import bit.ihainan.me.bitunionforandroid.utils.CommonUtils;
 import bit.ihainan.me.bitunionforandroid.utils.Global;
 
@@ -45,7 +46,7 @@ public class SettingFragment extends PreferenceFragment {
             public boolean onPreferenceChange(Preference preference, Object newValue) {
                 Boolean checked = (Boolean) newValue;
                 Global.networkType = checked ? Global.NETWORK_TYPE.OUT_SCHOOL : Global.NETWORK_TYPE.IN_SCHOOL;
-                Global.currentEndPoint = checked ? Global.OUT_SCHOOL_ENDPOINT : Global.IN_SCHOOL_ENDPOINT;
+                BUApi.currentEndPoint = checked ? BUApi.OUT_SCHOOL_ENDPOINT : BUApi.IN_SCHOOL_ENDPOINT;
                 Global.saveConfig(mContext);
                 return true;
             }

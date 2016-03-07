@@ -2,7 +2,6 @@ package bit.ihainan.me.bitunionforandroid.utils;
 
 import android.app.ActivityManager;
 import android.app.Dialog;
-import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -15,7 +14,6 @@ import android.support.v7.view.ContextThemeWrapper;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.Response;
@@ -33,7 +31,6 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
-import java.net.NetworkInterface;
 import java.net.URLDecoder;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -47,6 +44,7 @@ import java.util.Map;
 import bit.ihainan.me.bitunionforandroid.R;
 import bit.ihainan.me.bitunionforandroid.models.Member;
 import bit.ihainan.me.bitunionforandroid.ui.UserInfoActivity;
+import bit.ihainan.me.bitunionforandroid.utils.network.BUApi;
 
 /**
  * 通用工具类
@@ -333,14 +331,14 @@ public class CommonUtils {
             Log.i(TAG, "准备拉取用户 " + userName + " 的缓存数据");
 
             // 从服务器拉取数据并写入到缓存当中
-            Api.getUserInfo(context, -1,
+            BUApi.getUserInfo(context, -1,
                     userName,
                     new Response.Listener<JSONObject>() {
                         @Override
                         public void onResponse(JSONObject response) {
-                            if (Api.checkStatus(response)) {
+                            if (BUApi.checkStatus(response)) {
                                 try {
-                                    Member newMember = Api.MAPPER.readValue(
+                                    Member newMember = BUApi.MAPPER.readValue(
                                             response.getJSONObject("memberinfo").toString(),
                                             Member.class);
 
@@ -384,8 +382,8 @@ public class CommonUtils {
             return ori;
         }
 
-        originalURL = originalURL.replaceAll("^images/", Global.getBaseURL() + "images/");
-        originalURL = originalURL.replaceAll("^../images", Global.getBaseURL() + "images/");
+        originalURL = originalURL.replaceAll("^images/", BUApi.getBaseURL() + "images/");
+        originalURL = originalURL.replaceAll("^../images", BUApi.getBaseURL() + "images/");
 
         // 回帖头像
         if (ori.startsWith("<embed src=") || ori.startsWith("<img src=")) {
@@ -400,19 +398,19 @@ public class CommonUtils {
         // 完整地址和不完整地址¡¡
         if (originalURL.startsWith("http"))
             originalURL = Global.isInSchool() ? originalURL : originalURL.replace("www", "out");
-        else originalURL = Global.getBaseURL() + originalURL;
+        else originalURL = BUApi.getBaseURL() + originalURL;
 
-        originalURL = originalURL.replaceAll("(http://)?(www|v6|kiss|out).bitunion.org/", Global.getBaseURL());
-        originalURL = originalURL.replaceAll("http://bitunion.org/", Global.getBaseURL());
+        originalURL = originalURL.replaceAll("(http://)?(www|v6|kiss|out).bitunion.org/", BUApi.getBaseURL());
+        originalURL = originalURL.replaceAll("http://bitunion.org/", BUApi.getBaseURL());
 
         // 图片
-        originalURL = originalURL.replaceAll("^images/", Global.getBaseURL() + "images/");
+        originalURL = originalURL.replaceAll("^images/", BUApi.getBaseURL() + "images/");
 
         // 特殊情况
         if (originalURL.endsWith(",120,120")) originalURL = originalURL.replace(",120,120", "");
 
         if (originalURL.contains("aid="))
-            originalURL = Global.getBaseURL() + "images/standard/noavatar.gif";
+            originalURL = BUApi.getBaseURL() + "images/standard/noavatar.gif";
         Log.d(TAG, "getRealImageURL >> " + ori + " - " + originalURL);
         return originalURL;
     }
