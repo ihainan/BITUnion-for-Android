@@ -19,7 +19,7 @@ import bit.ihainan.me.bitunionforandroid.utils.Global;
  */
 public class ExtraApi {
     public final static String TAG = ExtraApi.class.getSimpleName();
-    public final static String BASE_API = "http://192.168.31.115:8080/api/";
+    public final static String BASE_API = "http://ali.ihainan.me:8080/api/";
     public final static String VERSION = "v1";
     public final static String ENDPOINT = BASE_API + VERSION;
 
@@ -67,7 +67,6 @@ public class ExtraApi {
                 "DELETE_FAVOR", parameters, listener, errorListener);
     }
 
-
     /**
      * 获取收藏列表
      *
@@ -84,7 +83,6 @@ public class ExtraApi {
         makeRequest(Request.Method.GET, context, ADD_FAVORITE_ENDPOINT + "/list/" + username + "?from=" + from + "&to=" + to,
                 "GET_FAVOR_STATUS", parameters, listener, errorListener);
     }
-
 
     /**
      * 删除收藏状态

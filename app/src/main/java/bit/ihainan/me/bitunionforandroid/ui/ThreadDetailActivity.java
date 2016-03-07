@@ -14,6 +14,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -24,6 +25,7 @@ import com.umeng.analytics.MobclickAgent;
 import net.opacapp.multilinecollapsingtoolbar.CollapsingToolbarLayout;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -40,6 +42,7 @@ import bit.ihainan.me.bitunionforandroid.ui.assist.SwipeActivity;
 import bit.ihainan.me.bitunionforandroid.utils.network.BUApi;
 import bit.ihainan.me.bitunionforandroid.utils.CommonUtils;
 import bit.ihainan.me.bitunionforandroid.utils.Global;
+import bit.ihainan.me.bitunionforandroid.utils.network.ExtraApi;
 import bit.ihainan.me.bitunionforandroid.utils.ui.HtmlUtil;
 import jp.wasabeef.picasso.transformations.BlurTransformation;
 
@@ -112,7 +115,7 @@ public class ThreadDetailActivity extends SwipeActivity {
 
         // Cover
         mBackdrop = (ImageView) findViewById(R.id.backdrop);
-        fillBackdrop();
+        // fillBackdrop();
 
         // Setup RecyclerView
         mRecyclerView = (RecyclerView) findViewById(R.id.detail_recycler_view);
@@ -171,10 +174,14 @@ public class ThreadDetailActivity extends SwipeActivity {
         }
     }
 
+    private MenuItem mFavorItem;
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.thread_detail_menu, menu);
         setMenuIcon(menu.findItem(R.id.change_order));
+        mFavorItem = menu.findItem(R.id.favor);
+        getFavoriteStatus();
         return true;
     }
 
@@ -184,6 +191,8 @@ public class ThreadDetailActivity extends SwipeActivity {
         else
             menuItem.setIcon(R.drawable.ic_high_priority_white_24dp);
     }
+
+    private boolean favorClickable = true;
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -196,9 +205,138 @@ public class ThreadDetailActivity extends SwipeActivity {
 
                 reloadData();
                 break;
+
+            case R.id.favor:
+                if (favorClickable) {
+                    favorClickable = !favorClickable;   // 不允许重复点击
+                    hasFavor = !hasFavor;
+                    if (hasFavor) {
+                        // 之前是删除，想要添加
+                        mFavorItem.setIcon(R.drawable.ic_favorite_white_24dp);
+                        mFavorItem.setTitle("取消收藏");
+                        addFavorite();
+                    } else {
+                        mFavorItem.setTitle("添加收藏");
+                        mFavorItem.setIcon(R.drawable.ic_favorite_border_white_24dp);
+                        delFavorite();
+                    }
+                }
+                break;
         }
 
         return true;
+    }
+
+    public boolean hasFavor = false;
+
+
+    private void getFavoriteStatus() {
+        ExtraApi.getFavoriteStatus(this, mTid, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                try {
+                    if (response.getInt("code") == 0) {
+                        hasFavor = response.getBoolean("data");
+                        CommonUtils.debugToast(ThreadDetailActivity.this, "hasFavor = " + hasFavor);
+                        if (hasFavor) {
+                            mFavorItem.setTitle("取消收藏");
+                            mFavorItem.setIcon(R.drawable.ic_favorite_white_24dp);
+                        } else {
+                            mFavorItem.setTitle("添加收藏");
+                            mFavorItem.setIcon(R.drawable.ic_favorite_border_white_24dp);
+                        }
+                    } else {
+                        String message = "获取收藏状态失败，失败原因 " + response.getString("message");
+                        if (Global.debugMode) {
+                            CommonUtils.debugToast(ThreadDetailActivity.this, message);
+                        }
+                        Log.w(TAG, message);
+                    }
+                } catch (JSONException e) {
+                    Log.e(TAG, getString(R.string.error_parse_json) + ": " + response, e);
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.e(TAG, "getFavoriteStatus >> " + getString(R.string.error_network), error);
+            }
+        });
+    }
+
+    private Response.Listener mFavorListener = new Response.Listener<JSONObject>() {
+        @Override
+        public void onResponse(JSONObject response) {
+            favorClickable = !favorClickable;
+            try {
+                if (response.getInt("code") == 0) {
+                    // 成功添加 / 删除收藏，皆大欢喜
+                    String message = hasFavor ? "添加收藏成功" : "删除收藏成功";
+                    Log.d(TAG, "mFavorListener >> " + message);
+                    Toast.makeText(ThreadDetailActivity.this, message, Toast.LENGTH_SHORT).show();
+                } else {
+                    // Oh no!!!
+                    String message = (hasFavor ? "添加" : "删除") + "收藏失败";
+                    String debugMessage = message + " - " + response.get("message");
+                    if (Global.debugMode) {
+                        CommonUtils.debugToast(ThreadDetailActivity.this, debugMessage);
+                    } else {
+                        Toast.makeText(ThreadDetailActivity.this, message, Toast.LENGTH_SHORT).show();
+                    }
+
+                    Log.w(TAG, debugMessage);
+
+                    hasFavor = !hasFavor;
+                    if (hasFavor) {
+                        mFavorItem.setIcon(R.drawable.ic_favorite_white_24dp);
+                        mFavorItem.setTitle("取消收藏");
+                    } else {
+                        mFavorItem.setTitle("添加收藏");
+                        mFavorItem.setIcon(R.drawable.ic_favorite_border_white_24dp);
+                    }
+                }
+            } catch (JSONException e) {
+                String message = (hasFavor ? "添加" : "删除") + "收藏失败";
+                String debugMessage = message + " - " + getString(R.string.error_parse_json) + " " + response;
+                if (Global.debugMode) {
+                    CommonUtils.debugToast(ThreadDetailActivity.this, debugMessage);
+                } else {
+                    Toast.makeText(ThreadDetailActivity.this, message, Toast.LENGTH_SHORT).show();
+                }
+                Log.e(TAG, debugMessage, e);
+
+                hasFavor = !hasFavor;
+                if (hasFavor) {
+                    mFavorItem.setIcon(R.drawable.ic_favorite_white_24dp);
+                    mFavorItem.setTitle("取消收藏");
+                } else {
+                    mFavorItem.setTitle("添加收藏");
+                    mFavorItem.setIcon(R.drawable.ic_favorite_border_white_24dp);
+                }
+            }
+        }
+    };
+
+    private Response.ErrorListener mFavorErrorListener = new Response.ErrorListener() {
+        @Override
+        public void onErrorResponse(VolleyError error) {
+            String message = (hasFavor ? "取消收藏失败，" : "添加收藏失败") + "无法连接到服务器";
+            Snackbar.make(mRecyclerView, message, Snackbar.LENGTH_INDEFINITE).setAction("RETRY", new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (hasFavor) addFavorite();
+                    else delFavorite();
+                }
+            }).show();
+        }
+    };
+
+    private void addFavorite() {
+        ExtraApi.addFavorite(this, mTid, mThreadName, mAuthorName, mFavorListener, mFavorErrorListener);
+    }
+
+    private void delFavorite() {
+        ExtraApi.delFavorite(this, mTid, mFavorListener, mFavorErrorListener);
     }
 
     private void setupRecyclerView() {
