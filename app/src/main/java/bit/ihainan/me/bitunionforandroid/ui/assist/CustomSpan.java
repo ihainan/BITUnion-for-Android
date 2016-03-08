@@ -22,7 +22,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import bit.ihainan.me.bitunionforandroid.R;
-import bit.ihainan.me.bitunionforandroid.ui.UserInfoActivity;
+import bit.ihainan.me.bitunionforandroid.ui.OldUserInfoActivity;
 import bit.ihainan.me.bitunionforandroid.utils.network.BUApi;
 import bit.ihainan.me.bitunionforandroid.utils.CommonUtils;
 
@@ -110,8 +110,8 @@ public class CustomSpan {
                 String newUrl = mUrl.replace(BUApi.IN_SCHOOL_BASE_URL, "/");
                 newUrl = mUrl.replace(BUApi.OUT_SCHOOL_BASE_URL, "/");
                 String userName = CommonUtils.decode(newUrl.substring("/profile-username-".length(), mUrl.length() - 5), "GBK");
-                Intent intent = new Intent(mContext, UserInfoActivity.class);
-                intent.putExtra(UserInfoActivity.USER_NAME_TAG, userName);
+                Intent intent = new Intent(mContext, OldUserInfoActivity.class);
+                intent.putExtra(OldUserInfoActivity.USER_NAME_TAG, userName);
                 mContext.startActivity(intent);
             } else {
                 Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(mUrl));

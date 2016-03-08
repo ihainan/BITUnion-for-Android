@@ -43,7 +43,7 @@ import java.util.Map;
 
 import bit.ihainan.me.bitunionforandroid.R;
 import bit.ihainan.me.bitunionforandroid.models.Member;
-import bit.ihainan.me.bitunionforandroid.ui.UserInfoActivity;
+import bit.ihainan.me.bitunionforandroid.ui.OldUserInfoActivity;
 import bit.ihainan.me.bitunionforandroid.utils.network.BUApi;
 
 /**
@@ -227,9 +227,9 @@ public class CommonUtils {
         view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(context, UserInfoActivity.class);
-                intent.putExtra(UserInfoActivity.USER_ID_TAG, userId);
-                intent.putExtra(UserInfoActivity.USER_NAME_TAG, userName);
+                Intent intent = new Intent(context, OldUserInfoActivity.class);
+                intent.putExtra(OldUserInfoActivity.USER_ID_TAG, userId);
+                intent.putExtra(OldUserInfoActivity.USER_NAME_TAG, userName);
                 context.startActivity(intent);
             }
         });

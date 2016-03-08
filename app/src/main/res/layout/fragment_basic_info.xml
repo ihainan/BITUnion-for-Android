@@ -1,13 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    tools:showIn="@layout/activity_old_user_info"
-    app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    >
+    android:layout_height="wrap_content">
 
     <android.support.v4.widget.SwipeRefreshLayout
         android:id="@+id/swipe_refresh_layout"
@@ -19,11 +15,9 @@
             android:id="@+id/profile_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginTop="@dimen/activity_horizontal_margin"
             android:clipToPadding="false"
             android:padding="@dimen/activity_horizontal_margin"
-            tools:context="com.letsnurture.ln_202.coordinatorlayoutpart1.ScrollingActivity">
-
+            app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -234,7 +228,6 @@
                         android:id="@+id/profile_website_layout"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:background="?attr/selectableItemBackground"
                         android:clickable="true"
                         android:padding="@dimen/activity_horizontal_margin">
 

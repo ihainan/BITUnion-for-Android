@@ -46,9 +46,6 @@ public class FocusFragment extends Fragment {
             ab.setDisplayHomeAsUpEnabled(true);
 
             // UI references
-            final LinearLayoutManager layoutManager = new LinearLayoutManager(mContext);
-            layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-
             mTabLayout = (TabLayout) mRootView.findViewById(R.id.tab_layout);
             mPager = (ViewPager) mRootView.findViewById(R.id.pager);
             mPager.setAdapter(new PagerAdapter(getFragmentManager(), mContext));
