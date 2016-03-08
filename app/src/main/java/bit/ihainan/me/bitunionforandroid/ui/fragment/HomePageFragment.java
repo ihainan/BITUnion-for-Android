@@ -57,7 +57,6 @@ public class HomePageFragment extends Fragment {
             // UI references
             mToolbar = (Toolbar) mRootView.findViewById(R.id.toolbar);
             ((AppCompatActivity) getActivity()).setSupportActionBar(mToolbar);
-            mToolbar.setTitle(R.string.action_home);
             final ActionBar ab = ((AppCompatActivity) getActivity()).getSupportActionBar();
             ab.setHomeAsUpIndicator(R.drawable.ic_menu_white_24dp);
             ab.setDisplayHomeAsUpEnabled(true);
@@ -78,6 +77,13 @@ public class HomePageFragment extends Fragment {
         }
 
         return mRootView;
+    }
+
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        mToolbar.setTitle(R.string.action_home);
     }
 
     @Override

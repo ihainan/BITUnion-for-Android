@@ -19,7 +19,6 @@ import android.widget.Toast;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.squareup.picasso.Picasso;
 import com.umeng.analytics.MobclickAgent;
 
 import net.opacapp.multilinecollapsingtoolbar.CollapsingToolbarLayout;
@@ -39,12 +38,11 @@ import bit.ihainan.me.bitunionforandroid.adapters.PostListAdapter;
 import bit.ihainan.me.bitunionforandroid.models.ThreadReply;
 import bit.ihainan.me.bitunionforandroid.ui.assist.SimpleDividerItemDecoration;
 import bit.ihainan.me.bitunionforandroid.ui.assist.SwipeActivity;
-import bit.ihainan.me.bitunionforandroid.utils.network.BUApi;
 import bit.ihainan.me.bitunionforandroid.utils.CommonUtils;
 import bit.ihainan.me.bitunionforandroid.utils.Global;
+import bit.ihainan.me.bitunionforandroid.utils.network.BUApi;
 import bit.ihainan.me.bitunionforandroid.utils.network.ExtraApi;
 import bit.ihainan.me.bitunionforandroid.utils.ui.HtmlUtil;
-import jp.wasabeef.picasso.transformations.BlurTransformation;
 
 public class ThreadDetailActivity extends SwipeActivity {
     private final static String TAG = ThreadDetailActivity.class.getSimpleName();
@@ -56,6 +54,7 @@ public class ThreadDetailActivity extends SwipeActivity {
     private LinearLayoutManager mLayoutManager = new LinearLayoutManager(this);
     private CollapsingToolbarLayout mCollapsingToolbar;
     private ImageView mBackdrop;
+    private Toolbar mToolbar;
 
     // Bundle tags
     public final static String THREAD_ID_TAG = "THREAD_ID_TAG";
@@ -67,13 +66,6 @@ public class ThreadDetailActivity extends SwipeActivity {
         Intent intent = getIntent();
         Bundle bundle = intent.getExtras();
         mTid = bundle.getLong(THREAD_ID_TAG);
-        mThreadName = bundle.getString(THREAD_NAME_TAG);
-        mReplyCount = bundle.getLong(THREAD_REPLY_COUNT_TAG);
-        mAuthorName = bundle.getString(THREAD_AUTHOR_NAME_TAG);
-        if (mTid == null) {
-            Global.readConfig(this);
-            mTid = 10609296l;
-        }
     }
 
     // Data
@@ -88,90 +80,90 @@ public class ThreadDetailActivity extends SwipeActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_thread_detail);
-        final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+        mToolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(mToolbar);
 
         // Get thread name and id
         getExtra();
 
         // Toolbar
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+        mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 finish();
             }
         });
 
-        // Title
-        mCollapsingToolbar = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
-        mCollapsingToolbar.setTitle(Html.fromHtml(mThreadName));
-        mCollapsingToolbar.setExpandedTitleTextAppearance(R.style.ExpandedAppBar);
-
-        if (mThreadName == null || mReplyCount == null) {
-            // TODO: 获取标题信息和回复数目信息
-        } else {
-        }
-
-        // Cover
-        mBackdrop = (ImageView) findViewById(R.id.backdrop);
-        // fillBackdrop();
-
-        // Setup RecyclerView
-        mRecyclerView = (RecyclerView) findViewById(R.id.detail_recycler_view);
+        //  RecyclerView & SwipeRefreshLayout
         mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.home_swipe_refresh_layout);
-        toolbar.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mRecyclerView.smoothScrollToPosition(0);
-            }
-        });
-        setupRecyclerView();
-        setupSwipeRefreshLayout();
+        mRecyclerView = (RecyclerView) findViewById(R.id.detail_recycler_view);
+
+        // Get replies count / thread subject / author name and update ui
+        getBasicData();
 
         // Swipe to back
         setSwipeAnyWhere(false);
     }
 
+    private void getBasicData() {
+        BUApi.getPostReplies(this, mTid, 0, 1, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                if (BUApi.checkStatus(response)) {
+                    try {
+                        JSONArray newListJson = response.getJSONArray("postlist");
+                        mReplyCount = (long) response.getInt("total_reply_count") + 1;
 
-    private void fillBackdrop() {
-        if (!Global.ascendingOrder && CommonUtils.isWifi(this) || !Global.saveDataMode) {
-            BUApi.getPostReplies(this, mTid, 0, 1, new Response.Listener<JSONObject>() {
-                @Override
-                public void onResponse(JSONObject response) {
-                    if (BUApi.checkStatus(response)) {
+                        List<bit.ihainan.me.bitunionforandroid.models.ThreadReply> threads = BUApi.MAPPER.readValue(newListJson.toString(),
+                                new TypeReference<List<ThreadReply>>() {
+                                });
 
-                        try {
-                            JSONArray newListJson = response.getJSONArray("postlist");
-
-                            List<bit.ihainan.me.bitunionforandroid.models.ThreadReply> threads = BUApi.MAPPER.readValue(newListJson.toString(),
-                                    new TypeReference<List<ThreadReply>>() {
-                                    });
-
-                            if (threads.size() > 0) {
-                                ThreadReply firstReply = threads.get(0);
-                                if (firstReply.attachext != null && Integer.valueOf(firstReply.filesize) / 1000 <= 300 && (firstReply.attachext.equals("png") || firstReply.attachext.equals("jpg")
-                                        || firstReply.attachext.equals("jpeg"))) {
-                                    String imageURL = CommonUtils.getRealImageURL(CommonUtils.decode(firstReply.attachment));
-                                    Picasso.with(ThreadDetailActivity.this).load(imageURL).transform(new BlurTransformation(ThreadDetailActivity.this)).into(mBackdrop);
-                                }
-                            }
-                        } catch (Exception e) {
-                            String message = getString(R.string.error_parse_json) + "\n" + response;
-                            Log.e(TAG, message, e);
-                            CommonUtils.debugToast(ThreadDetailActivity.this, message);
+                        if (threads.size() > 0) {
+                            ThreadReply firstReply = threads.get(0);
+                            mThreadName = CommonUtils.decode(firstReply.subject);
+                            mAuthorName = CommonUtils.decode(firstReply.author);
+                            fillViews();
                         }
+                    } catch (Exception e) {
+                        String message = getString(R.string.error_parse_json) + "\n" + response;
+                        Log.e(TAG, message, e);
+                        CommonUtils.debugToast(ThreadDetailActivity.this, message);
                     }
                 }
-            }, new Response.ErrorListener() {
-                @Override
-                public void onErrorResponse(VolleyError error) {
-                    String message = getString(R.string.error_network);
-                    Log.e(TAG, message, error);
-                    CommonUtils.debugToast(ThreadDetailActivity.this, message);
-                }
-            });
-        }
+
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                String message = getString(R.string.error_network);
+                Log.e(TAG, message, error);
+                CommonUtils.debugToast(ThreadDetailActivity.this, message);
+
+            }
+        });
+
+    }
+
+
+    private void fillViews() {
+        getFavoriteStatus();
+
+        setupRecyclerView();
+        setupSwipeRefreshLayout();
+
+        // Title
+        mCollapsingToolbar = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
+        mCollapsingToolbar.setTitle(Html.fromHtml(mThreadName));
+        mCollapsingToolbar.setExpandedTitleTextAppearance(R.style.ExpandedAppBar);
+
+        // Setup RecyclerView
+        mToolbar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mRecyclerView.smoothScrollToPosition(0);
+            }
+        });
     }
 
     private MenuItem mFavorItem;
@@ -181,7 +173,6 @@ public class ThreadDetailActivity extends SwipeActivity {
         getMenuInflater().inflate(R.menu.thread_detail_menu, menu);
         setMenuIcon(menu.findItem(R.id.change_order));
         mFavorItem = menu.findItem(R.id.favor);
-        getFavoriteStatus();
         return true;
     }
 
@@ -272,6 +263,7 @@ public class ThreadDetailActivity extends SwipeActivity {
                 if (response.getInt("code") == 0) {
                     // 成功添加 / 删除收藏，皆大欢喜
                     String message = hasFavor ? "添加收藏成功" : "删除收藏成功";
+                    Global.hasUpdateFavor = true;
                     Log.d(TAG, "mFavorListener >> " + message);
                     Toast.makeText(ThreadDetailActivity.this, message, Toast.LENGTH_SHORT).show();
                 } else {
@@ -360,7 +352,7 @@ public class ThreadDetailActivity extends SwipeActivity {
                 super.onScrolled(recyclerView, dx, dy);
 
                 int mLastVisibleItem = mLayoutManager.findLastVisibleItemPosition();
-                if (dy > 0 && mLastVisibleItem >= mThreadPostList.size() - 2 && !mIsLoading) {
+                if (dy > 0 && mLastVisibleItem >= mThreadPostList.size() - Global.LOADING_REPLIES_COUNT / 2 && !mIsLoading) {
                     loadMore(true);
                 }
             }
@@ -450,7 +442,8 @@ public class ThreadDetailActivity extends SwipeActivity {
                                 }
 
                                 // 更新 RecyclerView
-                                if (!Global.ascendingOrder) Collections.reverse(newThreads); // 倒序
+                                if (!Global.ascendingOrder)
+                                    Collections.reverse(newThreads); // 倒序
                                 mCurrentPosition += (Global.ascendingOrder ? Global.LOADING_REPLIES_COUNT : -Global.LOADING_REPLIES_COUNT);
                                 mThreadPostList.addAll(newThreads);
                                 mAdapter.notifyDataSetChanged();

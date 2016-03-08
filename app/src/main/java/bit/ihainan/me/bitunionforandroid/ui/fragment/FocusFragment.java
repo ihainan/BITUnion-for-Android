@@ -41,7 +41,6 @@ public class FocusFragment extends Fragment {
 
             mToolbar = (Toolbar) mRootView.findViewById(R.id.toolbar);
             ((AppCompatActivity) getActivity()).setSupportActionBar(mToolbar);
-            mToolbar.setTitle(R.string.action_focus);
             final ActionBar ab = ((AppCompatActivity) getActivity()).getSupportActionBar();
             ab.setHomeAsUpIndicator(R.drawable.ic_menu_white_24dp);
             ab.setDisplayHomeAsUpEnabled(true);
@@ -62,11 +61,13 @@ public class FocusFragment extends Fragment {
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        mToolbar.setTitle(R.string.action_focus);
     }
 
     public class PagerAdapter extends FragmentPagerAdapter {
         final int PAGE_COUNT = 2;
-        private String tabTitles[] = new String[]{"主题", "动态"};
+        private String tabTitles[] = new String[]{"动态", "收藏"};
         private Context context;
 
         public PagerAdapter(FragmentManager fm, Context context) {
@@ -83,7 +84,7 @@ public class FocusFragment extends Fragment {
 
         @Override
         public Fragment getItem(int position) {
-            return new FocusListFragment();
+            return new FavoriteListFragment();
         }
 
         @Override

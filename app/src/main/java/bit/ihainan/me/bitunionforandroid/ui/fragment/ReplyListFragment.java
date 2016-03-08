@@ -35,7 +35,6 @@ public class ReplyListFragment extends Fragment {
     private final static String TAG = ReplyListFragment.class.getSimpleName();
     private Context mContext;
 
-
     // UI references
     private RecyclerView mRecyclerView;
     private View mRootView;
@@ -46,7 +45,6 @@ public class ReplyListFragment extends Fragment {
     public final static String THREAD_AUTHOR_NAME_TAG = "THREAD_AUTHOR_NAME_TAG";
     public final static String THREAD_PAGE_POSITION = "THREAD_PAGE_POSITION";
     public final static String THREAD_REPLY_COUNT = "THREAD_REPLY_COUNT";
-
 
     // Data
     private int mTid, mPagePosition, mReplyCount;

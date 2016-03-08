@@ -29,6 +29,7 @@
             android:minHeight="?attr/actionBarSize"
             android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
             app:tabGravity="fill"
+            app:tabIndicatorColor="@android:color/white"
             app:tabMode="fixed" />
     </android.support.design.widget.AppBarLayout>
 

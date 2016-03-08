@@ -1,10 +1,12 @@
 package bit.ihainan.me.bitunionforandroid.utils.network;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.HashMap;
@@ -25,6 +27,16 @@ public class ExtraApi {
 
     /* 收藏相关接口 */
     public final static String ADD_FAVORITE_ENDPOINT = ENDPOINT + "/favorite";
+
+    public static boolean checkStatus(JSONObject response) {
+        try {
+            if (response.getInt("code") == 0) return true;
+            else return false;
+        } catch (JSONException e) {
+            Log.e(TAG, "Fail to parse JSON object " + response, e);
+            return false;
+        }
+    }
 
     /**
      * 收藏帖子

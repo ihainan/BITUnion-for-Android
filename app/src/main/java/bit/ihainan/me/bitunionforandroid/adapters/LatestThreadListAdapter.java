@@ -112,9 +112,6 @@ public class LatestThreadListAdapter extends RecyclerView.Adapter<RecyclerView.V
             public void onClick(View v) {
                 Intent intent = new Intent(mContext, ThreadDetailActivity.class);
                 intent.putExtra(ThreadDetailActivity.THREAD_ID_TAG, latestThread.tid);
-                intent.putExtra(ThreadDetailActivity.THREAD_NAME_TAG, CommonUtils.decode(latestThread.pname));
-                intent.putExtra(ThreadDetailActivity.THREAD_REPLY_COUNT_TAG, latestThread.tid_sum + 1);
-                intent.putExtra(ThreadDetailActivity.THREAD_AUTHOR_NAME_TAG, CommonUtils.decode(latestThread.author));
                 mContext.startActivity(intent);
             }
         });
@@ -199,9 +196,6 @@ public class LatestThreadListAdapter extends RecyclerView.Adapter<RecyclerView.V
             public void onClick(View v) {
                 Intent intent = new Intent(mContext, ThreadDetailActivity.class);
                 intent.putExtra(ThreadDetailActivity.THREAD_ID_TAG, latestThread.tid);
-                intent.putExtra(ThreadDetailActivity.THREAD_NAME_TAG, CommonUtils.decode(latestThread.pname));
-                intent.putExtra(ThreadDetailActivity.THREAD_REPLY_COUNT_TAG, latestThread.tid_sum + 1);
-                intent.putExtra(ThreadDetailActivity.THREAD_AUTHOR_NAME_TAG, CommonUtils.decode(latestThread.author));
                 mContext.startActivity(intent);
             }
         });

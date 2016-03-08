@@ -55,12 +55,15 @@ public class Global extends Application {
     public final static int HOT_TOPIC_THREAD = 30; // 热门帖子阈值
     public final static int LOADING_COUNT = 10; // 一次最多 Loading 的帖子数目
     public final static int LOADING_REPLIES_COUNT = 10; // 一次最多 Loading 的回复数目
+    public final static int LOADING_FAVORITES_COUNT = 10; // 一次最多 Loading 的回复数目
+
     public final static int RETRY_LIMIT = 3;    // 重新登录尝试次数
     public final static int SWIPE_LAYOUT_TRIGGER_DISTANCE = 400;    // 手指在屏幕下拉多少距离会触发下拉刷新
     public static Boolean debugMode = true;  // 是否启动 debug 模式
     public static Boolean saveDataMode = false; // 是否启动省流量模式
     public static Boolean uploadData = true;    // 是否自动上传数据
     public static Boolean ascendingOrder = true; // 是否按照升序排序
+    public static boolean hasUpdateFavor = false;
 
     public enum NETWORK_TYPE {
         IN_SCHOOL,
