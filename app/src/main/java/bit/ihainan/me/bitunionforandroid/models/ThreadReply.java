@@ -52,6 +52,8 @@ public class ThreadReply implements Serializable {
     public String attachimg;
     public String exif; // EXIF 信息
     public String deviceName;
+    public int level;
+    public String dt_created;
 
     @Override
     public String toString() {

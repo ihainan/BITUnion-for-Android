@@ -130,4 +130,23 @@ public class ExtraApi {
                 new JSONObject(parameters), listener, errorListener);
         RequestQueueManager.getInstance(context).addToRequestQueue(request, tag);
     }
+
+    /* 关注相关接口 */
+    public final static String ADD_FOLLOW_ENDPOINT = ENDPOINT + "/follow";
+
+    /**
+     * 获取关注动态列表
+     *
+     * @param context       上下文
+     * @param listener      response 事件监听器
+     * @param errorListener error 事件监听器
+     */
+    public final static void getFollowNewsList(Context context,
+                                               long from, long to,
+                                               Response.Listener<JSONObject> listener,
+                                               Response.ErrorListener errorListener) {
+        Map<String, Object> parameters = new HashMap();
+        makeRequest(Request.Method.GET, context, ADD_FOLLOW_ENDPOINT + "/new/" + Global.userName + "?from=" + from + "&to=" + to,
+                "GET_FOLLOW_NEWS_LIST", parameters, listener, errorListener);
+    }
 }

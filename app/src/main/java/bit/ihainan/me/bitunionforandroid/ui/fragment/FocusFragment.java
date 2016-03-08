@@ -81,7 +81,8 @@ public class FocusFragment extends Fragment {
 
         @Override
         public Fragment getItem(int position) {
-            return new FavoriteListFragment();
+            if (position == 0) return new FollowNewsListFragment();
+            else return new FavoriteListFragment();
         }
 
         @Override
