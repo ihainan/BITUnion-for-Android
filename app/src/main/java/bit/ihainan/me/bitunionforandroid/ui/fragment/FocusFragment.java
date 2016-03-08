@@ -4,10 +4,9 @@ import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Context;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
-import android.support.v13.app.FragmentStatePagerAdapter;
+import android.support.v13.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -53,16 +52,21 @@ public class FocusFragment extends Fragment {
 
             mTabLayout = (TabLayout) mRootView.findViewById(R.id.tab_layout);
             mPager = (ViewPager) mRootView.findViewById(R.id.pager);
-            mPager.setAdapter(new PagerAdapter(getChildFragmentManager(), mContext));
+            mPager.setAdapter(new PagerAdapter(getFragmentManager(), mContext));
             mTabLayout.setupWithViewPager(mPager);
         }
 
         return mRootView;
     }
 
-    public class PagerAdapter extends FragmentStatePagerAdapter {
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+    }
+
+    public class PagerAdapter extends FragmentPagerAdapter {
         final int PAGE_COUNT = 2;
-        private String tabTitles[] = new String[]{"主题", "回复"};
+        private String tabTitles[] = new String[]{"主题", "动态"};
         private Context context;
 
         public PagerAdapter(FragmentManager fm, Context context) {
@@ -75,25 +79,17 @@ public class FocusFragment extends Fragment {
             return PAGE_COUNT;
         }
 
-        private Fragment[] fragments = new Fragment[PAGE_COUNT];
+        // private Fragment[] fragments = new Fragment[PAGE_COUNT];
 
         @Override
         public Fragment getItem(int position) {
-            if (fragments[position] == null) {
-                fragments[position] = new FocusListFragment();
-            }
-            return fragments[position];
+            return new FocusListFragment();
         }
 
         @Override
         public CharSequence getPageTitle(int position) {
             // Generate title based on item position
             return tabTitles[position];
-        }
-
-        @Override
-        public Parcelable saveState() {
-            return null;
         }
     }
 }

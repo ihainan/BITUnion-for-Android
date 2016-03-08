@@ -25,7 +25,7 @@ android {
 
     defaultConfig {
         applicationId "bit.ihainan.me.bitunionforandroid"
-        minSdkVersion 17
+        minSdkVersion 15
         targetSdkVersion 23
         versionCode 1
         versionName "0.1"

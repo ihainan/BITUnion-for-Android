@@ -217,7 +217,6 @@ public class MainActivity extends AppCompatActivity {
                             navigationView.setCheckedItem(menuId);
                             FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
                             fragmentTransaction.replace(R.id.flContent, mFragment).commit();
-                            // mToolbar.setTitle(menuItem.getTitle());
                             menuItem.setChecked(true);
                             return true;
                         }
