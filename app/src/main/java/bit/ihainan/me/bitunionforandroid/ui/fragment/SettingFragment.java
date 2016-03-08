@@ -1,4 +1,4 @@
-package bit.ihainan.me.bitunionforandroid.ui.assist;
+package bit.ihainan.me.bitunionforandroid.ui.fragment;
 
 import android.app.ProgressDialog;
 import android.content.Context;

@@ -24,6 +24,16 @@
             android:id="@+id/nav_forum"
             android:icon="@drawable/ic_list_white_24dp"
             android:title="@string/action_forum" />
+
+        <item
+            android:id="@+id/nav_focus"
+            android:icon="@drawable/ic_remove_red_eye_black_24dp"
+            android:title="@string/action_focus" />
+
+        <item
+            android:id="@+id/nav_discover"
+            android:icon="@drawable/ic_discover"
+            android:title="@string/action_discover" />
     </group>
 
     <group

@@ -8,9 +8,7 @@ import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -20,15 +18,14 @@ import android.widget.TextView;
 
 import com.umeng.analytics.MobclickAgent;
 
-import java.io.UnsupportedEncodingException;
-
 import bit.ihainan.me.bitunionforandroid.BuildConfig;
 import bit.ihainan.me.bitunionforandroid.R;
 import bit.ihainan.me.bitunionforandroid.models.Member;
-import bit.ihainan.me.bitunionforandroid.ui.assist.AboutFragment;
-import bit.ihainan.me.bitunionforandroid.ui.assist.ForumFragment;
-import bit.ihainan.me.bitunionforandroid.ui.assist.HomePageFragment;
-import bit.ihainan.me.bitunionforandroid.ui.assist.SettingFragment;
+import bit.ihainan.me.bitunionforandroid.ui.fragment.AboutFragment;
+import bit.ihainan.me.bitunionforandroid.ui.fragment.FocusFragment;
+import bit.ihainan.me.bitunionforandroid.ui.fragment.ForumFragment;
+import bit.ihainan.me.bitunionforandroid.ui.fragment.HomePageFragment;
+import bit.ihainan.me.bitunionforandroid.ui.fragment.SettingFragment;
 import bit.ihainan.me.bitunionforandroid.utils.CommonUtils;
 import bit.ihainan.me.bitunionforandroid.utils.Global;
 
@@ -37,7 +34,7 @@ public class MainActivity extends AppCompatActivity {
 
     // UI elements
     private DrawerLayout mDrawerLayout;
-    private Toolbar mToolbar;
+    // private Toolbar mToolbar;
     private View mNavHead;
     private ImageView mNavProfileView;
     private TextView mNavUsername;
@@ -59,13 +56,6 @@ public class MainActivity extends AppCompatActivity {
         }
 
         setContentView(R.layout.activity_main);
-
-        // Toolbar
-        mToolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(mToolbar);
-        final ActionBar ab = getSupportActionBar();
-        ab.setHomeAsUpIndicator(R.drawable.ic_menu_white_24dp);
-        ab.setDisplayHomeAsUpEnabled(true);
 
         // Navigation view
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
@@ -98,49 +88,11 @@ public class MainActivity extends AppCompatActivity {
 
             // Activity content
             if (mFragment == null) {
-                mFragment = getHomeFragment();
+                mFragment = getFocusFragment();
                 FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
                 fragmentTransaction.replace(R.id.flContent, mFragment).commit();
             }
         }
-    }
-
-    // TODO: 退出 activity 时候保存当前的 Fragment，返回时候再恢复该 Fragment
-
-    private Fragment mFragment;
-
-    private Fragment homeFragment;
-
-    private Fragment getHomeFragment() {
-        setTitle(getString(R.string.action_home));
-        if (homeFragment == null) homeFragment = new HomePageFragment();
-        return homeFragment;
-    }
-
-    private Fragment forumFragment;
-
-    private Fragment getForumFragment() {
-        setTitle(getString(R.string.action_forum));
-        mAppBarLayout.setExpanded(true);
-        if (forumFragment == null) forumFragment = new ForumFragment();
-        return forumFragment;
-    }
-
-    private Fragment settingFragment;
-
-    public Fragment getSettingFragment() {
-        setTitle(R.string.action_settings);
-        if (settingFragment == null) settingFragment = new SettingFragment();
-        return settingFragment;
-    }
-
-    private Fragment aboutFragment;
-
-    private Fragment getAboutFragment() {
-        setTitle(getString(R.string.action_about));
-        mAppBarLayout.setExpanded(true);
-        if (aboutFragment == null) aboutFragment = new AboutFragment();
-        return aboutFragment;
     }
 
     private void getUserInfo() {
@@ -166,6 +118,46 @@ public class MainActivity extends AppCompatActivity {
                                 avatarURL, R.drawable.default_avatar);
                     }
                 });
+    }
+
+    // TODO: 退出 activity 时候保存当前的 Fragment，返回时候再恢复该 Fragment
+
+    private Fragment mFragment;
+    private Fragment homeFragment;
+    private Fragment forumFragment;
+    private Fragment settingFragment;
+    private Fragment aboutFragment;
+    private Fragment focusFragment;
+
+    private Fragment getHomeFragment() {
+        setTitle(getString(R.string.action_home));
+        if (homeFragment == null) homeFragment = new HomePageFragment();
+        return homeFragment;
+    }
+
+    private Fragment getForumFragment() {
+        setTitle(getString(R.string.action_forum));
+        if (forumFragment == null) forumFragment = new ForumFragment();
+        return forumFragment;
+    }
+
+    public Fragment getFocusFragment() {
+        setTitle(R.string.action_focus);
+        if (focusFragment == null) focusFragment = new FocusFragment();
+        return focusFragment;
+    }
+
+    public Fragment getSettingFragment() {
+        setTitle(R.string.action_settings);
+        if (settingFragment == null) settingFragment = new SettingFragment();
+        return settingFragment;
+    }
+
+
+    private Fragment getAboutFragment() {
+        setTitle(getString(R.string.action_about));
+        if (aboutFragment == null) aboutFragment = new AboutFragment();
+        return aboutFragment;
     }
 
     private void setupDrawerContent(final NavigationView navigationView) {
@@ -206,23 +198,26 @@ public class MainActivity extends AppCompatActivity {
                                 setTitle = true;
                                 mFragment = getSettingFragment();
                                 break;
+                            case R.id.nav_focus:
+                                setTitle = true;
+                                mFragment = getFocusFragment();
+                                break;
                             case R.id.nav_feedback:
                                 setTitle = false;
-                                Intent i = new Intent(Intent.ACTION_SEND);
-                                i.setType("message/rfc822");
-                                i.putExtra(Intent.EXTRA_EMAIL, new String[]{"ihainan72@gmail.com"});
-                                i.putExtra(Intent.EXTRA_SUBJECT, "联盟客户端意见反馈 - 问题概述");
-                                i.putExtra(Intent.EXTRA_TEXT, "\n---\n当前版本：" + BuildConfig.VERSION_NAME);
-                                startActivity(Intent.createChooser(i, "Send mail..."));
+                                Intent feedbackIntent = new Intent(Intent.ACTION_SEND);
+                                feedbackIntent.setType("message/rfc822");
+                                feedbackIntent.putExtra(Intent.EXTRA_EMAIL, new String[]{"ihainan72@gmail.com"});
+                                feedbackIntent.putExtra(Intent.EXTRA_SUBJECT, "联盟客户端意见反馈 - 问题概述");
+                                feedbackIntent.putExtra(Intent.EXTRA_TEXT, "\n---\n当前版本：" + BuildConfig.VERSION_NAME);
+                                startActivity(Intent.createChooser(feedbackIntent, "Send mail..."));
                                 break;
                         }
-
 
                         if (setTitle) {
                             navigationView.setCheckedItem(menuId);
                             FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
                             fragmentTransaction.replace(R.id.flContent, mFragment).commit();
-                            mToolbar.setTitle(menuItem.getTitle());
+                            // mToolbar.setTitle(menuItem.getTitle());
                             menuItem.setChecked(true);
                             return true;
                         }
@@ -240,15 +235,6 @@ public class MainActivity extends AppCompatActivity {
                 return true;
         }
         return super.onOptionsItemSelected(item);
-    }
-
-
-    private final static String MAIN_ACTIVITY_LIST = "MAIN_ACTIVITY_LIST";
-
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-        // Global.getCache(this).put(MAIN_ACTIVITY_LIST, );
     }
 
     @Override

@@ -1,4 +1,4 @@
-package bit.ihainan.me.bitunionforandroid.ui.assist;
+package bit.ihainan.me.bitunionforandroid.ui.fragment;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -25,6 +25,7 @@ import java.util.List;
 import bit.ihainan.me.bitunionforandroid.R;
 import bit.ihainan.me.bitunionforandroid.adapters.PostListAdapter;
 import bit.ihainan.me.bitunionforandroid.models.ThreadReply;
+import bit.ihainan.me.bitunionforandroid.ui.assist.SimpleDividerItemDecoration;
 import bit.ihainan.me.bitunionforandroid.utils.network.BUApi;
 import bit.ihainan.me.bitunionforandroid.utils.CommonUtils;
 import bit.ihainan.me.bitunionforandroid.utils.Global;

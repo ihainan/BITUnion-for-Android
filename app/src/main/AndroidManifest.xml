@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="bit.ihainan.me.bitunionforandroid">
+    package="bit.ihainan.me.bitunionforandroid" >
 
     <!-- 访问联盟服务器 -->
     <uses-permission android:name="android.permission.INTERNET" />
@@ -22,11 +22,11 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppTheme" >
         <activity
             android:name=".ui.MainActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:theme="@style/AppTheme.NoActionBar" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -49,9 +49,7 @@
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:label="@string/title_activity_thread_detail"
             android:theme="@style/AppTheme.SwipeTheme" />
-
-        <activity android:name=".ui.TestActivity">
-
+        <activity android:name=".ui.TestActivity" >
         </activity>
 
         <meta-data
@@ -73,13 +71,12 @@
             android:name=".ui.PostOrReplyActivity"
             android:label="@string/title_activity_post_or_reply"
             android:theme="@style/AppTheme.NoActionBar"
-            android:windowSoftInputMode="adjustResize">
-
+            android:windowSoftInputMode="adjustResize" >
         </activity>
         <activity
             android:name=".ui.PreviewActivity"
             android:label="@string/title_activity_preview"
-            android:theme="@style/AppTheme.SwipeTheme"></activity>
+            android:theme="@style/AppTheme.SwipeTheme" />
     </application>
 
 </manifest>

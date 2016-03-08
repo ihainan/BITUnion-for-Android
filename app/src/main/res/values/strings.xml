@@ -4,7 +4,9 @@
     <!-- Navigation Drawable -->
     <string name="action_settings">设置</string>
     <string name="action_home">首页</string>
-    <string name="action_forum">论坛列表</string>
+    <string name="action_forum">论坛</string>
+    <string name="action_discover">发现</string>
+    <string name="action_focus">关注</string>
     <string name="action_topic">热点话题</string>
     <string name="action_feedback">意见反馈</string>
     <string name="action_about">关于</string>
@@ -102,4 +104,5 @@
     </string>
     <string name="title_activity_post_or_reply">PostOrReplyActivity</string>
     <string name="title_activity_preview">PreviewActivity</string>
+    <string name="title_activity_focus">FocusActivity</string>
 </resources>
