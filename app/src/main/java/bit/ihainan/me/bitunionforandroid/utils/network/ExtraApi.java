@@ -21,7 +21,7 @@ import bit.ihainan.me.bitunionforandroid.utils.Global;
  */
 public class ExtraApi {
     public final static String TAG = ExtraApi.class.getSimpleName();
-    public final static String BASE_API = "http://10.62.54.148:8080/api/";
+    public final static String BASE_API = "http://ali.ihainan.me:8080/api/";
     public final static String VERSION = "v2";
     public final static String ENDPOINT = BASE_API + VERSION;
 

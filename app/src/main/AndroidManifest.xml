@@ -27,7 +27,11 @@
             android:name=".ui.MainActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:theme="@style/AppTheme.NoActionBar">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
 
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
         <activity
             android:name=".ui.LoginActivity"
@@ -46,11 +50,7 @@
             android:label="@string/title_activity_thread_detail"
             android:theme="@style/AppTheme.SwipeTheme" />
         <activity android:name=".ui.TestActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
 
         <meta-data
@@ -72,14 +72,17 @@
             android:name=".ui.PostOrReplyActivity"
             android:label="@string/title_activity_post_or_reply"
             android:theme="@style/AppTheme.NoActionBar"
-            android:windowSoftInputMode="adjustResize"></activity>
+            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".ui.PreviewActivity"
             android:label="@string/title_activity_preview"
             android:theme="@style/AppTheme.SwipeTheme" />
         <activity
-            android:name=".ui.UserInfoActivity"
-            android:theme="@style/AppTheme.SwipeTheme"></activity>
+            android:name=".ui.ProfileActivity"
+            android:label="@string/title_activity_profile"
+            android:theme="@style/AppTheme.SwipeTheme">
+
+        </activity>
     </application>
 
 </manifest>

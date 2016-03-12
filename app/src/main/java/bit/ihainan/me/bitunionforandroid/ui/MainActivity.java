@@ -100,8 +100,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 mDrawerLayout.closeDrawers();
-                Intent intent = new Intent(MainActivity.this, OldUserInfoActivity.class);
-                intent.putExtra(OldUserInfoActivity.USER_NAME_TAG, Global.username);
+                Intent intent = new Intent(MainActivity.this, ProfileActivity.class);
+                intent.putExtra(ProfileActivity.USER_NAME_TAG, Global.username);
                 startActivity(intent);
             }
         });

@@ -105,4 +105,5 @@
     <string name="title_activity_post_or_reply">PostOrReplyActivity</string>
     <string name="title_activity_preview">PreviewActivity</string>
     <string name="title_activity_focus">FocusActivity</string>
+    <string name="title_activity_profile">ProfileActivity</string>
 </resources>

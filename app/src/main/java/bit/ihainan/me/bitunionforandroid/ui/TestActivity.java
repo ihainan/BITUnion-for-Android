@@ -49,23 +49,23 @@ public class TestActivity extends SwipeActivity {
         // testSearchAPI();
 
         // 测试时间轴动态接口
-        // testTimelineAPI();
+        testTimelineAPI();
     }
 
-    private void parseEvents(List<TimelineEvent> events) throws IOException {
+    private void parseEvents(String tag, List<TimelineEvent> events) throws IOException {
         for (TimelineEvent event : events) {
             if (event.type == 1) {
                 // 帖子
                 Post post = BUApi.MAPPER.readValue(BUApi.MAPPER.writeValueAsString(event.content), Post.class);
-                Log.i(TAG, "getSpecialUserTimeline >> " + post);
+                Log.i(TAG, tag + " >> " + post);
             } else if (event.type == 2) {
                 // 收藏
                 Favorite favorite = BUApi.MAPPER.readValue(BUApi.MAPPER.writeValueAsString(event.content), Favorite.class);
-                Log.i(TAG, "getSpecialUserTimeline >> " + favorite);
+                Log.i(TAG, tag + " >> " + favorite);
             } else if (event.type == 3) {
                 // 关注
                 Follow follow = BUApi.MAPPER.readValue(BUApi.MAPPER.writeValueAsString(event.content), Follow.class);
-                Log.i(TAG, "getSpecialUserTimeline >> " + follow);
+                Log.i(TAG, tag + " >> " + follow);
             }
         }
     }
@@ -80,7 +80,7 @@ public class TestActivity extends SwipeActivity {
                         List<TimelineEvent> events = BUApi.MAPPER.readValue(response.get("data").toString(),
                                 new TypeReference<List<TimelineEvent>>() {
                                 });
-                        parseEvents(events);
+                        parseEvents("getSpecialUserTimeline", events);
                     } catch (IOException e) {
                         Log.e(TAG, "解析指定用户动态列表 JSON 数据失败", e);
                     } catch (JSONException e) {
@@ -104,7 +104,7 @@ public class TestActivity extends SwipeActivity {
                         List<TimelineEvent> events = BUApi.MAPPER.readValue(response.get("data").toString(),
                                 new TypeReference<List<TimelineEvent>>() {
                                 });
-                        parseEvents(events);
+                        parseEvents("getFocusTimeline", events);
                     } catch (IOException e) {
                         Log.e(TAG, "解析用户关注列表 JSON 数据失败", e);
                     } catch (JSONException e) {
