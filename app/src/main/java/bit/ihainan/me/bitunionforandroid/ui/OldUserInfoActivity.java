@@ -79,7 +79,7 @@ public class OldUserInfoActivity extends SwipeActivity {
         }
 
         if (mUsername == null && mUid == null) {
-            mUsername = Global.userName;
+            mUsername = Global.username;
         }
 
         // UI references

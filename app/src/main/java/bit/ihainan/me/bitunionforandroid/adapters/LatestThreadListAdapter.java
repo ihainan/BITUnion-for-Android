@@ -23,7 +23,7 @@ import java.util.List;
 import bit.ihainan.me.bitunionforandroid.R;
 import bit.ihainan.me.bitunionforandroid.models.LatestThread;
 import bit.ihainan.me.bitunionforandroid.models.Member;
-import bit.ihainan.me.bitunionforandroid.models.ThreadReply;
+import bit.ihainan.me.bitunionforandroid.models.Post;
 import bit.ihainan.me.bitunionforandroid.ui.ThreadDetailActivity;
 import bit.ihainan.me.bitunionforandroid.ui.viewholders.DefaultViewHolder;
 import bit.ihainan.me.bitunionforandroid.ui.viewholders.SelfieViewHolder;
@@ -249,7 +249,7 @@ public class LatestThreadListAdapter extends RecyclerView.Adapter<RecyclerView.V
         }
 
         // 获取背景图片
-        ThreadReply reply = (ThreadReply) Global.getCache(mContext).getAsObject(Global.CACHE_REPLY_CONTENT + "_" + latestThread.tid);
+        Post reply = (Post) Global.getCache(mContext).getAsObject(Global.CACHE_REPLY_CONTENT + "_" + latestThread.tid);
         Picasso.with(mContext).load(R.drawable.background).into(holder.background);
         if (reply == null) {
             Log.i(TAG, "fillDefaultView >> 拉取回复数据");
@@ -259,11 +259,11 @@ public class LatestThreadListAdapter extends RecyclerView.Adapter<RecyclerView.V
                     try {
                         if (BUApi.checkStatus(response)) {
                             JSONArray newListJson = response.getJSONArray("postlist");
-                            List<ThreadReply> postReplies = BUApi.MAPPER.readValue(newListJson.toString(),
-                                    new TypeReference<List<ThreadReply>>() {
+                            List<Post> postReplies = BUApi.MAPPER.readValue(newListJson.toString(),
+                                    new TypeReference<List<Post>>() {
                                     });
                             if (postReplies != null && postReplies.size() > 0) {
-                                ThreadReply firstReply = postReplies.get(0);
+                                Post firstReply = postReplies.get(0);
                                 Log.i(TAG, "fillSelfieView >> 拉取得到回复数据，放入缓存：" + firstReply);
                                 Global.getCache(mContext).put(Global.CACHE_REPLY_CONTENT + "_" + latestThread.tid, firstReply);
 

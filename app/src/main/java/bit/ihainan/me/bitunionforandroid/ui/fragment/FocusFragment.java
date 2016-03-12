@@ -10,7 +10,6 @@ import android.support.v13.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -39,13 +38,14 @@ public class FocusFragment extends Fragment {
 
             mRootView = inflater.inflate(R.layout.fragment_focus, container, false);
 
+            // Toolbar
             mToolbar = (Toolbar) mRootView.findViewById(R.id.toolbar);
             ((AppCompatActivity) getActivity()).setSupportActionBar(mToolbar);
             final ActionBar ab = ((AppCompatActivity) getActivity()).getSupportActionBar();
             ab.setHomeAsUpIndicator(R.drawable.ic_menu_white_24dp);
             ab.setDisplayHomeAsUpEnabled(true);
 
-            // UI references
+            // TabLayout
             mTabLayout = (TabLayout) mRootView.findViewById(R.id.tab_layout);
             mPager = (ViewPager) mRootView.findViewById(R.id.pager);
             mPager.setAdapter(new PagerAdapter(getFragmentManager(), mContext));
@@ -63,8 +63,8 @@ public class FocusFragment extends Fragment {
     }
 
     public class PagerAdapter extends FragmentPagerAdapter {
-        final int PAGE_COUNT = 2;
-        private String tabTitles[] = new String[]{"动态", "收藏"};
+        final int PAGE_COUNT = 1;
+        private String tabTitles[] = new String[]{"收藏"};
         private Context context;
 
         public PagerAdapter(FragmentManager fm, Context context) {
@@ -77,12 +77,9 @@ public class FocusFragment extends Fragment {
             return PAGE_COUNT;
         }
 
-        // private Fragment[] fragments = new Fragment[PAGE_COUNT];
-
         @Override
         public Fragment getItem(int position) {
-            if (position == 0) return new FollowNewsListFragment();
-            else return new FavoriteListFragment();
+            return new FavoriteListFragment();
         }
 
         @Override

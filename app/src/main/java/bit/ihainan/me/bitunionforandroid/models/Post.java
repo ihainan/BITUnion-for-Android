@@ -11,10 +11,12 @@ import bit.ihainan.me.bitunionforandroid.utils.network.BUApi;
 /**
  * 回帖模型
  */
-public class ThreadReply implements Serializable {
-    public final static String TAG = ThreadReply.class.getSimpleName();
+public class Post implements Serializable {
+    public final static String TAG = Post.class.getSimpleName();
 
     // Json mapping fields
+    public long post_id;
+    public int floor;
     public long pid;
     public long fid;
     public long tid;

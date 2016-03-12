@@ -35,7 +35,7 @@ import java.util.regex.Pattern;
 
 import bit.ihainan.me.bitunionforandroid.R;
 import bit.ihainan.me.bitunionforandroid.adapters.PostListAdapter;
-import bit.ihainan.me.bitunionforandroid.models.ThreadReply;
+import bit.ihainan.me.bitunionforandroid.models.Post;
 import bit.ihainan.me.bitunionforandroid.ui.assist.SimpleDividerItemDecoration;
 import bit.ihainan.me.bitunionforandroid.ui.assist.SwipeActivity;
 import bit.ihainan.me.bitunionforandroid.utils.CommonUtils;
@@ -73,7 +73,7 @@ public class ThreadDetailActivity extends SwipeActivity {
     private String mThreadName, mAuthorName;
     private long mCurrentPosition = 0;
     private boolean mIsLoading = false;
-    private List<bit.ihainan.me.bitunionforandroid.models.ThreadReply> mThreadPostList = new ArrayList<>();
+    private List<Post> mThreadPostList = new ArrayList<>();
     private PostListAdapter mAdapter;
 
     @Override
@@ -115,12 +115,12 @@ public class ThreadDetailActivity extends SwipeActivity {
                         JSONArray newListJson = response.getJSONArray("postlist");
                         mReplyCount = (long) response.getInt("total_reply_count") + 1;
 
-                        List<bit.ihainan.me.bitunionforandroid.models.ThreadReply> threads = BUApi.MAPPER.readValue(newListJson.toString(),
-                                new TypeReference<List<ThreadReply>>() {
+                        List<Post> threads = BUApi.MAPPER.readValue(newListJson.toString(),
+                                new TypeReference<List<Post>>() {
                                 });
 
                         if (threads.size() > 0) {
-                            ThreadReply firstReply = threads.get(0);
+                            Post firstReply = threads.get(0);
                             mThreadName = CommonUtils.decode(firstReply.subject);
                             mAuthorName = CommonUtils.decode(firstReply.author);
                             fillViews();
@@ -417,8 +417,8 @@ public class ThreadDetailActivity extends SwipeActivity {
                         if (BUApi.checkStatus(response)) {
                             try {
                                 JSONArray newListJson = response.getJSONArray("postlist");
-                                List<bit.ihainan.me.bitunionforandroid.models.ThreadReply> newThreads = BUApi.MAPPER.readValue(newListJson.toString(),
-                                        new TypeReference<List<ThreadReply>>() {
+                                List<Post> newThreads = BUApi.MAPPER.readValue(newListJson.toString(),
+                                        new TypeReference<List<Post>>() {
                                         });
 
                                 // 成功拿到数据，删除 Loading Progress Bar
@@ -430,7 +430,7 @@ public class ThreadDetailActivity extends SwipeActivity {
                                 CommonUtils.debugToast(ThreadDetailActivity.this, "Loaded " + newThreads.size() + " more item(s)");
 
                                 // 处理数据
-                                for (ThreadReply reply : newThreads) {
+                                for (Post reply : newThreads) {
                                     // 处理正文
                                     String body = CommonUtils.decode(reply.message);
                                     reply.useMobile = body.contains("From BIT-Union Open API Project");
@@ -504,7 +504,7 @@ public class ThreadDetailActivity extends SwipeActivity {
     }
 
 
-    private void getDeviceName(ThreadReply reply) {
+    private void getDeviceName(Post reply) {
         // Log.d(TAG, "getDeviceName >> " + reply.message);
         String[] regexStrArray = new String[]{"<a .*?>\\.\\.::发自(.*?)::\\.\\.</a>$",
                 "<br><br>发送自 <a href='.*?' target='_blank'><b>(.*?) @BUApp</b></a>",

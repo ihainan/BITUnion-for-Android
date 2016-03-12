@@ -220,7 +220,7 @@ public class CommonUtils {
      *
      * @param context  上下文
      * @param view     被点击的 View
-     * @param userId   用户 ID。若 userName != null 则无视 userId
+     * @param userId   用户 ID。若 username != null 则无视 userId
      * @param userName 用户名
      */
     public static void setUserAvatarClickListener(final Context context, View view, final long userId, final String userName) {

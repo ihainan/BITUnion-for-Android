@@ -28,7 +28,7 @@ public class Global extends Application {
 
     /* 会话相关 */
     public static Session userSession = null;   // 用户会话实例，向服务器发送请求时候需要附上会话字符串
-    public static String userName, password;    // 用户名，密码，用于重新登陆
+    public static String username, password;    // 用户名，密码，用于重新登陆
     public static Member userInfo;  // 用户信息
     private final static String SESSION_STR = "{\"result\":\"success\",\"uid\":108263,\"username\":\"ihainan\",\"session\":\"SgAIeVTX\",\"status\":\"Member\",\"credit\":\"0\",\"lastactivity\":1454659703}";
 
@@ -87,7 +87,7 @@ public class Global extends Application {
 
 
     public static void readConfig(Context context) {
-        userName = Global.getCache(context).getAsString(PREF_USER_NAME);
+        username = Global.getCache(context).getAsString(PREF_USER_NAME);
 
         userSession = (Session) Global.getCache(context).getAsObject(CONF_SESSION_STR);
 
@@ -113,7 +113,7 @@ public class Global extends Application {
     }
 
     public static void printConf() {
-        Log.d(TAG, "printConf >> User Name：" + userName);
+        Log.d(TAG, "printConf >> User Name：" + username);
         Log.d(TAG, "printConf >> User Session：" + userSession);
         Log.d(TAG, "printConf >> Password：" + (password == null ? "NULL" : "****"));
         Log.d(TAG, "printConf >> Network Type：" + networkType);
@@ -125,7 +125,7 @@ public class Global extends Application {
 
     public static void saveConfig(Context context) {
         if (userSession != null) Global.getCache(context).put(CONF_SESSION_STR, userSession);
-        Global.getCache(context).put(PREF_USER_NAME, Global.userName == null ? "" : Global.userName);
+        Global.getCache(context).put(PREF_USER_NAME, Global.username == null ? "" : Global.username);
         Global.getCache(context).put(PREF_PASSWORD, Global.password == null ? "" : Global.password);
         if (ascendingOrder != null) Global.getCache(context).put(PREF_REPLY_ORDER, ascendingOrder);
         if (networkType != null)

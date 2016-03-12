@@ -119,7 +119,7 @@ public class BUApi {
         parameters.put("action", "login");
         parameters.put("username", userName);
         parameters.put("password", password);
-        makeRequest(context, getLoginURL(), "LOGIN", parameters, 0, listener, errorListener);
+        makeRequest(context, getLoginURL(), "LOGIN", parameters, retryLimit, listener, errorListener);
     }
 
     /**
@@ -154,7 +154,7 @@ public class BUApi {
                                    Response.ErrorListener errorListener) {
         Map<String, String> parameters = new HashMap<String, String>();
         parameters.put("action", "profile");
-        parameters.put("username", Global.userName);
+        parameters.put("username", Global.username);
         parameters.put("session", Global.userSession.session);
         if (username != null) parameters.put("queryusername", username);
         else parameters.put("uid", "" + uid);
@@ -245,22 +245,20 @@ public class BUApi {
 
         // 不设置 retryLimit，只尝试一次
         if (retryLimit <= 0) {
-            JsonObjectRequest request = new JsonObjectRequest(url,
-                    new JSONObject(parameters), listener, errorListener);
-            RequestQueueManager.getInstance(context).addToRequestQueue(request, tag);
+            makeRequest(context, url, tag, parameters, listener, errorListener);
         } else {
             // 设置 retryLimit，最多尝试特定次数，直到登录成功为止
-            makeRequest(context, url, tag, parameters, 0,
+            makeRequest(context, url, tag, parameters,
                     new Response.Listener<JSONObject>() {
                         @Override
                         public void onResponse(JSONObject response) {
                             if (BUApi.checkStatus(response)) {
+                                // 在 tryLimit 次成功
                                 listener.onResponse(response);
                             } else {
-                                Log.d(TAG, "failed to make request " + response);
                                 // 尝试重新登录
                                 Log.i(TAG, "makeRequest >> Session 过期，尝试重新登录 " + retryLimit + " " + url);
-                                BUApi.tryLogin(context, Global.userName, Global.password, retryLimit - 1,
+                                BUApi.tryLogin(context, Global.username, Global.password, retryLimit - 1,
                                         new Response.Listener<JSONObject>() {
                                             @Override
                                             public void onResponse(JSONObject response) {
@@ -280,7 +278,7 @@ public class BUApi {
                                                 } else {
                                                     // 登录失败……继续尝试重新登录，直到成功，或者 retryLimit = 0
                                                     Log.i(TAG, "makeRequest >> 尝试重新登录失败，继续尝试 " + retryLimit + " URL: " + url);
-                                                    BUApi.tryLogin(context, Global.userName, Global.password,
+                                                    BUApi.tryLogin(context, Global.username, Global.password,
                                                             retryLimit - 2, listener, errorListener);
                                                 }
                                             }
@@ -289,5 +287,16 @@ public class BUApi {
                         }
                     }, errorListener);
         }
+    }
+
+    private static void makeRequest(final Context context, final String url, final String tag,
+                                    final Map<String, String> parameters,
+                                    final Response.Listener<JSONObject> listener,
+                                    final Response.ErrorListener errorListener) {
+        Log.i(TAG, "Want to make request with parameters: " + parameters.toString() + " URL: " + url + " Retry Limit: " + 0);
+        JsonObjectRequest request = new JsonObjectRequest(url,
+                new JSONObject(parameters), listener, errorListener);
+        RequestQueueManager.getInstance(context).addToRequestQueue(request, tag);
+
     }
 }

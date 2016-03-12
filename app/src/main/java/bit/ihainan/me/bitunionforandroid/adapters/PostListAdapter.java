@@ -25,7 +25,7 @@ import java.util.Date;
 import java.util.List;
 
 import bit.ihainan.me.bitunionforandroid.R;
-import bit.ihainan.me.bitunionforandroid.models.ThreadReply;
+import bit.ihainan.me.bitunionforandroid.models.Post;
 import bit.ihainan.me.bitunionforandroid.ui.PostOrReplyActivity;
 import bit.ihainan.me.bitunionforandroid.ui.assist.CustomSpan;
 import bit.ihainan.me.bitunionforandroid.ui.viewholders.LoadingViewHolder;
@@ -43,10 +43,10 @@ public class PostListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     private final String mAuthorName;
     private final long mReplyCount;
     private final Context mContext;
-    private List<ThreadReply> mList;
+    private List<Post> mList;
     private RecyclerView mRecyclerView;
 
-    public PostListAdapter(Context context, List<ThreadReply> mList, String authorName, long replyCount) {
+    public PostListAdapter(Context context, List<Post> mList, String authorName, long replyCount) {
         this.mContext = context;
         this.mList = mList;
         mLayoutInflater = LayoutInflater.from(context);
@@ -67,7 +67,7 @@ public class PostListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     public void onBindViewHolder(RecyclerView.ViewHolder holder, final int position) {
         if (holder instanceof PostViewHolder) {
             // Do nothing here
-            final ThreadReply reply = mList.get(position);
+            final Post reply = mList.get(position);
             final PostViewHolder viewHolder = (PostViewHolder) holder;
 
             // 防止附件出现重复
@@ -145,7 +145,7 @@ public class PostListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     }
 
 
-    private void showAttachmentView(LinearLayout linearLayout, final ThreadReply reply) {
+    private void showAttachmentView(LinearLayout linearLayout, final Post reply) {
         LayoutInflater inflater = LayoutInflater.from(mContext);
         View itemView = inflater.inflate(R.layout.item_thread_detail_attachment, null, false);
 

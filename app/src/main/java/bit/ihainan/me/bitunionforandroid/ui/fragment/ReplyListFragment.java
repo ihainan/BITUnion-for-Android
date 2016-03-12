@@ -24,7 +24,7 @@ import java.util.List;
 
 import bit.ihainan.me.bitunionforandroid.R;
 import bit.ihainan.me.bitunionforandroid.adapters.PostListAdapter;
-import bit.ihainan.me.bitunionforandroid.models.ThreadReply;
+import bit.ihainan.me.bitunionforandroid.models.Post;
 import bit.ihainan.me.bitunionforandroid.ui.assist.SimpleDividerItemDecoration;
 import bit.ihainan.me.bitunionforandroid.utils.network.BUApi;
 import bit.ihainan.me.bitunionforandroid.utils.CommonUtils;
@@ -49,7 +49,7 @@ public class ReplyListFragment extends Fragment {
     // Data
     private int mTid, mPagePosition, mReplyCount;
     private String mAuthorName;
-    private List<ThreadReply> mThreadPostList = new ArrayList<>();
+    private List<Post> mThreadPostList = new ArrayList<>();
     private PostListAdapter mAdapter;
 
     private void getExtra(Bundle savedInstanceState) {
@@ -148,12 +148,12 @@ public class ReplyListFragment extends Fragment {
                         if (BUApi.checkStatus(response)) {
                             try {
                                 JSONArray newListJson = response.getJSONArray("postlist");
-                                List<bit.ihainan.me.bitunionforandroid.models.ThreadReply> newThreads = BUApi.MAPPER.readValue(newListJson.toString(),
-                                        new TypeReference<List<ThreadReply>>() {
+                                List<Post> newThreads = BUApi.MAPPER.readValue(newListJson.toString(),
+                                        new TypeReference<List<Post>>() {
                                         });
 
                                 // 处理数据
-                                for (ThreadReply reply : newThreads) {
+                                for (Post reply : newThreads) {
                                     String body = CommonUtils.decode(reply.message);
                                     reply.useMobile = body.contains("From BIT-Union Open API Project");
                                     HtmlUtil htmlUtil = new HtmlUtil(CommonUtils.decode(reply.message));

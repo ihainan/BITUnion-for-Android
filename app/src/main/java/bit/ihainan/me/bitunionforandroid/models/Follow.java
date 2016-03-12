@@ -4,27 +4,13 @@ import android.util.Log;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-import java.io.Serializable;
-
 import bit.ihainan.me.bitunionforandroid.utils.network.BUApi;
 
 /**
- * 帖子模型
+ * 关注模型
  */
-public class Thread implements Serializable{
-    public final static String TAG = Thread.class.getSimpleName();
-
-    // Json mapping fields
-    public long tid;
-    public String author;
-    public long authorid;
-    public String subject;
-    public long dateline;
-    public long lastpost;
-    public String lastposter;
-    public long views;
-    public long replies;
-
+public class Follow {
+    public final static String TAG = Follow.class.getSimpleName();
 
     @Override
     public String toString() {
@@ -35,4 +21,9 @@ public class Thread implements Serializable{
             return null;
         }
     }
+
+    public Long fl_id;
+    public String follower;
+    public String following;
+    public String dt_created;
 }

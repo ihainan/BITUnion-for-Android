@@ -67,7 +67,7 @@ public class FavoriteListFragment extends Fragment {
             mSwipeRefreshLayout = (SwipeRefreshLayout) mRootView.findViewById(R.id.swipe_refresh_layout);
             setupSwipeRefreshLayout();
         }
-        
+
         return mRootView;
     }
 
@@ -149,7 +149,7 @@ public class FavoriteListFragment extends Fragment {
      * 更新列表数据
      */
     private void refreshData(final long from, final long to) {
-        ExtraApi.getFavoriteList(mContext, Global.userName, from, to,
+        ExtraApi.getFavoriteList(mContext, from, to,
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {

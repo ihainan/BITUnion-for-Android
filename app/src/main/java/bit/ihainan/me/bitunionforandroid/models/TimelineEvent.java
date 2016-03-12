@@ -7,25 +7,22 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import bit.ihainan.me.bitunionforandroid.utils.network.BUApi;
 
 /**
- * 收藏模型
+ * 时间轴模型
  */
-public class Favorite {
-    public final static String TAG = Favorite.class.getSimpleName();
-
-    public Long fav_id;
-    public String username;
-    public Long tid;
-    public String subject;
-    public String author;
-    public String dt_created;
+public class TimelineEvent {
+    public final static String TAG = TimelineEvent.class.getSimpleName();
 
     @Override
     public String toString() {
         try {
             return BUApi.MAPPER.writeValueAsString(this);
         } catch (JsonProcessingException e) {
-            Log.e(TAG, "Failed to convert object to JSON string", e);
+            Log.e(TAG, "Failed to convert TimelineEvent object to JSON string", e);
             return null;
         }
     }
+
+    public long tl_id;
+    public int type;
+    public Object content;
 }

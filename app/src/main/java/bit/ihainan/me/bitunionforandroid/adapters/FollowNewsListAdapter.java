@@ -14,7 +14,7 @@ import java.util.List;
 
 import bit.ihainan.me.bitunionforandroid.R;
 import bit.ihainan.me.bitunionforandroid.models.Member;
-import bit.ihainan.me.bitunionforandroid.models.ThreadReply;
+import bit.ihainan.me.bitunionforandroid.models.Post;
 import bit.ihainan.me.bitunionforandroid.ui.ThreadDetailActivity;
 import bit.ihainan.me.bitunionforandroid.ui.viewholders.DefaultViewHolder;
 import bit.ihainan.me.bitunionforandroid.ui.viewholders.LoadingViewHolder;
@@ -26,11 +26,11 @@ import bit.ihainan.me.bitunionforandroid.utils.Global;
  */
 public class FollowNewsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private final static String TAG = PostListAdapter.class.getSimpleName();
-    private List<ThreadReply> mList;
+    private List<Post> mList;
     private final LayoutInflater mLayoutInflater;
     private final Context mContext;
 
-    public FollowNewsListAdapter(Context context, List<ThreadReply> list) {
+    public FollowNewsListAdapter(Context context, List<Post> list) {
         mList = list;
         mContext = context;
         mLayoutInflater = LayoutInflater.from(context);
@@ -51,7 +51,7 @@ public class FollowNewsListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
 
     @Override
     public void onBindViewHolder(final RecyclerView.ViewHolder viewHolder, int position) {
-        final ThreadReply reply = mList.get(position);
+        final Post reply = mList.get(position);
 
         if (viewHolder instanceof DefaultViewHolder) {
             fillDefaultView(reply, (DefaultViewHolder) viewHolder);
@@ -61,7 +61,7 @@ public class FollowNewsListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
         }
     }
 
-    private void fillDefaultView(final bit.ihainan.me.bitunionforandroid.models.ThreadReply reply, DefaultViewHolder viewHolder) {
+    private void fillDefaultView(final Post reply, DefaultViewHolder viewHolder) {
         final DefaultViewHolder holder = viewHolder;
         Picasso.with(mContext).load(R.drawable.empty_avatar)
                 .into(holder.avatar);

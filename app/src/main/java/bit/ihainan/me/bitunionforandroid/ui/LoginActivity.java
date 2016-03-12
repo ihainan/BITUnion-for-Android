@@ -56,8 +56,8 @@ public class LoginActivity extends AppCompatActivity {
         Global.readConfig(this);
 
         // 自动填充，并设置最原始的登录节点
-        if (Global.userName != null && Global.networkType != null) {
-            mUsername.setText(Global.userName);
+        if (Global.username != null && Global.networkType != null) {
+            mUsername.setText(Global.username);
             mPassword.setText(Global.password);
             if (Global.networkType == Global.NETWORK_TYPE.OUT_SCHOOL)
                 mSwitchCompatOutNetwork.setChecked(true);
@@ -181,7 +181,7 @@ public class LoginActivity extends AppCompatActivity {
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
-                        Global.userName = mUsername.getText().toString();
+                        Global.username = mUsername.getText().toString();
                         if (mDialog != null) mDialog.dismiss();
                         // showProgress(false);
                         if (BUApi.checkStatus(response)) {

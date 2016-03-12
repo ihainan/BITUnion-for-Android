@@ -9,7 +9,7 @@ import java.io.Serializable;
 import bit.ihainan.me.bitunionforandroid.utils.network.BUApi;
 
 /**
- * Session Model
+ * 回话模型
  */
 public class Session implements Serializable {
     public final static String TAG = Session.class.getSimpleName();

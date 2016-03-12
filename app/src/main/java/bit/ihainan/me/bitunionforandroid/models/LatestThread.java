@@ -9,7 +9,7 @@ import java.io.Serializable;
 import bit.ihainan.me.bitunionforandroid.utils.network.BUApi;
 
 /**
- * Latest Forum Thread（最新帖子）
+ * 最新主题模型
  */
 public class LatestThread implements Serializable {
     public final static String TAG = LatestThread.class.getSimpleName();
