@@ -20,6 +20,7 @@ import android.widget.TextView;
 import bit.ihainan.me.bitunionforandroid.R;
 import bit.ihainan.me.bitunionforandroid.ui.assist.SwipeActivity;
 import bit.ihainan.me.bitunionforandroid.ui.fragment.BasicInfoFragment;
+import bit.ihainan.me.bitunionforandroid.ui.fragment.TimelineFragment;
 import bit.ihainan.me.bitunionforandroid.utils.CommonUtils;
 import bit.ihainan.me.bitunionforandroid.utils.Global;
 
@@ -108,7 +109,7 @@ public class ProfileActivity extends SwipeActivity {
 
         @Override
         public Fragment getItem(int position) {
-            Fragment fragment = new BasicInfoFragment();
+            Fragment fragment = position == 0 ? new BasicInfoFragment() : new TimelineFragment();
             Bundle args = new Bundle();
             args.putString(ProfileActivity.USER_NAME_TAG, mUsername);
             fragment.setArguments(args);

@@ -40,6 +40,7 @@ public class MainActivity extends AppCompatActivity {
     private TextView mNavUsername;
     private ImageButton mNavExit;
     private AppBarLayout mAppBarLayout;
+    private NavigationView mNavigationView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,9 +59,9 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         // Navigation view
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        mNavigationView = (NavigationView) findViewById(R.id.nav_view);
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        mNavHead = navigationView.getHeaderView(0);
+        mNavHead = mNavigationView.getHeaderView(0);
         mNavProfileView = (ImageView) mNavHead.findViewById(R.id.nav_profile_image);
         mNavUsername = (TextView) mNavHead.findViewById(R.id.nav_user_name);
         mNavExit = (ImageButton) mNavHead.findViewById(R.id.nav_logout);
@@ -79,8 +80,8 @@ public class MainActivity extends AppCompatActivity {
             CommonUtils.updateVersion(this, true, null);
 
             // 配置 Navigation Layout
-            if (navigationView != null) {
-                setupDrawerContent(navigationView);
+            if (mNavigationView != null) {
+                setupDrawerContent(mNavigationView);
             }
 
             // 用户用户信息
@@ -88,7 +89,7 @@ public class MainActivity extends AppCompatActivity {
 
             // Activity content
             if (mFragment == null) {
-                mFragment = getHomeFragment();
+                mFragment = getFocusFragment();
                 FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
                 fragmentTransaction.replace(R.id.flContent, mFragment).commit();
             }
@@ -131,24 +132,28 @@ public class MainActivity extends AppCompatActivity {
 
     private Fragment getHomeFragment() {
         setTitle(getString(R.string.action_home));
+        mNavigationView.setCheckedItem(R.id.nav_home);
         if (homeFragment == null) homeFragment = new HomePageFragment();
         return homeFragment;
     }
 
     private Fragment getForumFragment() {
         setTitle(getString(R.string.action_forum));
+        mNavigationView.setCheckedItem(R.id.nav_forum);
         if (forumFragment == null) forumFragment = new ForumFragment();
         return forumFragment;
     }
 
     public Fragment getFocusFragment() {
         setTitle(R.string.action_focus);
+        mNavigationView.setCheckedItem(R.id.nav_focus);
         if (focusFragment == null) focusFragment = new FocusFragment();
         return focusFragment;
     }
 
     public Fragment getSettingFragment() {
         setTitle(R.string.action_settings);
+        mNavigationView.setCheckedItem(R.id.nav_setting);
         if (settingFragment == null) settingFragment = new SettingFragment();
         return settingFragment;
     }
@@ -156,6 +161,7 @@ public class MainActivity extends AppCompatActivity {
 
     private Fragment getAboutFragment() {
         setTitle(getString(R.string.action_about));
+        mNavigationView.setCheckedItem(R.id.nav_about);
         if (aboutFragment == null) aboutFragment = new AboutFragment();
         return aboutFragment;
     }

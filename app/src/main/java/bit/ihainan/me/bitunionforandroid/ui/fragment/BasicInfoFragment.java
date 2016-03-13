@@ -59,10 +59,11 @@ public class BasicInfoFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         if (mRootView == null) {
             mContext = getActivity();
-            mRootView = inflater.inflate(R.layout.user_info_content, container, false);
+            mRootView = inflater.inflate(R.layout.fragment_basic_info, container, false);
 
             // Username
             mUsername = getArguments().getString(ProfileActivity.USER_NAME_TAG);
+            if (mUsername == null) mUsername = Global.userSession.username;
 
             // UI references
             mSignature = (TextView) mRootView.findViewById(R.id.profile_signature);

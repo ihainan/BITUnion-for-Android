@@ -66,6 +66,9 @@ public class ThreadDetailActivity extends SwipeActivity {
         Intent intent = getIntent();
         Bundle bundle = intent.getExtras();
         mTid = bundle.getLong(THREAD_ID_TAG);
+        mThreadName = bundle.getString(THREAD_NAME_TAG);
+        mAuthorName = bundle.getString(THREAD_AUTHOR_NAME_TAG);
+        mReplyCount = bundle.getLong(THREAD_REPLY_COUNT_TAG);
     }
 
     // Data
@@ -94,13 +97,19 @@ public class ThreadDetailActivity extends SwipeActivity {
                 finish();
             }
         });
+        mCollapsingToolbar = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
+        mCollapsingToolbar.setExpandedTitleTextAppearance(R.style.ExpandedAppBar);
 
         //  RecyclerView & SwipeRefreshLayout
         mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.home_swipe_refresh_layout);
         mRecyclerView = (RecyclerView) findViewById(R.id.detail_recycler_view);
 
-        // Get replies count / thread subject / author name and update ui
-        getBasicData();
+        // Favorite Status /  replies count / thread subject / author name and update ui
+        if (mThreadName != null)
+            mCollapsingToolbar.setTitle(Html.fromHtml(CommonUtils.decode(mThreadName)));
+        if (mReplyCount == null || mReplyCount == 0 || mThreadName == null || mAuthorName == null)
+            getBasicData();
+        else fillViews();
 
         // Swipe to back
         setSwipeAnyWhere(false);
@@ -153,9 +162,7 @@ public class ThreadDetailActivity extends SwipeActivity {
         setupSwipeRefreshLayout();
 
         // Title
-        mCollapsingToolbar = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
-        mCollapsingToolbar.setTitle(Html.fromHtml(mThreadName));
-        mCollapsingToolbar.setExpandedTitleTextAppearance(R.style.ExpandedAppBar);
+        mCollapsingToolbar.setTitle(Html.fromHtml(CommonUtils.decode(mThreadName)));
 
         // Setup RecyclerView
         mToolbar.setOnClickListener(new View.OnClickListener() {

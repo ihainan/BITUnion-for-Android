@@ -18,8 +18,11 @@ import bit.ihainan.me.bitunionforandroid.models.Member;
 import bit.ihainan.me.bitunionforandroid.ui.ThreadDetailActivity;
 import bit.ihainan.me.bitunionforandroid.ui.viewholders.DefaultViewHolder;
 import bit.ihainan.me.bitunionforandroid.ui.viewholders.LoadingViewHolder;
+import bit.ihainan.me.bitunionforandroid.ui.viewholders.TimelineViewHolder;
 import bit.ihainan.me.bitunionforandroid.utils.CommonUtils;
 import bit.ihainan.me.bitunionforandroid.utils.Global;
+import bit.ihainan.me.bitunionforandroid.utils.network.BUApi;
+import bit.ihainan.me.bitunionforandroid.utils.ui.HtmlUtil;
 
 /**
  * 收藏列表适配器
@@ -52,51 +55,37 @@ public class FavoriteListAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, final int position) {
-        if (holder instanceof DefaultViewHolder) {
+        if (holder instanceof TimelineViewHolder) {
             // Do nothing here
             final Favorite favorite = mList.get(position);
-            final DefaultViewHolder viewHolder = (DefaultViewHolder) holder;
+            final TimelineViewHolder viewHolder = (TimelineViewHolder) holder;
 
-            viewHolder.replyCount.setVisibility(View.INVISIBLE);
+            // 收藏
+            String username = favorite.author;
+            viewHolder.username.setText(username);
+            viewHolder.action.setText("发表的主题");
+            viewHolder.title.setText(Html.fromHtml(HtmlUtil.formatHtml(favorite.subject)));
+            viewHolder.content.setVisibility(View.GONE);
+            viewHolder.date.setText(CommonUtils.formatDateTime(favorite.dt_created));
 
-            Picasso.with(mContext).load(R.drawable.empty_avatar)
-                    .into(viewHolder.avatar);
-
-            // 作者
-            viewHolder.authorName.setText(
-                    CommonUtils.truncateString(
-                            CommonUtils.decode(favorite.author),
-                            Global.MAX_USER_NAME_LENGTH));
-
-            // 标题
-            viewHolder.title.setText(Html.fromHtml(favorite.subject));
-            viewHolder.title.post(new Runnable() {
-                @Override
-                public void run() {
-                    if (viewHolder.title.getLineCount() == 1)
-                        viewHolder.title.setText(viewHolder.title.getText() + "\n     ");
-                }
-            });
-
-            viewHolder.title.setOnClickListener(new View.OnClickListener() {
+            View.OnClickListener onClickListener = new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     Intent intent = new Intent(mContext, ThreadDetailActivity.class);
                     intent.putExtra(ThreadDetailActivity.THREAD_ID_TAG, favorite.tid);
+                    intent.putExtra(ThreadDetailActivity.THREAD_AUTHOR_NAME_TAG, favorite.author);
+                    intent.putExtra(ThreadDetailActivity.THREAD_NAME_TAG, favorite.subject);
                     mContext.startActivity(intent);
                 }
-            });
+            };
 
-            viewHolder.date.setText("收藏于 " + favorite.dt_created);
-
-            viewHolder.placeHolderIn.setText("  发表的主题");
-            viewHolder.forumName.setVisibility(View.INVISIBLE);
-            viewHolder.action.setVisibility(View.INVISIBLE);
-            viewHolder.isNewOrHot.setVisibility(View.INVISIBLE);
+            viewHolder.title.setOnClickListener(onClickListener);
 
             // 从缓存中获取用户头像
+            // viewHolder.avatar.setVisibility(View.GONE);
+            username = username == null ? Global.userSession.username : username;
             CommonUtils.getAndCacheUserInfo(mContext,
-                    favorite.author,
+                    username,
                     new CommonUtils.UserInfoAndFillAvatarCallback() {
                         @Override
                         public void doSomethingIfHasCached(Member member) {
@@ -108,7 +97,7 @@ public class FavoriteListAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
             CommonUtils.setUserAvatarClickListener(mContext,
                     viewHolder.avatar, -1,
-                    CommonUtils.decode(favorite.author));
+                    CommonUtils.decode(username));
         } else {
             LoadingViewHolder loadingViewHolder = (LoadingViewHolder) holder;
             loadingViewHolder.progressBar.setIndeterminate(true);
@@ -119,8 +108,8 @@ public class FavoriteListAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view;
         if (viewType == VIEW_TYPE_ITEM) {
-            view = mLayoutInflater.inflate(R.layout.item_thread_item, parent, false);
-            return new DefaultViewHolder(view);
+            view = mLayoutInflater.inflate(R.layout.item_timeline, parent, false);
+            return new TimelineViewHolder(view);
         } else {
             view = mLayoutInflater.inflate(R.layout.listview_progress_bar, parent, false);
             return new LoadingViewHolder(view);

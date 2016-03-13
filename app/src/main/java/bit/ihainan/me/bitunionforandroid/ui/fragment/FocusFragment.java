@@ -16,6 +16,8 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import bit.ihainan.me.bitunionforandroid.R;
+import bit.ihainan.me.bitunionforandroid.ui.ProfileActivity;
+import bit.ihainan.me.bitunionforandroid.utils.Global;
 
 /**
  * 关注列表
@@ -63,8 +65,8 @@ public class FocusFragment extends Fragment {
     }
 
     public class PagerAdapter extends FragmentPagerAdapter {
-        final int PAGE_COUNT = 1;
-        private String tabTitles[] = new String[]{"收藏"};
+        final int PAGE_COUNT = 2;
+        private String tabTitles[] = new String[]{"关注", "收藏"};
         private Context context;
 
         public PagerAdapter(FragmentManager fm, Context context) {
@@ -79,7 +81,13 @@ public class FocusFragment extends Fragment {
 
         @Override
         public Fragment getItem(int position) {
-            return new FavoriteListFragment();
+            if (position == 0) {
+                Fragment fragment = new TimelineFragment();
+                Bundle args = new Bundle();
+                args.putString(TimelineFragment.TIMELINE_ACTION_TAG, "FOCUS");
+                fragment.setArguments(args);
+                return fragment;
+            } else return new FavoriteListFragment();
         }
 
         @Override

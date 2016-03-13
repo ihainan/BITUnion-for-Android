@@ -57,8 +57,6 @@ public class FavoriteListFragment extends Fragment {
 
             mRootView = inflater.inflate(R.layout.fragment_recyclerview, container, false);
 
-            Global.makeForumGroupList(mContext);
-
             // Setup RecyclerView
             mRecyclerView = (RecyclerView) mRootView.findViewById(R.id.recycler_view);
             setupRecyclerView();
@@ -142,7 +140,7 @@ public class FavoriteListFragment extends Fragment {
             mIsLoading = true;
         }
 
-        refreshData(mCurrentPosition, mCurrentPosition + Global.LOADING_REPLIES_COUNT - 1);
+        refreshData(mCurrentPosition, mCurrentPosition + Global.LOADING_REPLIES_COUNT);
     }
 
     /**

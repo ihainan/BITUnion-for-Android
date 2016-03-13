@@ -440,7 +440,7 @@ public class CommonUtils {
     public static String decode(String originalStr) {
         try {
             return URLDecoder.decode(originalStr, "utf-8");
-        } catch (UnsupportedEncodingException e) {
+        } catch (Exception e) {
             Log.e(TAG, "Unsupported Encoding", e);
             return originalStr;
         }
@@ -454,6 +454,16 @@ public class CommonUtils {
      */
     public static String formatDateTime(Date date) {
         return (new SimpleDateFormat("yyyy-MM-dd hh:mm")).format(date);
+    }
+
+    /**
+     * 格式化日期字符串为标准格式（yyyy-MM-dd hh:mm"）
+     *
+     * @param dateStr 需要格式化的日期字符串
+     * @return 格式化后的日期字符串
+     */
+    public static String formatDateTime(String dateStr) {
+        return (new SimpleDateFormat("yyyy-MM-dd hh:mm")).format(parseDateString(dateStr));
     }
 
     /**
@@ -516,6 +526,22 @@ public class CommonUtils {
         } catch (ParseException e) {
             Log.e(TAG, "错误的日期字符串", e);
             return false;
+        }
+    }
+
+    /**
+     * 字符串转换为日期
+     *
+     * @param dateStr 原始字符串
+     * @return 转换得到的日期
+     */
+    public static Date parseDateString(String dateStr) {
+        DateFormat format = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+        try {
+            return format.parse(dateStr);
+        } catch (ParseException e) {
+            Log.e(TAG, "错误的日期字符串 " + dateStr, e);
+            return new Date();
         }
     }
 

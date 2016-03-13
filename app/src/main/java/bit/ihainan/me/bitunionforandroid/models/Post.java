@@ -14,9 +14,13 @@ import bit.ihainan.me.bitunionforandroid.utils.network.BUApi;
 public class Post implements Serializable {
     public final static String TAG = Post.class.getSimpleName();
 
-    // Json mapping fields
+    // Extra Fields only used on ExtraAPI
     public long post_id;
     public int floor;
+    public String dt_created;
+    public String t_subject;    // 主题标题
+
+    // Original Fields
     public long pid;
     public long fid;
     public long tid;
@@ -55,7 +59,6 @@ public class Post implements Serializable {
     public String exif; // EXIF 信息
     public String deviceName;
     public int level;
-    public String dt_created;
 
     @Override
     public String toString() {

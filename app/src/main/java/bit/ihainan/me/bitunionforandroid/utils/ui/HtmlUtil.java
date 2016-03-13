@@ -216,4 +216,30 @@ public class HtmlUtil {
 
         return result;
     }
+
+    public static String formatHtml(String html) {
+        html = replaceBase(html); // 基本替换，如换行，br 等
+        html = replaceDel(html);  // 特殊处理 [s] 标签
+        html = replaceImage(html);    // 替换图片地址
+        html = replaceQuote(html);    // 替换引用
+        html = replaceLastEdit(html); // 删除 Last Edit
+        html = replaceOther(html);    // 剩余内容
+
+        return html;
+    }
+
+    public static String getSummaryOfMessage(String html) {
+        // 删除 blockquote
+        html = html.replaceAll("<blockquote>.*?</blockquote>", "");
+
+        // 图片
+        html = html.replaceAll("<img.*?>", "[图片]");
+
+        Log.d(TAG, "getSummaryOfMessage >> " + html);
+
+        // 获取原始文本
+        html = html.replaceAll("(?s)<[^>]*>(\\s*<[^>]*>)*", " ");
+
+        return html.trim();
+    }
 }
