@@ -19,7 +19,6 @@ import bit.ihainan.me.bitunionforandroid.models.Post;
 import bit.ihainan.me.bitunionforandroid.models.TimelineEvent;
 import bit.ihainan.me.bitunionforandroid.ui.ProfileActivity;
 import bit.ihainan.me.bitunionforandroid.ui.ThreadDetailActivity;
-import bit.ihainan.me.bitunionforandroid.ui.viewholders.DefaultViewHolder;
 import bit.ihainan.me.bitunionforandroid.ui.viewholders.LoadingViewHolder;
 import bit.ihainan.me.bitunionforandroid.ui.viewholders.TimelineViewHolder;
 import bit.ihainan.me.bitunionforandroid.utils.CommonUtils;
@@ -88,10 +87,10 @@ public class TimelineAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                     if (post.floor == 0) viewHolder.action.setText("发表了主题");
                     else viewHolder.action.setText("回复了主题");
 
-                    viewHolder.title.setText(Html.fromHtml(HtmlUtil.formatHtml(post.t_subject)));
+                    viewHolder.title.setText(Html.fromHtml(HtmlUtil.formatHtml(CommonUtils.decode(post.t_subject))));
                     String htmlContent = HtmlUtil.getSummaryOfMessage(HtmlUtil.formatHtml(post.message));
                     if ("".equals(htmlContent)) {
-                        if (!"".equals(post.attachment) && !"".equals(post.attachsize))
+                        if (!(post.attachment == null || "".equals(post.attachment)))
                             viewHolder.content.setText("[附件]");
                         else viewHolder.content.setVisibility(View.GONE);
                     } else viewHolder.content.setText(Html.fromHtml(htmlContent));
@@ -116,7 +115,7 @@ public class TimelineAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                     username = favorite.username;
                     viewHolder.username.setText(CommonUtils.decode(username));
                     viewHolder.action.setText("收藏了主题");
-                    viewHolder.title.setText(Html.fromHtml(HtmlUtil.formatHtml(favorite.subject)));
+                    viewHolder.title.setText(Html.fromHtml(HtmlUtil.formatHtml(CommonUtils.decode(favorite.subject))));
                     viewHolder.content.setVisibility(View.GONE);
                     viewHolder.date.setText(CommonUtils.formatDateTime(favorite.dt_created));
 

@@ -49,6 +49,14 @@
                             android:src="@drawable/logo"
                             app:civ_border_color="@android:color/white"
                             app:civ_border_width="2dp" />
+
+                        <ImageView
+                            android:id="@+id/follow_icon"
+                            android:layout_width="18dp"
+                            android:layout_height="18dp"
+                            android:layout_alignParentBottom="true"
+                            android:layout_alignParentRight="true"
+                            android:src="@drawable/ic_remove_red_eye_black_24dp" />
                     </RelativeLayout>
                 </FrameLayout>
             </RelativeLayout>

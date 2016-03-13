@@ -17,6 +17,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -44,6 +45,7 @@ public class ProfileActivity extends SwipeActivity {
     private ViewPager mPager;
     private TabLayout mTabLayout;
     private Toolbar mToolbar;
+    private ImageView mFollowIcon;
     private CollapsingToolbarLayout mCollapsingToolbar;
 
     // Data
@@ -84,6 +86,9 @@ public class ProfileActivity extends SwipeActivity {
             }
         });
 
+        // Follow icon
+        mFollowIcon = (ImageView) findViewById(R.id.follow_icon);
+        mFollowIcon.setVisibility(View.INVISIBLE);
 
         // Tab Layout
         mTabLayout = (TabLayout) findViewById(R.id.tab_layout);
@@ -101,9 +106,11 @@ public class ProfileActivity extends SwipeActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.profile_menu, menu);
-        mFollowMenuItem = menu.findItem(R.id.follow);
-        return true;
+        if (!Global.userSession.username.equals(mUsername)) {
+            getMenuInflater().inflate(R.menu.profile_menu, menu);
+            mFollowMenuItem = menu.findItem(R.id.follow);
+            return true;
+        } else return false;
     }
 
     private boolean hasFollow;
@@ -111,6 +118,7 @@ public class ProfileActivity extends SwipeActivity {
     private boolean mFollowClickable = true;
 
     private void getFollowStatus() {
+        if (mFollowMenuItem == null) return;
         ExtraApi.getFollowStatus(this, mUsername, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
@@ -120,8 +128,10 @@ public class ProfileActivity extends SwipeActivity {
                         CommonUtils.debugToast(ProfileActivity.this, "hasFollow = " + hasFollow);
                         if (hasFollow) {
                             mFollowMenuItem.setTitle("取消关注");
+                            mFollowIcon.setVisibility(View.VISIBLE);
                         } else {
                             mFollowMenuItem.setTitle("添加关注");
+                            mFollowIcon.setVisibility(View.INVISIBLE);
                         }
                     } else {
                         String message = "获取关注状态失败，失败原因 " + response.getString("message");
@@ -151,12 +161,12 @@ public class ProfileActivity extends SwipeActivity {
                     hasFollow = !hasFollow;
                     if (hasFollow) {
                         // 之前是删除，想要添加
-                        mFollowMenuItem.setIcon(R.drawable.ic_favorite_white_24dp);
                         mFollowMenuItem.setTitle("取消关注");
+                        mFollowIcon.setVisibility(View.VISIBLE);
                         addFollow();
                     } else {
                         mFollowMenuItem.setTitle("添加关注");
-                        mFollowMenuItem.setIcon(R.drawable.ic_favorite_border_white_24dp);
+                        mFollowIcon.setVisibility(View.INVISIBLE);
                         delFollow();
                     }
                 }
@@ -191,8 +201,10 @@ public class ProfileActivity extends SwipeActivity {
                     hasFollow = !hasFollow;
                     if (hasFollow) {
                         mFollowMenuItem.setTitle("取消关注");
+                        mFollowIcon.setVisibility(View.VISIBLE);
                     } else {
                         mFollowMenuItem.setTitle("添加关注");
+                        mFollowIcon.setVisibility(View.INVISIBLE);
                     }
                 }
             } catch (JSONException e) {
@@ -208,8 +220,10 @@ public class ProfileActivity extends SwipeActivity {
                 hasFollow = !hasFollow;
                 if (hasFollow) {
                     mFollowMenuItem.setTitle("取消关注");
+                    mFollowIcon.setVisibility(View.VISIBLE);
                 } else {
                     mFollowMenuItem.setTitle("添加关注");
+                    mFollowIcon.setVisibility(View.INVISIBLE);
                 }
             }
         }

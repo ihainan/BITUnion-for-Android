@@ -170,12 +170,18 @@ public class TimelineFragment extends Fragment {
                         mAdapter.notifyItemRemoved(mList.size());
                     }
 
-                    CommonUtils.debugToast(mContext, "Loaded " + newEvents.size() + " more item(s)");
+                    // 过滤
+                    List<TimelineEvent> newEventsFiltered = new ArrayList<>();
+                    for (TimelineEvent event : newEvents) {
+                        if (event.type != 0) newEventsFiltered.add(event);
+                    }
+                    CommonUtils.debugToast(mContext, "Loaded " + newEventsFiltered.size() + " more item(s)");
+
 
                     // 更新 RecyclerView
-                    if (newEvents.size() > 0) {
+                    if (newEventsFiltered.size() > 0) {
                         mCurrentPosition += Global.LOADING_TIMELINE_COUNT;
-                        mList.addAll(newEvents);
+                        mList.addAll(newEventsFiltered);
                         mAdapter.notifyDataSetChanged();
                     }
 

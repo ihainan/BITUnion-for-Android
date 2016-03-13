@@ -66,7 +66,7 @@ public class FocusFragment extends Fragment {
 
     public class PagerAdapter extends FragmentPagerAdapter {
         final int PAGE_COUNT = 2;
-        private String tabTitles[] = new String[]{"关注", "收藏"};
+        private String tabTitles[] = new String[]{"动态", "收藏"};
         private Context context;
 
         public PagerAdapter(FragmentManager fm, Context context) {
