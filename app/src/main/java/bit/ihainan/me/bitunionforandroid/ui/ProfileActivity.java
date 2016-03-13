@@ -13,9 +13,18 @@ import android.support.v13.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import bit.ihainan.me.bitunionforandroid.R;
 import bit.ihainan.me.bitunionforandroid.ui.assist.SwipeActivity;
@@ -23,6 +32,7 @@ import bit.ihainan.me.bitunionforandroid.ui.fragment.BasicInfoFragment;
 import bit.ihainan.me.bitunionforandroid.ui.fragment.TimelineFragment;
 import bit.ihainan.me.bitunionforandroid.utils.CommonUtils;
 import bit.ihainan.me.bitunionforandroid.utils.Global;
+import bit.ihainan.me.bitunionforandroid.utils.network.ExtraApi;
 
 public class ProfileActivity extends SwipeActivity {
     // TAGS
@@ -82,6 +92,9 @@ public class ProfileActivity extends SwipeActivity {
         mTabLayout.setupWithViewPager(mPager);
         ((TextView) findViewById(R.id.title)).setText(CommonUtils.decode(mUsername));
 
+        // Get follow status
+        getFollowStatus();
+
         // Swipe
         setSwipeAnyWhere(false);
     }
@@ -89,7 +102,139 @@ public class ProfileActivity extends SwipeActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.profile_menu, menu);
+        mFollowMenuItem = menu.findItem(R.id.follow);
         return true;
+    }
+
+    private boolean hasFollow;
+    private MenuItem mFollowMenuItem;
+    private boolean mFollowClickable = true;
+
+    private void getFollowStatus() {
+        ExtraApi.getFollowStatus(this, mUsername, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                try {
+                    if (response.getInt("code") == 0) {
+                        hasFollow = response.getBoolean("data");
+                        CommonUtils.debugToast(ProfileActivity.this, "hasFollow = " + hasFollow);
+                        if (hasFollow) {
+                            mFollowMenuItem.setTitle("取消关注");
+                        } else {
+                            mFollowMenuItem.setTitle("添加关注");
+                        }
+                    } else {
+                        String message = "获取关注状态失败，失败原因 " + response.getString("message");
+                        if (Global.debugMode) {
+                            CommonUtils.debugToast(ProfileActivity.this, message);
+                        }
+                        Log.w(TAG, message);
+                    }
+                } catch (JSONException e) {
+                    Log.e(TAG, getString(R.string.error_parse_json) + ": " + response, e);
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.e(TAG, "getFollowStatus >> " + getString(R.string.error_network), error);
+            }
+        });
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.follow:
+                if (mFollowClickable) {
+                    mFollowClickable = !mFollowClickable;   // 不允许重复点击
+                    hasFollow = !hasFollow;
+                    if (hasFollow) {
+                        // 之前是删除，想要添加
+                        mFollowMenuItem.setIcon(R.drawable.ic_favorite_white_24dp);
+                        mFollowMenuItem.setTitle("取消关注");
+                        addFollow();
+                    } else {
+                        mFollowMenuItem.setTitle("添加关注");
+                        mFollowMenuItem.setIcon(R.drawable.ic_favorite_border_white_24dp);
+                        delFollow();
+                    }
+                }
+                break;
+        }
+        return true;
+    }
+
+    private Response.Listener mFollowListener = new Response.Listener<JSONObject>() {
+        @Override
+        public void onResponse(JSONObject response) {
+            mFollowClickable = !mFollowClickable;
+            try {
+                if (response.getInt("code") == 0) {
+                    // 成功添加 / 删除收藏，皆大欢喜
+                    String message = hasFollow ? "添加关注成功" : "取消关注成功";
+                    Global.hasUpdateFavor = true;
+                    Log.d(TAG, "mFollowListener >> " + message);
+                    Toast.makeText(ProfileActivity.this, message, Toast.LENGTH_SHORT).show();
+                } else {
+                    // Oh no!!!
+                    String message = (hasFollow ? "添加" : "取消") + "关注失败";
+                    String debugMessage = message + " - " + response.get("message");
+                    if (Global.debugMode) {
+                        CommonUtils.debugToast(ProfileActivity.this, debugMessage);
+                    } else {
+                        Toast.makeText(ProfileActivity.this, message, Toast.LENGTH_SHORT).show();
+                    }
+
+                    Log.w(TAG, debugMessage);
+
+                    hasFollow = !hasFollow;
+                    if (hasFollow) {
+                        mFollowMenuItem.setTitle("取消关注");
+                    } else {
+                        mFollowMenuItem.setTitle("添加关注");
+                    }
+                }
+            } catch (JSONException e) {
+                String message = (hasFollow ? "添加" : "删除") + "关注失败";
+                String debugMessage = message + " - " + getString(R.string.error_parse_json) + " " + response;
+                if (Global.debugMode) {
+                    CommonUtils.debugToast(ProfileActivity.this, debugMessage);
+                } else {
+                    Toast.makeText(ProfileActivity.this, message, Toast.LENGTH_SHORT).show();
+                }
+                Log.e(TAG, debugMessage, e);
+
+                hasFollow = !hasFollow;
+                if (hasFollow) {
+                    mFollowMenuItem.setTitle("取消关注");
+                } else {
+                    mFollowMenuItem.setTitle("添加关注");
+                }
+            }
+        }
+    };
+
+    private Response.ErrorListener mFollowErrorListener = new Response.ErrorListener() {
+        @Override
+        public void onErrorResponse(VolleyError error) {
+            String message = (hasFollow ? "取消收藏失败，" : "添加收藏失败") + "无法连接到服务器";
+            Snackbar.make(mCollapsingToolbar, message, Snackbar.LENGTH_INDEFINITE).setAction("RETRY", new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (hasFollow) addFollow();
+                    else delFollow();
+                }
+            }).show();
+        }
+    };
+
+    private void addFollow() {
+        ExtraApi.addFollow(this, mUsername, mFollowListener, mFollowErrorListener);
+    }
+
+    private void delFollow() {
+        ExtraApi.delFollow(this, mUsername, mFollowListener, mFollowErrorListener);
     }
 
     public class UserInfoPageAdapter extends FragmentPagerAdapter {
