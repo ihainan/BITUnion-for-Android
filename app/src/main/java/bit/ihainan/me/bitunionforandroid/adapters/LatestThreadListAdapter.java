@@ -70,7 +70,8 @@ public class LatestThreadListAdapter extends RecyclerView.Adapter<RecyclerView.V
     @Override
     public int getItemViewType(int position) {
         final LatestThread latestThread = mLatestThreads.get(position);
-        if (!CommonUtils.decode(latestThread.fname).equals("个人展示区")) return VIEW_TYPE_DEFAULT;
+        if (Global.saveDataMode || !CommonUtils.decode(latestThread.fname).equals("个人展示区"))
+            return VIEW_TYPE_DEFAULT;
         else return VIEW_TYPE_SELFIE;
     }
 
@@ -78,7 +79,7 @@ public class LatestThreadListAdapter extends RecyclerView.Adapter<RecyclerView.V
     public void onBindViewHolder(final RecyclerView.ViewHolder viewHolder, int position) {
         final LatestThread latestThread = mLatestThreads.get(position);
         // 注意节省流量模式
-        if (Global.saveDataMode || getItemViewType(position) == VIEW_TYPE_DEFAULT) {
+        if (getItemViewType(position) == VIEW_TYPE_DEFAULT) {
             fillDefaultView(latestThread, viewHolder);
         } else {
             fillSelfieView(latestThread, viewHolder);

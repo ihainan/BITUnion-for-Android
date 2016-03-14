@@ -232,7 +232,7 @@ public class ProfileActivity extends SwipeActivity {
     private Response.ErrorListener mFollowErrorListener = new Response.ErrorListener() {
         @Override
         public void onErrorResponse(VolleyError error) {
-            String message = (hasFollow ? "取消收藏失败，" : "添加收藏失败") + "无法连接到服务器";
+            String message = (hasFollow ? "添加收藏失败，" : "取消收藏失败") + "无法连接到服务器";
             Snackbar.make(mCollapsingToolbar, message, Snackbar.LENGTH_INDEFINITE).setAction("RETRY", new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
