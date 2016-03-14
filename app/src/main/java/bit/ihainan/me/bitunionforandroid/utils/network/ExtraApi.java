@@ -14,6 +14,7 @@ import java.util.Map;
 
 import bit.ihainan.me.bitunionforandroid.BuildConfig;
 import bit.ihainan.me.bitunionforandroid.R;
+import bit.ihainan.me.bitunionforandroid.utils.CommonUtils;
 import bit.ihainan.me.bitunionforandroid.utils.Global;
 
 /**
@@ -81,10 +82,10 @@ public class ExtraApi {
         Map<String, Object> parameters = new HashMap();
         parameters.put("app", context.getString(R.string.app_name));
         parameters.put("version", BuildConfig.VERSION_NAME);
-        parameters.put("username", Global.username);
+        parameters.put("username", CommonUtils.decode(Global.username));
         parameters.put("tid", tid);
-        parameters.put("subject", subject);
-        parameters.put("author", author);
+        parameters.put("subject", CommonUtils.decode(subject));
+        parameters.put("author", CommonUtils.decode(author));
 
         makeRequest(Request.Method.POST, context, url,
                 "ADD_FAVOR", parameters, listener, errorListener);
@@ -101,7 +102,7 @@ public class ExtraApi {
     public static void delFavorite(Context context, long tid,
                                    Response.Listener<JSONObject> listener,
                                    Response.ErrorListener errorListener) {
-        String url = ADD_FAVORITE_ENDPOINT + "/" + Global.username + "/" + tid;
+        String url = ADD_FAVORITE_ENDPOINT + "/" + CommonUtils.encode(Global.username) + "/" + tid;
         Log.i(TAG, "delFavorite >> " + url);
 
         Map<String, Object> parameters = new HashMap();
@@ -122,7 +123,7 @@ public class ExtraApi {
                                        long from, long to,
                                        Response.Listener<JSONObject> listener,
                                        Response.ErrorListener errorListener) {
-        String url = ADD_FAVORITE_ENDPOINT + "/list/" + Global.username + "?from=" + from + "&to=" + to;
+        String url = ADD_FAVORITE_ENDPOINT + "/list/" + CommonUtils.encode(Global.username) + "?from=" + from + "&to=" + to;
         Log.i(TAG, "getFavoriteList >> " + url);
 
         Map<String, Object> parameters = new HashMap();
@@ -141,7 +142,7 @@ public class ExtraApi {
     public static void getFavoriteStatus(Context context, long tid,
                                          Response.Listener<JSONObject> listener,
                                          Response.ErrorListener errorListener) {
-        String url = ADD_FAVORITE_ENDPOINT + "/status/" + Global.username + "/" + tid;
+        String url = ADD_FAVORITE_ENDPOINT + "/status/" + CommonUtils.encode(Global.username) + "/" + tid;
         Log.i(TAG, "getFavoriteStatus >> " + url);
 
         Map<String, Object> parameters = new HashMap();
@@ -170,8 +171,8 @@ public class ExtraApi {
         Map<String, Object> parameters = new HashMap();
         parameters.put("app", context.getString(R.string.app_name));
         parameters.put("version", BuildConfig.VERSION_NAME);
-        parameters.put("follower", Global.username);
-        parameters.put("following", following);
+        parameters.put("follower", CommonUtils.decode(Global.username));
+        parameters.put("following", CommonUtils.decode(following));
         makeRequest(Request.Method.POST, context, url,
                 "ADD_FOLLOW", parameters, listener, errorListener);
     }
@@ -206,7 +207,7 @@ public class ExtraApi {
     public static void getFollowStatus(Context context, String following,
                                        Response.Listener<JSONObject> listener,
                                        Response.ErrorListener errorListener) {
-        String url = FOLLOW_ENDPOINT + "/status/" + Global.userSession.username + "/" + following;
+        String url = FOLLOW_ENDPOINT + "/status/" + CommonUtils.encode(Global.userSession.username) + "/" + following;
         Log.i(TAG, "getFollowStatus >> " + url);
 
         Map<String, Object> parameters = new HashMap();
@@ -226,7 +227,7 @@ public class ExtraApi {
     public static void getFollowingList(Context context, long from, long to,
                                         Response.Listener<JSONObject> listener,
                                         Response.ErrorListener errorListener) {
-        String url = FOLLOW_ENDPOINT + "/list/" + Global.userSession.username + "?" + "from=" + from + "&to=" + to;
+        String url = FOLLOW_ENDPOINT + "/list/" + CommonUtils.encode(Global.userSession.username) + "?" + "from=" + from + "&to=" + to;
         Log.i(TAG, "getFollowingList >> " + url);
 
         Map<String, Object> parameters = new HashMap();
@@ -252,7 +253,7 @@ public class ExtraApi {
                                               long from, long to,
                                               Response.Listener<JSONObject> listener,
                                               Response.ErrorListener errorListener) {
-        String url = TIMELINE_ENDPOINT + "/spec/" + username + "?from=" + from + "&to=" + to;
+        String url = TIMELINE_ENDPOINT + "/spec/" + CommonUtils.encode(username) + "?from=" + from + "&to=" + to;
         Log.i(TAG, "getSpecialUserTimeline >> " + url);
 
         Map<String, Object> parameters = new HashMap();
@@ -273,7 +274,7 @@ public class ExtraApi {
                                         Response.Listener<JSONObject> listener,
                                         Response.ErrorListener errorListener) {
 
-        String url = TIMELINE_ENDPOINT + "/focus/" + Global.username + "?from=" + from + "&to=" + to;
+        String url = TIMELINE_ENDPOINT + "/focus/" + CommonUtils.encode(Global.username) + "?from=" + from + "&to=" + to;
         Log.i(TAG, "getFocusTimeline >> " + url);
 
         Map<String, Object> parameters = new HashMap();
@@ -298,7 +299,7 @@ public class ExtraApi {
                                      long from, long to,
                                      Response.Listener<JSONObject> listener,
                                      Response.ErrorListener errorListener) {
-        String url = ENDPOINT + "/search/threads?key=" + keyword + "&from=" + from + "&to=" + to;
+        String url = ENDPOINT + "/search/threads?key=" + CommonUtils.encode(keyword) + "&from=" + from + "&to=" + to;
         Log.i(TAG, "searchThreads >> " + url);
 
         Map<String, Object> parameters = new HashMap();
@@ -320,7 +321,7 @@ public class ExtraApi {
                                    long from, long to,
                                    Response.Listener<JSONObject> listener,
                                    Response.ErrorListener errorListener) {
-        String url = ENDPOINT + "/search/posts?key=" + keyword + "&from=" + from + "&to=" + to;
+        String url = ENDPOINT + "/search/posts?key=" + CommonUtils.encode(keyword) + "&from=" + from + "&to=" + to;
         Log.i(TAG, "searchPosts >> " + url);
 
         Map<String, Object> parameters = new HashMap();

@@ -32,6 +32,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
 import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -416,7 +417,7 @@ public class CommonUtils {
     }
 
     /**
-     * 将字符转换成 utf-8 编码
+     * 将 URL 编码字符转换成特定编码类型
      *
      * @param originalStr 原始字符串
      * @param encode      编码类型
@@ -432,7 +433,7 @@ public class CommonUtils {
     }
 
     /**
-     * 将字符转换成 utf-8 编码
+     * 将 URL 编码字符转换成 utf-8 编码
      *
      * @param originalStr 原始字符串
      * @return 转换后得到的 utf-8 编码字符串
@@ -445,6 +446,22 @@ public class CommonUtils {
             return originalStr;
         }
     }
+
+    /**
+     * 将字符串转换成 URL 编码
+     *
+     * @param originalStr 原始字符串
+     * @return 转换后得到的 URL 编码字符串
+     */
+    public static String encode(String originalStr) {
+        try {
+            return URLEncoder.encode(originalStr, "utf-8");
+        } catch (Exception e) {
+            Log.e(TAG, "Unsupported Encoding", e);
+            return originalStr;
+        }
+    }
+
 
     /**
      * 格式化日期为标准格式（yyyy-MM-dd hh:mm"）
