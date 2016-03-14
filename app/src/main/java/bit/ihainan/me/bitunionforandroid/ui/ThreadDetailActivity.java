@@ -13,7 +13,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.android.volley.Response;
@@ -53,7 +52,6 @@ public class ThreadDetailActivity extends SwipeActivity {
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private LinearLayoutManager mLayoutManager = new LinearLayoutManager(this);
     private CollapsingToolbarLayout mCollapsingToolbar;
-    private ImageView mBackdrop;
     private Toolbar mToolbar;
 
     // Bundle tags
@@ -151,9 +149,7 @@ public class ThreadDetailActivity extends SwipeActivity {
 
             }
         });
-
     }
-
 
     private void fillViews() {
         getFavoriteStatus();
@@ -226,7 +222,6 @@ public class ThreadDetailActivity extends SwipeActivity {
     }
 
     public boolean hasFavor = false;
-
 
     private void getFavoriteStatus() {
         ExtraApi.getFavoriteStatus(this, mTid, new Response.Listener<JSONObject>() {
@@ -359,7 +354,7 @@ public class ThreadDetailActivity extends SwipeActivity {
                 super.onScrolled(recyclerView, dx, dy);
 
                 int mLastVisibleItem = mLayoutManager.findLastVisibleItemPosition();
-                if (dy > 0 && mLastVisibleItem >= mThreadPostList.size() - Global.LOADING_REPLIES_COUNT / 2 && !mIsLoading) {
+                if (dy > 0 && mLastVisibleItem >= mThreadPostList.size() - Global.LOADING_POSTS_COUNT / 2 && !mIsLoading) {
                     loadMore(true);
                 }
             }
@@ -393,7 +388,7 @@ public class ThreadDetailActivity extends SwipeActivity {
         mIsLoading = true;
         mSwipeRefreshLayout.setRefreshing(true);
         mThreadPostList.clear();
-        mCurrentPosition = Global.ascendingOrder ? 0 : mReplyCount - Global.LOADING_REPLIES_COUNT;
+        mCurrentPosition = Global.ascendingOrder ? 0 : mReplyCount - Global.LOADING_POSTS_COUNT;
         loadMore(false);
     }
 
@@ -406,7 +401,7 @@ public class ThreadDetailActivity extends SwipeActivity {
             mIsLoading = true;
         }
 
-        refreshData(mCurrentPosition, mCurrentPosition + Global.LOADING_REPLIES_COUNT - 1); // 0 - 9, 10 - 19
+        refreshData(mCurrentPosition, mCurrentPosition + Global.LOADING_POSTS_COUNT - 1); // 0 - 9, 10 - 19
     }
 
     /**
@@ -451,7 +446,7 @@ public class ThreadDetailActivity extends SwipeActivity {
                                 // 更新 RecyclerView
                                 if (!Global.ascendingOrder)
                                     Collections.reverse(newThreads); // 倒序
-                                mCurrentPosition += (Global.ascendingOrder ? Global.LOADING_REPLIES_COUNT : -Global.LOADING_REPLIES_COUNT);
+                                mCurrentPosition += (Global.ascendingOrder ? Global.LOADING_POSTS_COUNT : -Global.LOADING_POSTS_COUNT);
                                 mThreadPostList.addAll(newThreads);
                                 mAdapter.notifyDataSetChanged();
 

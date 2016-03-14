@@ -16,7 +16,7 @@ import java.util.List;
 import bit.ihainan.me.bitunionforandroid.R;
 import bit.ihainan.me.bitunionforandroid.models.Member;
 import bit.ihainan.me.bitunionforandroid.models.Thread;
-import bit.ihainan.me.bitunionforandroid.ui.ThreadDetailActivity;
+import bit.ihainan.me.bitunionforandroid.ui.ThreadDetailNewActivity;
 import bit.ihainan.me.bitunionforandroid.ui.viewholders.DefaultViewHolder;
 import bit.ihainan.me.bitunionforandroid.ui.viewholders.LoadingViewHolder;
 import bit.ihainan.me.bitunionforandroid.utils.CommonUtils;
@@ -86,11 +86,11 @@ public class ThreadListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         holder.title.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(mContext, ThreadDetailActivity.class);
-                intent.putExtra(ThreadDetailActivity.THREAD_ID_TAG, thread.tid);
-                intent.putExtra(ThreadDetailActivity.THREAD_NAME_TAG, CommonUtils.decode(thread.subject));
-                intent.putExtra(ThreadDetailActivity.THREAD_REPLY_COUNT_TAG, thread.replies + 1);
-                intent.putExtra(ThreadDetailActivity.THREAD_AUTHOR_NAME_TAG, CommonUtils.decode(thread.author));
+                Intent intent = new Intent(mContext, ThreadDetailNewActivity.class);
+                intent.putExtra(ThreadDetailNewActivity.THREAD_ID_TAG, thread.tid);
+                intent.putExtra(ThreadDetailNewActivity.THREAD_NAME_TAG, CommonUtils.decode(thread.subject));
+                intent.putExtra(ThreadDetailNewActivity.THREAD_REPLY_COUNT_TAG, thread.replies + 1);
+                intent.putExtra(ThreadDetailNewActivity.THREAD_AUTHOR_NAME_TAG, CommonUtils.decode(thread.author));
                 mContext.startActivity(intent);
             }
         });

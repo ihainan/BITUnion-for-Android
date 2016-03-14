@@ -1,31 +1,246 @@
 package bit.ihainan.me.bitunionforandroid.ui;
 
+import android.app.Fragment;
+import android.app.FragmentManager;
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.v7.app.AppCompatActivity;
+import android.support.v13.app.FragmentPagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
+import android.text.Html;
+import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 
-import bit.ihainan.me.bitunionforandroid.R;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.ogaclejapan.smarttablayout.SmartTabLayout;
 
-public class ThreadDetailNewActivity extends AppCompatActivity {
+import net.opacapp.multilinecollapsingtoolbar.CollapsingToolbarLayout;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.List;
+
+import bit.ihainan.me.bitunionforandroid.R;
+import bit.ihainan.me.bitunionforandroid.models.Post;
+import bit.ihainan.me.bitunionforandroid.ui.assist.SwipeActivity;
+import bit.ihainan.me.bitunionforandroid.ui.fragment.PostListFragment;
+import bit.ihainan.me.bitunionforandroid.utils.CommonUtils;
+import bit.ihainan.me.bitunionforandroid.utils.Global;
+import bit.ihainan.me.bitunionforandroid.utils.network.BUApi;
+import bit.ihainan.me.bitunionforandroid.utils.network.ExtraApi;
+
+public class ThreadDetailNewActivity extends SwipeActivity {
+    // TAGS
+    private final static String TAG = ThreadDetailNewActivity.class.getSimpleName();
+    public final static String THREAD_ID_TAG = "THREAD_ID_TAG";
+    public final static String THREAD_NAME_TAG = "THREAD_NAME_TAG";
+    public final static String THREAD_AUTHOR_NAME_TAG = "THREAD_AUTHOR_NAME_TAG";
+    public final static String THREAD_REPLY_COUNT_TAG = "THREAD_REPLY_COUNT_TAG";
+
+    // UI references
+    private ViewPager mPager;
+    private SmartTabLayout mTabLayout;
+    private Toolbar mToolbar;
+    private CollapsingToolbarLayout mCollapsingToolbar;
+
+    // Data
+    private Long mTid, mReplyCount;
+    private String mThreadName, mAuthorName;
+    private int mTotalPage;  // 总页数
+
+    private void getExtra() {
+        Intent intent = getIntent();
+        Bundle bundle = intent.getExtras();
+        if (bundle != null) {
+            mTid = bundle.getLong(THREAD_ID_TAG);
+            mThreadName = bundle.getString(THREAD_NAME_TAG);
+            mAuthorName = bundle.getString(THREAD_AUTHOR_NAME_TAG);
+            mReplyCount = bundle.getLong(THREAD_REPLY_COUNT_TAG);
+        }
+
+        if (mTid == null) mTid = 10588072L; // For test
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_thread_detail_new);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
+        // Get bundle data
+        getExtra();
+
+        // Toolbar
+        mToolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(mToolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+            public void onClick(View v) {
+                finish();
+            }
+        });
+        mCollapsingToolbar = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
+        mCollapsingToolbar.setExpandedTitleTextAppearance(R.style.ExpandedAppBar);
+        mCollapsingToolbar.setTitle("Loading");
+
+        // Tab Layout
+        mTabLayout = (SmartTabLayout) findViewById(R.id.tab_layout);
+        mPager = (ViewPager) findViewById(R.id.pager);
+
+        if (mThreadName != null) {
+            mCollapsingToolbar.setTitle(Html.fromHtml(CommonUtils.decode(mThreadName)));
+        }
+
+        if (mReplyCount == null || mReplyCount == 0 || mThreadName == null || mAuthorName == null)
+            getBasicData();
+        else fillViews();
+
+        // Swipe
+        setSwipeAnyWhere(false);
+    }
+
+    private void getBasicData() {
+        BUApi.getPostReplies(this, mTid, 0, 1, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                if (BUApi.checkStatus(response)) {
+                    try {
+                        JSONArray newListJson = response.getJSONArray("postlist");
+                        mReplyCount = (long) response.getInt("total_reply_count") + 1;
+
+                        List<Post> threads = BUApi.MAPPER.readValue(newListJson.toString(),
+                                new TypeReference<List<Post>>() {
+                                });
+
+                        if (threads.size() > 0) {
+                            Post firstReply = threads.get(0);
+                            mThreadName = CommonUtils.decode(firstReply.subject);
+                            mAuthorName = CommonUtils.decode(firstReply.author);
+                            fillViews();
+                        }
+                    } catch (Exception e) {
+                        String message = getString(R.string.error_parse_json) + "\n" + response;
+                        Log.e(TAG, message, e);
+                        CommonUtils.debugToast(ThreadDetailNewActivity.this, message);
+                    }
+                }
+
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                String message = getString(R.string.error_network);
+                Log.e(TAG, message, error);
+                CommonUtils.debugToast(ThreadDetailNewActivity.this, message);
+
             }
         });
     }
 
+    private void calculateTotalPage() {
+        if (mReplyCount % Global.LOADING_POSTS_COUNT == 0) {
+            mTotalPage = (int) (mReplyCount / Global.LOADING_POSTS_COUNT);
+        } else {
+            mTotalPage = (int) (mReplyCount / Global.LOADING_POSTS_COUNT) + 1;
+        }
+    }
+
+    private void fillViews() {
+        getFavoriteStatus();
+
+        // Title
+        mCollapsingToolbar.setTitle(Html.fromHtml(CommonUtils.decode(mThreadName)));
+
+        // TabLayout
+        calculateTotalPage();
+        mPager.setAdapter(new ThreadPageAdapter(getFragmentManager(), this));
+        mTabLayout.setViewPager(mPager);
+        mPager.setOffscreenPageLimit(1);
+    }
+
+    public boolean hasFavor = false;
+
+    private void getFavoriteStatus() {
+        ExtraApi.getFavoriteStatus(this, mTid, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                try {
+                    if (response.getInt("code") == 0) {
+                        hasFavor = response.getBoolean("data");
+                        CommonUtils.debugToast(ThreadDetailNewActivity.this, "hasFavor = " + hasFavor);
+                        if (hasFavor) {
+                            mFavorItem.setTitle("取消收藏");
+                            mFavorItem.setIcon(R.drawable.ic_favorite_white_24dp);
+                        } else {
+                            mFavorItem.setTitle("添加收藏");
+                            mFavorItem.setIcon(R.drawable.ic_favorite_border_white_24dp);
+                        }
+                    } else {
+                        String message = "获取收藏状态失败，失败原因 " + response.getString("message");
+                        if (Global.debugMode) {
+                            CommonUtils.debugToast(ThreadDetailNewActivity.this, message);
+                        }
+                        Log.w(TAG, message);
+                    }
+                } catch (JSONException e) {
+                    Log.e(TAG, getString(R.string.error_parse_json) + ": " + response, e);
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.e(TAG, "getFavoriteStatus >> " + getString(R.string.error_network), error);
+            }
+        });
+    }
+
+    private MenuItem mFavorItem;
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.thread_detail_tab_menu, menu);
+        mFavorItem = menu.findItem(R.id.favor);
+        return true;
+    }
+
+    public class ThreadPageAdapter extends FragmentPagerAdapter {
+        private Context context;
+
+        public ThreadPageAdapter(FragmentManager fm, Context context) {
+            super(fm);
+            this.context = context;
+        }
+
+        @Override
+        public int getCount() {
+            return mTotalPage;
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            Bundle args = new Bundle();
+            args.putLong(ThreadDetailNewActivity.THREAD_ID_TAG, mTid);
+            args.putInt(PostListFragment.PAGE_POSITION_TAG, position);
+            args.putString(THREAD_AUTHOR_NAME_TAG, mAuthorName);
+            args.putLong(THREAD_REPLY_COUNT_TAG, mReplyCount);
+
+            Fragment fragment = new PostListFragment();
+            fragment.setArguments(args);
+
+            return fragment;
+        }
+
+        @Override
+        public CharSequence getPageTitle(int position) {
+            // Generate title based on item position
+            return "Page #" + (position + 1);
+        }
+    }
 }

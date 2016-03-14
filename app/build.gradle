@@ -2,7 +2,7 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 23
-    buildToolsVersion "23.0.1"
+    buildToolsVersion '22.0.1'
 
     repositories {
         mavenCentral()
@@ -46,7 +46,7 @@ android {
 }
 
 dependencies {
-    compile fileTree(include: ['*.jar'], dir: 'libs')
+    compile fileTree(dir: 'libs', include: ['*.jar'])
     testCompile 'junit:junit:4.12'
     compile 'com.android.support:appcompat-v7:23.1.1'
     compile 'com.android.support:design:23.1.1'
@@ -66,4 +66,5 @@ dependencies {
     testCompile 'junit:junit:4.12'
     compile 'com.android.support:support-v13:+'
     compile 'com.miguelcatalan:materialsearchview:1.4.0'
+    compile 'com.ogaclejapan.smarttablayout:library:1.6.0@aar'
 }

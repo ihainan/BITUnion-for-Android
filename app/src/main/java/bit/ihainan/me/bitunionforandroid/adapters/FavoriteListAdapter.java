@@ -8,20 +8,16 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.squareup.picasso.Picasso;
-
 import java.util.List;
 
 import bit.ihainan.me.bitunionforandroid.R;
 import bit.ihainan.me.bitunionforandroid.models.Favorite;
 import bit.ihainan.me.bitunionforandroid.models.Member;
-import bit.ihainan.me.bitunionforandroid.ui.ThreadDetailActivity;
-import bit.ihainan.me.bitunionforandroid.ui.viewholders.DefaultViewHolder;
+import bit.ihainan.me.bitunionforandroid.ui.ThreadDetailNewActivity;
 import bit.ihainan.me.bitunionforandroid.ui.viewholders.LoadingViewHolder;
 import bit.ihainan.me.bitunionforandroid.ui.viewholders.TimelineViewHolder;
 import bit.ihainan.me.bitunionforandroid.utils.CommonUtils;
 import bit.ihainan.me.bitunionforandroid.utils.Global;
-import bit.ihainan.me.bitunionforandroid.utils.network.BUApi;
 import bit.ihainan.me.bitunionforandroid.utils.ui.HtmlUtil;
 
 /**
@@ -71,10 +67,10 @@ public class FavoriteListAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             View.OnClickListener onClickListener = new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Intent intent = new Intent(mContext, ThreadDetailActivity.class);
-                    intent.putExtra(ThreadDetailActivity.THREAD_ID_TAG, favorite.tid);
-                    intent.putExtra(ThreadDetailActivity.THREAD_AUTHOR_NAME_TAG, favorite.author);
-                    intent.putExtra(ThreadDetailActivity.THREAD_NAME_TAG, favorite.subject);
+                    Intent intent = new Intent(mContext, ThreadDetailNewActivity.class);
+                    intent.putExtra(ThreadDetailNewActivity.THREAD_ID_TAG, favorite.tid);
+                    intent.putExtra(ThreadDetailNewActivity.THREAD_AUTHOR_NAME_TAG, favorite.author);
+                    intent.putExtra(ThreadDetailNewActivity.THREAD_NAME_TAG, favorite.subject);
                     mContext.startActivity(intent);
                 }
             };

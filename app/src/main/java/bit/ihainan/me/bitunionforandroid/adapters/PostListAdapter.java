@@ -74,7 +74,7 @@ public class PostListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             viewHolder.attachmentLayout.removeAllViews();
 
             // 楼层
-            final long currentLevel = Global.ascendingOrder ? position : mReplyCount - position - 1;
+            final long currentLevel = reply.floor;
             viewHolder.number.setText("# " + currentLevel);
 
             // 头像
