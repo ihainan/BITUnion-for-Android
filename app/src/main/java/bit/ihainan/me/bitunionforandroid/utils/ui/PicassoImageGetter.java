@@ -40,18 +40,36 @@ public class PicassoImageGetter implements Html.ImageGetter {
             protected Bitmap doInBackground(Void... params) {
                 // 获取图片
                 try {
+                    Bitmap bitmap;
+                    Picasso picasso = Picasso.with(mContext);
+
+                    // 表情，直接从本地获取
+                    Log.d(TAG, "loadImage >> 本地图片，直接获取 " + source);
+                    if (source.startsWith("file:///android_asset/faces/s")) {
+                        return picasso.load(source).resize(CommonUtils.getFontHeight(mContext, 18),
+                                CommonUtils.getFontHeight(mContext, 18)).get();
+                    } else if (source.startsWith("file:///android_asset/faces/bz")) {
+                        return picasso.load(source).resize(CommonUtils.getFontHeight(mContext, 35),
+                                CommonUtils.getFontHeight(mContext, 35)).get();
+                    }
+
+                    // 从缓存中获取图片
+                    bitmap = Global.getCache(mContext).getAsBitmap(Global.CACHE_MESSAGE_IMAGE + "_" + source);
+                    if (bitmap != null) {
+                        Log.d(TAG, "loadImage >> 从缓存中获取图片 " + source);
+                        return bitmap;
+                    }
+
                     // Wifi 条件或者非省流量条件下加载图片
                     if (CommonUtils.isWifi(mContext) || !Global.saveDataMode) {
                         Log.d(TAG, "loadImage >> 非节省流量模式或者 Wi-Fi 环境，正常下载图片 " + source);
-                        Picasso picasso = Picasso.with(mContext);
-                        if (source.startsWith("file:///android_asset/faces/s"))
-                            return picasso.load(source).resize(CommonUtils.getFontHeight(mContext, 18),
-                                    CommonUtils.getFontHeight(mContext, 18)).get();
-                        else if (source.startsWith("file:///android_asset/faces/bz"))
-                            return picasso.load(source).resize(CommonUtils.getFontHeight(mContext, 35),
-                                    CommonUtils.getFontHeight(mContext, 35)).get();
-                        else
-                            return picasso.load(source).get();
+                        bitmap = picasso.load(source).get();
+
+                        // 缓存位图
+                        Log.d(TAG, "loadImage >> 缓存图片成功 " + source);
+                        Global.getCache(mContext).put(Global.CACHE_MESSAGE_IMAGE + "_" + source, bitmap);
+
+                        return bitmap;
                     } else {
                         Log.d(TAG, "loadImage >> 节省流量模式且非 Wi-Fi 环境，不下载图片 " + source);
                         return null;

@@ -35,6 +35,7 @@ public class Global extends Application {
     /* 缓存相关 */
     private static ACache cache;
     public final static String CACHE_USER_INFO = "CACHE_USER_INFO";
+    public final static String CACHE_MESSAGE_IMAGE = "CACHE_MESSAGE_IMAGE";
     public final static String CACHE_USER_SESSION = "CACHE_SESSION";
     public final static String CACHE_REPLY_CONTENT = "CACHE_REPLY_CONTENT";
     public static int cacheDays = 10;
