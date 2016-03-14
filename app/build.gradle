@@ -65,4 +65,5 @@ dependencies {
     // compile 'jp.wasabeef:richeditor-android:1.2.0'
     testCompile 'junit:junit:4.12'
     compile 'com.android.support:support-v13:+'
+    compile 'com.miguelcatalan:materialsearchview:1.4.0'
 }

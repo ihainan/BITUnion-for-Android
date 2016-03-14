@@ -87,7 +87,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             android:ellipsize="end"
-            android:lineSpacingExtra="5dp"
+            android:lineSpacingExtra="6dp"
             android:maxLines="4"
             android:text="Long Long Long Long Long Long Long Long Long Long Long Long Long Long Long Long Long Long Long Long Long Long Long Long Long Content"
             android:textColor="@android:color/black"

@@ -118,11 +118,11 @@ public class ProfileActivity extends SwipeActivity {
     private boolean mFollowClickable = true;
 
     private void getFollowStatus() {
-        if (mFollowMenuItem == null) return;
         ExtraApi.getFollowStatus(this, mUsername, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
                 try {
+                    if (mFollowMenuItem == null) return;
                     if (response.getInt("code") == 0) {
                         hasFollow = response.getBoolean("data");
                         CommonUtils.debugToast(ProfileActivity.this, "hasFollow = " + hasFollow);

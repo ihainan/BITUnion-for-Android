@@ -19,14 +19,14 @@
             android:background="?attr/colorPrimary"
             android:elevation="@dimen/toolbar_elevation"
             app:popupTheme="@style/AppTheme.PopupOverlay" />
+
     </android.support.design.widget.AppBarLayout>
-    
+
     <android.support.v4.widget.SwipeRefreshLayout
         android:id="@+id/home_swipe_refresh_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
-
-
+        
         <android.support.v7.widget.RecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
             android:id="@+id/detail_recycler_view"
             android:layout_width="match_parent"

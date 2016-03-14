@@ -115,7 +115,7 @@ public class TimelineAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                     username = favorite.username;
                     viewHolder.username.setText(CommonUtils.decode(username));
                     viewHolder.action.setText("收藏了主题");
-                    viewHolder.title.setText(Html.fromHtml(HtmlUtil.formatHtml(CommonUtils.decode(favorite.subject))));
+                    viewHolder.title.setText(Html.fromHtml(HtmlUtil.formatHtml(favorite.subject)));
                     viewHolder.content.setVisibility(View.GONE);
                     viewHolder.date.setText(CommonUtils.formatDateTime(favorite.dt_created));
 

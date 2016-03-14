@@ -22,8 +22,14 @@ import bit.ihainan.me.bitunionforandroid.utils.Global;
 public class ExtraApi {
     public final static String TAG = ExtraApi.class.getSimpleName();
     public final static String BASE_API = "http://ali.ihainan.me:8080/api/";
+    // public final static String BASE_API = "http://192.168.56.1:8080/api/";
+    // public final static String BASE_API = "http://192.168.31.115:8080/api/";
     public final static String VERSION = "v2";
     public final static String ENDPOINT = BASE_API + VERSION;
+
+    // Basic Authentication
+    public static String BASIC_AUTH_USERNAME = "bitunion_app";
+    public static String BASIC_AUTH_PASSWORD = "bitunion_api";
 
     public static boolean checkStatus(JSONObject response) {
         try {

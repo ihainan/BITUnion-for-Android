@@ -2,9 +2,11 @@ package bit.ihainan.me.bitunionforandroid.utils.network;
 
 import android.content.Context;
 import android.text.TextUtils;
+import android.util.Base64;
 import android.util.Log;
 
 import com.android.volley.AuthFailureError;
+import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -94,10 +96,23 @@ public class RequestQueueManager {
 
         public CustomJsonObjectRequest(int method, String url, JSONObject jsonRequest, Response.Listener<JSONObject> listener, Response.ErrorListener errorListener) {
             super(method, url, jsonRequest, listener, errorListener);
+            setRetryPolicy(new DefaultRetryPolicy(
+                    1000 * 10,
+                    DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                    DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
         }
 
         public CustomJsonObjectRequest(String url, JSONObject jsonRequest, Response.Listener<JSONObject> listener, Response.ErrorListener errorListener) {
             super(url, jsonRequest, listener, errorListener);
+        }
+
+        @Override
+        public Map<String, String> getHeaders() throws AuthFailureError {
+            HashMap<String, String> params = new HashMap<String, String>();
+            String credits = String.format("%s:%s", ExtraApi.BASIC_AUTH_USERNAME, ExtraApi.BASIC_AUTH_PASSWORD);
+            String auth = "Basic " + Base64.encodeToString(credits.getBytes(), Base64.NO_WRAP);
+            params.put("Authorization", auth);
+            return params;
         }
 
         @Override

@@ -13,12 +13,16 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.miguelcatalan.materialsearchview.MaterialSearchView;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -74,6 +78,8 @@ public class HomePageFragment extends Fragment {
             // Swipe Refresh Layout
             mSwipeRefreshLayout = (SwipeRefreshLayout) mRootView.findViewById(R.id.home_swipe_refresh_layout);
             setupSwipeRefreshLayout();
+
+            setHasOptionsMenu(true);
         }
 
         return mRootView;
