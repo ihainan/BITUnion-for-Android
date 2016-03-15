@@ -9,7 +9,7 @@
         app:showAsAction="ifRoom" />
 
     <item
-        android:id="@+id/favor"
+        android:id="@+id/action_favor"
         android:icon="@drawable/ic_favorite_border_white_24dp"
         android:orderInCategory="80"
         android:title="添加收藏"

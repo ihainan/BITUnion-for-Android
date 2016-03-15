@@ -42,7 +42,7 @@ public class BasicInfoFragment extends Fragment {
 
     // UI references
     private View mRootView;
-    private TextView mUserId, mStatus, mCredit, mBday, mEmail, mWebsite, mThreadCount, mPostCount, mToolbarTitle, mRegDate, mLastVisit;
+    private TextView mUserId, mStatus, mCredit, mBday, mEmail, mWebsite, mThreadCount, mPostCount, mRegDate, mLastVisit;
     private TextView mSignature;
     private ImageView mAvatar;
     private LinearLayout mContactLayout, mSignatureLayout, mBdayLayout;
@@ -76,7 +76,6 @@ public class BasicInfoFragment extends Fragment {
             mWebsite = (TextView) mRootView.findViewById(R.id.profile_web);
             mThreadCount = (TextView) mRootView.findViewById(R.id.profile_thread_sum);
             mPostCount = (TextView) mRootView.findViewById(R.id.profile_post_sum);
-            mToolbarTitle = (TextView) mRootView.findViewById(R.id.toolbar_title);
             mRegDate = (TextView) mRootView.findViewById(R.id.profile_regdate);
             mLastVisit = (TextView) mRootView.findViewById(R.id.profile_lastvisit);
             mContactLayout = (LinearLayout) mRootView.findViewById(R.id.profile_contact_layout);

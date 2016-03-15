@@ -3,11 +3,14 @@ package bit.ihainan.me.bitunionforandroid.ui;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v13.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.text.Html;
 import android.util.Log;
@@ -37,6 +40,7 @@ import bit.ihainan.me.bitunionforandroid.utils.CommonUtils;
 import bit.ihainan.me.bitunionforandroid.utils.Global;
 import bit.ihainan.me.bitunionforandroid.utils.network.BUApi;
 import bit.ihainan.me.bitunionforandroid.utils.network.ExtraApi;
+import biz.kasual.materialnumberpicker.MaterialNumberPicker;
 
 public class ThreadDetailNewActivity extends SwipeActivity {
     // TAGS
@@ -230,7 +234,7 @@ public class ThreadDetailNewActivity extends SwipeActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.thread_detail_tab_menu, menu);
-        mFavorItem = menu.findItem(R.id.favor);
+        mFavorItem = menu.findItem(R.id.action_favor);
         return true;
     }
 
@@ -268,7 +272,7 @@ public class ThreadDetailNewActivity extends SwipeActivity {
         @Override
         public CharSequence getPageTitle(int position) {
             // Generate title based on item position
-            return "# " + (position + 1);
+            return "#" + (position + 1);
         }
     }
 
@@ -277,7 +281,7 @@ public class ThreadDetailNewActivity extends SwipeActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.favor:
+            case R.id.action_favor:
                 if (favorClickable) {
                     favorClickable = !favorClickable;   // 不允许重复点击
                     hasFavor = !hasFavor;
@@ -292,6 +296,40 @@ public class ThreadDetailNewActivity extends SwipeActivity {
                         delFavorite();
                     }
                 }
+                break;
+            case R.id.jump_to_page:
+                final MaterialNumberPicker numberPicker = new MaterialNumberPicker.Builder(this)
+                        .minValue(1)
+                        .maxValue(mTotalPage)
+                        .defaultValue(mPager.getCurrentItem() + 1)
+                        .backgroundColor(Color.WHITE)
+                        .separatorColor(Color.TRANSPARENT)
+                        .textColor(R.color.primary_dark)
+                        .textSize(20)
+                        .enableFocusability(false)
+                        .wrapSelectorWheel(true)
+                        .build();
+                new AlertDialog.Builder(this)
+                        .setTitle("跳转到页面")
+                        .setView(numberPicker)
+                        .setPositiveButton(getString(android.R.string.ok), new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                if (Math.abs(numberPicker.getValue() - mPager.getCurrentItem()) <= 5)
+                                    mPager.setCurrentItem(numberPicker.getValue() - 1, true);
+                                else mPager.setCurrentItem(numberPicker.getValue() - 1);
+                            }
+                        })
+                        .show();
+                break;
+            case R.id.action_jump_to_head:
+                if (mPager.getCurrentItem() <= 5) mPager.setCurrentItem(0, true);
+                else mPager.setCurrentItem(0);
+                break;
+            case R.id.action_jump_to_tail:
+                if (mTotalPage - mPager.getCurrentItem() <= 5)
+                    mPager.setCurrentItem(mTotalPage - 1, true);
+                else mPager.setCurrentItem(mTotalPage - 1);
                 break;
         }
 

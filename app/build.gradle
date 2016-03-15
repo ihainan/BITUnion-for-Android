@@ -67,4 +67,5 @@ dependencies {
     compile 'com.android.support:support-v13:+'
     compile 'com.miguelcatalan:materialsearchview:1.4.0'
     compile 'com.ogaclejapan.smarttablayout:library:1.6.0@aar'
+    compile 'biz.kasual:materialnumberpicker:1.2.0'
 }
