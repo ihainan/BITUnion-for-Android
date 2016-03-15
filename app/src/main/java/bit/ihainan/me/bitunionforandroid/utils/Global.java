@@ -38,7 +38,7 @@ public class Global extends Application {
     public final static String CACHE_MESSAGE_IMAGE = "CACHE_MESSAGE_IMAGE";
     public final static String CACHE_USER_SESSION = "CACHE_SESSION";
     public final static String CACHE_REPLY_CONTENT = "CACHE_REPLY_CONTENT";
-    public final static String CACHE_VIEW_POSITION = "CACHE_REPLY_CONTENT";
+    public final static String CACHE_VIEW_POSITION = "CACHE_VIEW_POSITION";
     public static int cacheDays = 10;
     public final static Integer VIEW_POSITION_CACHE_DAY = 1;
 
