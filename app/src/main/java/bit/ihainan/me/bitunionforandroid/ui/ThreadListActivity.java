@@ -48,7 +48,7 @@ public class ThreadListActivity extends SwipeActivity {
     private String mAction, mForumName;
     private ForumListGroup.SubForum mSubForum;
     private ForumListGroup.ForumList mMainForum;
-    private Long mFid, mRepliesCount;
+    private Long mFid;
     private int mCurrentPosition = 0;
 
     private void getExtra() {

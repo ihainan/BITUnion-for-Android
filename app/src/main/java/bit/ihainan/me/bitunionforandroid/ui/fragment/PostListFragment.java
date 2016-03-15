@@ -30,6 +30,7 @@ import bit.ihainan.me.bitunionforandroid.adapters.PostListAdapter;
 import bit.ihainan.me.bitunionforandroid.models.Post;
 import bit.ihainan.me.bitunionforandroid.ui.ThreadDetailNewActivity;
 import bit.ihainan.me.bitunionforandroid.ui.assist.SimpleDividerItemDecoration;
+import bit.ihainan.me.bitunionforandroid.utils.ACache;
 import bit.ihainan.me.bitunionforandroid.utils.CommonUtils;
 import bit.ihainan.me.bitunionforandroid.utils.Global;
 import bit.ihainan.me.bitunionforandroid.utils.network.BUApi;
@@ -42,6 +43,7 @@ public class PostListFragment extends Fragment {
     // Tags
     private final static String TAG = PostListFragment.class.getSimpleName();
     public final static String PAGE_POSITION_TAG = "PAGE_POSITION_TAG";
+    public final static String PAGE_INDEX_TAG = "PAGE_INDEX_TAG";
 
     private Context mContext;
 
@@ -53,7 +55,7 @@ public class PostListFragment extends Fragment {
 
     // Data
     private Long mTid, mReplyCount;
-    private Integer mPagePosition;
+    private Integer mPagePosition, mPageIndex;
     private String mAuthorName;
     private List<Post> mList = new ArrayList<>();
     private PostListAdapter mAdapter;
@@ -70,6 +72,7 @@ public class PostListFragment extends Fragment {
             mAuthorName = getArguments().getString(ThreadDetailNewActivity.THREAD_AUTHOR_NAME_TAG);
             mReplyCount = getArguments().getLong(ThreadDetailNewActivity.THREAD_REPLY_COUNT_TAG);
             mPagePosition = getArguments().getInt(PAGE_POSITION_TAG);
+            mPageIndex = getArguments().getInt(PAGE_INDEX_TAG);
 
             // Setup RecyclerView
             mRecyclerView = (RecyclerView) mRootView.findViewById(R.id.recycler_view);
@@ -89,6 +92,26 @@ public class PostListFragment extends Fragment {
         mRecyclerView.addItemDecoration(new SimpleDividerItemDecoration(mContext));
         mLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         mRecyclerView.setLayoutManager(mLayoutManager);
+
+        // Scroll
+        mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+            }
+
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+
+                int mLastVisibleItem = mLayoutManager.findFirstVisibleItemPosition();
+                Integer currentFloor = mList.get(mLastVisibleItem).floor;
+                Log.d(TAG, "onScrolled >> " + currentFloor);
+                Global.getCache(mContext).put(Global.CACHE_VIEW_POSITION + "_" + mTid,
+                        currentFloor,
+                        ACache.TIME_DAY * Global.VIEW_POSITION_CACHE_DAY);
+            }
+        });
 
         // Adapter
         mAdapter = new PostListAdapter(mContext, mList, mAuthorName, mReplyCount);
@@ -160,6 +183,11 @@ public class PostListFragment extends Fragment {
                                 // 更新 RecyclerView
                                 mList.addAll(newThreads);
                                 mAdapter.notifyDataSetChanged();
+
+                                // 上一次访问的位置
+                                if (mPageIndex != null) {
+                                    mRecyclerView.scrollToPosition(mPageIndex);
+                                }
                             } catch (Exception e) {
                                 Log.e(TAG, getString(R.string.error_parse_json) + "\n" + response, e);
 

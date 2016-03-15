@@ -15,6 +15,7 @@ import com.squareup.picasso.Picasso;
 
 import java.io.IOException;
 
+import bit.ihainan.me.bitunionforandroid.utils.ACache;
 import bit.ihainan.me.bitunionforandroid.utils.CommonUtils;
 import bit.ihainan.me.bitunionforandroid.utils.Global;
 
@@ -67,7 +68,7 @@ public class PicassoImageGetter implements Html.ImageGetter {
 
                         // 缓存位图
                         Log.d(TAG, "loadImage >> 缓存图片成功 " + source);
-                        Global.getCache(mContext).put(Global.CACHE_MESSAGE_IMAGE + "_" + source, bitmap);
+                        Global.getCache(mContext).put(Global.CACHE_MESSAGE_IMAGE + "_" + source, bitmap, Global.cacheDays * ACache.TIME_DAY);
 
                         return bitmap;
                     } else {

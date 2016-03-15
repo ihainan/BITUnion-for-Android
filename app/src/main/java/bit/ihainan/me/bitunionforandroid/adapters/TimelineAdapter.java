@@ -102,6 +102,7 @@ public class TimelineAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                             Intent intent = new Intent(mContext, ThreadDetailNewActivity.class);
                             intent.putExtra(ThreadDetailNewActivity.THREAD_ID_TAG, post.tid);
                             intent.putExtra(ThreadDetailNewActivity.THREAD_NAME_TAG, post.t_subject);
+                            intent.putExtra(ThreadDetailNewActivity.THREAD_JUMP_FLOOR, post.floor);
                             mContext.startActivity(intent);
                         }
                     };

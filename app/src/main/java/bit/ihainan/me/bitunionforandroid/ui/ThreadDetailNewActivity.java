@@ -5,6 +5,7 @@ import android.app.FragmentManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v13.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
@@ -13,6 +14,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -43,6 +45,7 @@ public class ThreadDetailNewActivity extends SwipeActivity {
     public final static String THREAD_NAME_TAG = "THREAD_NAME_TAG";
     public final static String THREAD_AUTHOR_NAME_TAG = "THREAD_AUTHOR_NAME_TAG";
     public final static String THREAD_REPLY_COUNT_TAG = "THREAD_REPLY_COUNT_TAG";
+    public final static String THREAD_JUMP_FLOOR = "THREAD_JUMP_FLOOR";
 
     // UI references
     private ViewPager mPager;
@@ -54,6 +57,8 @@ public class ThreadDetailNewActivity extends SwipeActivity {
     private Long mTid, mReplyCount;
     private String mThreadName, mAuthorName;
     private int mTotalPage;  // 总页数
+    private Integer mJumpFloor = null;    // 跳转页面
+    private Integer mJumpPage = 0, mJumpPageIndex = 0;   // 需要跳转的页数和页面内位置
 
     private void getExtra() {
         Intent intent = getIntent();
@@ -63,9 +68,30 @@ public class ThreadDetailNewActivity extends SwipeActivity {
             mThreadName = bundle.getString(THREAD_NAME_TAG);
             mAuthorName = bundle.getString(THREAD_AUTHOR_NAME_TAG);
             mReplyCount = bundle.getLong(THREAD_REPLY_COUNT_TAG);
+            mJumpFloor = bundle.getInt(THREAD_JUMP_FLOOR, -1);
+            Integer cacheViewPosition = (Integer) Global.getCache(this).getAsObject(Global.CACHE_VIEW_POSITION + "_" + mTid);
+            if (mJumpFloor == -1 && cacheViewPosition != null) {
+                mJumpFloor = cacheViewPosition;
+            }
+
+            if (mJumpFloor != null) mJumpFloor += 1;
         }
 
         if (mTid == null) mTid = 10588072L; // For test
+        // Jump Page & Index
+        if (mJumpFloor != null) {
+            // 要求跳转到特定楼层
+            mJumpPage = calculateTotalPage(mJumpFloor) - 1;  // 19 - 1, 21 - 2
+            mJumpPageIndex = (int) (mJumpFloor - (mJumpPage) * Global.LOADING_POSTS_COUNT) - 1;
+        }
+    }
+
+    private static int calculateTotalPage(long floor) {
+        if (floor % Global.LOADING_POSTS_COUNT == 0) {
+            return (int) (floor / Global.LOADING_POSTS_COUNT);
+        } else {
+            return (int) (floor / Global.LOADING_POSTS_COUNT) + 1;
+        }
     }
 
     @Override
@@ -106,6 +132,9 @@ public class ThreadDetailNewActivity extends SwipeActivity {
         setSwipeAnyWhere(false);
     }
 
+    /**
+     * Get basic data, including thread name, author name, replies count, etc.
+     */
     private void getBasicData() {
         BUApi.getPostReplies(this, mTid, 0, 1, new Response.Listener<JSONObject>() {
             @Override
@@ -144,25 +173,19 @@ public class ThreadDetailNewActivity extends SwipeActivity {
         });
     }
 
-    private void calculateTotalPage() {
-        if (mReplyCount % Global.LOADING_POSTS_COUNT == 0) {
-            mTotalPage = (int) (mReplyCount / Global.LOADING_POSTS_COUNT);
-        } else {
-            mTotalPage = (int) (mReplyCount / Global.LOADING_POSTS_COUNT) + 1;
-        }
-    }
-
     private void fillViews() {
-        getFavoriteStatus();
+        getFavoriteStatus();    // 收藏装填
 
-        // Title
-        mCollapsingToolbar.setTitle(Html.fromHtml(CommonUtils.decode(mThreadName)));
+        mCollapsingToolbar.setTitle(Html.fromHtml(CommonUtils.decode(mThreadName)));    // 标题
 
         // TabLayout
-        calculateTotalPage();
+        mTotalPage = calculateTotalPage(mReplyCount);
         mPager.setAdapter(new ThreadPageAdapter(getFragmentManager(), this));
         mTabLayout.setViewPager(mPager);
         mPager.setOffscreenPageLimit(1);
+        if (!(mJumpPage == 0 && mJumpPageIndex == 0)) {
+            mPager.setCurrentItem(mJumpPage);
+        }
     }
 
     public boolean hasFavor = false;
@@ -175,6 +198,7 @@ public class ThreadDetailNewActivity extends SwipeActivity {
                     if (response.getInt("code") == 0) {
                         hasFavor = response.getBoolean("data");
                         CommonUtils.debugToast(ThreadDetailNewActivity.this, "hasFavor = " + hasFavor);
+                        favorClickable = true;
                         if (hasFavor) {
                             mFavorItem.setTitle("取消收藏");
                             mFavorItem.setIcon(R.drawable.ic_favorite_white_24dp);
@@ -226,10 +250,14 @@ public class ThreadDetailNewActivity extends SwipeActivity {
         @Override
         public Fragment getItem(int position) {
             Bundle args = new Bundle();
-            args.putLong(ThreadDetailNewActivity.THREAD_ID_TAG, mTid);
+            args.putLong(THREAD_ID_TAG, mTid);
             args.putInt(PostListFragment.PAGE_POSITION_TAG, position);
             args.putString(THREAD_AUTHOR_NAME_TAG, mAuthorName);
             args.putLong(THREAD_REPLY_COUNT_TAG, mReplyCount);
+
+            if (!(mJumpPage == 0 && mJumpPageIndex == 0) && mJumpPage == position) {
+                args.putInt(PostListFragment.PAGE_INDEX_TAG, mJumpPageIndex);
+            }
 
             Fragment fragment = new PostListFragment();
             fragment.setArguments(args);
@@ -240,7 +268,109 @@ public class ThreadDetailNewActivity extends SwipeActivity {
         @Override
         public CharSequence getPageTitle(int position) {
             // Generate title based on item position
-            return "Page #" + (position + 1);
+            return "# " + (position + 1);
         }
+    }
+
+    private boolean favorClickable = false;
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.favor:
+                if (favorClickable) {
+                    favorClickable = !favorClickable;   // 不允许重复点击
+                    hasFavor = !hasFavor;
+                    if (hasFavor) {
+                        // 之前是删除，想要添加
+                        mFavorItem.setIcon(R.drawable.ic_favorite_white_24dp);
+                        mFavorItem.setTitle("取消收藏");
+                        addFavorite();
+                    } else {
+                        mFavorItem.setTitle("添加收藏");
+                        mFavorItem.setIcon(R.drawable.ic_favorite_border_white_24dp);
+                        delFavorite();
+                    }
+                }
+                break;
+        }
+
+        return true;
+    }
+
+    private Response.Listener mFavorListener = new Response.Listener<JSONObject>() {
+        @Override
+        public void onResponse(JSONObject response) {
+            favorClickable = !favorClickable;
+            try {
+                if (response.getInt("code") == 0) {
+                    // 成功添加 / 删除收藏，皆大欢喜
+                    String message = hasFavor ? "添加收藏成功" : "删除收藏成功";
+                    Global.hasUpdateFavor = true;
+                    Log.d(TAG, "mFavorListener >> " + message);
+                    Toast.makeText(ThreadDetailNewActivity.this, message, Toast.LENGTH_SHORT).show();
+                } else {
+                    // Oh no!!!
+                    String message = (hasFavor ? "添加" : "删除") + "收藏失败";
+                    String debugMessage = message + " - " + response.get("message");
+                    if (Global.debugMode) {
+                        CommonUtils.debugToast(ThreadDetailNewActivity.this, debugMessage);
+                    } else {
+                        Toast.makeText(ThreadDetailNewActivity.this, message, Toast.LENGTH_SHORT).show();
+                    }
+
+                    Log.w(TAG, debugMessage);
+
+                    hasFavor = !hasFavor;
+                    if (hasFavor) {
+                        mFavorItem.setIcon(R.drawable.ic_favorite_white_24dp);
+                        mFavorItem.setTitle("取消收藏");
+                    } else {
+                        mFavorItem.setTitle("添加收藏");
+                        mFavorItem.setIcon(R.drawable.ic_favorite_border_white_24dp);
+                    }
+                }
+            } catch (JSONException e) {
+                String message = (hasFavor ? "添加" : "删除") + "收藏失败";
+                String debugMessage = message + " - " + getString(R.string.error_parse_json) + " " + response;
+                if (Global.debugMode) {
+                    CommonUtils.debugToast(ThreadDetailNewActivity.this, debugMessage);
+                } else {
+                    Toast.makeText(ThreadDetailNewActivity.this, message, Toast.LENGTH_SHORT).show();
+                }
+                Log.e(TAG, debugMessage, e);
+
+                hasFavor = !hasFavor;
+                if (hasFavor) {
+                    mFavorItem.setIcon(R.drawable.ic_favorite_white_24dp);
+                    mFavorItem.setTitle("取消收藏");
+                } else {
+                    mFavorItem.setTitle("添加收藏");
+                    mFavorItem.setIcon(R.drawable.ic_favorite_border_white_24dp);
+                }
+            }
+        }
+    };
+
+    private Response.ErrorListener mFavorErrorListener = new Response.ErrorListener() {
+        @Override
+        public void onErrorResponse(VolleyError error) {
+            String message = (hasFavor ? "取消收藏失败，" : "添加收藏失败") + "无法连接到服务器";
+            Snackbar.make(mPager, message, Snackbar.LENGTH_INDEFINITE).setAction("RETRY", new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (hasFavor) addFavorite();
+                    else delFavorite();
+                }
+            }).show();
+        }
+    };
+
+    private void addFavorite() {
+        ExtraApi.addFavorite(this, mTid, mThreadName, mAuthorName, mFavorListener, mFavorErrorListener);
+    }
+
+    private void delFavorite() {
+        ExtraApi.delFavorite(this, mTid, mFavorListener, mFavorErrorListener);
     }
 }
