@@ -1,9 +1,15 @@
 package bit.ihainan.me.bitunionforandroid.ui;
 
+import android.content.Intent;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.OpenableColumns;
 import android.util.Log;
+import android.view.View;
 import android.widget.TextView;
 
+import com.android.volley.NetworkResponse;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -12,7 +18,12 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.sql.Time;
 import java.util.List;
 
@@ -27,6 +38,8 @@ import bit.ihainan.me.bitunionforandroid.utils.network.ExtraApi;
 
 public class TestActivity extends SwipeActivity {
     private final static String TAG = TestActivity.class.getSimpleName();
+    public final static int CHOOSE_PHOTO_TAG = 0;
+
 
     // UI references
     private TextView message;
@@ -49,7 +62,74 @@ public class TestActivity extends SwipeActivity {
         // testSearchAPI();
 
         // 测试时间轴动态接口
-        testTimelineAPI();
+        // testTimelineAPI();
+
+        // 测试发帖回帖子
+        testSendPost();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (resultCode == RESULT_OK && data != null) {
+            Uri uri = data.getData();
+
+            try {
+                BUApi.postNewPost(this, 10610779, "测试////?&", getFileData(uri), new Response.Listener<NetworkResponse>() {
+                    @Override
+                    public void onResponse(NetworkResponse response) {
+                        Log.i(TAG, "发表带附件帖子成功：" + response);
+                    }
+                }, new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.e(TAG, "发表带附件帖子失败", error);
+                    }
+                });
+            } catch (IOException e) {
+                Log.e(TAG, "发表带附件帖子 - 构建请求失败", e);
+            }
+        }
+    }
+
+    private byte[] getFileData(Uri data) throws IOException {
+        InputStream iStream = getContentResolver().openInputStream(data);
+        ByteArrayOutputStream byteBuffer = new ByteArrayOutputStream();
+        int bufferSize = 1024;
+        byte[] buffer = new byte[bufferSize];
+        int len = 0;
+        while ((len = iStream.read(buffer)) != -1) {
+            byteBuffer.write(buffer, 0, len);
+        }
+        return byteBuffer.toByteArray();
+    }
+
+    private void testSendPost() {
+        try {
+            BUApi.postNewPost(this, 10610779, "测试////?&", null, new Response.Listener<NetworkResponse>() {
+                @Override
+                public void onResponse(NetworkResponse response) {
+                    Log.i(TAG, "发表普通帖子成功：" + response);
+                }
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    Log.e(TAG, "发表普通帖子失败", error);
+                }
+            });
+        } catch (IOException e) {
+            Log.e(TAG, "发表普通帖子 - 构建请求失败", e);
+        }
+
+        message.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
+                photoPickerIntent.setType("image/*");
+                startActivityForResult(photoPickerIntent, CHOOSE_PHOTO_TAG);
+            }
+        });
     }
 
     private void parseEvents(String tag, List<TimelineEvent> events) throws IOException {

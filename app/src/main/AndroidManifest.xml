@@ -16,6 +16,9 @@
     <!-- 适配低版本 Android -->
     <uses-permission android:name="android.permission.GET_TASKS" />
 
+    <!-- 附件 -->
+
+
     <application
         android:name=".utils.Global"
         android:allowBackup="true"
@@ -42,7 +45,9 @@
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:label="@string/title_activity_post_list"
             android:theme="@style/AppTheme.SwipeTheme" />
-        <activity android:name=".ui.TestActivity"></activity>
+        <activity android:name=".ui.TestActivity">
+
+        </activity>
 
         <meta-data
             android:name="UMENG_APPKEY"
@@ -63,7 +68,9 @@
             android:name=".ui.PostOrReplyActivity"
             android:label="@string/title_activity_post_or_reply"
             android:theme="@style/AppTheme.NoActionBar"
-            android:windowSoftInputMode="adjustResize" />
+            android:windowSoftInputMode="adjustResize">
+
+        </activity>
         <activity
             android:name=".ui.PreviewActivity"
             android:label="@string/title_activity_preview"

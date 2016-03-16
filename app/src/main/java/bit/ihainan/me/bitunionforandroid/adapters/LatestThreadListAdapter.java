@@ -98,7 +98,7 @@ public class LatestThreadListAdapter extends RecyclerView.Adapter<RecyclerView.V
         // 无差别区域
         Picasso.with(mContext).load(R.drawable.empty_avatar)
                 .into(holder.avatar);
-        holder.replyCount.setText(CommonUtils.decode("" + latestThread.tid_sum + " 回复"));
+        holder.replyCount.setText("" + latestThread.tid_sum + " 回复");
         holder.title.setText(Html.fromHtml(CommonUtils.decode(latestThread.pname)));
         holder.title.post(new Runnable() {
             @Override
@@ -122,7 +122,7 @@ public class LatestThreadListAdapter extends RecyclerView.Adapter<RecyclerView.V
 
         // 发帖、回帖日期
         if (latestThread.lastreply != null)
-            holder.date.setText(CommonUtils.decode(latestThread.lastreply.when));
+            holder.date.setText(latestThread.lastreply.when);
         else
             holder.date.setText("未知次元未知时间");
 

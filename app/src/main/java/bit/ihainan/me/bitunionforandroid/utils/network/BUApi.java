@@ -1,8 +1,10 @@
 package bit.ihainan.me.bitunionforandroid.utils.network;
 
 import android.content.Context;
+import android.support.annotation.Nullable;
 import android.util.Log;
 
+import com.android.volley.NetworkResponse;
 import com.android.volley.Response;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -11,6 +13,11 @@ import com.umeng.analytics.MobclickAgent;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
+import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -60,6 +67,10 @@ public class BUApi {
 
     private static String getForumListURL() {
         return currentEndPoint + "bu_thread.php";
+    }
+
+    private static String getNewPostURL() {
+        return currentEndPoint + "bu_newpost.php";
     }
 
     public static boolean checkStatus(JSONObject response) {
@@ -227,6 +238,38 @@ public class BUApi {
     }
 
     /**
+     * 发表新回复
+     *
+     * @param context       上下文
+     * @param tid           回复的帖子 ID
+     * @param message       回复的帖子内容
+     * @param attachment    附件数据，可为 null
+     * @param listener      response 事件监听器
+     * @param errorListener error 事件监听器
+     * @throws IOException 构建 Multipart 请求失败
+     */
+    public static void postNewPost(Context context, int tid, String message,
+                                   @Nullable byte[] attachment,
+                                   Response.Listener<NetworkResponse> listener,
+                                   Response.ErrorListener errorListener) throws IOException {
+        Map<String, Object> parameters = new HashMap<String, Object>();
+        parameters.put("action", "thread");
+        parameters.put("username", Global.userSession.username);    // session 里面的 username 未曾 encode 过
+        parameters.put("action", "newreply");
+        parameters.put("tid", Integer.toString(tid));
+        parameters.put("message", CommonUtils.encode(message));
+        parameters.put("attachment", attachment == null ? "0" : "1");
+
+        if (attachment == null) {
+            String url = "http://192.168.56.1:8080/api/v2/multipart/no_att";
+            makeMultipartRequest(context, url, "POST_NEW_POST_NO_ATT", parameters, null, listener, errorListener);
+        } else {
+            String url = "http://192.168.56.1:8080/api/v2/multipart/att";
+            makeMultipartRequest(context, url, "POST_NEW_POST_NO_ATT", parameters, attachment, listener, errorListener);
+        }
+    }
+
+    /**
      * 发送请求，如果 Session 过期则更新 Session，如果失败则多次尝试，直到达到了上限 retryLimit
      *
      * @param context       上下文
@@ -257,7 +300,7 @@ public class BUApi {
                                 listener.onResponse(response);
                             } else {
                                 // 尝试重新登录
-                                Log.i(TAG, "makeRequest >> Session 过期，尝试重新登录 " + retryLimit + " " + url);
+                                Log.i(TAG, "makeRequest " + tag + ">> Session 过期，尝试重新登录 " + retryLimit + " " + url);
                                 BUApi.tryLogin(context, Global.username, Global.password, retryLimit - 1,
                                         new Response.Listener<JSONObject>() {
                                             @Override
@@ -267,8 +310,8 @@ public class BUApi {
                                                     try {
                                                         Global.userSession = BUApi.MAPPER.readValue(response.toString(), Session.class);
                                                         Global.saveConfig(context);
-                                                        CommonUtils.debugToast(context, "makeRequest >> 成功拿到新 Session " + Global.userSession);
-                                                        Log.i(TAG, "makeRequest >> 成功拿到新 Session " + Global.userSession);
+                                                        CommonUtils.debugToast(context, "makeRequest " + tag + ">> 成功拿到新 Session " + Global.userSession);
+                                                        Log.i(TAG, "makeRequest >> " + tag + "成功拿到新 Session " + Global.userSession);
                                                         parameters.put("session", Global.userSession.session);
                                                         Global.saveConfig(context);
                                                         makeRequest(context, url, tag, parameters, retryLimit - 1, listener, errorListener);
@@ -297,6 +340,72 @@ public class BUApi {
         JsonObjectRequest request = new JsonObjectRequest(url,
                 new JSONObject(parameters), listener, errorListener);
         RequestQueueManager.getInstance(context).addToRequestQueue(request, tag);
+    }
 
+    private final static String twoHyphens = "--";
+    private final static String lineEnd = "\r\n";
+    private final static String boundary = "apiclient-" + System.currentTimeMillis();
+    private final static String mimeType = "multipart/form-data;boundary=" + boundary;
+
+    private static void buildPart(DataOutputStream dataOutputStream, String parameterName, byte[] fileData) throws IOException {
+        dataOutputStream.writeBytes(twoHyphens + boundary + lineEnd);
+        dataOutputStream.writeBytes("Content-Disposition: form-data; name=\"" + parameterName + "\";" + lineEnd);
+        dataOutputStream.writeBytes(lineEnd);
+
+        ByteArrayInputStream fileInputStream = new ByteArrayInputStream(fileData);
+        int bytesAvailable = fileInputStream.available();
+
+        int maxBufferSize = 1024 * 1024;
+        int bufferSize = Math.min(bytesAvailable, maxBufferSize);
+        byte[] buffer = new byte[bufferSize];
+
+        // read file and write it into form...
+        int bytesRead = fileInputStream.read(buffer, 0, bufferSize);
+
+        while (bytesRead > 0) {
+            dataOutputStream.write(buffer, 0, bufferSize);
+            bytesAvailable = fileInputStream.available();
+            bufferSize = Math.min(bytesAvailable, maxBufferSize);
+            bytesRead = fileInputStream.read(buffer, 0, bufferSize);
+        }
+
+        dataOutputStream.writeBytes(lineEnd);
+    }
+
+    private static void buildTextPart(DataOutputStream dataOutputStream, String parameterName, String parameterValue) throws IOException {
+        dataOutputStream.writeBytes(twoHyphens + boundary + lineEnd);
+        dataOutputStream.writeBytes("Content-Disposition: form-data; name=\"" + parameterName + "\"" + lineEnd);    // 然而并不需要 id 字段
+        dataOutputStream.writeBytes("Content-Type: text/plain; charset=UTF-8" + lineEnd);
+        dataOutputStream.writeBytes(lineEnd);
+        dataOutputStream.writeBytes(parameterValue + lineEnd);
+    }
+
+    private static void makeMultipartRequest(final Context context, final String url, final String tag,
+                                             final Map<String, Object> parameters, byte[] fileData,
+                                             final Response.Listener<NetworkResponse> listener,
+                                             final Response.ErrorListener errorListener) throws IOException {
+        byte[] multipartBody;
+
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        DataOutputStream dos = new DataOutputStream(bos);
+
+
+        // Build JSON Part
+        buildTextPart(dos, "json", new JSONObject(parameters).toString());
+
+        // Build Attachment Part
+        if (fileData != null) buildPart(dos, "attach", fileData);
+
+        // send multipart form data necessary after file data
+        dos.writeBytes(twoHyphens + boundary + twoHyphens + lineEnd);
+
+        // pass to multipart body
+        multipartBody = bos.toByteArray();
+
+        // Build MultipartRequest
+        MultipartRequest multipartRequest = new MultipartRequest(url, null, mimeType, multipartBody, listener, errorListener);
+
+        // Add to queue
+        RequestQueueManager.getInstance(context).addToRequestQueue(multipartRequest, tag);
     }
 }

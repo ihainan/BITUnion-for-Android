@@ -81,12 +81,12 @@ public class PostListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             CommonUtils.setUserAvatarClickListener(mContext,
                     viewHolder.avatar, -1,
                     CommonUtils.decode(reply.author));
-            String avatarURL = CommonUtils.getRealImageURL(CommonUtils.decode(reply.avatar == null ? "" : reply.avatar));
+            String avatarURL = CommonUtils.getRealImageURL(reply.avatar == null ? "" : CommonUtils.decode(reply.avatar));
             CommonUtils.setAvatarImageView(mContext, viewHolder.avatar,
                     avatarURL, R.drawable.default_avatar);
 
             // 作者
-            if (CommonUtils.decode(reply.author).equals(mAuthorName)) {
+            if (CommonUtils.decode(reply.author).equals(CommonUtils.decode(mAuthorName))) {
                 viewHolder.author.setTextColor(Color.RED);
                 viewHolder.author.setText(CommonUtils.decode(reply.author) + "（楼主）");
             } else {
