@@ -33,6 +33,11 @@
     <string name="error_network">连接服务器发生异常</string>
     <string name="error_unsupported_encoding">不支持的编码格式</string>
     <string name="error_parse_json">解析服务器返回数据失败</string>
+    <string name="error_forum_need_password">你没有权限访问该板块</string>
+    <string name="error_thread_permission_need">你没有权限访问该主题</string>
+    <string name="error_unknown_msg">服务器返回未知错误</string>
+    <string name="error_negative_credit">积分为负，拉取数据失败</string>
+    <string name="error_login_negative_credit">积分为负，不允许登录</string>
     <string name="error_reach_bottom">底部所有帖子已经加载完毕啦</string>
     <string name="error_reach_top">顶部所有帖子已经加载完毕啦</string>
     <string name="error_unknown_json">服务器返回了未知格式的数据</string>

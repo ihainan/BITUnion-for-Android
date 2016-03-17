@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
@@ -46,6 +47,9 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
+        // Adjust Resize
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
 
         // init UI references
         mUsername = (AutoCompleteTextView) findViewById(R.id.user_name);
@@ -115,12 +119,14 @@ public class LoginActivity extends AppCompatActivity {
         // Check whether the username is empty
         if (TextUtils.isEmpty(username)) {
             mUsername.setError(getString(R.string.error_field_required));
+            mUsername.requestFocus();
             return;
         }
 
         // Check whether the password is empty
         if (TextUtils.isEmpty(password)) {
             mPassword.setError(getString(R.string.error_invalid_password));
+            mPassword.requestFocus();
             return;
         }
 
@@ -184,34 +190,42 @@ public class LoginActivity extends AppCompatActivity {
                         Global.username = mUsername.getText().toString();
                         if (mDialog != null) mDialog.dismiss();
                         // showProgress(false);
-                        if (BUApi.checkStatus(response)) {
-                            try {
+                        try {
+                            if (BUApi.checkStatus(response)) {
                                 Global.userSession = BUApi.MAPPER.readValue(response.toString(), Session.class);
-                                Global.password = mPassword.getText().toString();
+
+                                if (Global.userSession.credit < 0) {
+                                    if (mDialog != null) mDialog.dismiss();
+                                    mUsername.setError(getString(R.string.error_login_negative_credit));
+                                    mUsername.requestFocus();
+                                } else {
+                                    Global.password = mPassword.getText().toString();
+                                    Global.saveConfig(LoginActivity.this);
+                                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                                    startActivity(intent);
+                                    finish();
+                                }
+                            } else {
+                                if (mDialog != null) mDialog.dismiss();
+                                mPassword.setError(getString(R.string.error_wrong_password));
                                 Global.saveConfig(LoginActivity.this);
-                                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                                startActivity(intent);
-                                finish();
-                            } catch (IOException e) {
-                                mUsername.setError(getString(R.string.error_parse_json));
-                                Log.e(TAG, getString(R.string.error_parse_json) + "\n" + response, e);
+                                mPassword.requestFocus();
                                 return;
                             }
-                        } else {
-                            if (mDialog != null) mDialog.dismiss();
-                            mUsername.setError(getString(R.string.error_wrong_password));
-                            Global.saveConfig(LoginActivity.this);
-                            mUsername.setError(getString(R.string.error_wrong_password));
+                        } catch (IOException e) {
+                            mUsername.setError(getString(R.string.error_parse_json));
+                            mUsername.requestFocus();
+                            Log.e(TAG, getString(R.string.error_parse_json) + "\n" + response, e);
                             return;
                         }
                     }
-                },
-                new Response.ErrorListener() {
+                }, new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         if (mDialog != null) mDialog.dismiss();
                         // showProgress(false);
                         mUsername.setError(getString(R.string.error_network));
+                        mUsername.requestFocus();
                         Log.e(TAG, getString(R.string.error_network), error);
                     }
                 });

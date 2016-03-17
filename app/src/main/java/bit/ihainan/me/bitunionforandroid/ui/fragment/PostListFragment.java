@@ -157,9 +157,8 @@ public class PostListFragment extends Fragment {
                     @Override
                     public void onResponse(JSONObject response) {
                         mSwipeRefreshLayout.setRefreshing(false);
-
-                        if (BUApi.checkStatus(response)) {
-                            try {
+                        try {
+                            if (BUApi.checkStatus(response)) {
                                 JSONArray newListJson = response.getJSONArray("postlist");
                                 List<Post> newThreads = BUApi.MAPPER.readValue(newListJson.toString(),
                                         new TypeReference<List<Post>>() {
@@ -187,20 +186,23 @@ public class PostListFragment extends Fragment {
                                 if (mPageIndex != null) {
                                     mRecyclerView.scrollToPosition(mPageIndex);
                                 }
-                            } catch (Exception e) {
-                                Log.e(TAG, getString(R.string.error_parse_json) + "\n" + response, e);
-
-                                Snackbar.make(mRecyclerView, getString(R.string.error_parse_json),
-                                        Snackbar.LENGTH_INDEFINITE).setAction("RETRY", new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View v) {
-                                        reloadData();
-                                    }
-                                }).show();
+                            } else {
+                                String message = getString(R.string.error_unknown_msg) + ": " + response.getString("msg");
+                                String debugMessage = message + " - " + response;
+                                Log.w(TAG, debugMessage);
+                                CommonUtils.debugToast(mContext, debugMessage);
+                                Snackbar.make(mRecyclerView, message, Snackbar.LENGTH_LONG).show();
                             }
-                        } else {
-                            Log.i(TAG, "refreshData >> " + getString(R.string.error_unknown_json) + "" + response);
-                            Snackbar.make(mRecyclerView, getString(R.string.error_unknown_json), Snackbar.LENGTH_LONG).show();
+                        } catch (Exception e) {
+                            Log.e(TAG, getString(R.string.error_parse_json) + "\n" + response, e);
+
+                            Snackbar.make(mRecyclerView, getString(R.string.error_parse_json),
+                                    Snackbar.LENGTH_INDEFINITE).setAction("RETRY", new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    reloadData();
+                                }
+                            }).show();
                         }
                     }
                 }, new Response.ErrorListener() {

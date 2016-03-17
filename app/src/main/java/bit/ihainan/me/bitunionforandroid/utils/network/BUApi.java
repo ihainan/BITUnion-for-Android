@@ -33,6 +33,9 @@ public class BUApi {
     public final static String TAG = BUApi.class.getSimpleName();
     public final static ObjectMapper MAPPER = new ObjectMapper();
 
+    // Constants
+    public final static String LOGGED_MSG = "IP+logged";
+
     // END POINT
     public final static String IN_SCHOOL_BASE_URL = "http://www.bitunion.org/";
     public final static String OUT_SCHOOL_BASE_URL = "http://out.bitunion.org/";
@@ -73,12 +76,32 @@ public class BUApi {
         return currentEndPoint + "bu_newpost.php";
     }
 
+    /**
+     * 检查联盟返回 result 字段是否为 success
+     *
+     * @param response BU 服务器回复数据
+     * @return <code>true</code> 表示 result 字段是 success，否则不是
+     */
     public static boolean checkStatus(JSONObject response) {
         try {
             if (!response.getString("result").equals("success")) return false;
             else return true;
         } catch (JSONException e) {
             Log.e(TAG, "Fail to parse JSON object " + response, e);
+            return false;
+        }
+    }
+
+    /**
+     * 检查 Session 是否已经过去
+     *
+     * @param response BU 服务器回复数据
+     * @return <code>true</code> 表示已经过期，否则未过期
+     */
+    private static boolean checkIfSessionOutOfData(JSONObject response) {
+        try {
+            return LOGGED_MSG.equals(response.getString("msg"));
+        } catch (JSONException e) {
             return false;
         }
     }
@@ -295,12 +318,9 @@ public class BUApi {
                     new Response.Listener<JSONObject>() {
                         @Override
                         public void onResponse(JSONObject response) {
-                            if (BUApi.checkStatus(response)) {
-                                // 在 tryLimit 次成功
-                                listener.onResponse(response);
-                            } else {
-                                // 尝试重新登录
-                                Log.i(TAG, "makeRequest " + tag + ">> Session 过期，尝试重新登录 " + retryLimit + " " + url);
+                            if (!BUApi.checkStatus(response) && checkIfSessionOutOfData(response)) {
+                                // Success + IP+logged，尝试重新登录
+                                Log.i(TAG, "makeRequest " + tag + ">> Session " + Global.userSession.session + " 过期，尝试重新登录 " + retryLimit + " " + url);
                                 BUApi.tryLogin(context, Global.username, Global.password, retryLimit - 1,
                                         new Response.Listener<JSONObject>() {
                                             @Override
@@ -326,6 +346,9 @@ public class BUApi {
                                                 }
                                             }
                                         }, errorListener);
+                            } else {
+                                // 在 tryLimit 次成功
+                                listener.onResponse(response);
                             }
                         }
                     }, errorListener);
@@ -336,7 +359,7 @@ public class BUApi {
                                     final Map<String, String> parameters,
                                     final Response.Listener<JSONObject> listener,
                                     final Response.ErrorListener errorListener) {
-        Log.i(TAG, "Want to make request with parameters: " + parameters.toString() + " URL: " + url + " Retry Limit: " + 0);
+        Log.i(TAG, "Want to make request with parameters: " + parameters.toString() + " URL: " + url);
         JsonObjectRequest request = new JsonObjectRequest(url,
                 new JSONObject(parameters), listener, errorListener);
         RequestQueueManager.getInstance(context).addToRequestQueue(request, tag);

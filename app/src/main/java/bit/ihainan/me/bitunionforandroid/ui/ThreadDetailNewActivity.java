@@ -143,8 +143,8 @@ public class ThreadDetailNewActivity extends SwipeActivity {
         BUApi.getPostReplies(this, mTid, 0, 1, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
-                if (BUApi.checkStatus(response)) {
-                    try {
+                try {
+                    if (BUApi.checkStatus(response)) {
                         JSONArray newListJson = response.getJSONArray("postlist");
                         mReplyCount = (long) response.getInt("total_reply_count") + 1;
 
@@ -158,13 +158,26 @@ public class ThreadDetailNewActivity extends SwipeActivity {
                             mAuthorName = firstReply.author;
                             fillViews();
                         }
-                    } catch (Exception e) {
-                        String message = getString(R.string.error_parse_json) + "\n" + response;
-                        Log.e(TAG, message, e);
-                        CommonUtils.debugToast(ThreadDetailNewActivity.this, message);
+                    } else if ("thread_nopermission".equals(response.getString("msg"))) {
+                        String message = getString(R.string.error_thread_permission_need);
+                        String debugMessage = message + " - " + response;
+                        Log.w(TAG, debugMessage);
+                        CommonUtils.debugToast(ThreadDetailNewActivity.this, debugMessage);
+                        Snackbar.make(mPager, message, Snackbar.LENGTH_LONG).show();
+                    } else {
+                        String message = getString(R.string.error_unknown_msg) + ": " + response.getString("msg");
+                        String debugMessage = message + " - " + response;
+                        Log.w(TAG, debugMessage);
+                        CommonUtils.debugToast(ThreadDetailNewActivity.this, debugMessage);
+                        Snackbar.make(mPager, message, Snackbar.LENGTH_LONG).show();
                     }
+                } catch (Exception e) {
+                    String message = getString(R.string.error_parse_json);
+                    String debugMessage = message + " - " + response;
+                    Log.e(TAG, debugMessage, e);
+                    CommonUtils.debugToast(ThreadDetailNewActivity.this, debugMessage);
+                    Snackbar.make(mPager, message, Snackbar.LENGTH_LONG).show();
                 }
-
             }
         }, new Response.ErrorListener() {
             @Override
@@ -172,7 +185,6 @@ public class ThreadDetailNewActivity extends SwipeActivity {
                 String message = getString(R.string.error_network);
                 Log.e(TAG, message, error);
                 CommonUtils.debugToast(ThreadDetailNewActivity.this, message);
-
             }
         });
     }

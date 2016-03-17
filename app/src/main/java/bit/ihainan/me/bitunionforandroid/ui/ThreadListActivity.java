@@ -29,6 +29,7 @@ import bit.ihainan.me.bitunionforandroid.models.ForumListGroup;
 import bit.ihainan.me.bitunionforandroid.models.Thread;
 import bit.ihainan.me.bitunionforandroid.ui.assist.SimpleDividerItemDecoration;
 import bit.ihainan.me.bitunionforandroid.ui.assist.SwipeActivity;
+import bit.ihainan.me.bitunionforandroid.utils.CommonUtils;
 import bit.ihainan.me.bitunionforandroid.utils.network.BUApi;
 import bit.ihainan.me.bitunionforandroid.utils.Global;
 
@@ -206,10 +207,10 @@ public class ThreadListActivity extends SwipeActivity {
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
-                        if (BUApi.checkStatus(response)) {
+                        try {
                             mSwipeRefreshLayout.setRefreshing(false);
 
-                            try {
+                            if (BUApi.checkStatus(response)) {
                                 JSONArray newListJson = response.getJSONArray("threadlist");
                                 List<bit.ihainan.me.bitunionforandroid.models.Thread> newThreads = BUApi.MAPPER.readValue(newListJson.toString(),
                                         new TypeReference<List<Thread>>() {
@@ -229,17 +230,29 @@ public class ThreadListActivity extends SwipeActivity {
 
                                 // 更新标志
                                 mIsLoading = false;
-                            } catch (Exception e) {
-                                // 解析失败的话，说明到头了，移除标志，不允许再次更新（mIsLoading 始终为 true）
-                                if (mThreadList.size() > 0) {
-                                    Log.d(TAG, "refreshData >> 到头了 " + response);
-                                    mThreadList.remove(mThreadList.size() - 1);
-                                    mAdapter.notifyItemRemoved(mThreadList.size());
-                                }
-
-                                mSwipeRefreshLayout.setRefreshing(false);
-                                Log.e(TAG, getString(R.string.error_parse_json) + "\n" + response, e);
+                            } else if ("forum+need+password".equals(response.getString("msg"))) {
+                                String message = getString(R.string.error_forum_need_password);
+                                String debugMessage = message + " - " + response;
+                                Log.w(TAG, debugMessage);
+                                CommonUtils.debugToast(ThreadListActivity.this, debugMessage);
+                                Snackbar.make(mRecyclerView, message, Snackbar.LENGTH_LONG).show();
+                            } else {
+                                String message = getString(R.string.error_unknown_msg) + ": " + response.getString("msg");
+                                String debugMessage = message + " - " + response;
+                                Log.w(TAG, debugMessage);
+                                CommonUtils.debugToast(ThreadListActivity.this, debugMessage);
+                                Snackbar.make(mRecyclerView, message, Snackbar.LENGTH_LONG).show();
                             }
+                        } catch (Exception e) {
+                            // 解析失败的话，说明到头了，移除标志，不允许再次更新（mIsLoading 始终为 true）
+                            if (mThreadList.size() > 0) {
+                                Log.d(TAG, "refreshData >> 到头了 " + response);
+                                mThreadList.remove(mThreadList.size() - 1);
+                                mAdapter.notifyItemRemoved(mThreadList.size());
+                            }
+
+                            mSwipeRefreshLayout.setRefreshing(false);
+                            Log.e(TAG, getString(R.string.error_parse_json) + "\n" + response, e);
                         }
                     }
                 }, new Response.ErrorListener() {

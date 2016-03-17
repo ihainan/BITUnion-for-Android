@@ -34,6 +34,7 @@ import bit.ihainan.me.bitunionforandroid.R;
 import bit.ihainan.me.bitunionforandroid.adapters.LatestThreadListAdapter;
 import bit.ihainan.me.bitunionforandroid.models.LatestThread;
 import bit.ihainan.me.bitunionforandroid.ui.assist.SimpleDividerItemDecoration;
+import bit.ihainan.me.bitunionforandroid.utils.CommonUtils;
 import bit.ihainan.me.bitunionforandroid.utils.Global;
 import bit.ihainan.me.bitunionforandroid.utils.network.BUApi;
 
@@ -132,21 +133,37 @@ public class HomePageFragment extends Fragment {
         BUApi.getHomePage(mContext, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
-                if (BUApi.checkStatus(response)) {
+                try {
                     mSwipeRefreshLayout.setRefreshing(false);
-                    try {
+
+                    if (BUApi.checkStatus(response)) {
                         JSONArray newListJson = response.getJSONArray("newlist");
                         List<LatestThread> newThreads = BUApi.MAPPER.readValue(newListJson.toString(),
                                 new TypeReference<List<LatestThread>>() {
                                 });
-                        mLatestThreads.clear();
-                        mLatestThreads.addAll(newThreads);
-                        mAdapter.notifyDataSetChanged();
-                    } catch (Exception e) {
-                        mSwipeRefreshLayout.setRefreshing(false);
-                        showSnackbar(getString(R.string.error_parse_json));
-                        Log.e(TAG, getString(R.string.error_parse_json) + "\n" + response, e);
+
+                        if (newThreads == null || newThreads.size() == 0) {
+                            String message = getString(R.string.error_negative_credit);
+                            String debugMessage = message + " - " + response;
+                            Log.w(TAG, debugMessage);
+                            CommonUtils.debugToast(mContext, debugMessage);
+                            Snackbar.make(mRecyclerView, message, Snackbar.LENGTH_LONG).show();
+                        } else {
+                            mLatestThreads.clear();
+                            mLatestThreads.addAll(newThreads);
+                            mAdapter.notifyDataSetChanged();
+                        }
+                    } else {
+                        String message = getString(R.string.error_unknown_msg) + ": " + response.getString("msg");
+                        String debugMessage = message + " - " + response;
+                        Log.w(TAG, debugMessage);
+                        CommonUtils.debugToast(mContext, debugMessage);
+                        Snackbar.make(mRecyclerView, message, Snackbar.LENGTH_LONG).show();
                     }
+                } catch (Exception e) {
+                    mSwipeRefreshLayout.setRefreshing(false);
+                    showSnackbar(getString(R.string.error_parse_json));
+                    Log.e(TAG, getString(R.string.error_parse_json) + "\n" + response, e);
                 }
             }
         }, new Response.ErrorListener() {

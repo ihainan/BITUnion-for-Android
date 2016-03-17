@@ -9,6 +9,7 @@ import android.graphics.Paint;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.view.ContextThemeWrapper;
 import android.util.Log;
@@ -341,8 +342,8 @@ public class CommonUtils {
                     new Response.Listener<JSONObject>() {
                         @Override
                         public void onResponse(JSONObject response) {
-                            if (BUApi.checkStatus(response)) {
-                                try {
+                            try {
+                                if (BUApi.checkStatus(response)) {
                                     Member newMember = BUApi.MAPPER.readValue(
                                             response.getJSONObject("memberinfo").toString(),
                                             Member.class);
@@ -356,9 +357,14 @@ public class CommonUtils {
                                             Global.CACHE_USER_INFO + finalUserName,
                                             newMember,
                                             Global.cacheDays * ACache.TIME_DAY);
-                                } catch (Exception e) {
-                                    Log.e(TAG, context.getString(R.string.error_parse_json) + "\n" + response, e);
+                                } else {
+                                    String message = context.getString(R.string.error_unknown_msg) + ": " + response.getString("msg");
+                                    String debugMessage = message + " - " + response;
+                                    Log.w(TAG, debugMessage);
+                                    CommonUtils.debugToast(context, debugMessage);
                                 }
+                            } catch (Exception e) {
+                                Log.e(TAG, context.getString(R.string.error_parse_json) + "\n" + response, e);
                             }
                         }
                     }, new Response.ErrorListener() {

@@ -16,6 +16,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.List;
@@ -283,6 +284,8 @@ public class LatestThreadListAdapter extends RecyclerView.Adapter<RecyclerView.V
                                             .error(R.drawable.background)
                                             .into(holder.background);
                                 }
+                            } else {
+                                handleUnknownError(response);
                             }
                         }
                     } catch (Exception e) {
@@ -312,5 +315,12 @@ public class LatestThreadListAdapter extends RecyclerView.Adapter<RecyclerView.V
     @Override
     public int getItemCount() {
         return mLatestThreads == null ? 0 : mLatestThreads.size();
+    }
+
+    private void handleUnknownError(JSONObject response) throws JSONException {
+        String message = mContext.getString(R.string.error_unknown_msg) + ": " + response.getString("msg");
+        String debugMessage = message + " - " + response;
+        Log.w(TAG, debugMessage);
+        CommonUtils.debugToast(mContext, debugMessage);
     }
 }
