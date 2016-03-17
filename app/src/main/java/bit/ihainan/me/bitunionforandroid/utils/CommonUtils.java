@@ -357,6 +357,11 @@ public class CommonUtils {
                                             Global.CACHE_USER_INFO + finalUserName,
                                             newMember,
                                             Global.cacheDays * ACache.TIME_DAY);
+                                } else if ("member_nonexistence".equals(response.getString("msg"))) {
+                                    String message = context.getString(R.string.error_user_not_exists) + ": " + CommonUtils.decode(finalUserName);
+                                    String debugMessage = message + " - " + response;
+                                    Log.w(TAG, debugMessage);
+                                    CommonUtils.debugToast(context, debugMessage);
                                 } else {
                                     String message = context.getString(R.string.error_unknown_msg) + ": " + response.getString("msg");
                                     String debugMessage = message + " - " + response;
@@ -475,6 +480,21 @@ public class CommonUtils {
         }
     }
 
+
+    /**
+     * 将字符串转换成 URL 编码
+     *
+     * @param originalStr 原始字符串
+     * @return 转换后得到的 URL 编码字符串
+     */
+    public static String encode(String originalStr, String code) {
+        try {
+            return URLEncoder.encode(originalStr, code);
+        } catch (Exception e) {
+            Log.e(TAG, "Unsupported Encoding", e);
+            return originalStr;
+        }
+    }
 
     /**
      * 格式化日期为标准格式（yyyy-MM-dd hh:mm"）

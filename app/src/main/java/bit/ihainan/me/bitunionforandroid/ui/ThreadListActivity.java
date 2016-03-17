@@ -127,8 +127,10 @@ public class ThreadListActivity extends SwipeActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, getString(R.string.error_not_implement), Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                Intent intent = new Intent(ThreadListActivity.this, NewPostActivity.class);
+                intent.putExtra(NewPostActivity.NEW_POST_ACTION_TAG, NewPostActivity.ACTION_THREAD);
+                intent.putExtra(NewPostActivity.NEW_POST_FID_TAG, mFid);
+                startActivity(intent);
             }
         });
 

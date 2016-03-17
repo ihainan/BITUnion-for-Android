@@ -6,12 +6,12 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.OpenableColumns;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.ContextMenu;
 import android.view.Gravity;
 import android.view.Menu;
@@ -19,24 +19,49 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.io.File;
 
 import bit.ihainan.me.bitunionforandroid.R;
+import bit.ihainan.me.bitunionforandroid.ui.assist.SwipeActivity;
 import bit.ihainan.me.bitunionforandroid.ui.fragment.EmoticonFragment;
+import bit.ihainan.me.bitunionforandroid.utils.ACache;
+import bit.ihainan.me.bitunionforandroid.utils.Global;
 import bit.ihainan.me.bitunionforandroid.utils.ui.EditTextUndoRedo;
 
-public class PostOrReplyActivity extends AppCompatActivity {
+public class NewPostActivity extends SwipeActivity {
     // TAGS
-    public final static String TAG = PostOrReplyActivity.class.getSimpleName();
+    public final static String TAG = NewPostActivity.class.getSimpleName();
     public final static int CHOOSE_PHOTO_TAG = 0;
     public final static int CHOOSE_FILE_TAG = 1;
 
+    public final static String NEW_POST_ACTION_TAG = "NEW_POST_ACTION"; // 可选 thread / post
+    public final static String NEW_POST_SUBJECT_TAG = "NEW_POST_SUBJECT_TAG"; // 主题
+    public final static String ACTION_POST = "newreply";
+    public final static String ACTION_THREAD = "newthread";
+
+    public final static String NEW_POST_QUOTE_TAG = "NEW_POST_QUOTE"; // 引用内容
+    public final static String NEW_POST_TID_TAG = "NEW_POST_TID"; // 回复帖子 ID
+    public final static String NEW_POST_FID_TAG = "NEW_POST_FID"; // 回复论坛组 ID
+
+    public final static String NEW_POST_FLOOR_TAG = "NEW_POST_FLOOR_TAG"; // 回复论坛组 ID
+
+    // EditText draft
+    public final static String DRAFT_POST_SUBJECT = "DRAFT_POST_SUBJECT"; // 草稿 - 回帖 - 主题
+    public final static String DRAFT_POST_CONTENT = "DRAFT_POST_CONTENT"; // 草稿 - 回帖- 正文
+    public final static String DRAFT_POST_ATTACHMENT = "DRAFT_POST_ATTACHMENT"; // 草稿 - 回帖- 附件
+
+    public final static String DRAFT_THREAD_SUBJECT = "DRAFT_THREAD_SUBJECT"; // 草稿 - 主题 - 主题
+    public final static String DRAFT_THREAD_CONTENT = "DRAFT_THREAD_CONTENT"; // 草稿 - 主题 - 正文
+    public final static String DRAFT_THREAD_ATTACHMENT = "DRAFT_THREAD_ATTACHMENT"; // 草稿 - 主题 - 附件
+
     // UI References
     private DrawerLayout mDrawer;
-    private EditText mMessage;
+    private HorizontalScrollView buttonPanel;
+    private EditText mMessage, mSubject;
     private ImageView mBoldAction, mQuoteAction, mUndoAction, mRedoAction, mTestAction, mEmojiAction;
     private ImageView mItalic, mLink, mAt, mImage, mAttachment;
     private EmoticonFragment mEmoticonFragment;
@@ -45,10 +70,64 @@ public class PostOrReplyActivity extends AppCompatActivity {
     private ImageView mFileTypeImage, mDelButton;
     private TextView mAttachmentName, mAttachmentSize;
 
+    // Data
+    private String mAction, mQuote;
+    private Long mFid, mTid, mFloor;
+
+    private void getExtra() {
+        Intent intent = getIntent();
+        Bundle bundle = intent.getExtras();
+        if (bundle != null) {
+            mAction = bundle.getString(NEW_POST_ACTION_TAG);
+            if (mAction == null || "".equals(mAction)) finish();
+            if (mAction.equals(ACTION_POST)) setTitle("回复帖子");
+            else setTitle("发布主题");
+            if (ACTION_POST.equals(mAction)) mTid = bundle.getLong(NEW_POST_TID_TAG);
+            if (ACTION_THREAD.equals(mAction)) mFid = bundle.getLong(NEW_POST_FID_TAG);
+            mQuote = bundle.getString(NEW_POST_QUOTE_TAG);
+            mFloor = bundle.getLong(NEW_POST_FLOOR_TAG, 1);
+        }
+    }
+
+    private void loadCachedData() {
+        if (mAction.equals(ACTION_POST)) {
+            // 主题
+            String cachedSubject = Global.getCache(this).getAsStringWithNewLine(DRAFT_POST_SUBJECT + "_" + mTid);
+            mSubject.setHint("帖子主题（可选）");
+            if (cachedSubject != null) mSubject.append(cachedSubject);
+
+            // 内容
+            String cachedContent = Global.getCache(this).getAsStringWithNewLine(DRAFT_POST_CONTENT + "_" + mTid);
+            mMessage.setHint("回帖内容");
+            if (cachedContent != null) mMessage.append(cachedContent);
+
+            // 引用
+            if (mQuote != null) {
+                mMessage.append("\n" + mQuote);
+                // mMessage.setSelection(mMessage.getText().length());
+            }
+        } else {
+            // 主题
+            String cachedSubject = Global.getCache(this).getAsStringWithNewLine(DRAFT_THREAD_SUBJECT + "_" + mFid);
+            mSubject.setHint("帖子主题");
+            if (cachedSubject != null) mSubject.append(cachedSubject);
+
+            // 内容
+            String cachedContent = Global.getCache(this).getAsStringWithNewLine(DRAFT_THREAD_CONTENT + "_" + mFid);
+            mMessage.setHint("主题内容");
+            if (cachedContent != null) mMessage.append(cachedContent);
+        }
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_post_or_reply);
+
+        // Get Extra Data
+        getExtra();
+
+        // Toolbar
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -59,27 +138,14 @@ public class PostOrReplyActivity extends AppCompatActivity {
             }
         });
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
 
-        setTitle("发布新帖");
+        if (mAction.equals(ACTION_POST)) setTitle("发布新帖");
+        else setTitle("发布主题");
 
         mMessage = (EditText) findViewById(R.id.message);
+        mSubject = (EditText) findViewById(R.id.subject);
         mMessage.setLineSpacing(10, 1.3f);
-        // mMessage.setText(":bz_71:本科我宿舍的一个是国防生，本科毕业就去了保定徐水的38军某防空团了，到现在差不多有7年多的时间\n\n到现在差不多有7年多的时间\n本科我宿舍的一个是国防生，本科毕业就去了保定徐水的38军某防空团了，到现在差不多有7年多的时间\n到现在差不多有7年多的时间" + "本科我宿舍的一个是国防生，本科毕业就去了保定徐水的38军某防空团了，到现在差不多有7年多的时间\n\n到现在差不多有7年多的时间\n本科我宿舍的一个是国防生，本科毕业就去了保定徐水的38军某防空团了，到现在差不多有7年多的时间\n到现在差不多有7年多的时间" + "本科我宿舍的一个是国防生，本科毕业就去了保定徐水的38军某防空团了，到现在差不多有7年多的时间\n\n到现在差不多有7年多的时间\n本科我宿舍的一个是国防生，本科毕业就去了保定徐水的38军某防空团了，到现在差不多有7年多的时间\n到现在差不多有7年多的时间");
-        mMessage.setText("普通文本: 这个家教是我之前做的，平均每个月能收入4k。现在因为我个人原因，帮忙学生找一位新的认真负责的家教。我做的时候是周末50一小时，平时100元一次(陪写作业，一般每次2-3小时之间)这个价格请自行和家长商量，我这个仅供参考。" +
-                "\n\n加粗：[b]加粗[/b]" +
-                "\n\n链接：[url=http://www.baidu.com]百度[/url]" +
-                "\n\n表情：:nugget::sweating::wink::tongue:"
-                + "\n\n引用：[quote]我是一个引用[/quote]");
         editTextUndoRedo = new EditTextUndoRedo(mMessage);
-
 
         // Fragments
         mDrawer = (DrawerLayout) findViewById(R.id.post_drawer);
@@ -93,7 +159,6 @@ public class PostOrReplyActivity extends AppCompatActivity {
             }
         });
 
-
         // Attachment Layout
         mAttachmentLayout = (CardView) findViewById(R.id.attachment_layout);
         mFileTypeImage = (ImageView) findViewById(R.id.attachment_icon);
@@ -101,6 +166,7 @@ public class PostOrReplyActivity extends AppCompatActivity {
         mAttachmentName = (TextView) findViewById(R.id.attachment_name);
         mAttachmentSize = (TextView) findViewById(R.id.attachment_size);
         setupAttachmentLayout(false, null, null, null);
+        buttonPanel = (HorizontalScrollView) findViewById(R.id.buttonPanel);
 
         // Buttons
         mBoldAction = (ImageView) findViewById(R.id.bold_action);
@@ -113,7 +179,15 @@ public class PostOrReplyActivity extends AppCompatActivity {
         mImage = (ImageView) findViewById(R.id.img_action);
         mAt = (ImageView) findViewById(R.id.at_action);
         mAttachment = (ImageView) findViewById(R.id.attachment_action);
+
+        // Actions
         setUpActions();
+
+        // 从缓存中提取数据
+        loadCachedData();
+
+        // Swipe
+        setSwipeAnyWhere(false);
     }
 
     private void setupAttachmentLayout(Boolean visibility, Boolean isImage, String fileName, Long fileSize) {
@@ -135,7 +209,59 @@ public class PostOrReplyActivity extends AppCompatActivity {
     }
 
     private void setUpActions() {
-        // registerForContextMenu(mAttachment);
+        if (mAction.equals(ACTION_THREAD) && "".equals(mSubject.getText())) mSubject.requestFocus();
+        else mMessage.requestFocus();
+
+        mMessage.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                String content = s.toString();
+                if (mAction.equals(ACTION_POST)) {
+                    Global.getCache(NewPostActivity.this).put(DRAFT_POST_CONTENT + "_" + mTid, content, ACache.TIME_DAY * 2);
+                } else {
+                    Global.getCache(NewPostActivity.this).put(DRAFT_THREAD_CONTENT + "_" + mFid, content, ACache.TIME_DAY * 2);
+                }
+            }
+        });
+
+        mSubject.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                String subject = s.toString();
+                if (mAction.equals(ACTION_POST)) {
+                    Global.getCache(NewPostActivity.this).put(DRAFT_POST_SUBJECT + "_" + mTid, subject, ACache.TIME_DAY * 2);
+                } else {
+                    Global.getCache(NewPostActivity.this).put(DRAFT_THREAD_SUBJECT + "_" + mFid, subject, ACache.TIME_DAY * 2);
+                }
+            }
+        });
+
+        mAt.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                addTag("@", false);
+            }
+        });
 
         mQuoteAction.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -154,7 +280,6 @@ public class PostOrReplyActivity extends AppCompatActivity {
         mUndoAction.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // mMessage.
                 editTextUndoRedo.undo();
             }
         });
@@ -169,12 +294,7 @@ public class PostOrReplyActivity extends AppCompatActivity {
         mTestAction.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                View view = getCurrentFocus();
-                ((InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE))
-                        .hideSoftInputFromWindow(view.getWindowToken(), 0);
-                Intent intent = new Intent(PostOrReplyActivity.this, PreviewActivity.class);
-                intent.putExtra(PreviewActivity.MESSAGE_CONTENT, mMessage.getText().toString());
-                startActivity(intent);
+
             }
         });
 
@@ -267,25 +387,38 @@ public class PostOrReplyActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.send:
+                // 进入预览界面
                 View view = getCurrentFocus();
                 ((InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE))
                         .hideSoftInputFromWindow(view.getWindowToken(), 0);
-                Intent intent = new Intent(PostOrReplyActivity.this, PreviewActivity.class);
-                intent.putExtra(PreviewActivity.MESSAGE_CONTENT, mMessage.getText().toString());
-                startActivity(intent);
-                break;
+
+                // TODO: 长度、内容限制
+                if (ACTION_THREAD.equals(mAction) && ("".equals(mSubject.getText().toString()))) {
+                    Snackbar.make(buttonPanel, R.string.error_subject_required, Snackbar.LENGTH_LONG).show();
+                    mSubject.requestFocus();
+                } else if (mMessage.getText().toString().length() < 5) {
+                    Snackbar.make(buttonPanel, R.string.error_message_length_short, Snackbar.LENGTH_LONG).show();
+                    mMessage.requestFocus();
+                } else {
+                    Intent intent = new Intent(NewPostActivity.this, PreviewActivity.class);
+                    intent.putExtra(PreviewActivity.MESSAGE_CONTENT, mMessage.getText().toString());
+                    intent.putExtra(NEW_POST_ACTION_TAG, mAction);
+                    intent.putExtra(NEW_POST_ACTION_TAG, mAction);
+                    intent.putExtra(NEW_POST_SUBJECT_TAG, mSubject.getText().toString());
+                    if (mTid != null) intent.putExtra(NEW_POST_TID_TAG, mTid);
+                    if (mFid != null) intent.putExtra(NEW_POST_FID_TAG, mFid);
+                    intent.putExtra(NEW_POST_FLOOR_TAG, mFloor);
+
+                    startActivity(intent);
+                }
         }
 
         return true;
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
 
-        if (resultCode == RESULT_OK && data != null) {
-            Uri uri = data.getData();
-
+    private void fillAttachmentView(Uri uri, int requestCode) {
+        if (uri != null) {
             // Get the Uri of the selected file
             String uriString = uri.toString();
             File myFile = new File(uriString);
@@ -313,6 +446,18 @@ public class PostOrReplyActivity extends AppCompatActivity {
             cursor.close();
 
             setupAttachmentLayout(true, requestCode == CHOOSE_PHOTO_TAG, displayName, size);
+        } else {
+            setupAttachmentLayout(false, null, null, null);
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (resultCode == RESULT_OK && data != null) {
+            Uri uri = data.getData();
+            fillAttachmentView(uri, requestCode);
         }
     }
 }

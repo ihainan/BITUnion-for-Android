@@ -5,6 +5,8 @@ import android.util.Log;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import bit.ihainan.me.bitunionforandroid.utils.CommonUtils;
+
 /**
  * HTML Util
  */
@@ -170,7 +172,7 @@ public class HtmlUtil {
         result = result.replaceAll("\\[b\\]", "<b>");
         result = result.replaceAll("\\[/b\\]", "</b>");
 
-        result = result.replaceAll("\\[quote\\]", "<blockquote>");
+        result = result.replaceAll("\\[quote.*?\\]", "<blockquote>");
         result = result.replaceAll("\\[/quote\\]", "</blockquote>");
 
         result = result.replaceAll("\\[i\\]", "<i>");
@@ -184,6 +186,9 @@ public class HtmlUtil {
 
         // 替换表情
         result = replaceEmotion(result);
+
+        // 替换 @
+        result = replaceAt(result);
 
         return result;
     }
@@ -212,6 +217,20 @@ public class HtmlUtil {
                 else if (Emoticons.EMOTICONS.get(m.group(0)).startsWith("bz_"))
                     result = result.replace(m.group(0), "<img src=\"../images/bz/" + Emoticons.EMOTICONS.get(m.group(0)).substring(3) + "\" align=\"absmiddle\" border=\"0\">");
             }
+        }
+
+        return result;
+    }
+
+    public static String replaceAt(String result) {
+        String regex = "\\[@\\](.+?)\\[/@\\]";
+        Pattern pattern = Pattern.compile(regex);
+        Matcher m = pattern.matcher(result);
+        while (m.find()) {
+            result = result.replace(m.group(0),
+                    "<a href = \"/profile-username-"
+                            + CommonUtils.encode(m.group(1), "GBK")
+                            + ".html\" > " + m.group(1) + "</a >");
         }
 
         return result;

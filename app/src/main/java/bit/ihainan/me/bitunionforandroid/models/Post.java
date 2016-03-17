@@ -1,11 +1,15 @@
 package bit.ihainan.me.bitunionforandroid.models;
 
+import android.text.Html;
 import android.util.Log;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import java.io.Serializable;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
+import bit.ihainan.me.bitunionforandroid.utils.CommonUtils;
 import bit.ihainan.me.bitunionforandroid.utils.network.BUApi;
 
 /**
@@ -68,6 +72,41 @@ public class Post implements Serializable {
             Log.e(TAG, "Failed to convert object to JSON string", e);
             return null;
         }
+    }
+
+    // See: https://github.com/wuhao-ouyang/BUApp/blob/master/src/martin/app/bitunion/model/BUPost.java
+    public String toQuote() {
+        String quote = message;
+
+        quote = quote.replaceAll("<blockquote>.*?</blockquote>", "[引用]");
+
+        // Cut down the message if it's too long
+        if (quote.length() > 250)
+            quote = quote.substring(0, 250) + "......";
+
+        // Change hypertext reference to Discuz style
+        Pattern p = Pattern.compile("<a href='(.+?)'(?:.target='.+?')>(.+?)</a>");
+        Matcher m = p.matcher(quote);
+        while (m.find()) {
+            String discuz = "[url=" + m.group(1) + "]" + m.group(2) + "[/url]";
+            quote = quote.replace(m.group(0), discuz);
+            m = p.matcher(quote);
+        }
+
+        // Change image to Discuz style
+        p = Pattern.compile("<img src='([^>])'>");
+        m = p.matcher(quote);
+        while (m.find()) {
+            quote = quote.replace(m.group(0), "[img]" + m.group(1) + "[/img]");
+            m = p.matcher(quote);
+        }
+
+        // Clear other HTML marks
+        quote = Html.fromHtml(quote).toString();
+        quote = "[quote=" + pid + "][b]" + CommonUtils.decode(author) + "[/b] "
+                + CommonUtils.formatDateTime(CommonUtils.unixTimeStampToDate(dateline)) + "\n" + quote + "[/quote]\n";
+
+        return quote + "[@]" + CommonUtils.decode(author) + "[/@]\n";
     }
 
     public boolean useMobile;

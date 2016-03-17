@@ -72,7 +72,7 @@
 
 
                 <TextView
-                    android:id="@+id/thread_date"
+                    android:id="@+id/post_date"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_below="@id/thread_author_name"
@@ -133,7 +133,7 @@
                 android:layout_below="@id/divider">
 
                 <TextView
-                    android:id="@+id/thread_item_number"
+                    android:id="@+id/post_floor"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"

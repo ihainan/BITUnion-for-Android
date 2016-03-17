@@ -26,12 +26,11 @@ import java.util.List;
 
 import bit.ihainan.me.bitunionforandroid.R;
 import bit.ihainan.me.bitunionforandroid.models.Post;
-import bit.ihainan.me.bitunionforandroid.ui.PostOrReplyActivity;
+import bit.ihainan.me.bitunionforandroid.ui.NewPostActivity;
 import bit.ihainan.me.bitunionforandroid.ui.assist.CustomSpan;
 import bit.ihainan.me.bitunionforandroid.ui.viewholders.LoadingViewHolder;
 import bit.ihainan.me.bitunionforandroid.utils.network.BUApi;
 import bit.ihainan.me.bitunionforandroid.utils.CommonUtils;
-import bit.ihainan.me.bitunionforandroid.utils.Global;
 import bit.ihainan.me.bitunionforandroid.utils.ui.PicassoImageGetter;
 
 /**
@@ -122,6 +121,22 @@ public class PostListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 }
             }
 
+            // 回复
+            viewHolder.reply.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    // Snackbar.make(mRecyclerView, context.getString(R.string.error_not_implement), Snackbar.LENGTH_LONG).show();
+                    Intent intent = new Intent(mContext, NewPostActivity.class);
+                    intent.putExtra(NewPostActivity.NEW_POST_ACTION_TAG, NewPostActivity.ACTION_POST);
+                    intent.putExtra(NewPostActivity.NEW_POST_TID_TAG, reply.tid);
+                    String quoteContent = reply.toQuote();
+                    intent.putExtra(NewPostActivity.NEW_POST_QUOTE_TAG, quoteContent);
+                    intent.putExtra(NewPostActivity.NEW_POST_FLOOR_TAG, mReplyCount + 1);
+                    mContext.startActivity(intent);
+                }
+            });
+
+            // 日期
             viewHolder.date.setText(datePostStr);
 
             // 移动端
@@ -249,18 +264,9 @@ public class PostListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             avatar = (ImageView) itemView.findViewById(R.id.thread_author_avatar);
             author = (TextView) itemView.findViewById(R.id.thread_author_name);
             subject = (TextView) itemView.findViewById(R.id.thread_subject);
-            date = (TextView) itemView.findViewById(R.id.thread_date);
-            number = (TextView) itemView.findViewById(R.id.thread_item_number);
+            date = (TextView) itemView.findViewById(R.id.post_date);
+            number = (TextView) itemView.findViewById(R.id.post_floor);
             reply = (ImageView) itemView.findViewById(R.id.btn_repost);
-
-            reply.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    // Snackbar.make(mRecyclerView, context.getString(R.string.error_not_implement), Snackbar.LENGTH_LONG).show();
-                    Intent intent = new Intent(mContext, PostOrReplyActivity.class);
-                    mContext.startActivity(intent);
-                }
-            });
 
             message = (TextView) itemView.findViewById(R.id.thread_message);
             message.setMovementMethod(new CustomSpan.LinkTouchMovementMethod());

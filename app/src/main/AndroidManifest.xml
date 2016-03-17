@@ -17,7 +17,7 @@
     <uses-permission android:name="android.permission.GET_TASKS" />
 
     <!-- 附件 -->
-    
+
     <application
         android:name=".utils.Global"
         android:allowBackup="true"
@@ -64,9 +64,9 @@
             android:theme="@android:style/Theme.Translucent.NoTitleBar" />
         <activity android:name=".ui.assist.SwipeActivity" />
         <activity
-            android:name=".ui.PostOrReplyActivity"
+            android:name=".ui.NewPostActivity"
             android:label="@string/title_activity_post_or_reply"
-            android:theme="@style/AppTheme.NoActionBar"
+            android:theme="@style/AppTheme.SwipeTheme"
             android:windowSoftInputMode="adjustResize">
 
         </activity>

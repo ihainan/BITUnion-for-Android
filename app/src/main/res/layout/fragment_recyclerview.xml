@@ -23,8 +23,8 @@
             android:layout_centerHorizontal="true"
             android:layout_centerVertical="true"
             android:clipToPadding="false"
-            android:paddingBottom="7dp"
-            android:paddingTop="7dp" />
+            android:paddingBottom="5dp"
+            android:paddingTop="5dp" />
     </android.support.v4.widget.SwipeRefreshLayout>
 
 </LinearLayout>

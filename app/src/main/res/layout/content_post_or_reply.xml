@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context="bit.ihainan.me.bitunionforandroid.ui.PostOrReplyActivity"
+    tools:context=".ui.NewPostActivity"
     tools:showIn="@layout/activity_post_or_reply">
 
     <FrameLayout
@@ -132,6 +132,7 @@
                     </ScrollView>
 
                     <HorizontalScrollView
+                        android:id="@+id/buttonPanel"
                         android:layout_width="match_parent"
                         android:layout_height="56dp"
                         android:layout_marginTop="1dp"

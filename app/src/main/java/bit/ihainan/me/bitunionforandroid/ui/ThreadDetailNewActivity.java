@@ -7,6 +7,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v13.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
@@ -53,6 +54,7 @@ public class ThreadDetailNewActivity extends SwipeActivity {
 
     // UI references
     private ViewPager mPager;
+    private FloatingActionButton mNewPost;
     private SmartTabLayout mTabLayout;
     private Toolbar mToolbar;
     private CollapsingToolbarLayout mCollapsingToolbar;
@@ -73,9 +75,8 @@ public class ThreadDetailNewActivity extends SwipeActivity {
             mAuthorName = bundle.getString(THREAD_AUTHOR_NAME_TAG);
             mReplyCount = bundle.getLong(THREAD_REPLY_COUNT_TAG);
             mJumpFloor = bundle.getInt(THREAD_JUMP_FLOOR, -1);
-            Integer cacheViewPosition = (Integer) Global.getCache(this).getAsObject(Global.CACHE_VIEW_POSITION + "_" + mTid);
-            if (mJumpFloor == -1 && cacheViewPosition != null) {
-                mJumpFloor = cacheViewPosition;
+            if (mJumpFloor == -1) {
+                mJumpFloor = mReplyCount == null ? 0 : mReplyCount.intValue() - 1;
             }
 
             if (mJumpFloor != null) mJumpFloor += 1;
@@ -119,6 +120,20 @@ public class ThreadDetailNewActivity extends SwipeActivity {
         mCollapsingToolbar = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
         mCollapsingToolbar.setExpandedTitleTextAppearance(R.style.ExpandedAppBar);
         mCollapsingToolbar.setTitle("Loading");
+
+        // FAB
+        mNewPost = (FloatingActionButton) findViewById(R.id.fab);
+        mNewPost.setVisibility(View.INVISIBLE);
+        mNewPost.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(ThreadDetailNewActivity.this, NewPostActivity.class);
+                intent.putExtra(NewPostActivity.NEW_POST_ACTION_TAG, NewPostActivity.ACTION_POST);
+                intent.putExtra(NewPostActivity.NEW_POST_TID_TAG, mTid);
+                intent.putExtra(NewPostActivity.NEW_POST_FLOOR_TAG, mReplyCount + 1);
+                startActivity(intent);
+            }
+        });
 
         // Tab Layout
         mTabLayout = (SmartTabLayout) findViewById(R.id.tab_layout);
@@ -191,6 +206,8 @@ public class ThreadDetailNewActivity extends SwipeActivity {
     }
 
     private void fillViews() {
+        mNewPost.setVisibility(View.VISIBLE);
+
         getFavoriteStatus();    // 收藏装填
 
         mCollapsingToolbar.setTitle(Html.fromHtml(CommonUtils.decode(mThreadName)));    // 标题

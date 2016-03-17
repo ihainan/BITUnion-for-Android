@@ -86,6 +86,13 @@ public class PostListFragment extends Fragment {
         return mRootView;
     }
 
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        mRecyclerView.setPadding(mRecyclerView.getPaddingLeft(), 0, mRecyclerView.getPaddingRight(), mRecyclerView.getPaddingBottom());
+    }
+
     private void setupRecyclerView() {
         mLayoutManager = new LinearLayoutManager(mContext);
 
@@ -107,9 +114,6 @@ public class PostListFragment extends Fragment {
                 int mLastVisibleItem = mLayoutManager.findFirstVisibleItemPosition();
                 Integer currentFloor = mList.get(mLastVisibleItem).floor;
                 Log.d(TAG, "onScrolled >> " + currentFloor);
-                Global.getCache(mContext).put(Global.CACHE_VIEW_POSITION + "_" + mTid,
-                        currentFloor,
-                        ACache.TIME_DAY * Global.VIEW_POSITION_CACHE_DAY);
             }
         });
 
@@ -184,7 +188,7 @@ public class PostListFragment extends Fragment {
 
                                 // 上一次访问的位置
                                 if (mPageIndex != null) {
-                                    mRecyclerView.scrollToPosition(mPageIndex);
+                                    mLayoutManager.scrollToPositionWithOffset(mPageIndex, 0);
                                 }
                             } else {
                                 String message = getString(R.string.error_unknown_msg) + ": " + response.getString("msg");
