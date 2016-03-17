@@ -258,6 +258,8 @@ public class ThreadListActivity extends SwipeActivity {
                 }, new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
+                        mSwipeRefreshLayout.setRefreshing(false);
+
                         // 服务器请求失败，说明网络不好，移除标志，运行再次发送请求
                         if (mThreadList.size() > 0) {
                             mThreadList.remove(mThreadList.size() - 1);
@@ -270,9 +272,13 @@ public class ThreadListActivity extends SwipeActivity {
                             mThreadList.remove(mThreadList.size() - 1);
                             mAdapter.notifyItemRemoved(mThreadList.size());
                         }
-                        mSwipeRefreshLayout.setRefreshing(false);
-                        showSnackbar(getString(R.string.error_network));
-                        Log.e(TAG, getString(R.string.error_network), error);
+
+
+                        String message = getString(R.string.error_network);
+                        String debugMessage = "getForumThreads >> " + message;
+                        CommonUtils.debugToast(ThreadListActivity.this, debugMessage);
+                        showSnackbar(message);
+                        Log.e(TAG, debugMessage, error);
                     }
                 });
     }

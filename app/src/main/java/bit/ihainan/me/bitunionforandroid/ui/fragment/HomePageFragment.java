@@ -170,8 +170,12 @@ public class HomePageFragment extends Fragment {
             @Override
             public void onErrorResponse(VolleyError error) {
                 mSwipeRefreshLayout.setRefreshing(false);
-                showSnackbar(getString(R.string.error_network));
-                Log.e(TAG, getString(R.string.error_network), error);
+
+                String message = getString(R.string.error_network);
+                String debugMessage = "getHomePage >> " + message;
+                CommonUtils.debugToast(mContext, debugMessage);
+                showSnackbar(message);
+                Log.e(TAG, debugMessage, error);
             }
         });
     }

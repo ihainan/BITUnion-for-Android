@@ -230,14 +230,17 @@ public class TimelineFragment extends Fragment {
 
             mSwipeRefreshLayout.setRefreshing(false);
 
-            Snackbar.make(mRecyclerView, getString(R.string.error_network), Snackbar.LENGTH_INDEFINITE).setAction("RETRY", new View.OnClickListener() {
+            String message = getString(R.string.error_network);
+            String debugMessage = "TimelineFragment >> " + message;
+            CommonUtils.debugToast(mContext, debugMessage);
+            Log.e(TAG, debugMessage, error);
+
+            Snackbar.make(mRecyclerView, message, Snackbar.LENGTH_LONG).setAction("RETRY", new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     loadMore(true);
                 }
             }).show();
-
-            Log.e(TAG, getString(R.string.error_network), error);
         }
     };
 

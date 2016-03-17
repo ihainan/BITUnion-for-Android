@@ -197,7 +197,7 @@ public class PostListFragment extends Fragment {
                             Log.e(TAG, getString(R.string.error_parse_json) + "\n" + response, e);
 
                             Snackbar.make(mRecyclerView, getString(R.string.error_parse_json),
-                                    Snackbar.LENGTH_INDEFINITE).setAction("RETRY", new View.OnClickListener() {
+                                    Snackbar.LENGTH_LONG).setAction("RETRY", new View.OnClickListener() {
                                 @Override
                                 public void onClick(View v) {
                                     reloadData();
@@ -210,14 +210,18 @@ public class PostListFragment extends Fragment {
                     public void onErrorResponse(VolleyError error) {
                         mSwipeRefreshLayout.setRefreshing(false);
 
-                        Snackbar.make(mRecyclerView, getString(R.string.error_network), Snackbar.LENGTH_INDEFINITE).setAction("RETRY", new View.OnClickListener() {
+                        String message = getString(R.string.error_network);
+                        String debugMessage = "getPostReplies >> " + message;
+                        CommonUtils.debugToast(mContext, debugMessage);
+
+                        Snackbar.make(mRecyclerView, message, Snackbar.LENGTH_LONG).setAction("RETRY", new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
                                 reloadData();
                             }
                         }).show();
 
-                        Log.e(TAG, getString(R.string.error_network), error);
+                        Log.e(TAG, debugMessage, error);
                     }
                 });
     }

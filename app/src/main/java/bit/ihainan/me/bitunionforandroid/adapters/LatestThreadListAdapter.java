@@ -296,7 +296,10 @@ public class LatestThreadListAdapter extends RecyclerView.Adapter<RecyclerView.V
             }, new Response.ErrorListener() {
                 @Override
                 public void onErrorResponse(VolleyError error) {
-                    Log.e(TAG, mContext.getString(R.string.error_network), error);
+                    String message = mContext.getString(R.string.error_network);
+                    String debugMessage = "getPostReplies >> " + message;
+                    CommonUtils.debugToast(mContext, debugMessage);
+                    Log.e(TAG, debugMessage, error);
                 }
             });
         } else {

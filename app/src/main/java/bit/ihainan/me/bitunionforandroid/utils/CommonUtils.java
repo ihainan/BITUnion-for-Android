@@ -370,7 +370,10 @@ public class CommonUtils {
                     }, new Response.ErrorListener() {
                         @Override
                         public void onErrorResponse(VolleyError error) {
-                            Log.e(TAG, context.getString(R.string.error_network), error);
+                            String message = context.getString(R.string.error_network);
+                            String debugMessage = "getAndCacheUserInfo >> " + message;
+                            CommonUtils.debugToast(context, debugMessage);
+                            Log.e(TAG, debugMessage, error);
                         }
                     });
         }

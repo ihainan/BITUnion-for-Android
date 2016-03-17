@@ -183,8 +183,9 @@ public class ThreadDetailNewActivity extends SwipeActivity {
             @Override
             public void onErrorResponse(VolleyError error) {
                 String message = getString(R.string.error_network);
-                Log.e(TAG, message, error);
-                CommonUtils.debugToast(ThreadDetailNewActivity.this, message);
+                String debugMessage = " getPostReplies >> " + message;
+                Log.e(TAG, debugMessage, error);
+                CommonUtils.debugToast(ThreadDetailNewActivity.this, debugMessage);
             }
         });
     }
@@ -236,7 +237,10 @@ public class ThreadDetailNewActivity extends SwipeActivity {
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Log.e(TAG, "getFavoriteStatus >> " + getString(R.string.error_network), error);
+                String message = getString(R.string.error_network);
+                String debugMessage = "getFavoriteStatus >> " + message;
+                CommonUtils.debugToast(ThreadDetailNewActivity.this, debugMessage);
+                Log.e(TAG, debugMessage, error);
             }
         });
     }

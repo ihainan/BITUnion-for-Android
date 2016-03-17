@@ -147,7 +147,10 @@ public class ProfileActivity extends SwipeActivity {
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Log.e(TAG, "getFollowStatus >> " + getString(R.string.error_network), error);
+                String message = getString(R.string.error_network);
+                String debugMessage = "getFollowStatus >> " + message;
+                CommonUtils.debugToast(ProfileActivity.this, debugMessage);
+                Log.e(TAG, debugMessage, error);
             }
         });
     }
