@@ -17,8 +17,7 @@
     <uses-permission android:name="android.permission.GET_TASKS" />
 
     <!-- 附件 -->
-
-
+    
     <application
         android:name=".utils.Global"
         android:allowBackup="true"

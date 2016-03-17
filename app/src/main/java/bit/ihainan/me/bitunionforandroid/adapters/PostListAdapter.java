@@ -80,8 +80,8 @@ public class PostListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             // 头像
             CommonUtils.setUserAvatarClickListener(mContext,
                     viewHolder.avatar, -1,
-                    CommonUtils.decode(reply.author));
-            String avatarURL = CommonUtils.getRealImageURL(reply.avatar == null ? "" : CommonUtils.decode(reply.avatar));
+                    reply.author);
+            String avatarURL = reply.avatar == null ? "" : CommonUtils.getRealImageURL(reply.avatar);
             CommonUtils.setAvatarImageView(mContext, viewHolder.avatar,
                     avatarURL, R.drawable.default_avatar);
 
@@ -95,7 +95,7 @@ public class PostListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             }
 
             // 标题和正文
-            if (CommonUtils.decode(reply.subject).equals("")) {
+            if (reply.subject.equals("")) {
                 viewHolder.subject.setVisibility(View.GONE);
             } else {
                 viewHolder.subject.setVisibility(View.VISIBLE);
@@ -178,7 +178,7 @@ public class PostListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             attachmentImageLayout.setVisibility(View.VISIBLE);
 
             // 尝试从缓存中读取图片，如果缓存中没有图片，则用户点击之后就能加载
-            final String imageURL = CommonUtils.getRealImageURL(CommonUtils.decode(reply.attachment));
+            final String imageURL = CommonUtils.getRealImageURL(reply.attachment);
             Picasso.with(mContext)
                     .load(imageURL)
                     .networkPolicy(NetworkPolicy.OFFLINE)

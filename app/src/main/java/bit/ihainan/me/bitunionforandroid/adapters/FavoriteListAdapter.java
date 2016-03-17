@@ -85,15 +85,14 @@ public class FavoriteListAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                     new CommonUtils.UserInfoAndFillAvatarCallback() {
                         @Override
                         public void doSomethingIfHasCached(Member member) {
-                            String avatarURL = CommonUtils.getRealImageURL(CommonUtils.decode(member.avatar));
+                            String avatarURL = CommonUtils.getRealImageURL(member.avatar);
                             CommonUtils.setAvatarImageView(mContext, viewHolder.avatar,
                                     avatarURL, R.drawable.default_avatar);
                         }
                     });
 
             CommonUtils.setUserAvatarClickListener(mContext,
-                    viewHolder.avatar, -1,
-                    CommonUtils.decode(username));
+                    viewHolder.avatar, -1, username);
         } else {
             LoadingViewHolder loadingViewHolder = (LoadingViewHolder) holder;
             loadingViewHolder.progressBar.setIndeterminate(true);

@@ -125,8 +125,8 @@ public class BasicInfoFragment extends Fragment {
                 .getAsObject(Global.CACHE_USER_INFO + mUsername);
 
         // 从缓存中获取用户头像
-        CommonUtils.getAndCacheUserInfo(mContext,
-                CommonUtils.decode(mUsername), new CommonUtils.UserInfoAndFillAvatarCallback() {
+        CommonUtils.getAndCacheUserInfo(mContext, mUsername,
+                new CommonUtils.UserInfoAndFillAvatarCallback() {
                     @Override
                     public void doSomethingIfHasCached(Member member) {
                         mMember = member;
@@ -137,7 +137,7 @@ public class BasicInfoFragment extends Fragment {
 
     private void fillViews() {
         // 头像
-        final String avatarURL = CommonUtils.getRealImageURL(CommonUtils.decode(mMember.avatar));
+        final String avatarURL = CommonUtils.getRealImageURL(mMember.avatar);
         CommonUtils.setImageView(mContext, mAvatar,
                 avatarURL, R.drawable.default_avatar);
         mAvatar.setOnClickListener(new View.OnClickListener() {

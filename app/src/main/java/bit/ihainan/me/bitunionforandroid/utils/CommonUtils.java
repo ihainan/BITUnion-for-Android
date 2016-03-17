@@ -317,8 +317,11 @@ public class CommonUtils {
      * @param userName 用户名
      * @param callback 包含回调函数
      */
-    public static void getAndCacheUserInfo(final Context context, final String userName,
+    public static void getAndCacheUserInfo(final Context context, String userName,
                                            final UserInfoAndFillAvatarCallback callback) {
+
+        userName = CommonUtils.decode(userName);
+
         // 从缓存中获取用户信息
         final Member member = (Member) Global.getCache(context)
                 .getAsObject(Global.CACHE_USER_INFO + userName);
@@ -332,6 +335,7 @@ public class CommonUtils {
             Log.i(TAG, "准备拉取用户 " + userName + " 的缓存数据");
 
             // 从服务器拉取数据并写入到缓存当中
+            final String finalUserName = userName;
             BUApi.getUserInfo(context, -1,
                     userName,
                     new Response.Listener<JSONObject>() {
@@ -347,9 +351,9 @@ public class CommonUtils {
                                     callback.doSomethingIfHasNotCached(newMember);
 
                                     // 将用户信息放入到缓存当中
-                                    Log.i(TAG, "拉取得到用户 " + userName + " 的数据，放入缓存 " + Global.CACHE_USER_INFO + userName + " 中：" + newMember);
+                                    Log.i(TAG, "拉取得到用户 " + finalUserName + " 的数据，放入缓存 " + Global.CACHE_USER_INFO + finalUserName + " 中：" + newMember);
                                     Global.getCache(context).put(
-                                            Global.CACHE_USER_INFO + userName,
+                                            Global.CACHE_USER_INFO + finalUserName,
                                             newMember,
                                             Global.cacheDays * ACache.TIME_DAY);
                                 } catch (Exception e) {
@@ -373,8 +377,8 @@ public class CommonUtils {
      * @return 图片的真实 URL
      */
     public static String getRealImageURL(String originalURL) {
-        // TODO: ../images/cf/b.gif
-
+        // URL 解码
+        originalURL = CommonUtils.decode(originalURL);
 
         String ori = originalURL;
 

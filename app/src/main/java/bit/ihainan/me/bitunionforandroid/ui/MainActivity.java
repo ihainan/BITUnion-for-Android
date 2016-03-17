@@ -108,13 +108,12 @@ public class MainActivity extends AppCompatActivity {
         });
 
         // 从缓存中获取用户头像
-        CommonUtils.getAndCacheUserInfo(this,
-                CommonUtils.decode(Global.username),
+        CommonUtils.getAndCacheUserInfo(this, Global.username,
                 new CommonUtils.UserInfoAndFillAvatarCallback() {
                     @Override
                     public void doSomethingIfHasCached(Member member) {
                         mNavUsername.setText(CommonUtils.decode(member.username));
-                        String avatarURL = CommonUtils.getRealImageURL(CommonUtils.decode(member.avatar));
+                        String avatarURL = CommonUtils.getRealImageURL(member.avatar);
                         CommonUtils.setImageView(MainActivity.this, mNavProfileView,
                                 avatarURL, R.drawable.default_avatar);
                     }

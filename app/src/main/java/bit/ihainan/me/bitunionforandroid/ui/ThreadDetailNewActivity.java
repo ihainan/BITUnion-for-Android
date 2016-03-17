@@ -154,8 +154,8 @@ public class ThreadDetailNewActivity extends SwipeActivity {
 
                         if (threads.size() > 0) {
                             Post firstReply = threads.get(0);
-                            mThreadName = CommonUtils.decode(firstReply.subject);
-                            mAuthorName = CommonUtils.decode(firstReply.author);
+                            mThreadName = firstReply.subject;
+                            mAuthorName = firstReply.author;
                             fillViews();
                         }
                     } catch (Exception e) {

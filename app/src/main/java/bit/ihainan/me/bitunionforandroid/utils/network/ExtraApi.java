@@ -207,7 +207,7 @@ public class ExtraApi {
     public static void getFollowStatus(Context context, String following,
                                        Response.Listener<JSONObject> listener,
                                        Response.ErrorListener errorListener) {
-        String url = FOLLOW_ENDPOINT + "/status/" + CommonUtils.encode(Global.userSession.username) + "/" + following;
+        String url = FOLLOW_ENDPOINT + "/status/" + Global.userSession.username + "/" + CommonUtils.encode(following);
         Log.i(TAG, "getFollowStatus >> " + url);
 
         Map<String, Object> parameters = new HashMap();

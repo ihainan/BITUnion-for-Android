@@ -88,9 +88,9 @@ public class ThreadListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             public void onClick(View v) {
                 Intent intent = new Intent(mContext, ThreadDetailNewActivity.class);
                 intent.putExtra(ThreadDetailNewActivity.THREAD_ID_TAG, thread.tid);
-                intent.putExtra(ThreadDetailNewActivity.THREAD_NAME_TAG, CommonUtils.decode(thread.subject));
+                intent.putExtra(ThreadDetailNewActivity.THREAD_NAME_TAG, thread.subject);
                 intent.putExtra(ThreadDetailNewActivity.THREAD_REPLY_COUNT_TAG, thread.replies + 1);
-                intent.putExtra(ThreadDetailNewActivity.THREAD_AUTHOR_NAME_TAG, CommonUtils.decode(thread.author));
+                intent.putExtra(ThreadDetailNewActivity.THREAD_AUTHOR_NAME_TAG, thread.author);
                 mContext.startActivity(intent);
             }
         });
@@ -110,15 +110,14 @@ public class ThreadListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
             CommonUtils.setUserAvatarClickListener(mContext,
                     holder.avatar, -1,
-                    CommonUtils.decode(thread.author));
+                    thread.author);
 
 
-            CommonUtils.getAndCacheUserInfo(mContext,
-                    CommonUtils.decode(thread.author),
+            CommonUtils.getAndCacheUserInfo(mContext, thread.author,
                     new CommonUtils.UserInfoAndFillAvatarCallback() {
                         @Override
                         public void doSomethingIfHasCached(Member member) {
-                            String avatarURL = CommonUtils.getRealImageURL(CommonUtils.decode(member.avatar));
+                            String avatarURL = CommonUtils.getRealImageURL(member.avatar);
                             CommonUtils.setAvatarImageView(mContext, holder.avatar,
                                     avatarURL, R.drawable.default_avatar);
                         }
@@ -131,7 +130,7 @@ public class ThreadListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                     Global.MAX_USER_NAME_LENGTH));
             CommonUtils.setUserAvatarClickListener(mContext,
                     holder.avatar, -1,
-                    CommonUtils.decode(thread.lastposter));
+                    thread.lastposter);
 
             holder.action.setText(" 回复了帖子");
 
@@ -143,12 +142,11 @@ public class ThreadListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             }
 
             // 从缓存中获取用户信息
-            CommonUtils.getAndCacheUserInfo(mContext,
-                    CommonUtils.decode(thread.lastposter),
+            CommonUtils.getAndCacheUserInfo(mContext, thread.lastposter,
                     new CommonUtils.UserInfoAndFillAvatarCallback() {
                         @Override
                         public void doSomethingIfHasCached(Member member) {
-                            String avatarURL = CommonUtils.getRealImageURL(CommonUtils.decode(member.avatar));
+                            String avatarURL = CommonUtils.getRealImageURL(member.avatar);
                             CommonUtils.setAvatarImageView(mContext, holder.avatar,
                                     avatarURL, R.drawable.default_avatar);
                         }

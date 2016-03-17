@@ -168,8 +168,7 @@ public class PostListFragment extends Fragment {
                                 // 处理数据
                                 for (Post reply : newThreads) {
                                     // 处理正文
-                                    String body = CommonUtils.decode(reply.message);
-                                    reply.useMobile = body.contains("From BIT-Union Open API Project");
+                                    reply.useMobile = CommonUtils.decode(reply.message).contains("From BIT-Union Open API Project");
                                     HtmlUtil htmlUtil = new HtmlUtil(CommonUtils.decode(reply.message));
                                     reply.message = htmlUtil.makeAll();
 

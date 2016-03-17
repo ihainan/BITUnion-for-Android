@@ -122,13 +122,13 @@ public class LatestThreadListAdapter extends RecyclerView.Adapter<RecyclerView.V
 
         // 发帖、回帖日期
         if (latestThread.lastreply != null)
-            holder.date.setText(latestThread.lastreply.when);
+            holder.date.setText(CommonUtils.decode(latestThread.lastreply.when));
         else
             holder.date.setText("未知次元未知时间");
 
         /* 发表新帖 */
         if (latestThread.lastreply == null || latestThread.tid_sum == 0) {
-            String avatarURL = CommonUtils.getRealImageURL(CommonUtils.decode(latestThread.avatar));
+            String avatarURL = CommonUtils.getRealImageURL(latestThread.avatar);
             CommonUtils.setAvatarImageView(mContext, holder.avatar,
                     avatarURL, R.drawable.default_avatar);
 
@@ -144,17 +144,17 @@ public class LatestThreadListAdapter extends RecyclerView.Adapter<RecyclerView.V
                             Global.MAX_USER_NAME_LENGTH));
             CommonUtils.setUserAvatarClickListener(mContext,
                     holder.avatar, -1,
-                    CommonUtils.decode(latestThread.lastreply.who));
+                    latestThread.lastreply.who);
             holder.forumName.setText(CommonUtils.decode(latestThread.fname));
             holder.action.setText(" 发表了新帖");
         } else {
             // 从缓存中获取用户头像
             CommonUtils.getAndCacheUserInfo(mContext,
-                    CommonUtils.decode(latestThread.lastreply.who),
+                    latestThread.lastreply.who,
                     new CommonUtils.UserInfoAndFillAvatarCallback() {
                         @Override
                         public void doSomethingIfHasCached(Member member) {
-                            String avatarURL = CommonUtils.getRealImageURL(CommonUtils.decode(member.avatar));
+                            String avatarURL = CommonUtils.getRealImageURL(member.avatar);
                             CommonUtils.setAvatarImageView(mContext, holder.avatar,
                                     avatarURL, R.drawable.default_avatar);
                         }
@@ -178,7 +178,7 @@ public class LatestThreadListAdapter extends RecyclerView.Adapter<RecyclerView.V
             holder.action.setText(" 回复了帖子");
             CommonUtils.setUserAvatarClickListener(mContext,
                     holder.avatar, -1,
-                    CommonUtils.decode(latestThread.lastreply.who));
+                    latestThread.lastreply.who);
         }
     }
 
@@ -215,9 +215,9 @@ public class LatestThreadListAdapter extends RecyclerView.Adapter<RecyclerView.V
                             Global.MAX_USER_NAME_LENGTH));
             CommonUtils.setUserAvatarClickListener(mContext,
                     holder.avatar, -1,
-                    CommonUtils.decode(latestThread.author));
+                    latestThread.author);
             holder.action.setText(" 发布了自拍");
-            String avatarURL = CommonUtils.getRealImageURL(CommonUtils.decode(latestThread.avatar));
+            String avatarURL = CommonUtils.getRealImageURL(latestThread.avatar);
             CommonUtils.setAvatarImageView(mContext, holder.avatar,
                     avatarURL, R.drawable.default_avatar);
         } else {
@@ -228,7 +228,7 @@ public class LatestThreadListAdapter extends RecyclerView.Adapter<RecyclerView.V
                             Global.MAX_USER_NAME_LENGTH));
             CommonUtils.setUserAvatarClickListener(mContext,
                     holder.avatar, -1,
-                    CommonUtils.decode(latestThread.lastreply.who));
+                    latestThread.lastreply.who);
             holder.action.setText(" 评价了 " +
                     CommonUtils.truncateString(
                             CommonUtils.decode(latestThread.author),
@@ -236,11 +236,11 @@ public class LatestThreadListAdapter extends RecyclerView.Adapter<RecyclerView.V
 
             // 从缓存中获取用户头像
             CommonUtils.getAndCacheUserInfo(mContext,
-                    CommonUtils.decode(latestThread.lastreply.who),
+                    latestThread.lastreply.who,
                     new CommonUtils.UserInfoAndFillAvatarCallback() {
                         @Override
                         public void doSomethingIfHasCached(Member member) {
-                            String avatarURL = CommonUtils.getRealImageURL(CommonUtils.decode(member.avatar));
+                            String avatarURL = CommonUtils.getRealImageURL(member.avatar);
                             // 缓存模式下不会进入本方法，所以直接显示图片
                             if (avatarURL.endsWith("/images/standard/noavatar.gif")) {
                                 Picasso.with(mContext).load(R.drawable.default_avatar)
@@ -277,7 +277,7 @@ public class LatestThreadListAdapter extends RecyclerView.Adapter<RecyclerView.V
                                 if (firstReply.attachext.equals("png") || firstReply.attachext.equals("jpg")
                                         || firstReply.attachext.equals("jpeg")) {
                                     // 缓存模式下不会进入本方法，所以直接显示图片
-                                    String imageURL = CommonUtils.getRealImageURL(CommonUtils.decode(firstReply.attachment));
+                                    String imageURL = CommonUtils.getRealImageURL(firstReply.attachment);
                                     Picasso.with(mContext).load(imageURL)
                                             .placeholder(R.drawable.background)
                                             .error(R.drawable.background)
@@ -300,7 +300,7 @@ public class LatestThreadListAdapter extends RecyclerView.Adapter<RecyclerView.V
             Log.i(TAG, "fillSelfieView >> 从缓存中拿到回复数据 " + reply);
             if (reply.attachext.equals("png") || reply.attachext.equals("jpg")
                     || reply.attachext.equals("jpeg")) {
-                String imageURL = CommonUtils.getRealImageURL(CommonUtils.decode(reply.attachment));
+                String imageURL = CommonUtils.getRealImageURL(reply.attachment);
                 Picasso.with(mContext).load(imageURL)
                         .placeholder(R.drawable.nav_background)
                         .error(R.drawable.nav_background)
