@@ -4,6 +4,7 @@ import android.content.Context;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
+import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.NetworkResponse;
 import com.android.volley.Response;
 import com.android.volley.toolbox.JsonObjectRequest;
@@ -16,7 +17,6 @@ import org.json.JSONObject;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
-import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -271,24 +271,62 @@ public class BUApi {
      * @param errorListener error 事件监听器
      * @throws IOException 构建 Multipart 请求失败
      */
-    public static void postNewPost(Context context, int tid, String message,
+    public static void postNewPost(Context context, Long tid, String message,
                                    @Nullable byte[] attachment,
                                    Response.Listener<NetworkResponse> listener,
                                    Response.ErrorListener errorListener) throws IOException {
         Map<String, Object> parameters = new HashMap<String, Object>();
-        parameters.put("action", "thread");
         parameters.put("username", Global.userSession.username);    // session 里面的 username 未曾 encode 过
+        parameters.put("session", Global.userSession.session);
         parameters.put("action", "newreply");
-        parameters.put("tid", Integer.toString(tid));
+        parameters.put("tid", String.valueOf(tid));
         parameters.put("message", CommonUtils.encode(message));
         parameters.put("attachment", attachment == null ? "0" : "1");
 
+        String url = "http://ali.ihainan.me:8080/api/v2/multipart/att";
+
         if (attachment == null) {
-            String url = "http://192.168.56.1:8080/api/v2/multipart/no_att";
+            CommonUtils.debugToast(context, "POST_NEW_POST_NO_ATT >> " + url);
             makeMultipartRequest(context, url, "POST_NEW_POST_NO_ATT", parameters, null, listener, errorListener);
         } else {
-            String url = "http://192.168.56.1:8080/api/v2/multipart/att";
+            CommonUtils.debugToast(context, "POST_NEW_POST_NO_ATT >> " + url);
             makeMultipartRequest(context, url, "POST_NEW_POST_NO_ATT", parameters, attachment, listener, errorListener);
+        }
+    }
+
+    /**
+     * 发表新回复
+     *
+     * @param context       上下文
+     * @param fid           回复的帖子 ID
+     * @param title         主题标题
+     * @param message       回复的帖子内容
+     * @param attachment    附件数据，可为 null
+     * @param listener      response 事件监听器
+     * @param errorListener error 事件监听器
+     * @throws IOException 构建 Multipart 请求失败
+     */
+    public static void postNewThread(Context context, Long fid, String title, String message,
+                                     @Nullable byte[] attachment,
+                                     Response.Listener<NetworkResponse> listener,
+                                     Response.ErrorListener errorListener) throws IOException {
+        Map<String, Object> parameters = new HashMap<String, Object>();
+        parameters.put("username", Global.userSession.username);    // session 里面的 username 未曾 encode 过
+        parameters.put("session", Global.userSession.session);
+        parameters.put("action", "newthread");
+        parameters.put("fid", fid);
+        parameters.put("subject", title);
+        parameters.put("message", CommonUtils.encode(message));
+        parameters.put("attachment", attachment == null ? "0" : "1");
+
+        String url = "http://ali.ihainan.me:8080/api/v2/multipart/att";
+
+        if (attachment == null) {
+            CommonUtils.debugToast(context, "POST_NEW_THREAD_NOT_ATT >> " + url);
+            makeMultipartRequest(context, url, "POST_NEW_THREAD_NOT_ATT", parameters, null, listener, errorListener);
+        } else {
+            CommonUtils.debugToast(context, "POST_NEW_THREAD_ATT >> " + url);
+            makeMultipartRequest(context, url, "POST_NEW_THREAD_ATT", parameters, attachment, listener, errorListener);
         }
     }
 
@@ -403,15 +441,15 @@ public class BUApi {
         dataOutputStream.writeBytes(parameterValue + lineEnd);
     }
 
-    private static void makeMultipartRequest(final Context context, final String url, final String tag,
-                                             final Map<String, Object> parameters, byte[] fileData,
-                                             final Response.Listener<NetworkResponse> listener,
-                                             final Response.ErrorListener errorListener) throws IOException {
+    private static void
+    makeMultipartRequest(final Context context, final String url, final String tag,
+                         final Map<String, Object> parameters, byte[] fileData,
+                         final Response.Listener<NetworkResponse> listener,
+                         final Response.ErrorListener errorListener) throws IOException {
         byte[] multipartBody;
 
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         DataOutputStream dos = new DataOutputStream(bos);
-
 
         // Build JSON Part
         buildTextPart(dos, "json", new JSONObject(parameters).toString());
@@ -427,6 +465,10 @@ public class BUApi {
 
         // Build MultipartRequest
         MultipartRequest multipartRequest = new MultipartRequest(url, null, mimeType, multipartBody, listener, errorListener);
+        int timeout = fileData != null ? 1000 * 200 : 1000 * 10;
+        multipartRequest.setRetryPolicy(new DefaultRetryPolicy(timeout,
+                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
 
         // Add to queue
         RequestQueueManager.getInstance(context).addToRequestQueue(multipartRequest, tag);

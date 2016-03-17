@@ -201,7 +201,7 @@ public class ACache {
                 readString += currentLine + "\n";
             }
             if (!Utils.isDue(readString)) {
-                return Utils.clearDateInfo(readString);
+                return Utils.clearDateInfo(readString).trim();
             } else {
                 removeFile = true;
                 return null;

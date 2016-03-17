@@ -25,8 +25,6 @@ import com.android.volley.VolleyError;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.ogaclejapan.smarttablayout.SmartTabLayout;
 
-import net.opacapp.multilinecollapsingtoolbar.CollapsingToolbarLayout;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -46,6 +44,8 @@ import biz.kasual.materialnumberpicker.MaterialNumberPicker;
 public class ThreadDetailNewActivity extends SwipeActivity {
     // TAGS
     private final static String TAG = ThreadDetailNewActivity.class.getSimpleName();
+    public final static int REQUEST_NEW_REPLY = 0;
+
     public final static String THREAD_ID_TAG = "THREAD_ID_TAG";
     public final static String THREAD_NAME_TAG = "THREAD_NAME_TAG";
     public final static String THREAD_AUTHOR_NAME_TAG = "THREAD_AUTHOR_NAME_TAG";
@@ -57,7 +57,6 @@ public class ThreadDetailNewActivity extends SwipeActivity {
     private FloatingActionButton mNewPost;
     private SmartTabLayout mTabLayout;
     private Toolbar mToolbar;
-    private CollapsingToolbarLayout mCollapsingToolbar;
 
     // Data
     private Long mTid, mReplyCount;
@@ -83,6 +82,7 @@ public class ThreadDetailNewActivity extends SwipeActivity {
         }
 
         if (mTid == null) mTid = 10588072L; // For test
+
         // Jump Page & Index
         if (mJumpFloor != null) {
             // 要求跳转到特定楼层
@@ -117,9 +117,6 @@ public class ThreadDetailNewActivity extends SwipeActivity {
                 finish();
             }
         });
-        mCollapsingToolbar = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
-        mCollapsingToolbar.setExpandedTitleTextAppearance(R.style.ExpandedAppBar);
-        mCollapsingToolbar.setTitle("Loading");
 
         // FAB
         mNewPost = (FloatingActionButton) findViewById(R.id.fab);
@@ -131,7 +128,7 @@ public class ThreadDetailNewActivity extends SwipeActivity {
                 intent.putExtra(NewPostActivity.NEW_POST_ACTION_TAG, NewPostActivity.ACTION_POST);
                 intent.putExtra(NewPostActivity.NEW_POST_TID_TAG, mTid);
                 intent.putExtra(NewPostActivity.NEW_POST_FLOOR_TAG, mReplyCount + 1);
-                startActivity(intent);
+                startActivityForResult(intent, REQUEST_NEW_REPLY);
             }
         });
 
@@ -140,7 +137,9 @@ public class ThreadDetailNewActivity extends SwipeActivity {
         mPager = (ViewPager) findViewById(R.id.pager);
 
         if (mThreadName != null) {
-            mCollapsingToolbar.setTitle(Html.fromHtml(CommonUtils.decode(mThreadName)));
+            setTitle(Html.fromHtml(CommonUtils.decode(mThreadName)));
+        } else {
+            setTitle("Loading...");
         }
 
         if (mReplyCount == null || mReplyCount == 0 || mThreadName == null || mAuthorName == null)
@@ -210,7 +209,7 @@ public class ThreadDetailNewActivity extends SwipeActivity {
 
         getFavoriteStatus();    // 收藏装填
 
-        mCollapsingToolbar.setTitle(Html.fromHtml(CommonUtils.decode(mThreadName)));    // 标题
+        setTitle(Html.fromHtml(CommonUtils.decode(mThreadName)));    // 标题
 
         // TabLayout
         mTotalPage = calculateTotalPage(mReplyCount);
@@ -443,5 +442,16 @@ public class ThreadDetailNewActivity extends SwipeActivity {
 
     private void delFavorite() {
         ExtraApi.delFavorite(this, mTid, mFavorListener, mFavorErrorListener);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == REQUEST_NEW_REPLY && resultCode == RESULT_OK) {
+            // TODO: REFRESH
+            CommonUtils.debugToast(this, "发表回复成功");
+            getBasicData();
+        }
     }
 }

@@ -1,5 +1,6 @@
 package bit.ihainan.me.bitunionforandroid.ui;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
@@ -12,6 +13,7 @@ import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.Gravity;
 import android.view.Menu;
@@ -23,25 +25,31 @@ import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 
 import bit.ihainan.me.bitunionforandroid.R;
 import bit.ihainan.me.bitunionforandroid.ui.assist.SwipeActivity;
 import bit.ihainan.me.bitunionforandroid.ui.fragment.EmoticonFragment;
 import bit.ihainan.me.bitunionforandroid.utils.ACache;
+import bit.ihainan.me.bitunionforandroid.utils.CommonUtils;
 import bit.ihainan.me.bitunionforandroid.utils.Global;
 import bit.ihainan.me.bitunionforandroid.utils.ui.EditTextUndoRedo;
 
 public class NewPostActivity extends SwipeActivity {
     // TAGS
     public final static String TAG = NewPostActivity.class.getSimpleName();
-    public final static int CHOOSE_PHOTO_TAG = 0;
-    public final static int CHOOSE_FILE_TAG = 1;
+    public final static int REQUEST_CHOOSE_PHOTO_TAG = 0;
+    public final static int REQUEST_CHOOSE_FILE_TAG = 1;
+    public final static int REQUEST_PREVIEW_TAG = 2;
 
     public final static String NEW_POST_ACTION_TAG = "NEW_POST_ACTION"; // 可选 thread / post
     public final static String NEW_POST_SUBJECT_TAG = "NEW_POST_SUBJECT_TAG"; // 主题
     public final static String ACTION_POST = "newreply";
     public final static String ACTION_THREAD = "newthread";
+    public final static String NEW_POST_ATTACHMENT_TAG = "NEW_POST_ATTACHMENT_TAG"; // 附件
 
     public final static String NEW_POST_QUOTE_TAG = "NEW_POST_QUOTE"; // 引用内容
     public final static String NEW_POST_TID_TAG = "NEW_POST_TID"; // 回复帖子 ID
@@ -73,6 +81,7 @@ public class NewPostActivity extends SwipeActivity {
     // Data
     private String mAction, mQuote;
     private Long mFid, mTid, mFloor;
+    private byte[] mAttachmentByteArray;
 
     private void getExtra() {
         Intent intent = getIntent();
@@ -92,30 +101,30 @@ public class NewPostActivity extends SwipeActivity {
     private void loadCachedData() {
         if (mAction.equals(ACTION_POST)) {
             // 主题
-            String cachedSubject = Global.getCache(this).getAsStringWithNewLine(DRAFT_POST_SUBJECT + "_" + mTid);
-            mSubject.setHint("帖子主题（可选）");
-            if (cachedSubject != null) mSubject.append(cachedSubject);
+            mSubject.setVisibility(View.GONE);
 
             // 内容
             String cachedContent = Global.getCache(this).getAsStringWithNewLine(DRAFT_POST_CONTENT + "_" + mTid);
             mMessage.setHint("回帖内容");
             if (cachedContent != null) mMessage.append(cachedContent);
+            else mMessage.setText("");
 
             // 引用
             if (mQuote != null) {
                 mMessage.append("\n" + mQuote);
-                // mMessage.setSelection(mMessage.getText().length());
             }
         } else {
             // 主题
             String cachedSubject = Global.getCache(this).getAsStringWithNewLine(DRAFT_THREAD_SUBJECT + "_" + mFid);
             mSubject.setHint("帖子主题");
             if (cachedSubject != null) mSubject.append(cachedSubject);
+            else mSubject.setText("");
 
             // 内容
             String cachedContent = Global.getCache(this).getAsStringWithNewLine(DRAFT_THREAD_CONTENT + "_" + mFid);
             mMessage.setHint("主题内容");
             if (cachedContent != null) mMessage.append(cachedContent);
+            else mMessage.setText("");
         }
     }
 
@@ -188,24 +197,6 @@ public class NewPostActivity extends SwipeActivity {
 
         // Swipe
         setSwipeAnyWhere(false);
-    }
-
-    private void setupAttachmentLayout(Boolean visibility, Boolean isImage, String fileName, Long fileSize) {
-        if (!visibility) mAttachmentLayout.setVisibility(View.GONE);
-        else {
-            mAttachmentLayout.setVisibility(View.VISIBLE);
-            if (isImage) mFileTypeImage.setImageResource(R.drawable.ic_photo_file);
-            else mFileTypeImage.setImageResource(R.drawable.ic_documentation_file);
-
-            mAttachmentName.setText(fileName);
-            mAttachmentSize.setText((fileSize / 1024) + " KB");
-            mDelButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    setupAttachmentLayout(false, null, null, null);
-                }
-            });
-        }
     }
 
     private void setUpActions() {
@@ -321,7 +312,7 @@ public class NewPostActivity extends SwipeActivity {
             public void onClick(View v) {
                 Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
                 photoPickerIntent.setType("image/*");
-                startActivityForResult(photoPickerIntent, CHOOSE_PHOTO_TAG);
+                startActivityForResult(photoPickerIntent, REQUEST_CHOOSE_PHOTO_TAG);
             }
         });
 
@@ -331,7 +322,7 @@ public class NewPostActivity extends SwipeActivity {
                 Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
                 intent.addCategory(Intent.CATEGORY_OPENABLE);
                 intent.setType("*/*");
-                startActivityForResult(intent, CHOOSE_FILE_TAG);
+                startActivityForResult(intent, REQUEST_CHOOSE_FILE_TAG);
             }
         });
     }
@@ -408,46 +399,88 @@ public class NewPostActivity extends SwipeActivity {
                     if (mTid != null) intent.putExtra(NEW_POST_TID_TAG, mTid);
                     if (mFid != null) intent.putExtra(NEW_POST_FID_TAG, mFid);
                     intent.putExtra(NEW_POST_FLOOR_TAG, mFloor);
+                    intent.putExtra(NEW_POST_ATTACHMENT_TAG, mAttachmentByteArray);
 
-                    startActivity(intent);
+                    startActivityForResult(intent, REQUEST_PREVIEW_TAG);
                 }
         }
 
         return true;
     }
 
-
     private void fillAttachmentView(Uri uri, int requestCode) {
-        if (uri != null) {
-            // Get the Uri of the selected file
-            String uriString = uri.toString();
-            File myFile = new File(uriString);
-            String displayName = null;
+        try {
+            if (uri != null) {
+                // Get byte array
+                getByteArray(uri);
 
-            if (uriString.startsWith("content://")) {
-                Cursor cursor = null;
-                try {
-                    cursor = getContentResolver().query(uri, null, null, null, null);
-                    if (cursor != null && cursor.moveToFirst()) {
-                        displayName = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
+                // Get the Uri of the selected file
+                String uriString = uri.toString();
+                File myFile = new File(uriString);
+                String displayName = null;
+
+                if (uriString.startsWith("content://")) {
+                    Cursor cursor = null;
+                    try {
+                        cursor = getContentResolver().query(uri, null, null, null, null);
+                        if (cursor != null && cursor.moveToFirst()) {
+                            displayName = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
+                        }
+                    } finally {
+                        cursor.close();
                     }
-                } finally {
-                    cursor.close();
+                } else if (uriString.startsWith("file://")) {
+                    displayName = myFile.getName();
                 }
-            } else if (uriString.startsWith("file://")) {
-                displayName = myFile.getName();
+
+                // Size
+                Cursor cursor = getContentResolver().query(uri,
+                        null, null, null, null);
+                cursor.moveToFirst();
+                long size = cursor.getLong(cursor.getColumnIndex(OpenableColumns.SIZE));
+                cursor.close();
+
+                setupAttachmentLayout(true, requestCode == REQUEST_CHOOSE_PHOTO_TAG, displayName, size);
+            } else {
+                setupAttachmentLayout(false, null, null, null);
             }
+        } catch (IOException e) {
+            String message = getString(R.string.error_insert_attachment);
+            Log.e(TAG, message, e);
+            CommonUtils.debugToast(this, message);
+            Snackbar.make(mMessage, message, Snackbar.LENGTH_LONG).show();
+        }
+    }
 
-            // Size
-            Cursor cursor = getContentResolver().query(uri,
-                    null, null, null, null);
-            cursor.moveToFirst();
-            long size = cursor.getLong(cursor.getColumnIndex(OpenableColumns.SIZE));
-            cursor.close();
+    private void getByteArray(Uri uri) throws IOException {
+        InputStream iStream = getContentResolver().openInputStream(uri);
+        ByteArrayOutputStream byteBuffer = new ByteArrayOutputStream();
+        int bufferSize = 1024;
+        byte[] buffer = new byte[bufferSize];
+        int len;
+        while ((len = iStream.read(buffer)) != -1) {
+            byteBuffer.write(buffer, 0, len);
+        }
+        iStream.close();
+        byteBuffer.close();
+        mAttachmentByteArray = byteBuffer.toByteArray();
+    }
 
-            setupAttachmentLayout(true, requestCode == CHOOSE_PHOTO_TAG, displayName, size);
-        } else {
-            setupAttachmentLayout(false, null, null, null);
+    private void setupAttachmentLayout(Boolean visibility, Boolean isImage, String fileName, Long fileSize) {
+        if (!visibility) mAttachmentLayout.setVisibility(View.GONE);
+        else {
+            mAttachmentLayout.setVisibility(View.VISIBLE);
+            if (isImage) mFileTypeImage.setImageResource(R.drawable.ic_photo_file);
+            else mFileTypeImage.setImageResource(R.drawable.ic_documentation_file);
+
+            mAttachmentName.setText(fileName);
+            mAttachmentSize.setText((fileSize / 1024) + " KB");
+            mDelButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    setupAttachmentLayout(false, null, null, null);
+                }
+            });
         }
     }
 
@@ -455,9 +488,25 @@ public class NewPostActivity extends SwipeActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (resultCode == RESULT_OK && data != null) {
+        if ((requestCode == REQUEST_CHOOSE_PHOTO_TAG || requestCode == REQUEST_CHOOSE_FILE_TAG)
+                && resultCode == RESULT_OK && data != null) {
             Uri uri = data.getData();
             fillAttachmentView(uri, requestCode);
+        } else if (requestCode == REQUEST_PREVIEW_TAG) {
+            if (resultCode == RESULT_OK) {
+                // TODO: 清除缓存
+                if (mAction.equals(ACTION_POST)) {
+                    Global.getCache(NewPostActivity.this).remove(DRAFT_POST_CONTENT + "_" + mTid);
+                    Global.getCache(NewPostActivity.this).remove(DRAFT_POST_SUBJECT + "_" + mTid);
+                } else {
+                    Global.getCache(NewPostActivity.this).remove(DRAFT_THREAD_CONTENT + "_" + mFid);
+                    Global.getCache(NewPostActivity.this).remove(DRAFT_THREAD_SUBJECT + "_" + mFid);
+                }
+
+                Intent resultData = new Intent();
+                setResult(Activity.RESULT_OK, resultData);
+                finish();
+            }
         }
     }
 }

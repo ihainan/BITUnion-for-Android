@@ -26,6 +26,7 @@
 
     <!-- Error message -->
     <string name="error_title">错误</string>
+    <string name="error_insert_attachment">插入附件失败</string>
     <string name="error_invalid_password">密码不得为空</string>
     <string name="error_field_required">用户名不得为空</string>
     <string name="error_subject_required">主题不得为空</string>
@@ -115,4 +116,5 @@
     <string name="title_activity_focus">FocusActivity</string>
     <string name="title_activity_profile">ProfileActivity</string>
     <string name="title_activity_thread_detail_new">ThreadDetailNewActivity</string>
+    <string name="title_activity_main2">Main2Activity</string>
 </resources>

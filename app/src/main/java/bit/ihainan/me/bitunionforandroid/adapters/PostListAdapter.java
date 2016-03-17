@@ -27,6 +27,7 @@ import java.util.List;
 import bit.ihainan.me.bitunionforandroid.R;
 import bit.ihainan.me.bitunionforandroid.models.Post;
 import bit.ihainan.me.bitunionforandroid.ui.NewPostActivity;
+import bit.ihainan.me.bitunionforandroid.ui.ThreadDetailNewActivity;
 import bit.ihainan.me.bitunionforandroid.ui.assist.CustomSpan;
 import bit.ihainan.me.bitunionforandroid.ui.viewholders.LoadingViewHolder;
 import bit.ihainan.me.bitunionforandroid.utils.network.BUApi;
@@ -132,7 +133,7 @@ public class PostListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                     String quoteContent = reply.toQuote();
                     intent.putExtra(NewPostActivity.NEW_POST_QUOTE_TAG, quoteContent);
                     intent.putExtra(NewPostActivity.NEW_POST_FLOOR_TAG, mReplyCount + 1);
-                    mContext.startActivity(intent);
+                    ((Activity) mContext).startActivityForResult(intent, ThreadDetailNewActivity.REQUEST_NEW_REPLY);
                 }
             });
 

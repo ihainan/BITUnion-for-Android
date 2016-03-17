@@ -76,7 +76,7 @@ public class TestActivity extends SwipeActivity {
             Uri uri = data.getData();
 
             try {
-                BUApi.postNewPost(this, 10610779, "测试////?&", getFileData(uri), new Response.Listener<NetworkResponse>() {
+                BUApi.postNewPost(this, 10610779L, "测试////?&", getFileData(uri), new Response.Listener<NetworkResponse>() {
                     @Override
                     public void onResponse(NetworkResponse response) {
                         Log.i(TAG, "发表带附件帖子成功：" + response);
@@ -107,7 +107,7 @@ public class TestActivity extends SwipeActivity {
 
     private void testSendPost() {
         try {
-            BUApi.postNewPost(this, 10610779, "测试////?&", null, new Response.Listener<NetworkResponse>() {
+            BUApi.postNewPost(this, 10610779L, "测试////?&", null, new Response.Listener<NetworkResponse>() {
                 @Override
                 public void onResponse(NetworkResponse response) {
                     Log.i(TAG, "发表普通帖子成功：" + response);
