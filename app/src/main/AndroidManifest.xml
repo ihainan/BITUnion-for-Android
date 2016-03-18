@@ -76,7 +76,7 @@
             android:label="@string/title_activity_profile"
             android:theme="@style/AppTheme.SwipeTheme" />
         <activity
-            android:name=".ui.ThreadDetailNewActivity"
+            android:name=".ui.PostListActivity"
             android:label="@string/title_activity_thread_detail_new"
             android:theme="@style/AppTheme.SwipeTheme" >
         </activity>

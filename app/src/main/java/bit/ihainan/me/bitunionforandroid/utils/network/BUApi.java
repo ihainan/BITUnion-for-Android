@@ -35,6 +35,7 @@ public class BUApi {
 
     // Constants
     public final static String LOGGED_MSG = "IP+logged";
+    public final static String THREAD_NO_PERMISSION_MSG = "thread_nopermission";
 
     // END POINT
     public final static String IN_SCHOOL_BASE_URL = "http://www.bitunion.org/";
@@ -315,7 +316,7 @@ public class BUApi {
         parameters.put("session", Global.userSession.session);
         parameters.put("action", "newthread");
         parameters.put("fid", fid);
-        parameters.put("subject", title);
+        parameters.put("subject", CommonUtils.encode(title));
         parameters.put("message", CommonUtils.encode(message));
         parameters.put("attachment", attachment == null ? "0" : "1");
 

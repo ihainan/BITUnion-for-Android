@@ -28,9 +28,8 @@ import java.util.regex.Pattern;
 import bit.ihainan.me.bitunionforandroid.R;
 import bit.ihainan.me.bitunionforandroid.adapters.PostListAdapter;
 import bit.ihainan.me.bitunionforandroid.models.Post;
-import bit.ihainan.me.bitunionforandroid.ui.ThreadDetailNewActivity;
+import bit.ihainan.me.bitunionforandroid.ui.PostListActivity;
 import bit.ihainan.me.bitunionforandroid.ui.assist.SimpleDividerItemDecoration;
-import bit.ihainan.me.bitunionforandroid.utils.ACache;
 import bit.ihainan.me.bitunionforandroid.utils.CommonUtils;
 import bit.ihainan.me.bitunionforandroid.utils.Global;
 import bit.ihainan.me.bitunionforandroid.utils.network.BUApi;
@@ -59,7 +58,8 @@ public class PostListFragment extends Fragment {
     private String mAuthorName;
     private List<Post> mList = new ArrayList<>();
     private PostListAdapter mAdapter;
-
+    private boolean shouldJump = true;  // 是否需要跳到指定楼层
+    
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -67,10 +67,10 @@ public class PostListFragment extends Fragment {
             mContext = getActivity();
             mRootView = inflater.inflate(R.layout.fragment_recyclerview, container, false);
 
-            // Tid & page position
-            mTid = getArguments().getLong(ThreadDetailNewActivity.THREAD_ID_TAG);
-            mAuthorName = getArguments().getString(ThreadDetailNewActivity.THREAD_AUTHOR_NAME_TAG);
-            mReplyCount = getArguments().getLong(ThreadDetailNewActivity.THREAD_REPLY_COUNT_TAG);
+            // Extra tid & page position
+            mTid = getArguments().getLong(PostListActivity.THREAD_ID_TAG);
+            mAuthorName = getArguments().getString(PostListActivity.THREAD_AUTHOR_NAME_TAG);
+            mReplyCount = getArguments().getLong(PostListActivity.THREAD_REPLY_COUNT_TAG);
             mPagePosition = getArguments().getInt(PAGE_POSITION_TAG);
             mPageIndex = getArguments().getInt(PAGE_INDEX_TAG);
 
@@ -95,27 +95,9 @@ public class PostListFragment extends Fragment {
 
     private void setupRecyclerView() {
         mLayoutManager = new LinearLayoutManager(mContext);
-
         mRecyclerView.addItemDecoration(new SimpleDividerItemDecoration(mContext));
         mLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         mRecyclerView.setLayoutManager(mLayoutManager);
-
-        // Scroll
-        mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-                super.onScrollStateChanged(recyclerView, newState);
-            }
-
-            @Override
-            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                super.onScrolled(recyclerView, dx, dy);
-
-                int mLastVisibleItem = mLayoutManager.findFirstVisibleItemPosition();
-                Integer currentFloor = mList.get(mLastVisibleItem).floor;
-                Log.d(TAG, "onScrolled >> " + currentFloor);
-            }
-        });
 
         // Adapter
         mAdapter = new PostListAdapter(mContext, mList, mAuthorName, mReplyCount);
@@ -186,8 +168,9 @@ public class PostListFragment extends Fragment {
                                 mList.addAll(newThreads);
                                 mAdapter.notifyDataSetChanged();
 
-                                // 上一次访问的位置
-                                if (mPageIndex != null) {
+                                // 跳转到指定的位置，仅跳转一次
+                                if (shouldJump && mPageIndex != null) {
+                                    shouldJump = false;
                                     mLayoutManager.scrollToPositionWithOffset(mPageIndex, 0);
                                 }
                             } else {

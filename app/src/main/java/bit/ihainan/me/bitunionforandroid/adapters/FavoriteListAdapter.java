@@ -13,7 +13,7 @@ import java.util.List;
 import bit.ihainan.me.bitunionforandroid.R;
 import bit.ihainan.me.bitunionforandroid.models.Favorite;
 import bit.ihainan.me.bitunionforandroid.models.Member;
-import bit.ihainan.me.bitunionforandroid.ui.ThreadDetailNewActivity;
+import bit.ihainan.me.bitunionforandroid.ui.PostListActivity;
 import bit.ihainan.me.bitunionforandroid.ui.viewholders.LoadingViewHolder;
 import bit.ihainan.me.bitunionforandroid.ui.viewholders.TimelineViewHolder;
 import bit.ihainan.me.bitunionforandroid.utils.CommonUtils;
@@ -67,10 +67,10 @@ public class FavoriteListAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             View.OnClickListener onClickListener = new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Intent intent = new Intent(mContext, ThreadDetailNewActivity.class);
-                    intent.putExtra(ThreadDetailNewActivity.THREAD_ID_TAG, favorite.tid);
-                    intent.putExtra(ThreadDetailNewActivity.THREAD_AUTHOR_NAME_TAG, favorite.author);
-                    intent.putExtra(ThreadDetailNewActivity.THREAD_NAME_TAG, favorite.subject);
+                    Intent intent = new Intent(mContext, PostListActivity.class);
+                    intent.putExtra(PostListActivity.THREAD_ID_TAG, favorite.tid);
+                    intent.putExtra(PostListActivity.THREAD_AUTHOR_NAME_TAG, favorite.author);
+                    intent.putExtra(PostListActivity.THREAD_NAME_TAG, favorite.subject);
                     mContext.startActivity(intent);
                 }
             };

@@ -41,9 +41,9 @@ import bit.ihainan.me.bitunionforandroid.utils.network.BUApi;
 import bit.ihainan.me.bitunionforandroid.utils.network.ExtraApi;
 import biz.kasual.materialnumberpicker.MaterialNumberPicker;
 
-public class ThreadDetailNewActivity extends SwipeActivity {
+public class PostListActivity extends SwipeActivity {
     // TAGS
-    private final static String TAG = ThreadDetailNewActivity.class.getSimpleName();
+    private final static String TAG = PostListActivity.class.getSimpleName();
     public final static int REQUEST_NEW_REPLY = 0;
 
     public final static String THREAD_ID_TAG = "THREAD_ID_TAG";
@@ -54,7 +54,7 @@ public class ThreadDetailNewActivity extends SwipeActivity {
 
     // UI references
     private ViewPager mPager;
-    private FloatingActionButton mNewPost;
+    private FloatingActionButton mNewPostFAB;
     private SmartTabLayout mTabLayout;
     private Toolbar mToolbar;
 
@@ -64,45 +64,12 @@ public class ThreadDetailNewActivity extends SwipeActivity {
     private int mTotalPage;  // 总页数
     private Integer mJumpFloor = null;    // 跳转页面
     private Integer mJumpPage = 0, mJumpPageIndex = 0;   // 需要跳转的页数和页面内位置
-
-    private void getExtra() {
-        Intent intent = getIntent();
-        Bundle bundle = intent.getExtras();
-        if (bundle != null) {
-            mTid = bundle.getLong(THREAD_ID_TAG);
-            mThreadName = bundle.getString(THREAD_NAME_TAG);
-            mAuthorName = bundle.getString(THREAD_AUTHOR_NAME_TAG);
-            mReplyCount = bundle.getLong(THREAD_REPLY_COUNT_TAG);
-            mJumpFloor = bundle.getInt(THREAD_JUMP_FLOOR, -1);
-            if (mJumpFloor == -1) {
-                mJumpFloor = mReplyCount == null ? 0 : mReplyCount.intValue() - 1;
-            }
-
-            if (mJumpFloor != null) mJumpFloor += 1;
-        }
-
-        if (mTid == null) mTid = 10588072L; // For test
-
-        // Jump Page & Index
-        if (mJumpFloor != null) {
-            // 要求跳转到特定楼层
-            mJumpPage = calculateTotalPage(mJumpFloor) - 1;  // 19 - 1, 21 - 2
-            mJumpPageIndex = (int) (mJumpFloor - (mJumpPage) * Global.LOADING_POSTS_COUNT) - 1;
-        }
-    }
-
-    private static int calculateTotalPage(long floor) {
-        if (floor % Global.LOADING_POSTS_COUNT == 0) {
-            return (int) (floor / Global.LOADING_POSTS_COUNT);
-        } else {
-            return (int) (floor / Global.LOADING_POSTS_COUNT) + 1;
-        }
-    }
+    private PostListPageAdapter postListPageAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_thread_detail_new);
+        setContentView(R.layout.activity_post_list);
 
         // Get bundle data
         getExtra();
@@ -119,12 +86,12 @@ public class ThreadDetailNewActivity extends SwipeActivity {
         });
 
         // FAB
-        mNewPost = (FloatingActionButton) findViewById(R.id.fab);
-        mNewPost.setVisibility(View.INVISIBLE);
-        mNewPost.setOnClickListener(new View.OnClickListener() {
+        mNewPostFAB = (FloatingActionButton) findViewById(R.id.fab);
+        mNewPostFAB.setVisibility(View.INVISIBLE);
+        mNewPostFAB.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(ThreadDetailNewActivity.this, NewPostActivity.class);
+                Intent intent = new Intent(PostListActivity.this, NewPostActivity.class);
                 intent.putExtra(NewPostActivity.NEW_POST_ACTION_TAG, NewPostActivity.ACTION_POST);
                 intent.putExtra(NewPostActivity.NEW_POST_TID_TAG, mTid);
                 intent.putExtra(NewPostActivity.NEW_POST_FLOOR_TAG, mReplyCount + 1);
@@ -135,6 +102,7 @@ public class ThreadDetailNewActivity extends SwipeActivity {
         // Tab Layout
         mTabLayout = (SmartTabLayout) findViewById(R.id.tab_layout);
         mPager = (ViewPager) findViewById(R.id.pager);
+        mPager.setOffscreenPageLimit(1);
 
         if (mThreadName != null) {
             setTitle(Html.fromHtml(CommonUtils.decode(mThreadName)));
@@ -148,6 +116,44 @@ public class ThreadDetailNewActivity extends SwipeActivity {
 
         // Swipe
         setSwipeAnyWhere(false);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == REQUEST_NEW_REPLY && resultCode == RESULT_OK) {
+            CommonUtils.debugToast(this, "发表回复成功");
+            Intent intent = getIntent();
+            intent.removeExtra(THREAD_JUMP_FLOOR);  // 直接跳到最后
+            finish();
+            startActivity(intent);
+        }
+    }
+
+    /**
+     * 获取 Bundle 数据
+     */
+    private void getExtra() {
+        Intent intent = getIntent();
+        Bundle bundle = intent.getExtras();
+        if (bundle != null) {
+            mTid = bundle.getLong(THREAD_ID_TAG);
+            mThreadName = bundle.getString(THREAD_NAME_TAG);
+            mAuthorName = bundle.getString(THREAD_AUTHOR_NAME_TAG);
+            mReplyCount = bundle.getLong(THREAD_REPLY_COUNT_TAG);
+            mJumpFloor = bundle.getInt(THREAD_JUMP_FLOOR, -1);
+        }
+
+        if (Global.debugMode && mTid == null) mTid = 10588072L; // For test
+    }
+
+    private static int calculateTotalPage(long floor) {
+        if (floor % Global.LOADING_POSTS_COUNT == 0) {
+            return (int) (floor / Global.LOADING_POSTS_COUNT);
+        } else {
+            return (int) (floor / Global.LOADING_POSTS_COUNT) + 1;
+        }
     }
 
     /**
@@ -172,24 +178,24 @@ public class ThreadDetailNewActivity extends SwipeActivity {
                             mAuthorName = firstReply.author;
                             fillViews();
                         }
-                    } else if ("thread_nopermission".equals(response.getString("msg"))) {
+                    } else if (BUApi.THREAD_NO_PERMISSION_MSG.equals(response.getString("msg"))) {
                         String message = getString(R.string.error_thread_permission_need);
                         String debugMessage = message + " - " + response;
                         Log.w(TAG, debugMessage);
-                        CommonUtils.debugToast(ThreadDetailNewActivity.this, debugMessage);
+                        CommonUtils.debugToast(PostListActivity.this, debugMessage);
                         Snackbar.make(mPager, message, Snackbar.LENGTH_LONG).show();
                     } else {
                         String message = getString(R.string.error_unknown_msg) + ": " + response.getString("msg");
                         String debugMessage = message + " - " + response;
                         Log.w(TAG, debugMessage);
-                        CommonUtils.debugToast(ThreadDetailNewActivity.this, debugMessage);
+                        CommonUtils.debugToast(PostListActivity.this, debugMessage);
                         Snackbar.make(mPager, message, Snackbar.LENGTH_LONG).show();
                     }
                 } catch (Exception e) {
                     String message = getString(R.string.error_parse_json);
                     String debugMessage = message + " - " + response;
                     Log.e(TAG, debugMessage, e);
-                    CommonUtils.debugToast(ThreadDetailNewActivity.this, debugMessage);
+                    CommonUtils.debugToast(PostListActivity.this, debugMessage);
                     Snackbar.make(mPager, message, Snackbar.LENGTH_LONG).show();
                 }
             }
@@ -199,81 +205,44 @@ public class ThreadDetailNewActivity extends SwipeActivity {
                 String message = getString(R.string.error_network);
                 String debugMessage = " getPostReplies >> " + message;
                 Log.e(TAG, debugMessage, error);
-                CommonUtils.debugToast(ThreadDetailNewActivity.this, debugMessage);
+                CommonUtils.debugToast(PostListActivity.this, debugMessage);
             }
         });
     }
 
     private void fillViews() {
-        mNewPost.setVisibility(View.VISIBLE);
-
-        getFavoriteStatus();    // 收藏装填
-
         setTitle(Html.fromHtml(CommonUtils.decode(mThreadName)));    // 标题
+        mNewPostFAB.setVisibility(View.VISIBLE);    // FAB
+
+        // Jump Page & Index
+        // 没有指定跳转楼层，那就跳转到最后一层
+        if (mJumpFloor == null || mJumpFloor == -1) {
+            mJumpFloor = mReplyCount.intValue();
+        }
+
+        if (mJumpFloor != null) {
+            // 要求跳转到特定楼层
+            mJumpPage = calculateTotalPage(mJumpFloor) - 1;
+            mJumpPageIndex = mJumpFloor - (mJumpPage) * Global.LOADING_POSTS_COUNT - 1;
+        }
 
         // TabLayout
         mTotalPage = calculateTotalPage(mReplyCount);
-        mPager.setAdapter(new ThreadPageAdapter(getFragmentManager(), this));
+        postListPageAdapter = new PostListPageAdapter(getFragmentManager(), this);
+        mPager.setAdapter(postListPageAdapter);
         mTabLayout.setViewPager(mPager);
-        mPager.setOffscreenPageLimit(1);
+
         if (!(mJumpPage == 0 && mJumpPageIndex == 0)) {
             mPager.setCurrentItem(mJumpPage);
         }
+
+        getFavoriteStatus();    // 获取收藏状态
     }
 
-    public boolean hasFavor = false;
-
-    private void getFavoriteStatus() {
-        ExtraApi.getFavoriteStatus(this, mTid, new Response.Listener<JSONObject>() {
-            @Override
-            public void onResponse(JSONObject response) {
-                try {
-                    if (response.getInt("code") == 0) {
-                        hasFavor = response.getBoolean("data");
-                        CommonUtils.debugToast(ThreadDetailNewActivity.this, "hasFavor = " + hasFavor);
-                        favorClickable = true;
-                        if (hasFavor) {
-                            mFavorItem.setTitle("取消收藏");
-                            mFavorItem.setIcon(R.drawable.ic_favorite_white_24dp);
-                        } else {
-                            mFavorItem.setTitle("添加收藏");
-                            mFavorItem.setIcon(R.drawable.ic_favorite_border_white_24dp);
-                        }
-                    } else {
-                        String message = "获取收藏状态失败，失败原因 " + response.getString("message");
-                        if (Global.debugMode) {
-                            CommonUtils.debugToast(ThreadDetailNewActivity.this, message);
-                        }
-                        Log.w(TAG, message);
-                    }
-                } catch (JSONException e) {
-                    Log.e(TAG, getString(R.string.error_parse_json) + ": " + response, e);
-                }
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                String message = getString(R.string.error_network);
-                String debugMessage = "getFavoriteStatus >> " + message;
-                CommonUtils.debugToast(ThreadDetailNewActivity.this, debugMessage);
-                Log.e(TAG, debugMessage, error);
-            }
-        });
-    }
-
-    private MenuItem mFavorItem;
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.thread_detail_tab_menu, menu);
-        mFavorItem = menu.findItem(R.id.action_favor);
-        return true;
-    }
-
-    public class ThreadPageAdapter extends FragmentPagerAdapter {
+    public class PostListPageAdapter extends FragmentPagerAdapter {
         private Context context;
 
-        public ThreadPageAdapter(FragmentManager fm, Context context) {
+        public PostListPageAdapter(FragmentManager fm, Context context) {
             super(fm);
             this.context = context;
         }
@@ -308,7 +277,12 @@ public class ThreadDetailNewActivity extends SwipeActivity {
         }
     }
 
-    private boolean favorClickable = false;
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.thread_detail_tab_menu, menu);
+        mFavorItem = menu.findItem(R.id.action_favor);
+        return true;
+    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -368,6 +342,10 @@ public class ThreadDetailNewActivity extends SwipeActivity {
         return true;
     }
 
+    /* 收藏相关接口 */
+    private MenuItem mFavorItem;    // 收藏按钮
+    private boolean favorClickable = false; // 收藏按钮是否可以被点击
+    private boolean hasFavor = false;   // 收藏按钮状态
     private Response.Listener mFavorListener = new Response.Listener<JSONObject>() {
         @Override
         public void onResponse(JSONObject response) {
@@ -378,15 +356,15 @@ public class ThreadDetailNewActivity extends SwipeActivity {
                     String message = hasFavor ? "添加收藏成功" : "删除收藏成功";
                     Global.hasUpdateFavor = true;
                     Log.d(TAG, "mFavorListener >> " + message);
-                    Toast.makeText(ThreadDetailNewActivity.this, message, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(PostListActivity.this, message, Toast.LENGTH_SHORT).show();
                 } else {
                     // Oh no!!!
                     String message = (hasFavor ? "添加" : "删除") + "收藏失败";
                     String debugMessage = message + " - " + response.get("message");
                     if (Global.debugMode) {
-                        CommonUtils.debugToast(ThreadDetailNewActivity.this, debugMessage);
+                        CommonUtils.debugToast(PostListActivity.this, debugMessage);
                     } else {
-                        Toast.makeText(ThreadDetailNewActivity.this, message, Toast.LENGTH_SHORT).show();
+                        Toast.makeText(PostListActivity.this, message, Toast.LENGTH_SHORT).show();
                     }
 
                     Log.w(TAG, debugMessage);
@@ -404,9 +382,9 @@ public class ThreadDetailNewActivity extends SwipeActivity {
                 String message = (hasFavor ? "添加" : "删除") + "收藏失败";
                 String debugMessage = message + " - " + getString(R.string.error_parse_json) + " " + response;
                 if (Global.debugMode) {
-                    CommonUtils.debugToast(ThreadDetailNewActivity.this, debugMessage);
+                    CommonUtils.debugToast(PostListActivity.this, debugMessage);
                 } else {
-                    Toast.makeText(ThreadDetailNewActivity.this, message, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(PostListActivity.this, message, Toast.LENGTH_SHORT).show();
                 }
                 Log.e(TAG, debugMessage, e);
 
@@ -436,22 +414,53 @@ public class ThreadDetailNewActivity extends SwipeActivity {
         }
     };
 
+    private void getFavoriteStatus() {
+        ExtraApi.getFavoriteStatus(this, mTid, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                try {
+                    // TODO: 等待一段时间
+                    if (mFavorItem == null) getFavoriteStatus();
+                    else {
+                        if (response.getInt("code") == 0) {
+                            hasFavor = response.getBoolean("data");
+                            CommonUtils.debugToast(PostListActivity.this, "hasFavor = " + hasFavor);
+                            favorClickable = true;
+                            if (hasFavor) {
+                                mFavorItem.setTitle("取消收藏");
+                                mFavorItem.setIcon(R.drawable.ic_favorite_white_24dp);
+                            } else {
+                                mFavorItem.setTitle("添加收藏");
+                                mFavorItem.setIcon(R.drawable.ic_favorite_border_white_24dp);
+                            }
+                        } else {
+                            String message = "获取收藏状态失败，失败原因 " + response.getString("message");
+                            if (Global.debugMode) {
+                                CommonUtils.debugToast(PostListActivity.this, message);
+                            }
+                            Log.w(TAG, message);
+                        }
+                    }
+                } catch (JSONException e) {
+                    Log.e(TAG, getString(R.string.error_parse_json) + ": " + response, e);
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                String message = getString(R.string.error_network);
+                String debugMessage = "getFavoriteStatus >> " + message;
+                CommonUtils.debugToast(PostListActivity.this, debugMessage);
+                Log.e(TAG, debugMessage, error);
+            }
+        });
+    }
+
     private void addFavorite() {
         ExtraApi.addFavorite(this, mTid, mThreadName, mAuthorName, mFavorListener, mFavorErrorListener);
     }
 
     private void delFavorite() {
         ExtraApi.delFavorite(this, mTid, mFavorListener, mFavorErrorListener);
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if (requestCode == REQUEST_NEW_REPLY && resultCode == RESULT_OK) {
-            // TODO: REFRESH
-            CommonUtils.debugToast(this, "发表回复成功");
-            getBasicData();
-        }
     }
 }

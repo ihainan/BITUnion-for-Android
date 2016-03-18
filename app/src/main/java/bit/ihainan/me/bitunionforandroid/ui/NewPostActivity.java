@@ -83,21 +83,6 @@ public class NewPostActivity extends SwipeActivity {
     private Long mFid, mTid, mFloor;
     private byte[] mAttachmentByteArray;
 
-    private void getExtra() {
-        Intent intent = getIntent();
-        Bundle bundle = intent.getExtras();
-        if (bundle != null) {
-            mAction = bundle.getString(NEW_POST_ACTION_TAG);
-            if (mAction == null || "".equals(mAction)) finish();
-            if (mAction.equals(ACTION_POST)) setTitle("回复帖子");
-            else setTitle("发布主题");
-            if (ACTION_POST.equals(mAction)) mTid = bundle.getLong(NEW_POST_TID_TAG);
-            if (ACTION_THREAD.equals(mAction)) mFid = bundle.getLong(NEW_POST_FID_TAG);
-            mQuote = bundle.getString(NEW_POST_QUOTE_TAG);
-            mFloor = bundle.getLong(NEW_POST_FLOOR_TAG, 1);
-        }
-    }
-
     private void loadCachedData() {
         if (mAction.equals(ACTION_POST)) {
             // 主题
@@ -115,6 +100,7 @@ public class NewPostActivity extends SwipeActivity {
             }
         } else {
             // 主题
+            mSubject.setVisibility(View.VISIBLE);
             String cachedSubject = Global.getCache(this).getAsStringWithNewLine(DRAFT_THREAD_SUBJECT + "_" + mFid);
             mSubject.setHint("帖子主题");
             if (cachedSubject != null) mSubject.append(cachedSubject);
@@ -146,11 +132,10 @@ public class NewPostActivity extends SwipeActivity {
                 finish();
             }
         });
-
-
-        if (mAction.equals(ACTION_POST)) setTitle("发布新帖");
+        if (ACTION_POST.equals(mAction)) setTitle("发布新帖");
         else setTitle("发布主题");
 
+        // UI Ref
         mMessage = (EditText) findViewById(R.id.message);
         mSubject = (EditText) findViewById(R.id.subject);
         mMessage.setLineSpacing(10, 1.3f);
@@ -197,6 +182,24 @@ public class NewPostActivity extends SwipeActivity {
 
         // Swipe
         setSwipeAnyWhere(false);
+    }
+
+    /**
+     * 获取 Bundle 数据
+     */
+    private void getExtra() {
+        Intent intent = getIntent();
+        Bundle bundle = intent.getExtras();
+        if (bundle != null) {
+            mAction = bundle.getString(NEW_POST_ACTION_TAG);
+            if (mAction == null || "".equals(mAction)) finish();
+            if (mAction.equals(ACTION_POST)) setTitle("回复帖子");
+            else setTitle("发布主题");
+            if (ACTION_POST.equals(mAction)) mTid = bundle.getLong(NEW_POST_TID_TAG);
+            if (ACTION_THREAD.equals(mAction)) mFid = bundle.getLong(NEW_POST_FID_TAG);
+            mQuote = bundle.getString(NEW_POST_QUOTE_TAG);
+            mFloor = bundle.getLong(NEW_POST_FLOOR_TAG, 1);
+        }
     }
 
     private void setUpActions() {
@@ -494,7 +497,6 @@ public class NewPostActivity extends SwipeActivity {
             fillAttachmentView(uri, requestCode);
         } else if (requestCode == REQUEST_PREVIEW_TAG) {
             if (resultCode == RESULT_OK) {
-                // TODO: 清除缓存
                 if (mAction.equals(ACTION_POST)) {
                     Global.getCache(NewPostActivity.this).remove(DRAFT_POST_CONTENT + "_" + mTid);
                     Global.getCache(NewPostActivity.this).remove(DRAFT_POST_SUBJECT + "_" + mTid);

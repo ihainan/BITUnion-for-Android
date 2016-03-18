@@ -151,12 +151,12 @@ public class PreviewActivity extends SwipeActivity {
 
     private void postNew() {
         try {
+            dialog = ProgressDialog.show(PreviewActivity.this, "",
+                    "正在" + mActionStr, true);
             if (NewPostActivity.ACTION_POST.equals(mAction)) {
-                dialog = ProgressDialog.show(PreviewActivity.this, "",
-                        "正在" + mActionStr, true);
                 BUApi.postNewPost(this, mTid, mMessageContent, mAttachmentByteArray, listener, errorListener);
             } else {
-
+                BUApi.postNewThread(this, mFid, mSubject, mMessageContent, mAttachmentByteArray, listener, errorListener);
             }
         } catch (IOException e) {
             e.printStackTrace();

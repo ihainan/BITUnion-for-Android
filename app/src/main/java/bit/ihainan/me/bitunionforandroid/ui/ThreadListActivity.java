@@ -35,6 +35,7 @@ import bit.ihainan.me.bitunionforandroid.utils.Global;
 
 public class ThreadListActivity extends SwipeActivity {
     private final static String TAG = ThreadListActivity.class.getSimpleName();
+    public final static int REQUEST_NEW_THREAD = 0;
 
     // UI references
     private RecyclerView mRecyclerView;
@@ -130,11 +131,23 @@ public class ThreadListActivity extends SwipeActivity {
                 Intent intent = new Intent(ThreadListActivity.this, NewPostActivity.class);
                 intent.putExtra(NewPostActivity.NEW_POST_ACTION_TAG, NewPostActivity.ACTION_THREAD);
                 intent.putExtra(NewPostActivity.NEW_POST_FID_TAG, mFid);
-                startActivity(intent);
+                startActivityForResult(intent, REQUEST_NEW_THREAD);
             }
         });
 
         setSwipeAnyWhere(false);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == REQUEST_NEW_THREAD && resultCode == RESULT_OK) {
+            CommonUtils.debugToast(this, "发布主题成功");
+            Intent intent = getIntent();
+            finish();
+            startActivity(intent);
+        }
     }
 
     @Override

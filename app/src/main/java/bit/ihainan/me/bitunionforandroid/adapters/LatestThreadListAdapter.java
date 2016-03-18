@@ -25,7 +25,7 @@ import bit.ihainan.me.bitunionforandroid.R;
 import bit.ihainan.me.bitunionforandroid.models.LatestThread;
 import bit.ihainan.me.bitunionforandroid.models.Member;
 import bit.ihainan.me.bitunionforandroid.models.Post;
-import bit.ihainan.me.bitunionforandroid.ui.ThreadDetailNewActivity;
+import bit.ihainan.me.bitunionforandroid.ui.PostListActivity;
 import bit.ihainan.me.bitunionforandroid.ui.viewholders.DefaultViewHolder;
 import bit.ihainan.me.bitunionforandroid.ui.viewholders.SelfieViewHolder;
 import bit.ihainan.me.bitunionforandroid.utils.CommonUtils;
@@ -112,11 +112,11 @@ public class LatestThreadListAdapter extends RecyclerView.Adapter<RecyclerView.V
         holder.title.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(mContext, ThreadDetailNewActivity.class);
-                intent.putExtra(ThreadDetailNewActivity.THREAD_ID_TAG, latestThread.tid);
-                intent.putExtra(ThreadDetailNewActivity.THREAD_AUTHOR_NAME_TAG, latestThread.author);
-                intent.putExtra(ThreadDetailNewActivity.THREAD_REPLY_COUNT_TAG, latestThread.tid_sum + 1);
-                intent.putExtra(ThreadDetailNewActivity.THREAD_NAME_TAG, latestThread.pname);
+                Intent intent = new Intent(mContext, PostListActivity.class);
+                intent.putExtra(PostListActivity.THREAD_ID_TAG, latestThread.tid);
+                intent.putExtra(PostListActivity.THREAD_AUTHOR_NAME_TAG, latestThread.author);
+                intent.putExtra(PostListActivity.THREAD_REPLY_COUNT_TAG, latestThread.tid_sum + 1);
+                intent.putExtra(PostListActivity.THREAD_NAME_TAG, latestThread.pname);
                 mContext.startActivity(intent);
             }
         });
@@ -199,11 +199,11 @@ public class LatestThreadListAdapter extends RecyclerView.Adapter<RecyclerView.V
         holder.title.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(mContext, ThreadDetailNewActivity.class);
-                intent.putExtra(ThreadDetailNewActivity.THREAD_ID_TAG, latestThread.tid);
-                intent.putExtra(ThreadDetailNewActivity.THREAD_AUTHOR_NAME_TAG, latestThread.author);
-                intent.putExtra(ThreadDetailNewActivity.THREAD_REPLY_COUNT_TAG, latestThread.tid_sum + 1);
-                intent.putExtra(ThreadDetailNewActivity.THREAD_NAME_TAG, latestThread.pname);
+                Intent intent = new Intent(mContext, PostListActivity.class);
+                intent.putExtra(PostListActivity.THREAD_ID_TAG, latestThread.tid);
+                intent.putExtra(PostListActivity.THREAD_AUTHOR_NAME_TAG, latestThread.author);
+                intent.putExtra(PostListActivity.THREAD_REPLY_COUNT_TAG, latestThread.tid_sum + 1);
+                intent.putExtra(PostListActivity.THREAD_NAME_TAG, latestThread.pname);
                 mContext.startActivity(intent);
             }
         });
