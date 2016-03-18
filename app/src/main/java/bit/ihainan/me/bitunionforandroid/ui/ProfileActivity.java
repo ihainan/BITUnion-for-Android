@@ -121,6 +121,7 @@ public class ProfileActivity extends SwipeActivity {
         ExtraApi.getFollowStatus(this, mUsername, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
+                if (isFinishing()) return;
                 try {
                     if (mFollowMenuItem == null) return;
                     if (response.getInt("code") == 0) {
@@ -147,6 +148,7 @@ public class ProfileActivity extends SwipeActivity {
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
+                if (isFinishing()) return;
                 String message = getString(R.string.error_network);
                 String debugMessage = "getFollowStatus >> " + message;
                 CommonUtils.debugToast(ProfileActivity.this, debugMessage);
@@ -181,6 +183,7 @@ public class ProfileActivity extends SwipeActivity {
     private Response.Listener mFollowListener = new Response.Listener<JSONObject>() {
         @Override
         public void onResponse(JSONObject response) {
+            if (isFinishing()) return;
             mFollowClickable = !mFollowClickable;
             try {
                 if (response.getInt("code") == 0) {
@@ -235,6 +238,7 @@ public class ProfileActivity extends SwipeActivity {
     private Response.ErrorListener mFollowErrorListener = new Response.ErrorListener() {
         @Override
         public void onErrorResponse(VolleyError error) {
+            if (isFinishing()) return;
             String message = (hasFollow ? "添加收藏失败，" : "取消收藏失败") + "无法连接到服务器";
             Snackbar.make(mCollapsingToolbar, message, Snackbar.LENGTH_INDEFINITE).setAction("RETRY", new View.OnClickListener() {
                 @Override

@@ -1,5 +1,6 @@
 package bit.ihainan.me.bitunionforandroid.ui.fragment;
 
+import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
 import android.os.Bundle;
@@ -156,6 +157,7 @@ public class TimelineFragment extends Fragment {
     private Response.Listener<JSONObject> listener = new Response.Listener<JSONObject>() {
         @Override
         public void onResponse(JSONObject response) {
+            if (!isAdded() || ((Activity) mContext).isFinishing()) return;
             mSwipeRefreshLayout.setRefreshing(false);
 
             if (ExtraApi.checkStatus(response)) {
@@ -222,6 +224,8 @@ public class TimelineFragment extends Fragment {
     private Response.ErrorListener errorListener = new Response.ErrorListener() {
         @Override
         public void onErrorResponse(VolleyError error) {
+            if (((Activity) mContext).isFinishing()) return;
+
             // 服务器请求失败，说明网络不好，只能通过 RETRY 来重新拉取数据
             if (mList.size() > 0) {
                 mList.remove(mList.size() - 1);

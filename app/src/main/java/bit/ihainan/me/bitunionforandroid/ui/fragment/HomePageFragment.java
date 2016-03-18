@@ -1,5 +1,6 @@
 package bit.ihainan.me.bitunionforandroid.ui.fragment;
 
+import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
 import android.os.Bundle;
@@ -133,6 +134,7 @@ public class HomePageFragment extends Fragment {
         BUApi.getHomePage(mContext, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
+                if (!isAdded() || ((Activity) mContext).isFinishing()) return;
                 try {
                     mSwipeRefreshLayout.setRefreshing(false);
 
@@ -169,6 +171,7 @@ public class HomePageFragment extends Fragment {
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
+                if (!isAdded() || ((Activity) mContext).isFinishing()) return;
                 mSwipeRefreshLayout.setRefreshing(false);
 
                 String message = getString(R.string.error_network);

@@ -1,5 +1,6 @@
 package bit.ihainan.me.bitunionforandroid.adapters;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v4.content.ContextCompat;
@@ -265,6 +266,7 @@ public class LatestThreadListAdapter extends RecyclerView.Adapter<RecyclerView.V
                 @Override
                 public void onResponse(JSONObject response) {
                     try {
+                        if (((Activity) mContext).isFinishing()) return;
                         if (BUApi.checkStatus(response)) {
                             JSONArray newListJson = response.getJSONArray("postlist");
                             List<Post> postReplies = BUApi.MAPPER.readValue(newListJson.toString(),
@@ -296,6 +298,7 @@ public class LatestThreadListAdapter extends RecyclerView.Adapter<RecyclerView.V
             }, new Response.ErrorListener() {
                 @Override
                 public void onErrorResponse(VolleyError error) {
+                    if (((Activity) mContext).isFinishing()) return;
                     String message = mContext.getString(R.string.error_network);
                     String debugMessage = "getPostReplies >> " + message;
                     CommonUtils.debugToast(mContext, debugMessage);

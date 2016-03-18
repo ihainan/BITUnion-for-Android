@@ -1,5 +1,6 @@
 package bit.ihainan.me.bitunionforandroid.ui.fragment;
 
+import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
 import android.os.Bundle;
@@ -59,7 +60,7 @@ public class PostListFragment extends Fragment {
     private List<Post> mList = new ArrayList<>();
     private PostListAdapter mAdapter;
     private boolean shouldJump = true;  // 是否需要跳到指定楼层
-    
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -142,6 +143,7 @@ public class PostListFragment extends Fragment {
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
+                        if (!isAdded() || ((Activity) mContext).isFinishing()) return;
                         mSwipeRefreshLayout.setRefreshing(false);
                         try {
                             if (BUApi.checkStatus(response)) {
@@ -195,6 +197,7 @@ public class PostListFragment extends Fragment {
                 }, new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
+                        if (!isAdded() || ((Activity) mContext).isFinishing()) return;
                         mSwipeRefreshLayout.setRefreshing(false);
 
                         String message = getString(R.string.error_network);

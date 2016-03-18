@@ -44,6 +44,7 @@
             android:label="@string/title_activity_post_list"
             android:theme="@style/AppTheme.SwipeTheme" />
         <activity android:name=".ui.TestActivity" >
+
         </activity>
 
         <meta-data

@@ -164,6 +164,7 @@ public class PostListActivity extends SwipeActivity {
             @Override
             public void onResponse(JSONObject response) {
                 try {
+                    if (isFinishing()) return;
                     if (BUApi.checkStatus(response)) {
                         JSONArray newListJson = response.getJSONArray("postlist");
                         mReplyCount = (long) response.getInt("total_reply_count") + 1;
@@ -202,6 +203,7 @@ public class PostListActivity extends SwipeActivity {
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
+                if (isFinishing()) return;
                 String message = getString(R.string.error_network);
                 String debugMessage = " getPostReplies >> " + message;
                 Log.e(TAG, debugMessage, error);
@@ -351,6 +353,7 @@ public class PostListActivity extends SwipeActivity {
         public void onResponse(JSONObject response) {
             favorClickable = !favorClickable;
             try {
+                if (isFinishing()) return;
                 if (response.getInt("code") == 0) {
                     // 成功添加 / 删除收藏，皆大欢喜
                     String message = hasFavor ? "添加收藏成功" : "删除收藏成功";
@@ -403,6 +406,7 @@ public class PostListActivity extends SwipeActivity {
     private Response.ErrorListener mFavorErrorListener = new Response.ErrorListener() {
         @Override
         public void onErrorResponse(VolleyError error) {
+            if (isFinishing()) return;
             String message = (hasFavor ? "取消收藏失败，" : "添加收藏失败") + "无法连接到服务器";
             Snackbar.make(mPager, message, Snackbar.LENGTH_INDEFINITE).setAction("RETRY", new View.OnClickListener() {
                 @Override
@@ -419,6 +423,7 @@ public class PostListActivity extends SwipeActivity {
             @Override
             public void onResponse(JSONObject response) {
                 try {
+                    if (isFinishing()) return;
                     // TODO: 等待一段时间
                     if (mFavorItem == null) getFavoriteStatus();
                     else {
@@ -448,6 +453,7 @@ public class PostListActivity extends SwipeActivity {
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
+                if (isFinishing()) return;
                 String message = getString(R.string.error_network);
                 String debugMessage = "getFavoriteStatus >> " + message;
                 CommonUtils.debugToast(PostListActivity.this, debugMessage);

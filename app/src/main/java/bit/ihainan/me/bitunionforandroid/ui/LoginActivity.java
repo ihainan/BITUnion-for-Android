@@ -48,7 +48,7 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        
+
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
 
         // init UI references
@@ -187,6 +187,7 @@ public class LoginActivity extends AppCompatActivity {
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
+                        if (isFinishing()) return;
                         Global.username = mUsername.getText().toString();
                         if (mDialog != null) mDialog.dismiss();
                         // showProgress(false);
@@ -222,6 +223,7 @@ public class LoginActivity extends AppCompatActivity {
                 }, new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
+                        if (isFinishing()) return;
                         if (mDialog != null) mDialog.dismiss();
                         // showProgress(false);
                         mUsername.setError(getString(R.string.error_network));

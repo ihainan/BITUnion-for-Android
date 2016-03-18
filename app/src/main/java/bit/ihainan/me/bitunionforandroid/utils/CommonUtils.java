@@ -1,5 +1,6 @@
 package bit.ihainan.me.bitunionforandroid.utils;
 
+import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.Dialog;
 import android.content.Context;
@@ -341,6 +342,7 @@ public class CommonUtils {
                     new Response.Listener<JSONObject>() {
                         @Override
                         public void onResponse(JSONObject response) {
+                            if (((Activity) context).isFinishing()) return;
                             try {
                                 if (BUApi.checkStatus(response)) {
                                     Member newMember = BUApi.MAPPER.readValue(
@@ -374,6 +376,7 @@ public class CommonUtils {
                     }, new Response.ErrorListener() {
                         @Override
                         public void onErrorResponse(VolleyError error) {
+                            if (((Activity) context).isFinishing()) return;
                             String message = context.getString(R.string.error_network);
                             String debugMessage = "getAndCacheUserInfo >> " + message;
                             CommonUtils.debugToast(context, debugMessage);

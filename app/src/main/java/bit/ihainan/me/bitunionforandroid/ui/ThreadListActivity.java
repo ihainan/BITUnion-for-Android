@@ -222,6 +222,7 @@ public class ThreadListActivity extends SwipeActivity {
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
+                        if (isFinishing()) return;
                         try {
                             mSwipeRefreshLayout.setRefreshing(false);
 
@@ -273,6 +274,7 @@ public class ThreadListActivity extends SwipeActivity {
                 }, new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
+                        if (isFinishing()) return;
                         mSwipeRefreshLayout.setRefreshing(false);
 
                         // 服务器请求失败，说明网络不好，移除标志，运行再次发送请求

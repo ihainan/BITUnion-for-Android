@@ -65,7 +65,37 @@ public class TestActivity extends SwipeActivity {
         // testTimelineAPI();
 
         // 测试发帖回帖子
-        testSendPost();
+        testAsync();
+    }
+
+    private void testAsync(){
+        ExtraApi.getFavoriteList(this, 0, 10, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                if (isFinishing()) return;
+                if (ExtraApi.checkStatus(response)) {
+                    // 提取出收藏数据
+                    try {
+                        List<Favorite> favoriteList = BUApi.MAPPER.readValue(response.get("data").toString(),
+                                new TypeReference<List<Favorite>>() {
+                                });
+                        Log.i(TAG, "getFavoriteList >> " + favoriteList);
+                        Log.d(TAG, "isFinishing = " + isFinishing());
+                        message.setText("Fuck You");
+                    } catch (IOException e) {
+                        Log.e(TAG, "解析收藏列表 JSON 数据失败", e);
+                    } catch (JSONException e) {
+                        Log.e(TAG, "解析收藏列表 JSON 数据失败", e);
+                    }
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                if (isFinishing()) return;
+                Log.e(TAG, "获取收藏列表失败", error);
+            }
+        });
     }
 
     @Override
@@ -79,11 +109,13 @@ public class TestActivity extends SwipeActivity {
                 BUApi.postNewPost(this, 10610779L, "测试////?&", getFileData(uri), new Response.Listener<NetworkResponse>() {
                     @Override
                     public void onResponse(NetworkResponse response) {
+                        if (isFinishing()) return;
                         Log.i(TAG, "发表带附件帖子成功：" + response);
                     }
                 }, new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
+                        if (isFinishing()) return;
                         Log.e(TAG, "发表带附件帖子失败", error);
                     }
                 });
@@ -110,11 +142,13 @@ public class TestActivity extends SwipeActivity {
             BUApi.postNewPost(this, 10610779L, "测试////?&", null, new Response.Listener<NetworkResponse>() {
                 @Override
                 public void onResponse(NetworkResponse response) {
+                    if (isFinishing()) return;
                     Log.i(TAG, "发表普通帖子成功：" + response);
                 }
             }, new Response.ErrorListener() {
                 @Override
                 public void onErrorResponse(VolleyError error) {
+                    if (isFinishing()) return;
                     Log.e(TAG, "发表普通帖子失败", error);
                 }
             });
@@ -154,6 +188,7 @@ public class TestActivity extends SwipeActivity {
         ExtraApi.getSpecialUserTimeline(this, "ihainan", 0, 20, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
+                if (isFinishing()) return;
                 if (ExtraApi.checkStatus(response)) {
                     // 提取出收藏数据
                     try {
@@ -171,6 +206,7 @@ public class TestActivity extends SwipeActivity {
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
+                if (isFinishing()) return;
                 Log.e(TAG, "获取指定用户动态失败", error);
             }
         });
@@ -178,6 +214,7 @@ public class TestActivity extends SwipeActivity {
         ExtraApi.getFocusTimeline(this, 0, 20, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
+                if (isFinishing()) return;
                 if (ExtraApi.checkStatus(response)) {
                     // 提取出收藏数据
                     try {
@@ -195,6 +232,7 @@ public class TestActivity extends SwipeActivity {
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
+                if (isFinishing()) return;
                 Log.e(TAG, "获取用户关注列表失败", error);
             }
         });
@@ -205,6 +243,7 @@ public class TestActivity extends SwipeActivity {
         ExtraApi.searchThreads(this, "Alpha", 0, 20, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
+                if (isFinishing()) return;
                 if (ExtraApi.checkStatus(response)) {
                     // 提取出收藏数据
                     try {
@@ -222,6 +261,7 @@ public class TestActivity extends SwipeActivity {
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
+                if (isFinishing()) return;
                 Log.e(TAG, "获取关注列表失败", error);
             }
         });
@@ -230,6 +270,7 @@ public class TestActivity extends SwipeActivity {
         ExtraApi.searchPosts(this, "Alpha", 0, 20, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
+                if (isFinishing()) return;
                 if (ExtraApi.checkStatus(response)) {
                     // 提取出收藏数据
                     try {
@@ -247,6 +288,7 @@ public class TestActivity extends SwipeActivity {
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
+                if (isFinishing()) return;
                 Log.e(TAG, "获取关注列表失败", error);
             }
         });
@@ -257,6 +299,7 @@ public class TestActivity extends SwipeActivity {
         ExtraApi.addFollow(this, "小猫香蒲", new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
+                if (isFinishing()) return;
                 if (ExtraApi.checkStatus(response)) {
                     Log.d(TAG, "添加关注成功");
                 }
@@ -264,6 +307,7 @@ public class TestActivity extends SwipeActivity {
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
+                if (isFinishing()) return;
                 Log.e(TAG, "添加关注失败", error);
             }
         });
@@ -272,6 +316,7 @@ public class TestActivity extends SwipeActivity {
         ExtraApi.getFollowingList(this, 0, 10, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
+                if (isFinishing()) return;
                 if (ExtraApi.checkStatus(response)) {
                     // 提取出收藏数据
                     try {
@@ -289,6 +334,7 @@ public class TestActivity extends SwipeActivity {
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
+                if (isFinishing()) return;
                 Log.e(TAG, "获取关注列表失败", error);
             }
         });
@@ -297,6 +343,7 @@ public class TestActivity extends SwipeActivity {
         ExtraApi.delFollow(this, "小猫香蒲", new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
+                if (isFinishing()) return;
                 if (ExtraApi.checkStatus(response)) {
                     Log.d(TAG, "取消关注成功");
                 }
@@ -304,6 +351,7 @@ public class TestActivity extends SwipeActivity {
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
+                if (isFinishing()) return;
                 Log.e(TAG, "取消关注失败", error);
             }
         });
@@ -312,6 +360,7 @@ public class TestActivity extends SwipeActivity {
         ExtraApi.getFollowStatus(this, "lanqiang", new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
+                if (isFinishing()) return;
                 if (ExtraApi.checkStatus(response)) {
                     try {
                         Boolean status = response.getBoolean("data");
@@ -324,6 +373,7 @@ public class TestActivity extends SwipeActivity {
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
+                if (isFinishing()) return;
                 Log.e(TAG, "解析关注状态失败", error);
             }
         });
@@ -334,6 +384,7 @@ public class TestActivity extends SwipeActivity {
         ExtraApi.addFavorite(this, 10610499, "新桌面儿", "小猫香蒲", new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
+                if (isFinishing()) return;
                 if (ExtraApi.checkStatus(response)) {
                     Log.d(TAG, "添加收藏成功");
                 }
@@ -341,6 +392,7 @@ public class TestActivity extends SwipeActivity {
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
+                if (isFinishing()) return;
                 Log.e(TAG, "添加收藏失败", error);
             }
         });
@@ -349,6 +401,7 @@ public class TestActivity extends SwipeActivity {
         ExtraApi.getFavoriteList(this, 0, 10, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
+                if (isFinishing()) return;
                 if (ExtraApi.checkStatus(response)) {
                     // 提取出收藏数据
                     try {
@@ -366,6 +419,7 @@ public class TestActivity extends SwipeActivity {
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
+                if (isFinishing()) return;
                 Log.e(TAG, "获取收藏列表失败", error);
             }
         });
@@ -374,6 +428,7 @@ public class TestActivity extends SwipeActivity {
         ExtraApi.delFavorite(this, 10610499, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
+                if (isFinishing()) return;
                 if (ExtraApi.checkStatus(response)) {
                     Log.d(TAG, "删除收藏成功");
                 }
@@ -381,6 +436,7 @@ public class TestActivity extends SwipeActivity {
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
+                if (isFinishing()) return;
                 Log.e(TAG, "删除收藏失败", error);
             }
         });
@@ -389,6 +445,7 @@ public class TestActivity extends SwipeActivity {
         ExtraApi.getFavoriteStatus(this, 10610499, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
+                if (isFinishing()) return;
                 if (ExtraApi.checkStatus(response)) {
                     try {
                         Boolean status = response.getBoolean("data");
@@ -401,6 +458,7 @@ public class TestActivity extends SwipeActivity {
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
+                if (isFinishing()) return;
                 Log.e(TAG, "获取收藏状态失败", error);
             }
         });
