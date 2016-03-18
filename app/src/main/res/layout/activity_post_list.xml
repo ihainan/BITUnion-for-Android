@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="@color/background"
     android:fitsSystemWindows="true"
-    tools:context=".ui.PostListActivity">
+    tools:context="me.ihainan.bu.app.ui.PostListActivity">
 
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
@@ -54,6 +54,6 @@
         android:layout_gravity="bottom|end"
         android:layout_margin="@dimen/fab_margin"
         android:src="@drawable/ic_add_white_24dp"
-        app:layout_behavior="bit.ihainan.me.bitunionforandroid.ui.assist.FABScrollBehavior" />
+        app:layout_behavior="me.ihainan.bu.app.ui.assist.FABScrollBehavior" />
 
 </android.support.design.widget.CoordinatorLayout>

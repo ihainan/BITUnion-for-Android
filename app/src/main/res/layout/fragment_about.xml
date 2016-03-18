@@ -29,7 +29,7 @@
         android:paddingLeft="@dimen/activity_horizontal_margin"
         android:paddingRight="@dimen/activity_horizontal_margin"
         android:paddingTop="@dimen/activity_vertical_margin"
-        tools:context="bit.ihainan.me.bitunionforandroid.ui.AboutActivity">
+        tools:context="me.ihainan.bu.app.ui.AboutActivity">
 
         <LinearLayout
             android:id="@+id/user_login_form"

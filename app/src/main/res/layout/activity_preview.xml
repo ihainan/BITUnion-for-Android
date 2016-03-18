@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="@color/background"
     android:fitsSystemWindows="true"
-    tools:context="bit.ihainan.me.bitunionforandroid.ui.PreviewActivity">
+    tools:context="me.ihainan.bu.app.ui.PreviewActivity">
 
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"

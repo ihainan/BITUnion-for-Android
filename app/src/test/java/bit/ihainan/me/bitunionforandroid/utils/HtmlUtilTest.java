@@ -1,8 +1,8 @@
-package bit.ihainan.me.bitunionforandroid.utils;
+package me.ihainan.bu.app.utils;
 
 import org.junit.Test;
 
-import bit.ihainan.me.bitunionforandroid.utils.ui.HtmlUtil;
+import me.ihainan.bu.app.utils.ui.HtmlUtil;
 
 import static org.junit.Assert.*;
 
