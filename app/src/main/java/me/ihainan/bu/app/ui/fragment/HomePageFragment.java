@@ -3,6 +3,7 @@ package me.ihainan.bu.app.ui.fragment;
 import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
@@ -13,7 +14,11 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -30,6 +35,7 @@ import java.util.List;
 import me.ihainan.bu.app.R;
 import me.ihainan.bu.app.adapters.LatestThreadListAdapter;
 import me.ihainan.bu.app.models.LatestThread;
+import me.ihainan.bu.app.ui.SearchResultActivity;
 import me.ihainan.bu.app.ui.assist.SimpleDividerItemDecoration;
 import me.ihainan.bu.app.utils.CommonUtils;
 import me.ihainan.bu.app.utils.Global;
@@ -48,6 +54,10 @@ public class HomePageFragment extends Fragment {
     private View mRootView;
     private Toolbar mToolbar;
 
+    // Data
+    private List<LatestThread> mLatestThreads = new ArrayList<LatestThread>();
+    private LatestThreadListAdapter mAdapter;
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -63,6 +73,7 @@ public class HomePageFragment extends Fragment {
             ab.setHomeAsUpIndicator(R.drawable.ic_menu_white_24dp);
             ab.setDisplayHomeAsUpEnabled(true);
 
+            // RecyclerView
             final LinearLayoutManager layoutManager = new LinearLayoutManager(mContext);
             layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
 
@@ -119,9 +130,6 @@ public class HomePageFragment extends Fragment {
             }
         });
     }
-
-    private List<LatestThread> mLatestThreads = new ArrayList<LatestThread>();
-    private LatestThreadListAdapter mAdapter;
 
     /**
      * 更新列表数据
@@ -193,5 +201,23 @@ public class HomePageFragment extends Fragment {
                         });
                     }
                 }).show();
+    }
+
+    /* 菜单 */
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.home_menu, menu);
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_search:
+                Intent intent = new Intent(mContext, SearchResultActivity.class);
+                mContext.startActivity(intent);
+                break;
+        }
+
+        return true;
     }
 }

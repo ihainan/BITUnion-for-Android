@@ -22,6 +22,7 @@ import org.json.JSONObject;
 
 import java.util.List;
 
+import jp.wasabeef.picasso.transformations.gpu.VignetteFilterTransformation;
 import me.ihainan.bu.app.R;
 import me.ihainan.bu.app.models.LatestThread;
 import me.ihainan.bu.app.models.Member;
@@ -281,10 +282,14 @@ public class LatestThreadListAdapter extends RecyclerView.Adapter<RecyclerView.V
                                         || firstReply.attachext.equals("jpeg")) {
                                     // 缓存模式下不会进入本方法，所以直接显示图片
                                     String imageURL = CommonUtils.getRealImageURL(firstReply.attachment);
+                                    /*
                                     Picasso.with(mContext).load(imageURL)
                                             .placeholder(R.drawable.background)
                                             .error(R.drawable.background)
-                                            .into(holder.background);
+                                            .into(holder.background); */
+
+                                    Picasso.with(mContext).load(imageURL)
+                                            .transform(new VignetteFilterTransformation(mContext)).into(holder.background);
                                 }
                             } else {
                                 handleUnknownError(response);

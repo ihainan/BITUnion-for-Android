@@ -11,7 +11,7 @@
     <string name="action_feedback">意见反馈</string>
     <string name="action_about">关于</string>
     <string name="title_activity_main">@string/action_home</string>
-    <string name="title_activity_login">登陆</string>
+    <string name="title_activity_login">登录</string>
 
     <!-- Strings related to login -->
     <string name="prompt_username">用户名</string>
@@ -32,7 +32,7 @@
     <string name="error_subject_required">主题不得为空</string>
     <string name="error_message_length_short">回帖内容不得少于 5 个字</string>
     <string name="error_wrong_password">用户名或者密码错误</string>
-    <string name="error_login_timeout">登陆超时，请重新登陆</string>
+    <string name="error_login_timeout">登录超时，请重新登录</string>
     <string name="error_network">连接服务器发生异常</string>
     <string name="error_unsupported_encoding">不支持的编码格式</string>
     <string name="error_parse_json">解析服务器返回数据失败</string>
@@ -117,4 +117,5 @@
     <string name="title_activity_profile">ProfileActivity</string>
     <string name="title_activity_thread_detail_new">ThreadDetailNewActivity</string>
     <string name="title_activity_main2">Main2Activity</string>
+    <string name="title_activity_search_result">SearchResultActivity</string>
 </resources>

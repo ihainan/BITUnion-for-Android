@@ -36,11 +36,11 @@ public class Emoticons {
         EMOTICONS.put(":wink:", "smilies_wink.gif");
 
         for (int i = 71; i <= 142; ++i) {
-            if (i != 129) EMOTICONS.put(":bz_" + i + ":", "bz_" + i + ".gif");
+            if (i != 129) EMOTICONS.put(":bz" + i + ":", "bz_" + i + ".gif");
         }
 
         for (int i = 401; i <= 432; ++i) {
-            if (i != 407) EMOTICONS.put(":bz_" + i + ":", "bz_" + i + ".gif");
+            if (i != 407) EMOTICONS.put(":bz" + i + ":", "bz_" + i + ".gif");
         }
     }
 
