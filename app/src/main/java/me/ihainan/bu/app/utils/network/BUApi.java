@@ -285,6 +285,7 @@ public class BUApi {
         parameters.put("attachment", attachment == null ? "0" : "1");
 
         String url = "http://ali.ihainan.me:8080/api/v2/multipart/att";
+        // String url = getNewPostURL();
 
         if (attachment == null) {
             CommonUtils.debugToast(context, "POST_NEW_POST_NO_ATT >> " + url);
@@ -407,11 +408,13 @@ public class BUApi {
     private final static String twoHyphens = "--";
     private final static String lineEnd = "\r\n";
     private final static String boundary = "apiclient-" + System.currentTimeMillis();
-    private final static String mimeType = "multipart/form-data;boundary=" + boundary;
+    private final static String mimeType = "multipart/form-data; boundary=" + boundary;
 
     private static void buildPart(DataOutputStream dataOutputStream, String parameterName, byte[] fileData) throws IOException {
         dataOutputStream.writeBytes(twoHyphens + boundary + lineEnd);
-        dataOutputStream.writeBytes("Content-Disposition: form-data; name=\"" + parameterName + "\";" + lineEnd);
+        dataOutputStream.writeBytes("Content-Disposition: form-data; name=\"" + parameterName + "\"" + lineEnd);
+        dataOutputStream.writeBytes("Content-Type: image/jpeg" + lineEnd);
+        dataOutputStream.writeBytes("Content-Transfer-Encoding: binary" + lineEnd);
         dataOutputStream.writeBytes(lineEnd);
 
         ByteArrayInputStream fileInputStream = new ByteArrayInputStream(fileData);
@@ -437,7 +440,8 @@ public class BUApi {
     private static void buildTextPart(DataOutputStream dataOutputStream, String parameterName, String parameterValue) throws IOException {
         dataOutputStream.writeBytes(twoHyphens + boundary + lineEnd);
         dataOutputStream.writeBytes("Content-Disposition: form-data; name=\"" + parameterName + "\"" + lineEnd);    // 然而并不需要 id 字段
-        dataOutputStream.writeBytes("Content-Type: text/plain; charset=UTF-8" + lineEnd);
+        dataOutputStream.writeBytes("Content-Type: text/plain; charset=US-ASCII" + lineEnd);
+        dataOutputStream.writeBytes("Content-Transfer-Encoding: 8bit" + lineEnd);
         dataOutputStream.writeBytes(lineEnd);
         dataOutputStream.writeBytes(parameterValue + lineEnd);
     }
@@ -472,6 +476,7 @@ public class BUApi {
                 DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
 
         // Add to queue
+        Log.d(TAG, "makeMultipartRequest >> " + tag + " - " + url + " " + parameters);
         RequestQueueManager.getInstance(context).addToRequestQueue(multipartRequest, tag);
     }
 }

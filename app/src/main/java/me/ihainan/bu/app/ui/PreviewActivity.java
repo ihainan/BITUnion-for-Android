@@ -166,8 +166,7 @@ public class PreviewActivity extends SwipeActivity {
     // 成功拉取数据事件监听器
     private Response.Listener<NetworkResponse> listener = new Response.Listener<NetworkResponse>() {
         @Override
-        public void onResponse(NetworkResponse response)
-        {
+        public void onResponse(NetworkResponse response) {
             if (isFinishing()) return;
             if (dialog != null && !isFinishing()) {
                 dialog.dismiss();
