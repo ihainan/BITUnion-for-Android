@@ -4,10 +4,12 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.Point;
 import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.text.SpannableString;
+import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,6 +23,7 @@ import com.squareup.picasso.Callback;
 import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 
+import java.text.DateFormat;
 import java.util.Date;
 import java.util.List;
 
@@ -112,14 +115,11 @@ public class PostListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             // 日期
             Date datePost = CommonUtils.unixTimeStampToDate(reply.dateline);
             Date dateEdit = CommonUtils.unixTimeStampToDate(Long.valueOf(reply.lastedit));
-            String datePostStr = CommonUtils.formatDateTime(datePost);
-            String dateEditStr = CommonUtils.formatDateTime(dateEdit);
-            if (!datePostStr.equals(dateEditStr)) {
-                if (CommonUtils.isSameDay(datePost, dateEdit)) {
-                    datePostStr += " (edited at " + CommonUtils.formatTime(dateEdit) + ")";
-                } else {
-                    datePostStr += " (edited at " + CommonUtils.formatDateTime(dateEdit) + ")";
-                }
+            String datePostStr = CommonUtils.getRelativeTimeSpanString(datePost);
+            String dateEditStr = CommonUtils.getRelativeTimeSpanString(datePost);
+            if (!(Long.valueOf(reply.lastedit) == 0L) && !datePost.equals(dateEdit)) {
+                datePostStr += " (edited at " + DateUtils.formatSameDayTime(dateEdit.getTime(), datePost.getTime(),
+                        DateFormat.SHORT, DateFormat.SHORT).toString() + ")";
             }
 
             // 回复
@@ -195,8 +195,11 @@ public class PostListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
             // 尝试从缓存中读取图片，如果缓存中没有图片，则用户点击之后就能加载
             final String imageURL = CommonUtils.getRealImageURL(reply.attachment);
+            final Point displaySize = CommonUtils.getDisplaySize(((Activity) mContext).getWindowManager().getDefaultDisplay());
+            final int size = (int) Math.ceil(Math.sqrt(displaySize.x * displaySize.y));
             Picasso.with(mContext)
                     .load(imageURL)
+                    .resize(size, size)
                     .networkPolicy(NetworkPolicy.OFFLINE)
                     .into(attachmentImage, new Callback() {
                         @Override
@@ -214,7 +217,7 @@ public class PostListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                                 public void onClick(View v) {
                                     Log.d(TAG, "Picasso >> 点击文本，加载图片中");
                                     clickToLoad.setText("正在加载");
-                                    Picasso.with(mContext).load(imageURL).into(attachmentImage, new Callback() {
+                                    Picasso.with(mContext).load(imageURL).resize(size, size).into(attachmentImage, new Callback() {
                                         @Override
                                         public void onSuccess() {
                                             Log.d(TAG, "Picasso >> 加载成功");

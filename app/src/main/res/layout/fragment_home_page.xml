@@ -12,13 +12,7 @@
         android:layout_height="wrap_content"
         android:theme="@style/AppTheme.AppBarOverlay">
 
-        <android.support.v7.widget.Toolbar
-            android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="?attr/colorPrimary"
-            android:elevation="@dimen/toolbar_elevation"
-            app:popupTheme="@style/AppTheme.PopupOverlay" />
+        <include layout="@layout/toolbar" />
 
     </android.support.design.widget.AppBarLayout>
 
@@ -26,9 +20,9 @@
         android:id="@+id/home_swipe_refresh_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
-        
+
         <android.support.v7.widget.RecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
-            android:id="@+id/detail_recycler_view"
+            android:id="@+id/recycler_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_centerHorizontal="true"

@@ -94,7 +94,7 @@ public class TimelineAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                             viewHolder.content.setText("[附件]");
                         else viewHolder.content.setVisibility(View.GONE);
                     } else viewHolder.content.setText(Html.fromHtml(htmlContent));
-                    viewHolder.date.setText(CommonUtils.formatDateTime(CommonUtils.unixTimeStampToDate(post.dateline)));
+                    viewHolder.date.setText(CommonUtils.getRelativeTimeSpanString(CommonUtils.unixTimeStampToDate(post.dateline)));
 
                     View.OnClickListener onClickListener = new View.OnClickListener() {
                         @Override
@@ -118,7 +118,7 @@ public class TimelineAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                     viewHolder.action.setText("收藏了主题");
                     viewHolder.title.setText(Html.fromHtml(HtmlUtil.formatHtml(favorite.subject)));
                     viewHolder.content.setVisibility(View.GONE);
-                    viewHolder.date.setText(CommonUtils.formatDateTime(favorite.dt_created));
+                    viewHolder.date.setText(CommonUtils.getRelativeTimeSpanString(CommonUtils.parseDateString(favorite.dt_created)));
 
                     View.OnClickListener onClickListener = new View.OnClickListener() {
                         @Override
@@ -144,7 +144,7 @@ public class TimelineAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
                     viewHolder.content.setVisibility(View.GONE);
 
-                    viewHolder.date.setText(CommonUtils.formatDateTime(follow.dt_created));
+                    viewHolder.date.setText(CommonUtils.getRelativeTimeSpanString(CommonUtils.parseDateString(follow.dt_created)));
 
                     View.OnClickListener onClickListener = new View.OnClickListener() {
                         @Override

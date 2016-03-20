@@ -62,7 +62,7 @@ public class Global extends Application {
     public final static int LOADING_TIMELINE_COUNT = 10; // 一次最多 Loading 的动态数目
     public final static int LOADING_FAVORITES_COUNT = 10; // 一次最多 Loading 的收藏数目
 
-    public final static int RETRY_LIMIT = 1;    // 重新登录尝试次数
+    public final static int RETRY_LIMIT = 2;    // 重新登录尝试次数
     public final static int SWIPE_LAYOUT_TRIGGER_DISTANCE = 400;    // 手指在屏幕下拉多少距离会触发下拉刷新
     public static Boolean debugMode = true;  // 是否启动 debug 模式
     public static Boolean saveDataMode = false; // 是否启动省流量模式

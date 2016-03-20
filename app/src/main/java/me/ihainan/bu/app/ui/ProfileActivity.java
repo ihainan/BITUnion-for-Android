@@ -4,6 +4,9 @@ import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.Snackbar;
@@ -102,9 +105,21 @@ public class ProfileActivity extends SwipeActivity {
         setSwipeAnyWhere(false);
     }
 
+    private void setFollowIcon(boolean isFollow) {
+        if (isFollow) {
+            Drawable newIcon = getResources().getDrawable(R.drawable.ic_favorite_white_24dp);
+            newIcon.mutate().setColorFilter(Color.argb(255, 255, 76, 82), PorterDuff.Mode.SRC_IN);
+            mFollowMenuItem.setIcon(newIcon);
+            mFollowMenuItem.setTitle("取消关注");
+        } else {
+            mFollowMenuItem.setTitle("添加关注");
+            mFollowMenuItem.setIcon(R.drawable.ic_favorite_border_white_24dp);
+        }
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        if (!Global.userSession.username.equals(mUsername)) {
+        if (!CommonUtils.decode(Global.userSession.username).equals(CommonUtils.decode(mUsername))) {
             getMenuInflater().inflate(R.menu.profile_menu, menu);
             mFollowMenuItem = menu.findItem(R.id.follow);
             return true;
@@ -125,13 +140,7 @@ public class ProfileActivity extends SwipeActivity {
                     if (response.getInt("code") == 0) {
                         hasFollow = response.getBoolean("data");
                         CommonUtils.debugToast(ProfileActivity.this, "hasFollow = " + hasFollow);
-                        if (hasFollow) {
-                            mFollowMenuItem.setTitle("取消关注");
-                            mFollowIcon.setVisibility(View.VISIBLE);
-                        } else {
-                            mFollowMenuItem.setTitle("添加关注");
-                            mFollowIcon.setVisibility(View.INVISIBLE);
-                        }
+                        setFollowIcon(hasFollow);
                     } else {
                         String message = "获取关注状态失败，失败原因 " + response.getString("message");
                         if (Global.debugMode) {
@@ -162,14 +171,10 @@ public class ProfileActivity extends SwipeActivity {
                 if (mFollowClickable) {
                     mFollowClickable = !mFollowClickable;   // 不允许重复点击
                     hasFollow = !hasFollow;
+                    setFollowIcon(hasFollow);
                     if (hasFollow) {
-                        // 之前是删除，想要添加
-                        mFollowMenuItem.setTitle("取消关注");
-                        mFollowIcon.setVisibility(View.VISIBLE);
                         addFollow();
                     } else {
-                        mFollowMenuItem.setTitle("添加关注");
-                        mFollowIcon.setVisibility(View.INVISIBLE);
                         delFollow();
                     }
                 }
@@ -203,13 +208,7 @@ public class ProfileActivity extends SwipeActivity {
                     Log.w(TAG, debugMessage);
 
                     hasFollow = !hasFollow;
-                    if (hasFollow) {
-                        mFollowMenuItem.setTitle("取消关注");
-                        mFollowIcon.setVisibility(View.VISIBLE);
-                    } else {
-                        mFollowMenuItem.setTitle("添加关注");
-                        mFollowIcon.setVisibility(View.INVISIBLE);
-                    }
+                    setFollowIcon(hasFollow);
                 }
             } catch (JSONException e) {
                 String message = (hasFollow ? "添加" : "删除") + "关注失败";
@@ -222,13 +221,7 @@ public class ProfileActivity extends SwipeActivity {
                 Log.e(TAG, debugMessage, e);
 
                 hasFollow = !hasFollow;
-                if (hasFollow) {
-                    mFollowMenuItem.setTitle("取消关注");
-                    mFollowIcon.setVisibility(View.VISIBLE);
-                } else {
-                    mFollowMenuItem.setTitle("添加关注");
-                    mFollowIcon.setVisibility(View.INVISIBLE);
-                }
+                setFollowIcon(hasFollow);
             }
         }
     };

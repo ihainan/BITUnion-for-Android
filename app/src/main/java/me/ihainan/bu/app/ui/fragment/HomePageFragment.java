@@ -45,10 +45,11 @@ import me.ihainan.bu.app.utils.network.BUApi;
  * Home Page Fragment
  */
 public class HomePageFragment extends Fragment {
+    // Tags
     private final static String TAG = HomePageFragment.class.getSimpleName();
-    private Context mContext;
 
     // UI references
+    private Context mContext;
     private RecyclerView mRecyclerView;
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private View mRootView;
@@ -77,7 +78,7 @@ public class HomePageFragment extends Fragment {
             final LinearLayoutManager layoutManager = new LinearLayoutManager(mContext);
             layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
 
-            mRecyclerView = (RecyclerView) mRootView.findViewById(R.id.detail_recycler_view);
+            mRecyclerView = (RecyclerView) mRootView.findViewById(R.id.recycler_view);
             mRecyclerView.setLayoutManager(layoutManager);
             mRecyclerView.addItemDecoration(new SimpleDividerItemDecoration(mContext));
 

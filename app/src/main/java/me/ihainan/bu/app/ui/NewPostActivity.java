@@ -38,6 +38,9 @@ import me.ihainan.bu.app.utils.CommonUtils;
 import me.ihainan.bu.app.utils.Global;
 import me.ihainan.bu.app.utils.ui.EditTextUndoRedo;
 
+/**
+ * 发帖 / 回帖页面
+ */
 public class NewPostActivity extends SwipeActivity {
     // TAGS
     public final static String TAG = NewPostActivity.class.getSimpleName();
@@ -328,31 +331,6 @@ public class NewPostActivity extends SwipeActivity {
                 startActivityForResult(intent, REQUEST_CHOOSE_FILE_TAG);
             }
         });
-    }
-
-    // 菜单
-    @Override
-    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
-        super.onCreateContextMenu(menu, v, menuInfo);
-        if (v.equals(mAttachment)) {
-            menu.add(0, 1, Menu.NONE, "添加图片");
-            menu.add(0, 2, Menu.NONE, "添加文件");
-        }
-    }
-
-    @Override
-    public boolean onContextItemSelected(MenuItem item) {
-        if (item.getGroupId() == 0) {
-            // 附件
-            switch (item.getItemId()) {
-                case 1:
-                    break;
-                case 2:
-                    break;
-            }
-        }
-
-        return true;
     }
 
     private void addTag(String tag, boolean isWrapLine) {

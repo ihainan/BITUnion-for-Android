@@ -88,6 +88,25 @@ public class PostListFragment extends Fragment {
     }
 
     @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        if (isVisibleToUser && mContext != null && mRecyclerView != null) {
+            getActivity().findViewById(R.id.toolbar).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mRecyclerView.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            // TODO: not working
+                            mRecyclerView.getLayoutManager().smoothScrollToPosition(mRecyclerView, null, 0);
+                        }
+                    });
+                }
+            });
+        }
+    }
+
+    @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
@@ -218,11 +237,12 @@ public class PostListFragment extends Fragment {
 
     private void getDeviceName(Post reply) {
         // Log.d(TAG, "getDeviceName >> " + reply.message);
-        String[] regexStrArray = new String[]{"<a .*?>\\.\\.::发自(.*?)::\\.\\.</a>$",
+        String[] regexStrArray = new String[]{"<a .*?>\\.\\.::发自(.*?)::\\.\\.</a>",
                 "<br><br>发送自 <a href='.*?' target='_blank'><b>(.*?) @BUApp</b></a>",
-                "<i>来自傲立独行的(.*?)客户端</i>$",
-                "<br><br><i>发自联盟(.*?)客户端</i>$",
-                "<a href='.*?>..::发自联盟(.*?)客户端::..</a>"};
+                "<i>来自傲立独行的(.*?)客户端</i>",
+                "<br><br><i>发自联盟(.*?)客户端</i>",
+                "<a href='.*?>..::发自联盟(.*?)客户端::..</a>",
+                "<br><br>Sent from my (.+?)$"};
         if (reply.message.contains("客户端") || reply.message.contains("发自"))
             Log.d(TAG, "getDeviceName >> " + reply.message);
         for (String regex : regexStrArray) {
@@ -230,7 +250,7 @@ public class PostListFragment extends Fragment {
             Matcher matcher = pattern.matcher(reply.message);
             while (matcher.find()) {
                 // 找到啦！
-                reply.deviceName = matcher.group(1);
+                reply.deviceName = matcher.group(1);    // 可能出现多次，替换所有，提取最后一个
                 if (reply.deviceName.equals("WindowsPhone8"))
                     reply.deviceName = "Windows Phone 8";
                 if (reply.deviceName.equals("联盟iOS客户端"))
@@ -238,10 +258,7 @@ public class PostListFragment extends Fragment {
                 Log.d(TAG, "deviceName >> " + reply.deviceName);
                 reply.message = reply.message.replace(matcher.group(0), "");
                 reply.message = HtmlUtil.replaceOther(reply.message);
-                return;
             }
         }
-
-        reply.deviceName = "";
     }
 }

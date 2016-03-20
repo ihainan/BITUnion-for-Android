@@ -1,12 +1,22 @@
 package me.ihainan.bu.app.ui.fragment;
 
+import android.app.Fragment;
+import android.app.FragmentTransaction;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.SwitchPreference;
+import android.support.annotation.Nullable;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.FrameLayout;
 
 import me.ihainan.bu.app.BuildConfig;
 import me.ihainan.bu.app.R;
@@ -19,19 +29,33 @@ import me.ihainan.bu.app.utils.Global;
  */
 public class SettingFragment extends PreferenceFragment {
     public final static String TAG = SettingFragment.class.getSimpleName();
+    // UI references
     private Context mContext;
+    private View mRootView;
+    private Toolbar mToolbar;
 
+    @Nullable
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        mContext = getActivity();
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        if (mRootView == null) {
+            mContext = getActivity();
 
-        Log.d(TAG, "onCreate");
-        super.onCreate(savedInstanceState);
+            mRootView = inflater.inflate(R.layout.fragmemt_setting_main, container, false);
 
-        // Load the preferences from an XML resource
-        addPreferencesFromResource(R.xml.pref_all);
+            // UI references
+            mToolbar = (Toolbar) mRootView.findViewById(R.id.toolbar);
+            ((AppCompatActivity) getActivity()).setSupportActionBar(mToolbar);
+            final ActionBar ab = ((AppCompatActivity) getActivity()).getSupportActionBar();
+            ab.setHomeAsUpIndicator(R.drawable.ic_menu_white_24dp);
+            ab.setDisplayHomeAsUpEnabled(true);
+            setHasOptionsMenu(true);
 
-        loadDefaultValue();
+            // Load the preferences from an XML resource
+            addPreferencesFromResource(R.xml.pref_all);
+            loadDefaultValue();
+        }
+
+        return mRootView;
     }
 
     private SwitchPreference networkType, saveDataMode, uploadData, debugMode;

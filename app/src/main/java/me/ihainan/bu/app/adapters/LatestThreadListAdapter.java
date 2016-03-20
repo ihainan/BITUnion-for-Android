@@ -3,10 +3,13 @@ package me.ihainan.bu.app.adapters;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Point;
+import android.os.Build;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.util.Log;
+import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -124,10 +127,12 @@ public class LatestThreadListAdapter extends RecyclerView.Adapter<RecyclerView.V
         });
 
         // 发帖、回帖日期
-        if (latestThread.lastreply != null)
-            holder.date.setText(CommonUtils.decode(latestThread.lastreply.when));
-        else
+        if (latestThread.lastreply != null) {
+            // holder.date.setText(CommonUtils.decode(latestThread.lastreply.when));
+            holder.date.setText(CommonUtils.getRelativeTimeSpanString(CommonUtils.parseDateString(CommonUtils.decode(latestThread.lastreply.when))));
+        } else {
             holder.date.setText("未知次元未知时间");
+        }
 
         /* 发表新帖 */
         if (latestThread.lastreply == null || latestThread.tid_sum == 0) {
@@ -282,13 +287,9 @@ public class LatestThreadListAdapter extends RecyclerView.Adapter<RecyclerView.V
                                         || firstReply.attachext.equals("jpeg")) {
                                     // 缓存模式下不会进入本方法，所以直接显示图片
                                     String imageURL = CommonUtils.getRealImageURL(firstReply.attachment);
-                                    /*
-                                    Picasso.with(mContext).load(imageURL)
-                                            .placeholder(R.drawable.background)
-                                            .error(R.drawable.background)
-                                            .into(holder.background); */
-
-                                    Picasso.with(mContext).load(imageURL)
+                                    final Point displaySize = CommonUtils.getDisplaySize(((Activity) mContext).getWindowManager().getDefaultDisplay());
+                                    final int size = (int) Math.ceil(Math.sqrt(displaySize.x * displaySize.y));
+                                    Picasso.with(mContext).load(imageURL).resize(size, size)
                                             .transform(new VignetteFilterTransformation(mContext)).into(holder.background);
                                 }
                             } else {
@@ -315,10 +316,11 @@ public class LatestThreadListAdapter extends RecyclerView.Adapter<RecyclerView.V
             if (reply.attachext.equals("png") || reply.attachext.equals("jpg")
                     || reply.attachext.equals("jpeg")) {
                 String imageURL = CommonUtils.getRealImageURL(reply.attachment);
-                Picasso.with(mContext).load(imageURL)
-                        .placeholder(R.drawable.nav_background)
-                        .error(R.drawable.nav_background)
-                        .into(holder.background);
+
+                final Point displaySize = CommonUtils.getDisplaySize(((Activity) mContext).getWindowManager().getDefaultDisplay());
+                final int size = (int) Math.ceil(Math.sqrt(displaySize.x * displaySize.y));
+                Picasso.with(mContext).load(imageURL).resize(size, size)
+                        .transform(new VignetteFilterTransformation(mContext)).into(holder.background);
             }
         }
     }

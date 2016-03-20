@@ -358,7 +358,7 @@ public class BUApi {
                     new Response.Listener<JSONObject>() {
                         @Override
                         public void onResponse(JSONObject response) {
-                            if (!BUApi.checkStatus(response) && checkIfSessionOutOfData(response)) {
+                            if (checkIfSessionOutOfData(response)) {
                                 // Success + IP+logged，尝试重新登录
                                 Log.i(TAG, "makeRequest " + tag + ">> Session " + Global.userSession.session + " 过期，尝试重新登录 " + retryLimit + " " + url);
                                 BUApi.tryLogin(context, Global.username, Global.password, retryLimit - 1,

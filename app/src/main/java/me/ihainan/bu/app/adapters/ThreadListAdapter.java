@@ -82,7 +82,7 @@ public class ThreadListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         // 无差别区域
         holder.replyCount.setText(CommonUtils.decode("" + thread.replies + " 回复"));
         holder.title.setText(Html.fromHtml(CommonUtils.decode(thread.subject)));
-        holder.date.setText(CommonUtils.formatDateTime(CommonUtils.unixTimeStampToDate((thread.dateline))));
+        holder.date.setText(CommonUtils.getRelativeTimeSpanString(CommonUtils.unixTimeStampToDate((thread.lastpost))));
         holder.title.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

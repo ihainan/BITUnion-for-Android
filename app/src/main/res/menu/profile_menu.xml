@@ -3,7 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@+id/follow"
+        android:icon="@drawable/ic_favorite_border_white_24dp"
         android:orderInCategory="80"
         android:title="添加关注"
-        app:showAsAction="never" />
+        app:showAsAction="ifRoom" />
 </menu>

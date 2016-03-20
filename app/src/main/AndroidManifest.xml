@@ -34,16 +34,22 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <activity
             android:name=".ui.LoginActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
             android:label="@string/title_activity_login"
             android:windowSoftInputMode="adjustResize|stateVisible|stateAlwaysHidden" />
+
         <activity
             android:name=".ui.ThreadListActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:label="@string/title_activity_post_list"
             android:theme="@style/AppTheme.SwipeTheme" />
-        <activity android:name=".ui.TestActivity"></activity>
+
+        <activity
+            android:name=".ui.TestActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize" />
 
         <meta-data
             android:name="UMENG_APPKEY"
@@ -59,28 +65,38 @@
         <activity
             android:name="com.umeng.update.UpdateDialogActivity"
             android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+
         <activity android:name=".ui.assist.SwipeActivity" />
+
         <activity
             android:name=".ui.NewPostActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
             android:label="@string/title_activity_post_or_reply"
             android:theme="@style/AppTheme.SwipeTheme"
-            android:windowSoftInputMode="adjustResize"></activity>
+            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".ui.PreviewActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
             android:label="@string/title_activity_preview"
             android:theme="@style/AppTheme.SwipeTheme" />
+
         <activity
             android:name=".ui.ProfileActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
             android:label="@string/title_activity_profile"
             android:theme="@style/AppTheme.SwipeTheme" />
+
         <activity
             android:name=".ui.PostListActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
             android:label="@string/title_activity_thread_detail_new"
-            android:theme="@style/AppTheme.SwipeTheme"></activity>
+            android:theme="@style/AppTheme.SwipeTheme" />
+
         <activity
             android:name=".ui.SearchResultActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
             android:label="@string/title_activity_search_result"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
     </application>
 
 </manifest>

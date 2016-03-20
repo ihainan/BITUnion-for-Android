@@ -117,7 +117,11 @@ public class ThreadListActivity extends SwipeActivity {
         toolbar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mRecyclerView.smoothScrollToPosition(0);
+                if (layoutManager == null || layoutManager.findFirstVisibleItemPosition() >= 10) {
+                    mRecyclerView.scrollToPosition(0);
+                } else {
+                    mRecyclerView.smoothScrollToPosition(0);
+                }
             }
         });
         setupRecyclerView();
@@ -158,8 +162,10 @@ public class ThreadListActivity extends SwipeActivity {
 
     private boolean mIsLoading = false;
 
+    LinearLayoutManager layoutManager;
+
     private void setupRecyclerView() {
-        final LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+        layoutManager = new LinearLayoutManager(this);
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         mRecyclerView.setLayoutManager(layoutManager);
         mRecyclerView.addItemDecoration(new SimpleDividerItemDecoration(ThreadListActivity.this));

@@ -7,12 +7,15 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Paint;
+import android.graphics.Point;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.view.ContextThemeWrapper;
+import android.text.format.DateUtils;
 import android.util.Log;
+import android.view.Display;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -505,7 +508,7 @@ public class CommonUtils {
      * @return 格式化后的日期字符串
      */
     public static String formatDateTime(Date date) {
-        return (new SimpleDateFormat("yyyy-MM-dd hh:mm")).format(date);
+        return (new SimpleDateFormat("yyyy-MM-dd HH:mm")).format(date);
     }
 
     /**
@@ -515,7 +518,7 @@ public class CommonUtils {
      * @return 格式化后的日期字符串
      */
     public static String formatDateTime(String dateStr) {
-        return (new SimpleDateFormat("yyyy-MM-dd hh:mm")).format(parseDateString(dateStr));
+        return (new SimpleDateFormat("yyyy-MM-dd HH:mm")).format(parseDateString(dateStr));
     }
 
     /**
@@ -588,13 +591,22 @@ public class CommonUtils {
      * @return 转换得到的日期
      */
     public static Date parseDateString(String dateStr) {
-        DateFormat format = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+        DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         try {
             return format.parse(dateStr);
         } catch (ParseException e) {
             Log.e(TAG, "错误的日期字符串 " + dateStr, e);
             return new Date();
         }
+    }
+
+    public static String getRelativeTimeSpanString(Date date) {
+        long now = System.currentTimeMillis();
+        // 相同小时
+        // 相同天
+        // 相同年
+        // if ((now - current.getTime()) / ())
+        return DateUtils.getRelativeTimeSpanString(date.getTime(), now, DateUtils.MINUTE_IN_MILLIS).toString();
     }
 
     /**
@@ -682,5 +694,18 @@ public class CommonUtils {
         p.setTextSize(px);
         Paint.FontMetrics fm = p.getFontMetrics();
         return (int) Math.ceil(fm.descent - fm.ascent);
+    }
+
+    public static Point getDisplaySize(Display display) {
+        Point size = new Point();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
+            display.getSize(size);
+        } else {
+            int width = display.getWidth();
+            int height = display.getHeight();
+            size = new Point(width, height);
+        }
+
+        return size;
     }
 }

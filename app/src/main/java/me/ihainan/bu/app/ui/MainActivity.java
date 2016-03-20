@@ -2,12 +2,14 @@ package me.ihainan.bu.app.ui;
 
 import android.app.Fragment;
 import android.app.FragmentTransaction;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.MenuItem;
@@ -166,14 +168,29 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setupDrawerContent(final NavigationView navigationView) {
+
         mNavExit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Global.password = null;
-                Global.saveConfig(MainActivity.this);
-                Intent intent = new Intent(MainActivity.this, LoginActivity.class);
-                startActivity(intent);
-                finish();
+                mDrawerLayout.closeDrawers();
+                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                builder.setTitle("提醒")
+                        .setMessage("确定注销帐号？")
+                        .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                Global.password = null;
+                                Global.saveConfig(MainActivity.this);
+                                Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+                                startActivity(intent);
+                                finish();
+                            }
+                        }).setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                }).show();
             }
         });
 

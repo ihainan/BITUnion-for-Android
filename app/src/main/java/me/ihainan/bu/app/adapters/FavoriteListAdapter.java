@@ -62,7 +62,7 @@ public class FavoriteListAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             viewHolder.action.setText("发表的主题");
             viewHolder.title.setText(Html.fromHtml(HtmlUtil.formatHtml(favorite.subject)));
             viewHolder.content.setVisibility(View.GONE);
-            viewHolder.date.setText(CommonUtils.formatDateTime(favorite.dt_created));
+            viewHolder.date.setText(CommonUtils.getRelativeTimeSpanString(CommonUtils.parseDateString(favorite.dt_created)));
 
             View.OnClickListener onClickListener = new View.OnClickListener() {
                 @Override

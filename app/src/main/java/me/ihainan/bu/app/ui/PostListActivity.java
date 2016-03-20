@@ -6,6 +6,8 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -286,6 +288,18 @@ public class PostListActivity extends SwipeActivity {
         return true;
     }
 
+    private void setFavIcon(boolean isFav) {
+        if (isFav) {
+            Drawable newIcon = getResources().getDrawable(R.drawable.ic_star_white_24dp);
+            newIcon.mutate().setColorFilter(Color.argb(255, 255, 250, 76), PorterDuff.Mode.SRC_IN);
+            mFavorItem.setIcon(newIcon);
+            mFavorItem.setTitle("取消收藏");
+        } else {
+            mFavorItem.setTitle("添加收藏");
+            mFavorItem.setIcon(R.drawable.ic_star_border_white_24dp);
+        }
+    }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
@@ -295,12 +309,10 @@ public class PostListActivity extends SwipeActivity {
                     hasFavor = !hasFavor;
                     if (hasFavor) {
                         // 之前是删除，想要添加
-                        mFavorItem.setIcon(R.drawable.ic_favorite_white_24dp);
-                        mFavorItem.setTitle("取消收藏");
+                        setFavIcon(true);
                         addFavorite();
                     } else {
-                        mFavorItem.setTitle("添加收藏");
-                        mFavorItem.setIcon(R.drawable.ic_favorite_border_white_24dp);
+                        setFavIcon(false);
                         delFavorite();
                     }
                 }
@@ -392,13 +404,7 @@ public class PostListActivity extends SwipeActivity {
                 Log.e(TAG, debugMessage, e);
 
                 hasFavor = !hasFavor;
-                if (hasFavor) {
-                    mFavorItem.setIcon(R.drawable.ic_favorite_white_24dp);
-                    mFavorItem.setTitle("取消收藏");
-                } else {
-                    mFavorItem.setTitle("添加收藏");
-                    mFavorItem.setIcon(R.drawable.ic_favorite_border_white_24dp);
-                }
+                setFavIcon(hasFavor);
             }
         }
     };
@@ -431,13 +437,7 @@ public class PostListActivity extends SwipeActivity {
                             hasFavor = response.getBoolean("data");
                             CommonUtils.debugToast(PostListActivity.this, "hasFavor = " + hasFavor);
                             favorClickable = true;
-                            if (hasFavor) {
-                                mFavorItem.setTitle("取消收藏");
-                                mFavorItem.setIcon(R.drawable.ic_favorite_white_24dp);
-                            } else {
-                                mFavorItem.setTitle("添加收藏");
-                                mFavorItem.setIcon(R.drawable.ic_favorite_border_white_24dp);
-                            }
+                            setFavIcon(hasFavor);
                         } else {
                             String message = "获取收藏状态失败，失败原因 " + response.getString("message");
                             if (Global.debugMode) {
