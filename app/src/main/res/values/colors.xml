@@ -18,5 +18,5 @@
     <color name="link_background">#00000000</color>
 
     <color name="hot_topic">#FF0000</color>
-    <color name="blockquote_background">#f9f9f9</color>
+    <color name="blockquote_background">#FFFFFF</color>
 </resources>

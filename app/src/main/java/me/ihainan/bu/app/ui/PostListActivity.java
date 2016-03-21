@@ -102,9 +102,10 @@ public class PostListActivity extends SwipeActivity {
         });
 
         // Tab Layout
+        PostListFragment.isSetToolbar = false;  // So ugly....
         mTabLayout = (SmartTabLayout) findViewById(R.id.tab_layout);
         mPager = (ViewPager) findViewById(R.id.pager);
-        mPager.setOffscreenPageLimit(1);
+        mPager.setOffscreenPageLimit(0);
 
         if (mThreadName != null) {
             setTitle(Html.fromHtml(CommonUtils.decode(mThreadName)));
@@ -145,6 +146,7 @@ public class PostListActivity extends SwipeActivity {
             mAuthorName = bundle.getString(THREAD_AUTHOR_NAME_TAG);
             mReplyCount = bundle.getLong(THREAD_REPLY_COUNT_TAG);
             mJumpFloor = bundle.getInt(THREAD_JUMP_FLOOR, -1);
+            if (mJumpFloor != -1) mJumpFloor += 1;
         }
 
         if (Global.debugMode && mTid == null) mTid = 10588072L; // For test

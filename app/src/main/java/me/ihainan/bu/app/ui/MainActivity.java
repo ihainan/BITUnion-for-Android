@@ -5,6 +5,7 @@ import android.app.FragmentTransaction;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -17,6 +18,7 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.umeng.analytics.MobclickAgent;
 
@@ -36,12 +38,10 @@ public class MainActivity extends AppCompatActivity {
 
     // UI elements
     private DrawerLayout mDrawerLayout;
-    // private Toolbar mToolbar;
     private View mNavHead;
     private ImageView mNavProfileView;
     private TextView mNavUsername;
     private ImageButton mNavExit;
-    private AppBarLayout mAppBarLayout;
     private NavigationView mNavigationView;
 
     @Override
@@ -67,7 +67,6 @@ public class MainActivity extends AppCompatActivity {
         mNavProfileView = (ImageView) mNavHead.findViewById(R.id.nav_profile_image);
         mNavUsername = (TextView) mNavHead.findViewById(R.id.nav_user_name);
         mNavExit = (ImageButton) mNavHead.findViewById(R.id.nav_logout);
-        mAppBarLayout = (AppBarLayout) findViewById(R.id.app_bar_layout);
 
         // Get user info
         Global.readConfig(this);
@@ -246,6 +245,30 @@ public class MainActivity extends AppCompatActivity {
                         return false;
                     }
                 });
+    }
+
+    private boolean doubleBackToExitPressedOnce = false;
+
+    /**
+     * 按两次按钮退出应用
+     */
+    @Override
+    public void onBackPressed() {
+        if (doubleBackToExitPressedOnce) {
+            super.onBackPressed();
+            return;
+        }
+
+        this.doubleBackToExitPressedOnce = true;
+        Toast.makeText(this, "再次按下返回退出应用", Toast.LENGTH_SHORT).show();
+
+        new Handler().postDelayed(new Runnable() {
+
+            @Override
+            public void run() {
+                doubleBackToExitPressedOnce = false;
+            }
+        }, 2000);
     }
 
     @Override

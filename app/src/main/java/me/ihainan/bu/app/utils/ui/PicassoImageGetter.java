@@ -61,7 +61,7 @@ public class PicassoImageGetter implements Html.ImageGetter {
                         return bitmap;
                     }
 
-                    // Wifi 条件或者非省流量条件下加载图片
+                    // Wi-Fi 条件或者非省流量条件下加载图片
                     if (CommonUtils.isWifi(mContext) || !Global.saveDataMode) {
                         Log.d(TAG, "loadImage >> 非节省流量模式或者 Wi-Fi 环境，正常下载图片 " + source);
                         bitmap = picasso.load(source).get();

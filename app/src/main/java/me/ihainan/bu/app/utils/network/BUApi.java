@@ -107,15 +107,6 @@ public class BUApi {
         }
     }
 
-    public static String getErrorMessage(JSONObject response) {
-        try {
-            return response.getString("msg");
-        } catch (JSONException e) {
-            Log.e(TAG, "Fail to parse JSON object :" + response, e);
-            return null;
-        }
-    }
-
     /**
      * 尝试登陆系统
      *
@@ -273,6 +264,7 @@ public class BUApi {
      * @throws IOException 构建 Multipart 请求失败
      */
     public static void postNewPost(Context context, Long tid, String message,
+                                   String fileName,
                                    @Nullable byte[] attachment,
                                    Response.Listener<NetworkResponse> listener,
                                    Response.ErrorListener errorListener) throws IOException {
@@ -284,15 +276,15 @@ public class BUApi {
         parameters.put("message", CommonUtils.encode(message));
         parameters.put("attachment", attachment == null ? "0" : "1");
 
-        // String url = "http://ali.ihainan.me:8080/api/v2/multipart/att";
-        String url = getNewPostURL();
+        String url = "http://ali.ihainan.me:8080/api/v2/multipart/att";
+        // String url = getNewPostURL();
 
         if (attachment == null) {
             CommonUtils.debugToast(context, "POST_NEW_POST_NO_ATT >> " + url);
-            makeMultipartRequest(context, url, "POST_NEW_POST_NO_ATT", parameters, null, listener, errorListener);
+            makeMultipartRequest(context, url, "POST_NEW_POST_NO_ATT", parameters, fileName, null, listener, errorListener);
         } else {
             CommonUtils.debugToast(context, "POST_NEW_POST_NO_ATT >> " + url);
-            makeMultipartRequest(context, url, "POST_NEW_POST_NO_ATT", parameters, attachment, listener, errorListener);
+            makeMultipartRequest(context, url, "POST_NEW_POST_NO_ATT", parameters, fileName, attachment, listener, errorListener);
         }
     }
 
@@ -309,6 +301,7 @@ public class BUApi {
      * @throws IOException 构建 Multipart 请求失败
      */
     public static void postNewThread(Context context, Long fid, String title, String message,
+                                     String fileName,
                                      @Nullable byte[] attachment,
                                      Response.Listener<NetworkResponse> listener,
                                      Response.ErrorListener errorListener) throws IOException {
@@ -325,10 +318,10 @@ public class BUApi {
 
         if (attachment == null) {
             CommonUtils.debugToast(context, "POST_NEW_THREAD_NOT_ATT >> " + url);
-            makeMultipartRequest(context, url, "POST_NEW_THREAD_NOT_ATT", parameters, null, listener, errorListener);
+            makeMultipartRequest(context, url, "POST_NEW_THREAD_NOT_ATT", parameters, fileName, null, listener, errorListener);
         } else {
             CommonUtils.debugToast(context, "POST_NEW_THREAD_ATT >> " + url);
-            makeMultipartRequest(context, url, "POST_NEW_THREAD_ATT", parameters, attachment, listener, errorListener);
+            makeMultipartRequest(context, url, "POST_NEW_THREAD_ATT", parameters, fileName, attachment, listener, errorListener);
         }
     }
 
@@ -410,9 +403,9 @@ public class BUApi {
     private final static String boundary = "0xKhTmLbOuNdArY-D6FD9655-98B1-4414-9351-64C773F11138";  // TODO: 删除测试
     private final static String mimeType = " multipart/form-data; charset=utf-8; boundary=" + boundary;
 
-    private static void buildPart(DataOutputStream dataOutputStream, String parameterName, byte[] fileData) throws IOException {
+    private static void buildPart(DataOutputStream dataOutputStream, String parameterName, String fileName, byte[] fileData) throws IOException {
         dataOutputStream.writeBytes(twoHyphens + boundary + lineEnd);
-        dataOutputStream.writeBytes("Content-Disposition: form-data; name=\"" + parameterName + "\"; filename=\"111.jpg\"" + lineEnd);
+        dataOutputStream.writeBytes("Content-Disposition: form-data; name=\"" + parameterName + "\"; filename=\"" + fileName + "\"" + lineEnd);
         dataOutputStream.writeBytes("Content-Type: image/jpeg" + lineEnd);
         dataOutputStream.writeBytes(lineEnd);
 
@@ -445,7 +438,7 @@ public class BUApi {
 
     private static void
     makeMultipartRequest(final Context context, final String url, final String tag,
-                         final Map<String, Object> parameters, byte[] fileData,
+                         final Map<String, Object> parameters, String fileName, byte[] fileData,
                          final Response.Listener<NetworkResponse> listener,
                          final Response.ErrorListener errorListener) throws IOException {
         byte[] multipartBody;
@@ -457,7 +450,7 @@ public class BUApi {
         buildTextPart(dos, "json", new JSONObject(parameters).toString());
 
         // Build Attachment Part
-        if (fileData != null) buildPart(dos, "attach", fileData);
+        if (fileData != null) buildPart(dos, "attach", fileName, fileData);
 
         // send multipart form data necessary after file data
         dos.writeBytes(twoHyphens + boundary + twoHyphens + lineEnd);

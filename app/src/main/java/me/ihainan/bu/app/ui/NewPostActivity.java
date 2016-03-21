@@ -1,6 +1,7 @@
 package me.ihainan.bu.app.ui;
 
 import android.app.Activity;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
@@ -14,7 +15,6 @@ import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
-import android.view.ContextMenu;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -24,11 +24,7 @@ import android.widget.EditText;
 import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
 import android.widget.TextView;
-
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
+import android.widget.Toast;
 
 import me.ihainan.bu.app.R;
 import me.ihainan.bu.app.ui.assist.SwipeActivity;
@@ -47,6 +43,8 @@ public class NewPostActivity extends SwipeActivity {
     public final static int REQUEST_CHOOSE_PHOTO_TAG = 0;
     public final static int REQUEST_CHOOSE_FILE_TAG = 1;
     public final static int REQUEST_PREVIEW_TAG = 2;
+
+    public final static String NEW_POST_ATTACHMENT_URI = "NEW_POST_ATTACHMENT_URI"; // 附件 Uri
 
     public final static String NEW_POST_ACTION_TAG = "NEW_POST_ACTION"; // 可选 thread / post
     public final static String NEW_POST_SUBJECT_TAG = "NEW_POST_SUBJECT_TAG"; // 主题
@@ -84,38 +82,7 @@ public class NewPostActivity extends SwipeActivity {
     // Data
     private String mAction, mQuote;
     private Long mFid, mTid, mFloor;
-    private byte[] mAttachmentByteArray;
-
-    private void loadCachedData() {
-        if (mAction.equals(ACTION_POST)) {
-            // 主题
-            mSubject.setVisibility(View.GONE);
-
-            // 内容
-            String cachedContent = Global.getCache(this).getAsStringWithNewLine(DRAFT_POST_CONTENT + "_" + mTid);
-            mMessage.setHint("回帖内容");
-            if (cachedContent != null) mMessage.append(cachedContent);
-            else mMessage.setText("");
-
-            // 引用
-            if (mQuote != null) {
-                mMessage.append("\n" + mQuote);
-            }
-        } else {
-            // 主题
-            mSubject.setVisibility(View.VISIBLE);
-            String cachedSubject = Global.getCache(this).getAsStringWithNewLine(DRAFT_THREAD_SUBJECT + "_" + mFid);
-            mSubject.setHint("帖子主题");
-            if (cachedSubject != null) mSubject.append(cachedSubject);
-            else mSubject.setText("");
-
-            // 内容
-            String cachedContent = Global.getCache(this).getAsStringWithNewLine(DRAFT_THREAD_CONTENT + "_" + mFid);
-            mMessage.setHint("主题内容");
-            if (cachedContent != null) mMessage.append(cachedContent);
-            else mMessage.setText("");
-        }
-    }
+    private Uri mUri;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -132,6 +99,7 @@ public class NewPostActivity extends SwipeActivity {
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Toast.makeText(NewPostActivity.this, "帖子内容已保存", Toast.LENGTH_LONG).show();
                 finish();
             }
         });
@@ -177,14 +145,72 @@ public class NewPostActivity extends SwipeActivity {
         mAt = (ImageView) findViewById(R.id.at_action);
         mAttachment = (ImageView) findViewById(R.id.attachment_action);
 
-        // Actions
+        // 按钮操作
         setUpActions();
 
         // 从缓存中提取数据
-        loadCachedData();
+        initPostContent();
 
         // Swipe
         setSwipeAnyWhere(false);
+    }
+
+    /**
+     * 初始化帖子主题、内容和附件，如果有缓存则从缓存中提取，如果有引用则添加引用
+     */
+    private void initPostContent() {
+        if (mAction.equals(ACTION_POST)) {
+            // 主题
+            mSubject.setVisibility(View.GONE);
+
+            // 内容
+            String cachedContent = Global.getCache(this).getAsStringWithNewLine(DRAFT_POST_CONTENT + "_" + mTid);
+            mMessage.setHint("回帖内容");
+            if (cachedContent != null) mMessage.append(cachedContent);
+            else mMessage.setText("");
+
+            // 引用
+            if (mQuote != null) {
+                String message = mMessage.getText().toString();
+                if (message == null || "".equals(message.trim()) || message.endsWith("\n\n"))
+                    mMessage.append(mQuote);
+                else
+                    mMessage.append("\n\n" + mQuote);
+            }
+
+            // 附件
+            /*
+            String uriStr = Global.getCache(this).getAsString(DRAFT_POST_ATTACHMENT + "_" + mTid);
+            if (uriStr != null) {
+                mUri = Uri.parse(uriStr);
+                extraAttachmentInfo(mUri);
+            } else {
+                setupAttachmentLayout(false, null, null, null);
+            }*/
+        } else {
+            // 主题
+            mSubject.setVisibility(View.VISIBLE);
+            String cachedSubject = Global.getCache(this).getAsStringWithNewLine(DRAFT_THREAD_SUBJECT + "_" + mFid);
+            mSubject.setHint("帖子主题");
+            if (cachedSubject != null) mSubject.append(cachedSubject);
+            else mSubject.setText("");
+
+            // 内容
+            String cachedContent = Global.getCache(this).getAsStringWithNewLine(DRAFT_THREAD_CONTENT + "_" + mFid);
+            mMessage.setHint("主题内容");
+            if (cachedContent != null) mMessage.append(cachedContent);
+            else mMessage.setText("");
+
+            // 附件
+            /*
+            String uriStr = Global.getCache(this).getAsString(DRAFT_THREAD_ATTACHMENT + "_" + mFid);
+            if (uriStr != null) {
+                mUri = Uri.parse(uriStr);
+                extraAttachmentInfo(mUri);
+            } else {
+                setupAttachmentLayout(false, null, null, null);
+            } */
+        }
     }
 
     /**
@@ -206,9 +232,11 @@ public class NewPostActivity extends SwipeActivity {
     }
 
     private void setUpActions() {
+        // 回帖不能带主题（傻逼 API 限制）
         if (mAction.equals(ACTION_THREAD) && "".equals(mSubject.getText())) mSubject.requestFocus();
         else mMessage.requestFocus();
 
+        // 自动缓存帖子内容
         mMessage.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -231,6 +259,7 @@ public class NewPostActivity extends SwipeActivity {
             }
         });
 
+        // 自动缓存主题
         mSubject.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -246,13 +275,14 @@ public class NewPostActivity extends SwipeActivity {
             public void afterTextChanged(Editable s) {
                 String subject = s.toString();
                 if (mAction.equals(ACTION_POST)) {
-                    Global.getCache(NewPostActivity.this).put(DRAFT_POST_SUBJECT + "_" + mTid, subject, ACache.TIME_DAY * 2);
+                    Global.getCache(NewPostActivity.this).put(DRAFT_POST_ATTACHMENT + "_" + mTid, subject, ACache.TIME_DAY * 2);
                 } else {
-                    Global.getCache(NewPostActivity.this).put(DRAFT_THREAD_SUBJECT + "_" + mFid, subject, ACache.TIME_DAY * 2);
+                    Global.getCache(NewPostActivity.this).put(DRAFT_THREAD_ATTACHMENT + "_" + mFid, subject, ACache.TIME_DAY * 2);
                 }
             }
         });
 
+        // 添加 @ 标签，已废弃
         mAt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -260,6 +290,7 @@ public class NewPostActivity extends SwipeActivity {
             }
         });
 
+        // 添加引用标签
         mQuoteAction.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -267,6 +298,7 @@ public class NewPostActivity extends SwipeActivity {
             }
         });
 
+        // 添加加粗标签
         mBoldAction.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -274,6 +306,7 @@ public class NewPostActivity extends SwipeActivity {
             }
         });
 
+        // 撤销操作
         mUndoAction.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -281,6 +314,7 @@ public class NewPostActivity extends SwipeActivity {
             }
         });
 
+        // 重做操作
         mRedoAction.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -288,13 +322,7 @@ public class NewPostActivity extends SwipeActivity {
             }
         });
 
-        mTestAction.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-            }
-        });
-
+        // 添加表情
         mEmojiAction.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -306,6 +334,7 @@ public class NewPostActivity extends SwipeActivity {
             }
         });
 
+        // 添加斜体标签
         mItalic.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -313,6 +342,7 @@ public class NewPostActivity extends SwipeActivity {
             }
         });
 
+        // 添加图片上传标签
         mImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -322,6 +352,7 @@ public class NewPostActivity extends SwipeActivity {
             }
         });
 
+        // 添加任意附件上传标签
         mAttachment.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -333,6 +364,12 @@ public class NewPostActivity extends SwipeActivity {
         });
     }
 
+    /**
+     * 添加 Discuz 标签，并选择合适的光标位置
+     *
+     * @param tag        需要添加的标签，如 b
+     * @param isWrapLine 标签末尾是否需要加换行，如 [b] 不需要，[quote] 则需要
+     */
     private void addTag(String tag, boolean isWrapLine) {
         int startSelection = mMessage.getSelectionStart();
         int endSelection = mMessage.getSelectionEnd();
@@ -380,7 +417,7 @@ public class NewPostActivity extends SwipeActivity {
                     if (mTid != null) intent.putExtra(NEW_POST_TID_TAG, mTid);
                     if (mFid != null) intent.putExtra(NEW_POST_FID_TAG, mFid);
                     intent.putExtra(NEW_POST_FLOOR_TAG, mFloor);
-                    intent.putExtra(NEW_POST_ATTACHMENT_TAG, mAttachmentByteArray);
+                    intent.putExtra(NEW_POST_ATTACHMENT_URI, mUri == null ? null : mUri.toString());
 
                     startActivityForResult(intent, REQUEST_PREVIEW_TAG);
                 }
@@ -389,73 +426,76 @@ public class NewPostActivity extends SwipeActivity {
         return true;
     }
 
-    private void fillAttachmentView(Uri uri, int requestCode) {
-        try {
-            if (uri != null) {
-                // Get byte array
-                getByteArray(uri);
-
-                // Get the Uri of the selected file
-                String uriString = uri.toString();
-                File myFile = new File(uriString);
-                String displayName = null;
-
-                if (uriString.startsWith("content://")) {
-                    Cursor cursor = null;
-                    try {
-                        cursor = getContentResolver().query(uri, null, null, null, null);
-                        if (cursor != null && cursor.moveToFirst()) {
-                            displayName = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
-                        }
-                    } finally {
-                        cursor.close();
-                    }
-                } else if (uriString.startsWith("file://")) {
-                    displayName = myFile.getName();
+    /**
+     * 获取附件的大小和文件名
+     *
+     * @param uri 附件 URI
+     */
+    private void extraAttachmentInfo(Uri uri) {
+        if (uri != null || !uri.toString().startsWith("content://")) {
+            String displayName = "Unknown file name";
+            Cursor cursor = null;
+            try {
+                // 文件名
+                cursor = getContentResolver().query(uri, null, null, null, null);
+                if (cursor != null && cursor.moveToFirst()) {
+                    displayName = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
                 }
 
-                // Size
-                Cursor cursor = getContentResolver().query(uri,
-                        null, null, null, null);
+                // 文件大小
                 cursor.moveToFirst();
                 long size = cursor.getLong(cursor.getColumnIndex(OpenableColumns.SIZE));
-                cursor.close();
 
-                setupAttachmentLayout(true, requestCode == REQUEST_CHOOSE_PHOTO_TAG, displayName, size);
-            } else {
-                setupAttachmentLayout(false, null, null, null);
+                // 文件类型
+                ContentResolver cR = getContentResolver();
+                String type = cR.getType(uri);
+
+                // 显示 Attachment 布局
+                setupAttachmentLayout(true, type.startsWith("image"), displayName, size);
+            } finally {
+                if (cursor != null) cursor.close();
             }
-        } catch (IOException e) {
+        } else {
+            setupAttachmentLayout(false, null, null, null);
             String message = getString(R.string.error_insert_attachment);
-            Log.e(TAG, message, e);
+            Log.w(TAG, message);
             CommonUtils.debugToast(this, message);
             Snackbar.make(mMessage, message, Snackbar.LENGTH_LONG).show();
         }
+
     }
 
-    private void getByteArray(Uri uri) throws IOException {
-        InputStream iStream = getContentResolver().openInputStream(uri);
-        ByteArrayOutputStream byteBuffer = new ByteArrayOutputStream();
-        int bufferSize = 1024;
-        byte[] buffer = new byte[bufferSize];
-        int len;
-        while ((len = iStream.read(buffer)) != -1) {
-            byteBuffer.write(buffer, 0, len);
-        }
-        iStream.close();
-        byteBuffer.close();
-        mAttachmentByteArray = byteBuffer.toByteArray();
+    @Override
+    public void onBackPressed() {
+        Toast.makeText(NewPostActivity.this, "帖子内容已保存", Toast.LENGTH_LONG).show();
+        super.onBackPressed();
     }
 
     private void setupAttachmentLayout(Boolean visibility, Boolean isImage, String fileName, Long fileSize) {
-        if (!visibility) mAttachmentLayout.setVisibility(View.GONE);
-        else {
+        if (!visibility) {
+            if (mAction.equals(ACTION_POST)) {
+                Global.getCache(NewPostActivity.this).remove(DRAFT_POST_ATTACHMENT + "_" + mTid);
+            } else {
+                Global.getCache(NewPostActivity.this).remove(DRAFT_THREAD_ATTACHMENT + "_" + mFid);
+            }
+
+            CommonUtils.debugToast(this, "附件不存在或者已被清除");
+            mAttachmentLayout.setVisibility(View.GONE);
+            mUri = null;
+        } else {
+            // 存储
+            if (mAction.equals(ACTION_POST)) {
+                Global.getCache(NewPostActivity.this).put(DRAFT_POST_ATTACHMENT + "_" + mTid, mUri.toString(), ACache.TIME_DAY * 2);
+            } else {
+                Global.getCache(NewPostActivity.this).put(DRAFT_THREAD_ATTACHMENT + "_" + mFid, mUri.toString(), ACache.TIME_DAY * 2);
+            }
+
             mAttachmentLayout.setVisibility(View.VISIBLE);
             if (isImage) mFileTypeImage.setImageResource(R.drawable.ic_photo_file);
             else mFileTypeImage.setImageResource(R.drawable.ic_documentation_file);
 
             mAttachmentName.setText(fileName);
-            mAttachmentSize.setText((fileSize / 1024) + " KB");
+            mAttachmentSize.setText(CommonUtils.readableFileSize(fileSize));
             mDelButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -471,8 +511,8 @@ public class NewPostActivity extends SwipeActivity {
 
         if ((requestCode == REQUEST_CHOOSE_PHOTO_TAG || requestCode == REQUEST_CHOOSE_FILE_TAG)
                 && resultCode == RESULT_OK && data != null) {
-            Uri uri = data.getData();
-            fillAttachmentView(uri, requestCode);
+            mUri = data.getData();
+            extraAttachmentInfo(mUri);
         } else if (requestCode == REQUEST_PREVIEW_TAG) {
             if (resultCode == RESULT_OK) {
                 if (mAction.equals(ACTION_POST)) {

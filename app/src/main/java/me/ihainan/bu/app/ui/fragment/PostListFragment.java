@@ -60,6 +60,7 @@ public class PostListFragment extends Fragment {
     private List<Post> mList = new ArrayList<>();
     private PostListAdapter mAdapter;
     private boolean shouldJump = true;  // 是否需要跳到指定楼层
+    public static boolean isSetToolbar = false;
 
     @Nullable
     @Override
@@ -78,6 +79,16 @@ public class PostListFragment extends Fragment {
             // Setup RecyclerView
             mRecyclerView = (RecyclerView) mRootView.findViewById(R.id.recycler_view);
             setupRecyclerView();
+            if (!isSetToolbar) {
+                isSetToolbar = !isSetToolbar;
+                Log.d(TAG, "onCreateView >> " + mPagePosition);
+                getActivity().findViewById(R.id.toolbar).setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        mRecyclerView.getLayoutManager().smoothScrollToPosition(mRecyclerView, null, 0);
+                    }
+                });
+            }
 
             // Setup SwipeLayout
             mSwipeRefreshLayout = (SwipeRefreshLayout) mRootView.findViewById(R.id.swipe_refresh_layout);
@@ -89,21 +100,17 @@ public class PostListFragment extends Fragment {
 
     @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
+        // if (!isSetToolbar) isSetToolbar = true;
         super.setUserVisibleHint(isVisibleToUser);
         if (isVisibleToUser && mContext != null && mRecyclerView != null) {
             getActivity().findViewById(R.id.toolbar).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    mRecyclerView.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            // TODO: not working
-                            mRecyclerView.getLayoutManager().smoothScrollToPosition(mRecyclerView, null, 0);
-                        }
-                    });
+                    mRecyclerView.getLayoutManager().smoothScrollToPosition(mRecyclerView, null, 0);
                 }
             });
         }
+
     }
 
     @Override

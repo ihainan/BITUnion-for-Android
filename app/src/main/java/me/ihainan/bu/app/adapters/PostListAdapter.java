@@ -116,7 +116,6 @@ public class PostListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             Date datePost = CommonUtils.unixTimeStampToDate(reply.dateline);
             Date dateEdit = CommonUtils.unixTimeStampToDate(Long.valueOf(reply.lastedit));
             String datePostStr = CommonUtils.getRelativeTimeSpanString(datePost);
-            String dateEditStr = CommonUtils.getRelativeTimeSpanString(datePost);
             if (!(Long.valueOf(reply.lastedit) == 0L) && !datePost.equals(dateEdit)) {
                 datePostStr += " (edited at " + DateUtils.formatSameDayTime(dateEdit.getTime(), datePost.getTime(),
                         DateFormat.SHORT, DateFormat.SHORT).toString() + ")";
@@ -160,7 +159,6 @@ public class PostListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         }
     }
 
-
     private void showAttachmentView(LinearLayout linearLayout, final Post reply) {
         LayoutInflater inflater = LayoutInflater.from(mContext);
         View itemView = inflater.inflate(R.layout.item_thread_detail_attachment, null, false);
@@ -168,12 +166,12 @@ public class PostListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         // UI references
         TextView attachmentName = (TextView) itemView.findViewById(R.id.thread_attachment_name);
         RelativeLayout attachmentImageLayout = (RelativeLayout) itemView.findViewById(R.id.thread_attachment_image_layout);
-        final ImageView attachmentImage = (ImageView) itemView.findViewById(R.id.thread_attachment_image);
         final TextView clickToLoad = (TextView) itemView.findViewById(R.id.load_image_text);
+        final ImageView attachmentImage = (ImageView) itemView.findViewById(R.id.thread_attachment_image);
 
         // 附件名
         String fileName = CommonUtils.decode(reply.filename);
-        fileName = fileName.length() >= 6 ? fileName.substring(0, 5) + ".." : fileName;
+        fileName = CommonUtils.truncateString(fileName, 20);
 
         attachmentName.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -184,7 +182,7 @@ public class PostListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 mContext.startActivity(i);
             }
         });
-        attachmentName.setText(fileName + "（" + Integer.valueOf(reply.filesize) / 1000.0 + " KB）");
+        attachmentName.setText(fileName + "（" + CommonUtils.readableFileSize(reply.filesize) + "）");
 
         Log.d(TAG, "REPLY >> " + reply.toString());
 
@@ -234,6 +232,8 @@ public class PostListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                             });
                         }
                     });
+        } else {
+            attachmentImageLayout.setVisibility(View.GONE);
         }
 
         linearLayout.addView(itemView);

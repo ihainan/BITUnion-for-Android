@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
     <PreferenceCategory
         android:key="pref_key_network_settings"
         android:title="网络">
@@ -14,17 +15,27 @@
     </PreferenceCategory>
 
     <PreferenceCategory
-        android:key="pref_key_privacy_settings"
-        android:title="隐私">
+        android:key="pref_key_appearance_settings"
+        android:title="外观">
         <SwitchPreference
-            android:key="pref_upload_data"
-            android:summary="允许上传设备和异常等统计信息"
-            android:title="数据上传" />
+            android:key="pref_theme"
+            android:summary="知乎蓝"
+            android:title="主题" />
+
+        <SwitchPreference
+            android:key="pref_advanced_editor"
+            android:summary="启用高级编辑器，实现更复杂的文本编辑操作"
+            android:title="高级编辑器（实验）" />
     </PreferenceCategory>
 
     <PreferenceCategory
         android:key="pref_key_development_settings"
         android:title="开发">
+        <SwitchPreference
+            android:key="pref_upload_data"
+            android:summary="允许上传设备和异常等统计信息"
+            android:title="数据上传" />
+
         <SwitchPreference
             android:key="pref_enable_dev_mode"
             android:summary="输出额外调试信息"

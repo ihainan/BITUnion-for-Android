@@ -221,7 +221,8 @@
                                 android:layout_width="50dp"
                                 android:layout_height="50dp"
                                 android:padding="@dimen/bottom_icon_padding"
-                                android:src="@drawable/ic_at" />
+                                android:src="@drawable/ic_at"
+                                android:visibility="gone" />
 
                             <ImageView
                                 android:id="@+id/test_action"

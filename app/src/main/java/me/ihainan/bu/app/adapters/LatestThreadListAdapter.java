@@ -287,9 +287,11 @@ public class LatestThreadListAdapter extends RecyclerView.Adapter<RecyclerView.V
                                         || firstReply.attachext.equals("jpeg")) {
                                     // 缓存模式下不会进入本方法，所以直接显示图片
                                     String imageURL = CommonUtils.getRealImageURL(firstReply.attachment);
+
+                                    // 调整图片显示大小
                                     final Point displaySize = CommonUtils.getDisplaySize(((Activity) mContext).getWindowManager().getDefaultDisplay());
-                                    final int size = (int) Math.ceil(Math.sqrt(displaySize.x * displaySize.y));
-                                    Picasso.with(mContext).load(imageURL).resize(size, size)
+                                    // final int size = (int) Math.ceil(Math.sqrt(displaySize.x * displaySize.y));
+                                    Picasso.with(mContext).load(imageURL).resize(displaySize.x, 0)
                                             .transform(new VignetteFilterTransformation(mContext)).into(holder.background);
                                 }
                             } else {
@@ -318,8 +320,10 @@ public class LatestThreadListAdapter extends RecyclerView.Adapter<RecyclerView.V
                 String imageURL = CommonUtils.getRealImageURL(reply.attachment);
 
                 final Point displaySize = CommonUtils.getDisplaySize(((Activity) mContext).getWindowManager().getDefaultDisplay());
-                final int size = (int) Math.ceil(Math.sqrt(displaySize.x * displaySize.y));
-                Picasso.with(mContext).load(imageURL).resize(size, size)
+                // final int size = (int) Math.ceil(Math.sqrt(displaySize.x * displaySize.y));
+                /* Picasso.with(mContext).load(imageURL).resize(size, size)
+                        .transform(new VignetteFilterTransformation(mContext)).into(holder.background); */
+                Picasso.with(mContext).load(imageURL).resize(displaySize.x, 0)
                         .transform(new VignetteFilterTransformation(mContext)).into(holder.background);
             }
         }

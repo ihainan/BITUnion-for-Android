@@ -10,6 +10,7 @@ import android.graphics.Paint;
 import android.graphics.Point;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
 import android.os.Build;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.view.ContextThemeWrapper;
@@ -32,12 +33,14 @@ import com.umeng.update.UpdateStatus;
 
 import org.json.JSONObject;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
-import java.net.InetAddress;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.text.DateFormat;
+import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -251,6 +254,14 @@ public class CommonUtils {
         }
     }
 
+    /**
+     * 加载网络图片到指定 ImageView 中，如果缓存中已经存在图片，则不会重新下载
+     *
+     * @param context      上下文
+     * @param imageView    需要显示图片的 ImageView
+     * @param imageSrc     图片地址
+     * @param errorImageId 发现加载错误后显示的占位图片
+     */
     public static void setImageView(final Context context, final ImageView imageView, final String imageSrc, final int errorImageId) {
         // 测试 Offline 模式是否能够正确加载图片
         Picasso.with(context)
@@ -396,6 +407,7 @@ public class CommonUtils {
      * @return 图片的真实 URL
      */
     public static String getRealImageURL(String originalURL) {
+        // TODO: 重写本函数
         // URL 解码
         originalURL = CommonUtils.decode(originalURL);
 
@@ -528,17 +540,7 @@ public class CommonUtils {
      * @return 格式化后的时间字符串
      */
     public static String formatTime(Date date) {
-        return (new SimpleDateFormat("hh:mm")).format(date);
-    }
-
-    public static boolean checkIfInSchool() {
-        try {
-            InetAddress in = InetAddress.getByName(Global.DNS_SERVER);
-            return in.isReachable(300);
-        } catch (IOException e) {
-            Log.e(TAG, "Failed to check if in school", e);
-            return false;
-        }
+        return (new SimpleDateFormat("HH:mm")).format(date);
     }
 
     /**
@@ -565,26 +567,6 @@ public class CommonUtils {
     }
 
     /**
-     * 判断一个帖子是否是热门帖
-     *
-     * @param postDateStr      帖子发表时间
-     * @param lastReplyDateStr 帖子最后回复时间
-     * @param replies          总回帖数
-     * @return 是否是热门帖子
-     */
-    public boolean isHotThread(String postDateStr, String lastReplyDateStr, int replies) {
-        DateFormat format = new SimpleDateFormat("yyyy-MM-dd hh:mm");
-        try {
-            Date postDate = format.parse(postDateStr);
-            Date lastReplyDate = format.parse(lastReplyDateStr);
-            return isHotThread(postDate, lastReplyDate, replies);
-        } catch (ParseException e) {
-            Log.e(TAG, "错误的日期字符串", e);
-            return false;
-        }
-    }
-
-    /**
      * 字符串转换为日期
      *
      * @param dateStr 原始字符串
@@ -600,12 +582,14 @@ public class CommonUtils {
         }
     }
 
+    /**
+     * 获取指定时间距离当前时间的相对距离（如 3 分钟前）
+     *
+     * @param date 需要比较的时间
+     * @return 相对距离字符串
+     */
     public static String getRelativeTimeSpanString(Date date) {
         long now = System.currentTimeMillis();
-        // 相同小时
-        // 相同天
-        // 相同年
-        // if ((now - current.getTime()) / ())
         return DateUtils.getRelativeTimeSpanString(date.getTime(), now, DateUtils.MINUTE_IN_MILLIS).toString();
     }
 
@@ -660,6 +644,9 @@ public class CommonUtils {
         else return realDeviceName.get(deviceName);
     }
 
+    /**
+     * 厂商代码 -> 具体设备型号哈希表
+     */
     private static Map<String, String> realDeviceName = new HashMap<>();
 
     static {
@@ -667,24 +654,42 @@ public class CommonUtils {
         // TODO: 添加其他设备信息
     }
 
-    private static String capitalize(String s) {
-        if (s == null || s.length() == 0) return "";
+    /**
+     * 字符串首字母大写
+     *
+     * @param str 原始字符串
+     * @return 首字母大写字符串
+     */
+    private static String capitalize(String str) {
+        if (str == null || str.length() == 0) return "";
 
-
-        char first = s.charAt(0);
+        char first = str.charAt(0);
         if (Character.isUpperCase(first)) {
-            return s;
+            return str;
         } else {
-            return Character.toUpperCase(first) + s.substring(1);
+            return Character.toUpperCase(first) + str.substring(1);
         }
     }
 
+    /**
+     * 判断当前是否处于 Wi-Fi 环境
+     *
+     * @param context 上下文
+     * @return <code>true</code> 表示 Wi-Fi 环境，否则不是
+     */
     public static boolean isWifi(Context context) {
         ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
         return networkInfo != null && networkInfo.getType() == ConnectivityManager.TYPE_WIFI;
     }
 
+    /**
+     * 获取特定大小字体的高度
+     *
+     * @param context  上下文
+     * @param fontSize 字体大小
+     * @return 对应的高度
+     */
     public static int getFontHeight(Context context, float fontSize) {
         // Convert Dp To Px
         float px = context.getResources().getDisplayMetrics().density * fontSize + 0.5f;
@@ -696,6 +701,12 @@ public class CommonUtils {
         return (int) Math.ceil(fm.descent - fm.ascent);
     }
 
+    /**
+     * 获取屏幕大小
+     *
+     * @param display 屏幕
+     * @return 屏幕大小
+     */
     public static Point getDisplaySize(Display display) {
         Point size = new Point();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
@@ -707,5 +718,18 @@ public class CommonUtils {
         }
 
         return size;
+    }
+
+    /**
+     * 以更友好的方式显示文件大小
+     *
+     * @param size
+     * @return 文件大小字符串
+     */
+    public static String readableFileSize(long size) {
+        if (size <= 0) return "0 KB";
+        final String[] units = new String[]{"B", "KB", "MB", "GB", "TB"};
+        int digitGroups = (int) (Math.log10(size) / Math.log10(1024));
+        return new DecimalFormat("#,##0.#").format(size / Math.pow(1024, digitGroups)) + " " + units[digitGroups];
     }
 }

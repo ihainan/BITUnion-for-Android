@@ -50,7 +50,7 @@ public class Post implements Serializable {
     public String filetype;
     public String filename;
     public String attachment;
-    public String filesize;
+    public Integer filesize;
     public String downloads;    // 附件下载次数
     public long uid;
     public String username;
@@ -78,7 +78,7 @@ public class Post implements Serializable {
     public String toQuote() {
         String quote = message;
 
-        quote = quote.replaceAll("<blockquote>.*?</blockquote>", "[引用]");
+        quote = quote.replaceAll("<blockquote>.*?</blockquote>", "[引用]\n");
 
         // Cut down the message if it's too long
         if (quote.length() > 250)
@@ -106,7 +106,7 @@ public class Post implements Serializable {
         quote = "[quote=" + pid + "][b]" + CommonUtils.decode(author) + "[/b] "
                 + CommonUtils.formatDateTime(CommonUtils.unixTimeStampToDate(dateline)) + "\n" + quote + "[/quote]\n";
 
-        return quote + "[@]" + CommonUtils.decode(author) + "[/@]\n";
+        return quote;
     }
 
     public boolean useMobile;

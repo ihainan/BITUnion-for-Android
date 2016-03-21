@@ -21,7 +21,7 @@
             android:layout_height="match_parent"
             android:layout_marginLeft="10dp"
             android:gravity="center"
-            android:text="Attachment: " />
+            android:text="" />
 
         <TextView
             android:id="@+id/thread_attachment_name"

@@ -1,7 +1,5 @@
 package me.ihainan.bu.app.ui.fragment;
 
-import android.app.Fragment;
-import android.app.FragmentTransaction;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.Bundle;
@@ -12,17 +10,15 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
 
 import me.ihainan.bu.app.BuildConfig;
 import me.ihainan.bu.app.R;
-import me.ihainan.bu.app.utils.network.BUApi;
 import me.ihainan.bu.app.utils.CommonUtils;
 import me.ihainan.bu.app.utils.Global;
+import me.ihainan.bu.app.utils.network.BUApi;
 
 /**
  * 设置页面
