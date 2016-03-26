@@ -19,4 +19,6 @@
 
     <color name="hot_topic">#FF0000</color>
     <color name="blockquote_background">#FFFFFF</color>
+
+    <color name="black_overlay">#66000000</color>
 </resources>

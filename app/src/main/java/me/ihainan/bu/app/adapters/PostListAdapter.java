@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
-import android.graphics.Point;
 import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
@@ -29,12 +28,13 @@ import java.util.List;
 
 import me.ihainan.bu.app.R;
 import me.ihainan.bu.app.models.Post;
+import me.ihainan.bu.app.ui.FullscreenPhotoViewerActivity;
 import me.ihainan.bu.app.ui.NewPostActivity;
 import me.ihainan.bu.app.ui.PostListActivity;
 import me.ihainan.bu.app.ui.assist.CustomSpan;
 import me.ihainan.bu.app.ui.viewholders.LoadingViewHolder;
-import me.ihainan.bu.app.utils.network.BUApi;
 import me.ihainan.bu.app.utils.CommonUtils;
+import me.ihainan.bu.app.utils.network.BUApi;
 import me.ihainan.bu.app.utils.ui.PicassoImageGetter;
 
 /**
@@ -192,13 +192,22 @@ public class PostListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             attachmentImageLayout.setVisibility(View.VISIBLE);
 
             // 尝试从缓存中读取图片，如果缓存中没有图片，则用户点击之后就能加载
+            // 图片全部采用 Fit + CenterCrop，大图裁剪，小图拉伸，点击之后自动放大
             final String imageURL = CommonUtils.getRealImageURL(reply.attachment);
-            final Point displaySize = CommonUtils.getDisplaySize(((Activity) mContext).getWindowManager().getDefaultDisplay());
-            final int size = (int) Math.ceil(Math.sqrt(displaySize.x * displaySize.y));
+            attachmentImage.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(mContext, FullscreenPhotoViewerActivity.class);
+                    intent.putExtra(FullscreenPhotoViewerActivity.IMAGE_URL_TAG, imageURL);
+                    mContext.startActivity(intent);
+                }
+            });
+
             Picasso.with(mContext)
                     .load(imageURL)
-                    .resize(size, size)
                     .networkPolicy(NetworkPolicy.OFFLINE)
+                    .fit()
+                    .centerCrop()
                     .into(attachmentImage, new Callback() {
                         @Override
                         public void onSuccess() {
@@ -215,19 +224,22 @@ public class PostListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                                 public void onClick(View v) {
                                     Log.d(TAG, "Picasso >> 点击文本，加载图片中");
                                     clickToLoad.setText("正在加载");
-                                    Picasso.with(mContext).load(imageURL).resize(size, size).into(attachmentImage, new Callback() {
-                                        @Override
-                                        public void onSuccess() {
-                                            Log.d(TAG, "Picasso >> 加载成功");
-                                            clickToLoad.setVisibility(View.GONE);
-                                        }
+                                    Picasso.with(mContext).load(imageURL)
+                                            .fit()
+                                            .centerCrop()
+                                            .into(attachmentImage, new Callback() {
+                                                @Override
+                                                public void onSuccess() {
+                                                    Log.d(TAG, "Picasso >> 加载成功");
+                                                    clickToLoad.setVisibility(View.GONE);
+                                                }
 
-                                        @Override
-                                        public void onError() {
-                                            Log.d(TAG, "Picasso >> 加载 " + imageURL + " 失败");
-                                            clickToLoad.setText("加载失败，点击重试");
-                                        }
-                                    });
+                                                @Override
+                                                public void onError() {
+                                                    Log.d(TAG, "Picasso >> 加载 " + imageURL + " 失败");
+                                                    clickToLoad.setText("加载失败，点击重试");
+                                                }
+                                            });
                                 }
                             });
                         }

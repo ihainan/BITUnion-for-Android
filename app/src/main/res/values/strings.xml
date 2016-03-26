@@ -118,4 +118,10 @@
     <string name="title_activity_thread_detail_new">ThreadDetailNewActivity</string>
     <string name="title_activity_main2">Main2Activity</string>
     <string name="title_activity_search_result">SearchResultActivity</string>
+
+    <string name="title_activity_full_screen_photo_viewer">FullScreenPhotoViewerActivity</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
+
+    <string name="title_activity_fullscreen_photo_viewer">FullscreenPhotoViewerActivity</string>
 </resources>

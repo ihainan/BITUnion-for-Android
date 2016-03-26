@@ -27,6 +27,7 @@ import android.widget.Toast;
 
 import me.ihainan.bu.app.R;
 import me.ihainan.bu.app.models.Member;
+import me.ihainan.bu.app.ui.FullscreenPhotoViewerActivity;
 import me.ihainan.bu.app.ui.ProfileActivity;
 import me.ihainan.bu.app.ui.assist.CustomSpan;
 import me.ihainan.bu.app.utils.CommonUtils;
@@ -143,7 +144,8 @@ public class BasicInfoFragment extends Fragment {
         mAvatar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(avatarURL));
+                Intent intent = new Intent(mContext, FullscreenPhotoViewerActivity.class);
+                intent.putExtra(FullscreenPhotoViewerActivity.IMAGE_URL_TAG, CommonUtils.getRealImageURL(avatarURL));
                 startActivity(intent);
             }
         });

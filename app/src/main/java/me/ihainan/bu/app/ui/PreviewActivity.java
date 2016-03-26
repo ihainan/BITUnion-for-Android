@@ -98,7 +98,7 @@ public class PreviewActivity extends SwipeActivity {
         TextView attachmentName = (TextView) itemView.findViewById(R.id.thread_attachment_name);
         RelativeLayout attachmentImageLayout = (RelativeLayout) itemView.findViewById(R.id.thread_attachment_image_layout);
         final ImageView attachmentImage = (ImageView) itemView.findViewById(R.id.thread_attachment_image);
-        ((TextView) itemView.findViewById(R.id.load_image_text)).setVisibility(View.GONE);
+        itemView.findViewById(R.id.load_image_text).setVisibility(View.GONE);
 
         // 附件名
         Cursor cursor = null;

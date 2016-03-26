@@ -36,7 +36,7 @@
 
     <RelativeLayout
         android:id="@+id/thread_attachment_image_layout"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="250dp">
 
         <ImageView
@@ -44,7 +44,7 @@
             android:layout_width="match_parent"
             android:layout_height="250dp"
             android:layout_marginTop="5dp"
-            android:scaleType="fitCenter" />
+            android:scaleType="centerCrop" />
 
         <TextView
             android:id="@+id/load_image_text"

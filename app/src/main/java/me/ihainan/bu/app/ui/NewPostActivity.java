@@ -179,14 +179,13 @@ public class NewPostActivity extends SwipeActivity {
             }
 
             // 附件
-            /*
             String uriStr = Global.getCache(this).getAsString(DRAFT_POST_ATTACHMENT + "_" + mTid);
             if (uriStr != null) {
                 mUri = Uri.parse(uriStr);
                 extraAttachmentInfo(mUri);
             } else {
                 setupAttachmentLayout(false, null, null, null);
-            }*/
+            }
         } else {
             // 主题
             mSubject.setVisibility(View.VISIBLE);
@@ -202,14 +201,13 @@ public class NewPostActivity extends SwipeActivity {
             else mMessage.setText("");
 
             // 附件
-            /*
             String uriStr = Global.getCache(this).getAsString(DRAFT_THREAD_ATTACHMENT + "_" + mFid);
             if (uriStr != null) {
                 mUri = Uri.parse(uriStr);
                 extraAttachmentInfo(mUri);
             } else {
                 setupAttachmentLayout(false, null, null, null);
-            } */
+            }
         }
     }
 
@@ -445,13 +443,19 @@ public class NewPostActivity extends SwipeActivity {
                 // 文件大小
                 cursor.moveToFirst();
                 long size = cursor.getLong(cursor.getColumnIndex(OpenableColumns.SIZE));
+                if (size > 1000000) {
+                    String message = getString(R.string.error_insert_attachment) + ": 附件大小超过 1M";
+                    Log.w(TAG, message);
+                    CommonUtils.debugToast(this, message);
+                    Snackbar.make(buttonPanel, message, Snackbar.LENGTH_LONG).show();
+                } else {
+                    // 文件类型
+                    ContentResolver cR = getContentResolver();
+                    String type = cR.getType(uri);
 
-                // 文件类型
-                ContentResolver cR = getContentResolver();
-                String type = cR.getType(uri);
-
-                // 显示 Attachment 布局
-                setupAttachmentLayout(true, type.startsWith("image"), displayName, size);
+                    // 显示 Attachment 布局
+                    setupAttachmentLayout(true, type.startsWith("image"), displayName, size);
+                }
             } finally {
                 if (cursor != null) cursor.close();
             }
@@ -460,7 +464,7 @@ public class NewPostActivity extends SwipeActivity {
             String message = getString(R.string.error_insert_attachment);
             Log.w(TAG, message);
             CommonUtils.debugToast(this, message);
-            Snackbar.make(mMessage, message, Snackbar.LENGTH_LONG).show();
+            Snackbar.make(buttonPanel, message, Snackbar.LENGTH_LONG).show();
         }
 
     }
