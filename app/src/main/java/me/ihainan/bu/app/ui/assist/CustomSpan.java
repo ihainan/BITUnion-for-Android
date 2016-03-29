@@ -22,8 +22,10 @@ import android.view.View;
 import android.widget.TextView;
 
 import me.ihainan.bu.app.R;
+import me.ihainan.bu.app.ui.FullscreenPhotoViewerActivity;
 import me.ihainan.bu.app.ui.ProfileActivity;
 import me.ihainan.bu.app.utils.CommonUtils;
+import me.ihainan.bu.app.utils.Global;
 import me.ihainan.bu.app.utils.network.BUApi;
 
 /**
@@ -104,11 +106,15 @@ public class CustomSpan {
         @Override
         public void onClick(View widget) {
             if (mUrl == null) return;
-            if (mUrl.startsWith(BUApi.IN_SCHOOL_BASE_URL)
+            else if (mUrl.startsWith(Global.IMAGE_URL_PREFIX)) {
+                String newUrl = mUrl.substring(Global.IMAGE_URL_PREFIX.length());
+                Intent intent = new Intent(mContext, FullscreenPhotoViewerActivity.class);
+                intent.putExtra(FullscreenPhotoViewerActivity.IMAGE_URL_TAG, newUrl);
+                mContext.startActivity(intent);
+            } else if (mUrl.startsWith(BUApi.IN_SCHOOL_BASE_URL)
                     || mUrl.startsWith(BUApi.OUT_SCHOOL_BASE_URL)
                     || mUrl.startsWith("/profile-username-")) {
-                String newUrl = mUrl.replace(BUApi.IN_SCHOOL_BASE_URL, "/");
-                newUrl = mUrl.replace(BUApi.OUT_SCHOOL_BASE_URL, "/");
+                String newUrl = mUrl.replace(BUApi.IN_SCHOOL_BASE_URL, "/").replace(BUApi.OUT_SCHOOL_BASE_URL, "/");
                 String userName = CommonUtils.decode(newUrl.substring("/profile-username-".length(), mUrl.length() - 5), "GBK");
                 Intent intent = new Intent(mContext, ProfileActivity.class);
                 intent.putExtra(ProfileActivity.USER_NAME_TAG, userName);

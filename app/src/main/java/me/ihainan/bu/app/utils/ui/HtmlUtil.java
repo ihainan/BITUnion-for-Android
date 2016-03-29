@@ -6,6 +6,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import me.ihainan.bu.app.utils.CommonUtils;
+import me.ihainan.bu.app.utils.Global;
 
 /**
  * HTML Util
@@ -73,7 +74,7 @@ public class HtmlUtil {
             if (url.contains("file:///android_asset/"))
                 url = "<img id = 'face' src='" + url + "'>";
             else
-                url = "<img src='" + url + "'>";
+                url = "<a href = '" + Global.IMAGE_URL_PREFIX + url + "'>" + "<img src='" + url + "'></a>";
             str = str.replace(m.group(0), url);
             m = p.matcher(str);
         }
