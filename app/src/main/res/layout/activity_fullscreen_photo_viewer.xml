@@ -9,12 +9,11 @@
          is needed to present your content, e.g. VideoView, SurfaceView,
          TextureView, etc. -->
 
-    <ImageView
+    <uk.co.senab.photoview.PhotoView
         android:id="@+id/iv_photo"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:scaleType="fitCenter"
-        android:src="@drawable/default_avatar" />
+        android:scaleType="fitCenter" />
 
     <!-- This FrameLayout insets its children based on system windows using
          android:fitsSystemWindows. -->

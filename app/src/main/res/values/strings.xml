@@ -48,6 +48,15 @@
     <string name="title_activity_settings">Settings</string>
     <string name="error_not_implement">然而程序猴子还没有开发此功能</string>
     <string name="warning_not_new_data">然而并没有任何更新</string>
+    <string name="error_no_storage_permission">无法读取外部存储，请检查是否具备相应的权限</string>
+    <string name="error_storage_file_not_found">存储图片失败，请检查文件是否存在</string>
+    <string name="error_storage_file_to_media">存储到图库失败</string>
+    <string name="error_download_image">下载图片失败，请检查网络</string>
+    <string name="error_no_permission">没有文件写入权限，保存图片失败</string>
+
+    <!-- File Download -->
+    <string name="success_download_image">下载图片成功</string>
+    <string name="downloading_image">正在下载图片</string>
 
     <!-- Menu -->
     <string name="menu_change_order">排序</string>
@@ -124,4 +133,5 @@
     <string name="dummy_content">DUMMY\nCONTENT</string>
 
     <string name="title_activity_fullscreen_photo_viewer">FullscreenPhotoViewerActivity</string>
+    <string name="title_activity_photo_viewer">PhotoViewerActivity</string>
 </resources>

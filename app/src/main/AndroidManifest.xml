@@ -5,9 +5,7 @@
     <!-- 访问联盟服务器 -->
     <uses-permission android:name="android.permission.INTERNET" />
 
-    <!-- 附件草稿 -->
-    <uses-permission android:name="com.android.providers.media.MediaProvider" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <!-- 存储图片 -->
 
     <!-- 友盟统计 SDK 额外要求权限 -->
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -15,12 +13,15 @@
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
 
     <!-- 友盟自动更新 SDK 额外要求权限 -->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <!-- 适配低版本 Android -->
     <uses-permission android:name="android.permission.GET_TASKS" />
 
     <!-- 附件 -->
+
+
     <application
         android:name=".utils.Global"
         android:allowBackup="true"
@@ -97,7 +98,9 @@
             android:name=".ui.FullscreenPhotoViewerActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/title_activity_fullscreen_photo_viewer"
-            android:theme="@style/FullscreenTheme"></activity>
+            android:theme="@style/FullscreenTheme">
+
+        </activity>
     </application>
 
 </manifest>

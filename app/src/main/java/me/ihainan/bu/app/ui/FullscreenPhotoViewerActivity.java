@@ -1,17 +1,49 @@
 package me.ihainan.bu.app.ui;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.ActionBar;
 import android.app.Activity;
+import android.app.ProgressDialog;
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.ContentValues;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
+import android.media.MediaScannerConnection;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
+import android.provider.MediaStore;
+import android.provider.Settings;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
+import android.util.Log;
+import android.view.ContextMenu;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.ImageView;
+import android.widget.Toast;
 
+import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import me.ihainan.bu.app.R;
+import me.ihainan.bu.app.utils.CommonUtils;
+import uk.co.senab.photoview.PhotoView;
 import uk.co.senab.photoview.PhotoViewAttacher;
 
 /**
@@ -22,10 +54,10 @@ public class FullscreenPhotoViewerActivity extends Activity {
     // TAG
     private final static String TAG = FullscreenPhotoViewerActivity.class.getSimpleName();
     public final static String IMAGE_URL_TAG = "_IMAGE_URL_TAG";
-    public final static String IMAGE_RESOURCE_ID_TAG = "_IMAGE_RESOURCE_ID_TAG";
+    public final static int PERMISSIONS_REQUEST_READ_CONTACTS = 19527;
 
     // UI
-    private ImageView mImageView;
+    private PhotoView mImageView;
     private PhotoViewAttacher mAttacher;
 
     // Data
@@ -76,7 +108,6 @@ public class FullscreenPhotoViewerActivity extends Activity {
             if (actionBar != null) {
                 actionBar.show();
             }
-            mControlsView.setVisibility(View.VISIBLE);
         }
     };
     private boolean mVisible;
@@ -127,27 +158,201 @@ public class FullscreenPhotoViewerActivity extends Activity {
 
         // Get Image URL
         mImageURL = getIntent().getExtras().getString(IMAGE_URL_TAG, null);
+        // mImageURL = "http://www.15w.com/uploads/allimg/120826/13-120R611334RA.jpg";
 
         // ImageView
-        mImageView = (ImageView) findViewById(R.id.iv_photo);
-        mImageView.setVisibility(View.INVISIBLE);
-        // TODO: 对头像进行适当调整
-
-        Picasso.with(this).load(mImageURL).into(mImageView);
-        mAttacher = new PhotoViewAttacher(mImageView);
-        mAttacher.update();
-
-        mAttacher.setOnPhotoTapListener(new PhotoViewAttacher.OnPhotoTapListener() {
+        mImageView = (PhotoView) findViewById(R.id.iv_photo);
+        Picasso.with(FullscreenPhotoViewerActivity.this).load(mImageURL).into(mImageView, new Callback() {
             @Override
-            public void onPhotoTap(View view, float x, float y) {
-                toggle();
+            public void onSuccess() {
+                mAttacher = new PhotoViewAttacher(mImageView);
+
+                mAttacher.setOnPhotoTapListener(new PhotoViewAttacher.OnPhotoTapListener() {
+                    @Override
+                    public void onPhotoTap(View view, float x, float y) {
+                        toggle();
+                    }
+
+                    @Override
+                    public void onOutsidePhotoTap() {
+
+                    }
+                });
+
+                registerForContextMenu(mImageView);
+                mAttacher.setOnLongClickListener(new View.OnLongClickListener() {
+                    @Override
+                    public boolean onLongClick(View v) {
+                        // Download Image
+                        v.showContextMenu();
+                        return true;
+                    }
+                });
             }
 
             @Override
-            public void onOutsidePhotoTap() {
-
+            public void onError() {
+                String message = "下载图片失败，请检查网络或者稍后重试";
+                String debugMessage = message + " " + mImageURL;
+                Log.e(TAG, debugMessage);
+                CommonUtils.showDialog(FullscreenPhotoViewerActivity.this, getString(R.string.error_title), message);
             }
         });
+    }
+
+    Target mDownloadTarget = new Target() {
+        @Override
+        public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+            if (mDownloadDialog != null) mDownloadDialog.dismiss();
+
+            // 创建文件
+            File pictureFile = getOutputMediaFile();
+            if (pictureFile == null) {
+                String message = getString(R.string.error_no_storage_permission);
+                String debugMessage = message + " - " + mImageURL;
+                CommonUtils.showDialog(FullscreenPhotoViewerActivity.this, getString(R.string.error_title), debugMessage);
+                Log.e(TAG, debugMessage);
+                return;
+            }
+
+            // 压缩并写入到文件中
+            FileOutputStream fos;
+            try {
+                fos = new FileOutputStream(pictureFile);
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
+                fos.flush();
+                fos.close();
+                Toast.makeText(FullscreenPhotoViewerActivity.this, getString(R.string.success_download_image), Toast.LENGTH_LONG).show();
+            } catch (Exception e) {
+                String message = getString(R.string.error_storage_file_not_found);
+                String debugMessage = message + " - " + mImageURL;
+                CommonUtils.showDialog(FullscreenPhotoViewerActivity.this, getString(R.string.error_title), debugMessage);
+                Log.e(TAG, debugMessage, e);
+                return;
+            }
+
+            // 保存到图库
+            CommonUtils.updateGallery(FullscreenPhotoViewerActivity.this, pictureFile);
+        }
+
+        @Override
+        public void onBitmapFailed(Drawable errorDrawable) {
+            if (mDownloadDialog != null) mDownloadDialog.dismiss();
+
+            String message = getString(R.string.error_download_image);
+            String debugMessage = message + " - " + mImageURL;
+            CommonUtils.showDialog(FullscreenPhotoViewerActivity.this, getString(R.string.error_title), debugMessage);
+            Log.e(TAG, debugMessage);
+        }
+
+        @Override
+        public void onPrepareLoad(Drawable placeHolderDrawable) {
+            onBitmapFailed(placeHolderDrawable);
+        }
+    };
+
+    /**
+     * 创建文件用于存储图片
+     *
+     * @return 用于存储图片的文件实例
+     */
+    private File getOutputMediaFile() {
+        // To be safe, you should check that the SDCard is mounted
+        // using Environment.getExternalStorageState() before doing this.
+        File mediaStorageDir;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            mediaStorageDir = getExternalFilesDirs(null)[0];
+        } else {
+            mediaStorageDir = new File(Environment.getExternalStorageDirectory()
+                    + "/Android/data/"
+                    + getApplicationContext().getPackageName()
+                    + "/Files");
+        }
+
+
+        // Create the storage directory if it does not exist
+        if (!mediaStorageDir.exists()) {
+            if (!mediaStorageDir.mkdirs()) {
+                return null;
+            }
+        }
+
+        // Create a media file name
+        String timeStamp = new SimpleDateFormat("ddMMyyyy_HHmm").format(new Date());
+        File mediaFile;
+        String mImageName = "BU_" + timeStamp + ".jpg";
+        mediaFile = new File(mediaStorageDir.getPath() + File.separator + mImageName);
+        return mediaFile;
+    }
+
+    // 菜单
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        // super.onCreateContextMenu(menu, v, menuInfo);
+        if (v.equals(mImageView)) {
+            menu.add(0, 1, Menu.NONE, "保存图片");
+            menu.add(0, 2, Menu.NONE, "复制地址");
+            menu.add(0, 3, Menu.NONE, "取消");
+
+        }
+    }
+
+    ProgressDialog mDownloadDialog;
+
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        ClipboardManager clipboardManager = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
+        if (item.getGroupId() == 0) {
+            switch (item.getItemId()) {
+                case 1:
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                        if (ContextCompat.checkSelfPermission(FullscreenPhotoViewerActivity.this,
+                                Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                                != PackageManager.PERMISSION_GRANTED) {
+                            ActivityCompat.requestPermissions(FullscreenPhotoViewerActivity.this,
+                                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                                    PERMISSIONS_REQUEST_READ_CONTACTS);
+                        } else {
+                            mDownloadDialog = ProgressDialog.show(FullscreenPhotoViewerActivity.this, "",
+                                    getString(R.string.downloading_image), true);
+                            mDownloadDialog.show();
+                            Picasso.with(this).load(mImageURL).into(mDownloadTarget);
+                        }
+                    } else {
+                        mDownloadDialog = ProgressDialog.show(FullscreenPhotoViewerActivity.this, "",
+                                getString(R.string.downloading_image), true);
+                        mDownloadDialog.show();
+                        Picasso.with(this).load(mImageURL).into(mDownloadTarget);
+                    }
+
+                    break;
+                case 2:
+                    ClipData clipData = ClipData.newPlainText("Email", mImageURL);
+                    clipboardManager.setPrimaryClip(clipData);
+                    Toast.makeText(this, "复制成功", Toast.LENGTH_SHORT).show();
+                    break;
+                case 3:
+                    break;
+            }
+        }
+
+        return true;
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        switch (requestCode) {
+            case PERMISSIONS_REQUEST_READ_CONTACTS:
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    mDownloadDialog = ProgressDialog.show(FullscreenPhotoViewerActivity.this, "",
+                            getString(R.string.downloading_image), true);
+                    mDownloadDialog.show();
+                    Picasso.with(this).load(mImageURL).into(mDownloadTarget);
+                } else {
+                    Toast.makeText(this, getString(R.string.error_no_permission), Toast.LENGTH_LONG).show();
+                }
+        }
     }
 
     @Override
@@ -176,7 +381,6 @@ public class FullscreenPhotoViewerActivity extends Activity {
         if (actionBar != null) {
             actionBar.hide();
         }
-        mControlsView.setVisibility(View.GONE);
         mVisible = false;
 
         // Schedule a runnable to remove the status and navigation bar after a delay
@@ -186,8 +390,6 @@ public class FullscreenPhotoViewerActivity extends Activity {
 
     @SuppressLint("InlinedApi")
     private void show() {
-        mImageView.setVisibility(View.VISIBLE);
-
         // Show the system bar
         mContentView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
                 | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION);
