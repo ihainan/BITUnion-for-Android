@@ -21,9 +21,14 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.TextView;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import me.ihainan.bu.app.R;
 import me.ihainan.bu.app.ui.FullscreenPhotoViewerActivity;
+import me.ihainan.bu.app.ui.PostListActivity;
 import me.ihainan.bu.app.ui.ProfileActivity;
+import me.ihainan.bu.app.ui.ThreadListActivity;
 import me.ihainan.bu.app.utils.CommonUtils;
 import me.ihainan.bu.app.utils.Global;
 import me.ihainan.bu.app.utils.network.BUApi;
@@ -107,22 +112,58 @@ public class CustomSpan {
         public void onClick(View widget) {
             if (mUrl == null) return;
             else if (mUrl.startsWith(Global.IMAGE_URL_PREFIX)) {
+                // 图片
                 String newUrl = mUrl.substring(Global.IMAGE_URL_PREFIX.length());
                 Intent intent = new Intent(mContext, FullscreenPhotoViewerActivity.class);
                 intent.putExtra(FullscreenPhotoViewerActivity.IMAGE_URL_TAG, newUrl);
                 mContext.startActivity(intent);
-            } else if (mUrl.startsWith(BUApi.IN_SCHOOL_BASE_URL)
-                    || mUrl.startsWith(BUApi.OUT_SCHOOL_BASE_URL)
-                    || mUrl.startsWith("/profile-username-")) {
+                return;
+            } else if ((mUrl.startsWith(BUApi.IN_SCHOOL_BASE_URL)
+                    || mUrl.startsWith(BUApi.OUT_SCHOOL_BASE_URL))) {
                 String newUrl = mUrl.replace(BUApi.IN_SCHOOL_BASE_URL, "/").replace(BUApi.OUT_SCHOOL_BASE_URL, "/");
-                String userName = CommonUtils.decode(newUrl.substring("/profile-username-".length(), mUrl.length() - 5), "GBK");
-                Intent intent = new Intent(mContext, ProfileActivity.class);
-                intent.putExtra(ProfileActivity.USER_NAME_TAG, userName);
-                mContext.startActivity(intent);
-            } else {
-                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(mUrl));
-                mContext.startActivity(intent);
+                if (newUrl.startsWith("/profile-username-")) {
+                    // 个人信息
+                    String userName = CommonUtils.decode(newUrl.substring("/profile-username-".length(), mUrl.length() - 5), "GBK");
+                    Intent intent = new Intent(mContext, ProfileActivity.class);
+                    intent.putExtra(ProfileActivity.USER_NAME_TAG, userName);
+                    mContext.startActivity(intent);
+                    return;
+                } else if (newUrl.startsWith("/thread-")) {
+                    // 论坛帖子
+                    Pattern pattern = Pattern.compile("thread-(.*?)-");
+                    Matcher matcher = pattern.matcher(newUrl);
+                    Long tid = null;
+                    while (matcher.find()) {
+                        tid = Long.valueOf(matcher.group(1));
+                    }
+
+                    if (tid != null) {
+                        Intent intent = new Intent(mContext, PostListActivity.class);
+                        intent.putExtra(PostListActivity.THREAD_ID_TAG, tid);
+                        intent.putExtra(PostListActivity.THREAD_JUMP_FLOOR, 0);
+                        mContext.startActivity(intent);
+                        return;
+                    }
+                } else if (newUrl.startsWith("/forum-")) {
+                    // 论坛组
+                    Pattern pattern = Pattern.compile("forum-(.*?)-");
+                    Matcher matcher = pattern.matcher(newUrl);
+                    Long fid = null;
+                    while (matcher.find()) {
+                        fid = Long.valueOf(matcher.group(1));
+                    }
+
+                    if (fid != null) {
+                        Intent intent = new Intent(mContext, ThreadListActivity.class);
+                        intent.putExtra(ThreadListActivity.ACTION_TAG, "THREAD_LIST");
+                        intent.putExtra(ThreadListActivity.FORUM_FID_TAG, fid);
+                        mContext.startActivity(intent);
+                        return;
+                    }
+                }
             }
+
+            CommonUtils.openBrowser(mContext, mUrl);
         }
 
         @Override
@@ -134,7 +175,6 @@ public class CustomSpan {
             ds.setTypeface(Typeface.create(ds.getTypeface(), Typeface.BOLD));
         }
     }
-
 
     public static class LinkTouchMovementMethod extends LinkMovementMethod {
         private CustomLinkSpan mPressedSpan;

@@ -748,4 +748,15 @@ public class CommonUtils {
         values.put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg");
         context.getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
     }
+
+    /**
+     * 浏览器打开 URL
+     *
+     * @param context 上下文
+     * @param url     需要打开的 URL
+     */
+    public static void openBrowser(Context context, String url) {
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+        context.startActivity(intent);
+    }
 }

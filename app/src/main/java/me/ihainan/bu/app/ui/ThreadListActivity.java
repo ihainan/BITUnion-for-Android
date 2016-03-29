@@ -46,6 +46,7 @@ public class ThreadListActivity extends SwipeActivity {
     public final static String MAIN_FORUM_TAG = "MAIN_FORUM_TAG";
     public final static String SUB_FORUM_TAG = "SUB_FORUM_TAG";
     public final static String FORUM_NAME_TAG = "FORUM_NAME_TAG";
+    public final static String FORUM_FID_TAG = "FORUM_FID_TAG";
 
     private String mAction, mForumName;
     private ForumListGroup.SubForum mSubForum;
@@ -61,8 +62,28 @@ public class ThreadListActivity extends SwipeActivity {
         mMainForum = (ForumListGroup.ForumList) bundle.getSerializable(MAIN_FORUM_TAG);
         mSubForum = (ForumListGroup.SubForum) bundle.getSerializable(SUB_FORUM_TAG);
         mForumName = bundle.getString(FORUM_NAME_TAG);
+        mFid = bundle.getLong(FORUM_FID_TAG);
 
-        if (mMainForum == null && mForumName != null) {
+        if (mFid != null && mSubForum == null && mSubForum == null) {
+            for (ForumListGroup forumListGroup : Global.forumListGroupList) {
+                for (ForumListGroup.ForumList forumList : forumListGroup.getChildItemList()) {
+                    if (forumList.getForumId().equals(mFid)) {
+                        mMainForum = forumList;
+                        break;
+                    } else {
+                        for (ForumListGroup.SubForum subForum : forumList.getChildItemList()) {
+                            if (subForum.getSubForumId().equals(mFid)) {
+                                mMainForum = forumList;
+                                mSubForum = subForum;
+                                break;
+                            }
+                        }
+                    }
+                    if (mMainForum != null) break;
+                }
+                if (mMainForum != null) break;
+            }
+        } else if (mMainForum == null && mForumName != null) {
             for (ForumListGroup forumListGroup : Global.forumListGroupList) {
                 for (ForumListGroup.ForumList forumList : forumListGroup.getChildItemList()) {
                     if (forumList.getForumName().equals(mForumName)) {

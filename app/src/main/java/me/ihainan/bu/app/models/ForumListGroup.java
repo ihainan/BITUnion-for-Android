@@ -40,7 +40,7 @@ public class ForumListGroup {
     public static class ForumList implements Serializable {
         private String mForumName;
         private String mIcon;
-        private long mForumId;
+        private Long mForumId;
         private List<SubForum> mSubForumList;
 
         /**
@@ -52,7 +52,7 @@ public class ForumListGroup {
             return mForumName;
         }
 
-        public long getForumId() {
+        public Long getForumId() {
             return mForumId;
         }
 
@@ -90,7 +90,7 @@ public class ForumListGroup {
      */
     public static class SubForum implements Serializable {
         private String mForumName;
-        private long mSubForumId;
+        private Long mSubForumId;
 
         public SubForum(String forumName, long fid) {
             mForumName = forumName;
@@ -111,7 +111,7 @@ public class ForumListGroup {
          *
          * @return 子论坛 ID
          */
-        public long getSubForumId() {
+        public Long getSubForumId() {
             return mSubForumId;
         }
     }
