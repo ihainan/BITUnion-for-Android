@@ -14,6 +14,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -43,6 +45,8 @@ public class FavoriteListFragment extends Fragment {
     private RecyclerView mRecyclerView;
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private LinearLayoutManager mLayoutManager;
+    private RelativeLayout mErrorLayout;
+    private TextView mTvErrorMessage, mTvAction;
 
     // Data
     private boolean mIsLoading = false;
@@ -58,6 +62,13 @@ public class FavoriteListFragment extends Fragment {
 
             mRootView = inflater.inflate(R.layout.fragment_recyclerview, container, false);
 
+            // Error Layout
+            mErrorLayout = (RelativeLayout) mRootView.findViewById(R.id.error_layout);
+            mErrorLayout.setVisibility(View.GONE);
+            mTvErrorMessage = (TextView) mRootView.findViewById(R.id.error_message);
+            mTvAction = (TextView) mRootView.findViewById(R.id.action_text);
+            mTvAction.setVisibility(View.GONE);
+
             // Setup RecyclerView
             mRecyclerView = (RecyclerView) mRootView.findViewById(R.id.recycler_view);
             setupRecyclerView();
@@ -69,7 +80,6 @@ public class FavoriteListFragment extends Fragment {
 
         return mRootView;
     }
-
 
     private void setupRecyclerView() {
         mLayoutManager = new LinearLayoutManager(mContext);
@@ -148,6 +158,7 @@ public class FavoriteListFragment extends Fragment {
      * 更新列表数据
      */
     private void refreshData(final long from, final long to) {
+        mErrorLayout.setVisibility(View.GONE);
         ExtraApi.getFavoriteList(mContext, from, to,
                 new Response.Listener<JSONObject>() {
                     @Override
@@ -183,20 +194,17 @@ public class FavoriteListFragment extends Fragment {
                                     mIsLoading = false;
                                 }
                             } catch (Exception e) {
-                                Log.e(TAG, getString(R.string.error_parse_json) + "\n" + response, e);
+                                String message = getString(R.string.error_parse_json);
+                                String debugMessage = "TimelineFragment >> " + message + " - " + response;
+                                Log.e(TAG, debugMessage);
+                                CommonUtils.debugToast(mContext, debugMessage);
 
                                 if (mList.size() > 0) {
                                     mList.remove(mList.size() - 1);
                                     mAdapter.notifyItemRemoved(mList.size());
                                 }
 
-                                Snackbar.make(mRecyclerView, getString(R.string.error_parse_json),
-                                        Snackbar.LENGTH_INDEFINITE).setAction("RETRY", new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View v) {
-                                        loadMore(true);
-                                    }
-                                }).show();
+                                showErrorLayout(message);
                             }
                         } else {
                             Log.i(TAG, "refreshData >> " + getString(R.string.error_unknown_json) + "" + response);
@@ -206,7 +214,7 @@ public class FavoriteListFragment extends Fragment {
                                 mAdapter.notifyItemRemoved(mList.size());
                             }
 
-                            Snackbar.make(mRecyclerView, getString(R.string.error_unknown_json), Snackbar.LENGTH_LONG).show();
+                            showErrorLayout(getString(R.string.error_unknown_json));
                         }
                     }
                 }, new Response.ErrorListener() {
@@ -222,20 +230,27 @@ public class FavoriteListFragment extends Fragment {
 
                         mSwipeRefreshLayout.setRefreshing(false);
 
-
                         String message = getString(R.string.error_network);
-                        String debugMessage = "getFavoriteList >> " + message;
-
-                        Snackbar.make(mRecyclerView, message, Snackbar.LENGTH_LONG).setAction("RETRY", new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                loadMore(true);
-                            }
-                        }).show();
-
+                        String debugMessage = "FavoriteListFragment >> " + message;
                         CommonUtils.debugToast(mContext, debugMessage);
+                        showErrorLayout(message);
                         Log.e(TAG, debugMessage, error);
                     }
                 });
+    }
+
+    private void showErrorLayout(String message) {
+        mList.clear();
+        mAdapter.notifyDataSetChanged();
+        mErrorLayout.setVisibility(View.VISIBLE);
+        mTvErrorMessage.setText(message);
+        mTvAction.setVisibility(View.VISIBLE);
+        mTvAction.setText(getString(R.string.action_retry));
+        mTvAction.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                reloadData();
+            }
+        });
     }
 }

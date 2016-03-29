@@ -12,8 +12,8 @@
             android:id="@+id/post_item_background"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:scaleType="centerCrop"
-            android:background="@color/primary_dark"/>
+            android:background="@color/primary_dark"
+            android:scaleType="centerCrop" />
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -22,7 +22,7 @@
 
             <TextView
                 android:id="@+id/thread_item_title"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_alignParentBottom="true"
                 android:singleLine="true"
@@ -73,6 +73,7 @@
                 android:layout_marginBottom="10dp"
                 android:layout_marginLeft="10dp"
                 android:layout_marginTop="10dp"
+                android:src="@drawable/empty_avatar"
                 app:civ_border_color="@android:color/white"
                 app:civ_border_width="2dp" />
 

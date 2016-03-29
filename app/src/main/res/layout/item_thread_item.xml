@@ -55,6 +55,7 @@
             android:id="@+id/thread_item_avatar"
             android:layout_width="@dimen/avatar_size"
             android:layout_height="@dimen/avatar_size"
+            android:src="@drawable/empty_avatar"
             android:layout_alignParentRight="true"
             android:layout_marginBottom="10dp"
             android:layout_marginLeft="10dp"

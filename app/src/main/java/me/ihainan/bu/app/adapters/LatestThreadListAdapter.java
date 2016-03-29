@@ -265,7 +265,7 @@ public class LatestThreadListAdapter extends RecyclerView.Adapter<RecyclerView.V
 
         // 获取背景图片
         Post reply = (Post) Global.getCache(mContext).getAsObject(Global.CACHE_REPLY_CONTENT + "_" + latestThread.tid);
-        Picasso.with(mContext).load(R.drawable.background).into(holder.background);
+        // Picasso.with(mContext).load(R.drawable.background).into(holder.background);
         if (reply == null) {
             Log.i(TAG, "fillDefaultView >> 拉取回复数据");
             BUApi.getPostReplies(mContext, latestThread.tid, 0, 1, new Response.Listener<JSONObject>() {

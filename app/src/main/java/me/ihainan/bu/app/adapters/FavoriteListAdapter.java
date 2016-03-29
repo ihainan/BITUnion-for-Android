@@ -2,6 +2,7 @@ package me.ihainan.bu.app.adapters;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.view.LayoutInflater;
@@ -61,6 +62,7 @@ public class FavoriteListAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             viewHolder.username.setText(username);
             viewHolder.action.setText("发表的主题");
             viewHolder.title.setText(Html.fromHtml(HtmlUtil.formatHtml(favorite.subject)));
+            viewHolder.title.setTextAppearance(mContext, R.style.boldText);
             viewHolder.content.setVisibility(View.GONE);
             viewHolder.date.setText(CommonUtils.getRelativeTimeSpanString(CommonUtils.parseDateString(favorite.dt_created)));
 
@@ -71,6 +73,7 @@ public class FavoriteListAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                     intent.putExtra(PostListActivity.THREAD_ID_TAG, favorite.tid);
                     intent.putExtra(PostListActivity.THREAD_AUTHOR_NAME_TAG, favorite.author);
                     intent.putExtra(PostListActivity.THREAD_NAME_TAG, favorite.subject);
+                    intent.putExtra(PostListActivity.THREAD_JUMP_FLOOR, 0);
                     mContext.startActivity(intent);
                 }
             };

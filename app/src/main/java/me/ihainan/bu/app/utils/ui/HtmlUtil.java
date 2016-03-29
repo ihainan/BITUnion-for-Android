@@ -5,6 +5,7 @@ import android.util.Log;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import me.ihainan.bu.app.models.Post;
 import me.ihainan.bu.app.utils.CommonUtils;
 import me.ihainan.bu.app.utils.Global;
 
@@ -12,6 +13,12 @@ import me.ihainan.bu.app.utils.Global;
  * HTML Util
  */
 public class HtmlUtil {
+    public final static String[] REGEX_DEVICE_ARRAY = new String[]{"<a .*?>\\.\\.::发自(.*?)::\\.\\.</a>",
+            "<br><br>发送自 <a href='.*?' target='_blank'><b>(.*?) @BUApp</b></a>",
+            "<i>来自傲立独行的(.*?)客户端</i>",
+            "<br><br><i>发自联盟(.*?)客户端</i>",
+            "<a href='.*?>..::发自联盟(.*?)客户端::..</a>",
+            "<br><br>Sent from my (.+?)$"};
     public final static String TAG = HtmlUtil.class.getSimpleName();
 
     private String mBody;
@@ -248,16 +255,22 @@ public class HtmlUtil {
         return html;
     }
 
+    private static String removeDeviceInfo(String message) {
+        for (String regex : HtmlUtil.REGEX_DEVICE_ARRAY) {
+            Pattern pattern = Pattern.compile(regex);
+            Matcher matcher = pattern.matcher(message);
+            while (matcher.find()) {
+                message = message.replace(matcher.group(0), "");
+            }
+        }
+
+        return message;
+    }
+
     public static String getSummaryOfMessage(String html) {
-        // 删除 blockquote
+        html = removeDeviceInfo(html);
         html = html.replaceAll("<blockquote>.*?</blockquote>", "");
-
-        // 图片
         html = html.replaceAll("<img.*?>", "[图片]");
-
-        Log.d(TAG, "getSummaryOfMessage >> " + html);
-
-        // 获取原始文本
         html = html.replaceAll("(?s)<[^>]*>(\\s*<[^>]*>)*", " ");
 
         return html.trim();

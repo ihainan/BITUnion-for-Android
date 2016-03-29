@@ -10,7 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:layout_marginTop="9dp"
+        android:layout_marginTop="4dp"
         card_view:cardCornerRadius="1dp"
         card_view:cardElevation="5dp">
 
@@ -22,7 +22,6 @@
             android:paddingLeft="@dimen/activity_horizontal_margin"
             android:paddingRight="@dimen/activity_horizontal_margin"
             android:paddingTop="@dimen/activity_horizontal_margin">
-            >
 
             <RelativeLayout
                 android:id="@+id/thread_layout_head"
@@ -33,7 +32,7 @@
                     android:id="@+id/thread_author_avatar"
                     android:layout_width="@dimen/avatar_size"
                     android:layout_height="@dimen/avatar_size"
-                    android:src="@drawable/avatar"
+                    android:src="@drawable/empty_avatar"
                     app:civ_border_color="@android:color/white"
                     app:civ_border_width="2dp" />
 

@@ -14,13 +14,14 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -54,6 +55,8 @@ public class HomePageFragment extends Fragment {
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private View mRootView;
     private Toolbar mToolbar;
+    private RelativeLayout mErrorLayout;
+    private TextView mTvErrorMessage, mTvAction;
 
     // Data
     private List<LatestThread> mLatestThreads = new ArrayList<LatestThread>();
@@ -73,6 +76,13 @@ public class HomePageFragment extends Fragment {
             final ActionBar ab = ((AppCompatActivity) getActivity()).getSupportActionBar();
             ab.setHomeAsUpIndicator(R.drawable.ic_menu_white_24dp);
             ab.setDisplayHomeAsUpEnabled(true);
+
+            // Error Layout
+            mErrorLayout = (RelativeLayout) mRootView.findViewById(R.id.error_layout);
+            mErrorLayout.setVisibility(View.GONE);
+            mTvErrorMessage = (TextView) mRootView.findViewById(R.id.error_message);
+            mTvAction = (TextView) mRootView.findViewById(R.id.action_text);
+            mTvAction.setVisibility(View.GONE);
 
             // RecyclerView
             final LinearLayoutManager layoutManager = new LinearLayoutManager(mContext);
@@ -126,7 +136,6 @@ public class HomePageFragment extends Fragment {
         mSwipeRefreshLayout.post(new Runnable() {
             @Override
             public void run() {
-                mSwipeRefreshLayout.setRefreshing(true);
                 refreshData();
             }
         });
@@ -136,6 +145,11 @@ public class HomePageFragment extends Fragment {
      * 更新列表数据
      */
     private void refreshData() {
+        // 隐藏错误页，显示刷新界面
+        mErrorLayout.setVisibility(View.GONE);
+        mSwipeRefreshLayout.setRefreshing(true);
+
+        // 从接口拉取数据
         BUApi.getHomePage(mContext, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
@@ -154,7 +168,11 @@ public class HomePageFragment extends Fragment {
                             String debugMessage = message + " - " + response;
                             Log.w(TAG, debugMessage);
                             CommonUtils.debugToast(mContext, debugMessage);
-                            Snackbar.make(mRecyclerView, message, Snackbar.LENGTH_LONG).show();
+
+                            // Error
+                            showErrorLayout(message);
+
+                            // Snackbar.make(mRecyclerView, message, Snackbar.LENGTH_LONG).show();
                         } else {
                             mLatestThreads.clear();
                             mLatestThreads.addAll(newThreads);
@@ -165,12 +183,12 @@ public class HomePageFragment extends Fragment {
                         String debugMessage = message + " - " + response;
                         Log.w(TAG, debugMessage);
                         CommonUtils.debugToast(mContext, debugMessage);
-                        Snackbar.make(mRecyclerView, message, Snackbar.LENGTH_LONG).show();
+                        showErrorLayout(message);
                     }
                 } catch (Exception e) {
                     mSwipeRefreshLayout.setRefreshing(false);
-                    showSnackbar(getString(R.string.error_parse_json));
                     Log.e(TAG, getString(R.string.error_parse_json) + "\n" + response, e);
+                    showErrorLayout(getString(R.string.error_parse_json));
                 }
             }
         }, new Response.ErrorListener() {
@@ -182,26 +200,25 @@ public class HomePageFragment extends Fragment {
                 String message = getString(R.string.error_network);
                 String debugMessage = "getHomePage >> " + message;
                 CommonUtils.debugToast(mContext, debugMessage);
-                showSnackbar(message);
+                showErrorLayout(message);
                 Log.e(TAG, debugMessage, error);
             }
         });
     }
 
-    private void showSnackbar(String showMessage) {
-        Snackbar.make(mRecyclerView, showMessage, Snackbar.LENGTH_LONG)
-                .setAction("Retry", new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        mSwipeRefreshLayout.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                mSwipeRefreshLayout.setRefreshing(true);
-                                refreshData();
-                            }
-                        });
-                    }
-                }).show();
+    private void showErrorLayout(String message) {
+        mLatestThreads.clear();
+        mAdapter.notifyDataSetChanged();
+        mErrorLayout.setVisibility(View.VISIBLE);
+        mTvErrorMessage.setText(message);
+        mTvAction.setVisibility(View.VISIBLE);
+        mTvAction.setText(getString(R.string.action_retry));
+        mTvAction.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                refreshData();
+            }
+        });
     }
 
     /* 菜单 */

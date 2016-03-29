@@ -71,7 +71,7 @@ public class RequestQueueManager {
     public <T> void addToRequestQueue(Request<T> req, String tag) {
         try {
             req.setRetryPolicy(new DefaultRetryPolicy(
-                    1000 * 10,
+                    1000 * 5,
                     DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
                     DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
             Log.d(TAG, "addToRequestQueue >> Making Request " + req.getUrl() + " With parameters " + new String(req.getBody()));

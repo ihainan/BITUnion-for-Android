@@ -9,6 +9,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.squareup.picasso.Picasso;
+
 import java.util.List;
 
 import me.ihainan.bu.app.R;
@@ -73,8 +75,14 @@ public class TimelineAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             final TimelineEvent event = mList.get(position);
             final TimelineViewHolder viewHolder = (TimelineViewHolder) holder;
 
+            // 占位头像
+            Picasso.with(mContext).load(R.drawable.empty_avatar)
+                    .into(viewHolder.avatar);
+
+            // 公共部分
             String username = null;
             viewHolder.content.setVisibility(View.VISIBLE);
+            viewHolder.title.setTextAppearance(mContext, R.style.boldText);
 
             try {
                 if (event.type == 1) {
@@ -127,6 +135,7 @@ public class TimelineAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                             intent.putExtra(PostListActivity.THREAD_ID_TAG, favorite.tid);
                             intent.putExtra(PostListActivity.THREAD_AUTHOR_NAME_TAG, favorite.author);
                             intent.putExtra(PostListActivity.THREAD_NAME_TAG, favorite.subject);
+                            intent.putExtra(PostListActivity.THREAD_JUMP_FLOOR, 0);
                             mContext.startActivity(intent);
                         }
                     };

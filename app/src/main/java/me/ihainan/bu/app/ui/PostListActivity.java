@@ -20,6 +20,8 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.Response;
@@ -59,6 +61,8 @@ public class PostListActivity extends SwipeActivity {
     private FloatingActionButton mNewPostFAB;
     private SmartTabLayout mTabLayout;
     private Toolbar mToolbar;
+    private RelativeLayout mErrorLayout;
+    private TextView mTvErrorMessage, mTvAction;
 
     // Data
     private Long mTid, mReplyCount;
@@ -87,6 +91,13 @@ public class PostListActivity extends SwipeActivity {
             }
         });
 
+        // Error Layout
+        mErrorLayout = (RelativeLayout) findViewById(R.id.error_layout);
+        mErrorLayout.setVisibility(View.GONE);
+        mTvErrorMessage = (TextView) findViewById(R.id.error_message);
+        mTvAction = (TextView) findViewById(R.id.action_text);
+        mTvAction.setVisibility(View.GONE);
+
         // FAB
         mNewPostFAB = (FloatingActionButton) findViewById(R.id.fab);
         mNewPostFAB.setVisibility(View.INVISIBLE);
@@ -107,18 +118,19 @@ public class PostListActivity extends SwipeActivity {
         mPager = (ViewPager) findViewById(R.id.pager);
         mPager.setOffscreenPageLimit(0);
 
-        if (mThreadName != null) {
-            setTitle(Html.fromHtml(CommonUtils.decode(mThreadName)));
-        } else {
-            setTitle("Loading...");
-        }
+        // Start fetch data and fill views
+        startWork();
+
+        // Swipe
+        setSwipeAnyWhere(false);
+    }
+
+    private void startWork() {
+        setTitle(mThreadName != null ? Html.fromHtml(CommonUtils.decode(mThreadName)) : "Loading...");
 
         if (mReplyCount == null || mReplyCount == 0 || mThreadName == null || mAuthorName == null)
             getBasicData();
         else fillViews();
-
-        // Swipe
-        setSwipeAnyWhere(false);
     }
 
     @Override
@@ -164,6 +176,7 @@ public class PostListActivity extends SwipeActivity {
      * Get basic data, including thread name, author name, replies count, etc.
      */
     private void getBasicData() {
+        mErrorLayout.setVisibility(View.GONE);
         BUApi.getPostReplies(this, mTid, 0, 1, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
@@ -183,25 +196,31 @@ public class PostListActivity extends SwipeActivity {
                             mAuthorName = firstReply.author;
                             fillViews();
                         }
+                    } else if (response.getString("msg").equals(BUApi.FORUM_NO_PERMISSION_MSG)) {
+                        String message = getString(R.string.error_forum_no_permission);
+                        String debugMessage = message + " - " + response;
+                        Log.w(TAG, debugMessage);
+                        CommonUtils.debugToast(PostListActivity.this, debugMessage);
+                        showErrorLayout(message);
                     } else if (BUApi.THREAD_NO_PERMISSION_MSG.equals(response.getString("msg"))) {
                         String message = getString(R.string.error_thread_permission_need);
                         String debugMessage = message + " - " + response;
                         Log.w(TAG, debugMessage);
                         CommonUtils.debugToast(PostListActivity.this, debugMessage);
-                        Snackbar.make(mPager, message, Snackbar.LENGTH_LONG).show();
+                        showErrorLayout(message);
                     } else {
                         String message = getString(R.string.error_unknown_msg) + ": " + response.getString("msg");
                         String debugMessage = message + " - " + response;
                         Log.w(TAG, debugMessage);
                         CommonUtils.debugToast(PostListActivity.this, debugMessage);
-                        Snackbar.make(mPager, message, Snackbar.LENGTH_LONG).show();
+                        showErrorLayout(message);
                     }
                 } catch (Exception e) {
                     String message = getString(R.string.error_parse_json);
                     String debugMessage = message + " - " + response;
                     Log.e(TAG, debugMessage, e);
                     CommonUtils.debugToast(PostListActivity.this, debugMessage);
-                    Snackbar.make(mPager, message, Snackbar.LENGTH_LONG).show();
+                    showErrorLayout(message);
                 }
             }
         }, new Response.ErrorListener() {
@@ -212,6 +231,20 @@ public class PostListActivity extends SwipeActivity {
                 String debugMessage = " getPostReplies >> " + message;
                 Log.e(TAG, debugMessage, error);
                 CommonUtils.debugToast(PostListActivity.this, debugMessage);
+                showErrorLayout(message);
+            }
+        });
+    }
+
+    private void showErrorLayout(String message) {
+        mErrorLayout.setVisibility(View.VISIBLE);
+        mTvErrorMessage.setText(message);
+        mTvAction.setVisibility(View.VISIBLE);
+        mTvAction.setText(getString(R.string.action_retry));
+        mTvAction.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startWork();
             }
         });
     }

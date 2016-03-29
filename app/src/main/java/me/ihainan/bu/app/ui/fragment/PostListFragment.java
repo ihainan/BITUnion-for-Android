@@ -13,6 +13,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -52,6 +54,8 @@ public class PostListFragment extends Fragment {
     private RecyclerView mRecyclerView;
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private LinearLayoutManager mLayoutManager;
+    private RelativeLayout mErrorLayout;
+    private TextView mTvErrorMessage, mTvAction;
 
     // Data
     private Long mTid, mReplyCount;
@@ -75,6 +79,13 @@ public class PostListFragment extends Fragment {
             mReplyCount = getArguments().getLong(PostListActivity.THREAD_REPLY_COUNT_TAG);
             mPagePosition = getArguments().getInt(PAGE_POSITION_TAG);
             mPageIndex = getArguments().getInt(PAGE_INDEX_TAG);
+
+            // Error Layout
+            mErrorLayout = (RelativeLayout) mRootView.findViewById(R.id.error_layout);
+            mErrorLayout.setVisibility(View.GONE);
+            mTvErrorMessage = (TextView) mRootView.findViewById(R.id.error_message);
+            mTvAction = (TextView) mRootView.findViewById(R.id.action_text);
+            mTvAction.setVisibility(View.GONE);
 
             // Setup RecyclerView
             mRecyclerView = (RecyclerView) mRootView.findViewById(R.id.recycler_view);
@@ -100,7 +111,6 @@ public class PostListFragment extends Fragment {
 
     @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
-        // if (!isSetToolbar) isSetToolbar = true;
         super.setUserVisibleHint(isVisibleToUser);
         if (isVisibleToUser && mContext != null && mRecyclerView != null) {
             getActivity().findViewById(R.id.toolbar).setOnClickListener(new View.OnClickListener() {
@@ -110,7 +120,6 @@ public class PostListFragment extends Fragment {
                 }
             });
         }
-
     }
 
     @Override
@@ -151,6 +160,20 @@ public class PostListFragment extends Fragment {
         });
     }
 
+    private void showErrorLayout(String message) {
+        mList.clear();
+        mAdapter.notifyDataSetChanged();
+        mErrorLayout.setVisibility(View.VISIBLE);
+        mTvErrorMessage.setText(message);
+        mTvAction.setVisibility(View.VISIBLE);
+        mTvAction.setText(getString(R.string.action_retry));
+        mTvAction.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                reloadData();
+            }
+        });
+    }
 
     /**
      * 重新拉取数据
@@ -165,6 +188,8 @@ public class PostListFragment extends Fragment {
      * 更新列表数据
      */
     private void refreshData(final long from, final long to) {
+        mErrorLayout.setVisibility(View.GONE);
+
         BUApi.getPostReplies(mContext, mTid, from, to,
                 new Response.Listener<JSONObject>() {
                     @Override
@@ -201,23 +226,33 @@ public class PostListFragment extends Fragment {
                                     shouldJump = false;
                                     mLayoutManager.scrollToPositionWithOffset(mPageIndex, 0);
                                 }
+                            } else if (response.getString("msg").equals(BUApi.FORUM_NO_PERMISSION_MSG)) {
+                                String message = getString(R.string.error_forum_no_permission) + ": " + response.getString("msg");
+                                String debugMessage = message + " - " + response;
+                                Log.w(TAG, debugMessage);
+                                CommonUtils.debugToast(mContext, debugMessage);
+                                // Snackbar.make(mRecyclerView, message, Snackbar.LENGTH_LONG).show();
+                                showErrorLayout(message);
                             } else {
                                 String message = getString(R.string.error_unknown_msg) + ": " + response.getString("msg");
                                 String debugMessage = message + " - " + response;
                                 Log.w(TAG, debugMessage);
                                 CommonUtils.debugToast(mContext, debugMessage);
-                                Snackbar.make(mRecyclerView, message, Snackbar.LENGTH_LONG).show();
+                                // Snackbar.make(mRecyclerView, message, Snackbar.LENGTH_LONG).show();
+                                showErrorLayout(message);
                             }
                         } catch (Exception e) {
                             Log.e(TAG, getString(R.string.error_parse_json) + "\n" + response, e);
+                            showErrorLayout(getString(R.string.error_parse_json));
 
+                            /*
                             Snackbar.make(mRecyclerView, getString(R.string.error_parse_json),
                                     Snackbar.LENGTH_LONG).setAction("RETRY", new View.OnClickListener() {
                                 @Override
                                 public void onClick(View v) {
                                     reloadData();
                                 }
-                            }).show();
+                            }).show(); */
                         }
                     }
                 }, new Response.ErrorListener() {
@@ -230,12 +265,14 @@ public class PostListFragment extends Fragment {
                         String debugMessage = "getPostReplies >> " + message;
                         CommonUtils.debugToast(mContext, debugMessage);
 
+                        showErrorLayout(message);
+                        /*
                         Snackbar.make(mRecyclerView, message, Snackbar.LENGTH_LONG).setAction("RETRY", new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
                                 reloadData();
                             }
-                        }).show();
+                        }).show(); */
 
                         Log.e(TAG, debugMessage, error);
                     }
@@ -243,16 +280,9 @@ public class PostListFragment extends Fragment {
     }
 
     private void getDeviceName(Post reply) {
-        // Log.d(TAG, "getDeviceName >> " + reply.message);
-        String[] regexStrArray = new String[]{"<a .*?>\\.\\.::发自(.*?)::\\.\\.</a>",
-                "<br><br>发送自 <a href='.*?' target='_blank'><b>(.*?) @BUApp</b></a>",
-                "<i>来自傲立独行的(.*?)客户端</i>",
-                "<br><br><i>发自联盟(.*?)客户端</i>",
-                "<a href='.*?>..::发自联盟(.*?)客户端::..</a>",
-                "<br><br>Sent from my (.+?)$"};
         if (reply.message.contains("客户端") || reply.message.contains("发自"))
             Log.d(TAG, "getDeviceName >> " + reply.message);
-        for (String regex : regexStrArray) {
+        for (String regex : HtmlUtil.REGEX_DEVICE_ARRAY) {
             Pattern pattern = Pattern.compile(regex);
             Matcher matcher = pattern.matcher(reply.message);
             while (matcher.find()) {

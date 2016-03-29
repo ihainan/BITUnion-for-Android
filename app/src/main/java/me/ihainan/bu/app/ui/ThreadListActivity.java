@@ -11,6 +11,8 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -40,6 +42,8 @@ public class ThreadListActivity extends SwipeActivity {
     // UI references
     private RecyclerView mRecyclerView;
     private SwipeRefreshLayout mSwipeRefreshLayout;
+    private RelativeLayout mErrorLayout;
+    private TextView mTvErrorMessage, mTvAction;
 
     // Bundle tags
     public final static String ACTION_TAG = "ACTION_TAG";
@@ -128,6 +132,13 @@ public class ThreadListActivity extends SwipeActivity {
                 finish();
             }
         });
+
+        // Error Layout
+        mErrorLayout = (RelativeLayout) findViewById(R.id.error_layout);
+        mErrorLayout.setVisibility(View.GONE);
+        mTvErrorMessage = (TextView) findViewById(R.id.error_message);
+        mTvAction = (TextView) findViewById(R.id.action_text);
+        mTvAction.setVisibility(View.GONE);
 
         // Get Extra information from intent
         getExtra();
@@ -223,19 +234,24 @@ public class ThreadListActivity extends SwipeActivity {
             @Override
             public void onRefresh() {
                 // 重新加载
-                mThreadList.clear();
-                mCurrentPosition = 0;
-                refreshData(0, Global.LOADING_COUNT);
+                reloadData();
             }
         });
 
         mSwipeRefreshLayout.post(new Runnable() {
             @Override
             public void run() {
-                mSwipeRefreshLayout.setRefreshing(true);
-                refreshData(mCurrentPosition, Global.LOADING_COUNT);
+                reloadData();
             }
         });
+    }
+
+    private void reloadData() {
+        mSwipeRefreshLayout.setRefreshing(true);
+        mThreadList.clear();
+        mAdapter.notifyDataSetChanged();
+        mCurrentPosition = 0;
+        refreshData(0, Global.LOADING_COUNT);
     }
 
     private List<Thread> mThreadList = new ArrayList<>();
@@ -245,6 +261,7 @@ public class ThreadListActivity extends SwipeActivity {
      * 更新列表数据
      */
     private void refreshData(final int from, int to) {
+        mErrorLayout.setVisibility(View.GONE);
         BUApi.getForumThreads(this, mFid, from, to,
                 new Response.Listener<JSONObject>() {
                     @Override
@@ -278,15 +295,16 @@ public class ThreadListActivity extends SwipeActivity {
                                 String debugMessage = message + " - " + response;
                                 Log.w(TAG, debugMessage);
                                 CommonUtils.debugToast(ThreadListActivity.this, debugMessage);
-                                Snackbar.make(mRecyclerView, message, Snackbar.LENGTH_LONG).show();
+                                showErrorLayout(message);
                             } else {
                                 String message = getString(R.string.error_unknown_msg) + ": " + response.getString("msg");
                                 String debugMessage = message + " - " + response;
                                 Log.w(TAG, debugMessage);
                                 CommonUtils.debugToast(ThreadListActivity.this, debugMessage);
-                                Snackbar.make(mRecyclerView, message, Snackbar.LENGTH_LONG).show();
+                                showErrorLayout(message);
                             }
                         } catch (Exception e) {
+                            // TODO: 判断返回信息
                             // 解析失败的话，说明到头了，移除标志，不允许再次更新（mIsLoading 始终为 true）
                             if (mThreadList.size() > 0) {
                                 Log.d(TAG, "refreshData >> 到头了 " + response);
@@ -317,11 +335,10 @@ public class ThreadListActivity extends SwipeActivity {
                             mAdapter.notifyItemRemoved(mThreadList.size());
                         }
 
-
                         String message = getString(R.string.error_network);
                         String debugMessage = "getForumThreads >> " + message;
                         CommonUtils.debugToast(ThreadListActivity.this, debugMessage);
-                        showSnackbar(message);
+                        showErrorLayout(message);
                         Log.e(TAG, debugMessage, error);
                     }
                 });
@@ -345,19 +362,16 @@ public class ThreadListActivity extends SwipeActivity {
             MobclickAgent.onPause(this);
     }
 
-    private void showSnackbar(String showMessage) {
-        Snackbar.make(mRecyclerView, showMessage, Snackbar.LENGTH_LONG)
-                .setAction("Retry", new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        mSwipeRefreshLayout.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                mSwipeRefreshLayout.setRefreshing(true);
-                                refreshData(mCurrentPosition, Global.LOADING_COUNT);
-                            }
-                        });
-                    }
-                }).show();
+    private void showErrorLayout(String message) {
+        mErrorLayout.setVisibility(View.VISIBLE);
+        mTvErrorMessage.setText(message);
+        mTvAction.setVisibility(View.VISIBLE);
+        mTvAction.setText(getString(R.string.action_retry));
+        mTvAction.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                reloadData();
+            }
+        });
     }
 }

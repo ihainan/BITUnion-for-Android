@@ -45,7 +45,7 @@
                             android:id="@+id/profile_image"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
-                            android:src="@drawable/logo"
+                            android:src="@drawable/empty_avatar"
                             app:civ_border_color="@android:color/white"
                             app:civ_border_width="2dp" />
 

@@ -12,10 +12,10 @@
         android:theme="@style/AppTheme.AppBarOverlay">
 
         <include layout="@layout/toolbar" />
-        
+
     </android.support.design.widget.AppBarLayout>
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_margin="3dp"
@@ -32,6 +32,7 @@
             android:groupIndicator="@null"
             android:scrollbars="none" />
 
-    </LinearLayout>
+        <include layout="@layout/layout_error_message" />
+    </RelativeLayout>
 
 </LinearLayout>

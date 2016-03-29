@@ -36,6 +36,7 @@ public class BUApi {
     // Constants
     public final static String LOGGED_MSG = "IP+logged";
     public final static String THREAD_NO_PERMISSION_MSG = "thread_nopermission";
+    public final static String FORUM_NO_PERMISSION_MSG = "forum_nopermission";
 
     // END POINT
     public final static String IN_SCHOOL_BASE_URL = "http://www.bitunion.org/";
@@ -460,7 +461,7 @@ public class BUApi {
 
         // Build MultipartRequest
         MultipartRequest multipartRequest = new MultipartRequest(url, null, mimeType, multipartBody, listener, errorListener);
-        int timeout = fileData != null ? 1000 * 200 : 1000 * 10;
+        int timeout = fileData != null ? 1000 * 60 : 1000 * 10;
         multipartRequest.setRetryPolicy(new DefaultRetryPolicy(timeout,
                 DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
                 DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
