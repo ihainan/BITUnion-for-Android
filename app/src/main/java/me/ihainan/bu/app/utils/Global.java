@@ -53,9 +53,7 @@ public class Global extends Application {
     }
 
     /* 系统配置相关*/
-    public final static String UPDATE_JSON_URL = "http://vps.ihainan.me/bu/update.json";
     public final static int MAX_USER_NAME_LENGTH = 15;  // 列表用户名最长显示的长度
-    public final static String DNS_SERVER = "10.0.0.9";
     public final static int HOT_TOPIC_THREAD = 30; // 热门帖子阈值
     public final static int LOADING_COUNT = 10; // 一次最多 Loading 的帖子数目
     public final static int LOADING_POSTS_COUNT = 10; // 一次最多 Loading 的回复数目
@@ -149,7 +147,7 @@ public class Global extends Application {
     public static List<ForumListGroup> forumListGroupList;
 
     public static void makeForumGroupList(Context context) {
-        forumListGroupList = new ArrayList<ForumListGroup>();
+        forumListGroupList = new ArrayList<>();
 
         // 系统管理区
         List<ForumListGroup.ForumList> forumLists = new ArrayList<>();
@@ -336,9 +334,5 @@ public class Global extends Application {
             built.setLoggingEnabled(true);
         }
         Picasso.setSingletonInstance(built);
-
-        // 论坛列表
-        // TODO: 从服务器获取
-        // makeForumGroupList(getApplicationContext());
     }
 }

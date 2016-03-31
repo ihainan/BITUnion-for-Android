@@ -2,16 +2,9 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-        android:id="@+id/change_order"
-        android:icon="@drawable/ic_low_priority_white_24dp"
-        android:orderInCategory="80"
-        android:title="menu_change_order"
-        app:showAsAction="ifRoom" />
-
-    <item
         android:id="@+id/action_favor"
         android:icon="@drawable/ic_favorite_border_white_24dp"
         android:orderInCategory="80"
-        android:title="添加收藏"
+        android:title="@string/action_follow"
         app:showAsAction="ifRoom" />
 </menu>

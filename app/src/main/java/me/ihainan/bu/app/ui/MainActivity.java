@@ -6,7 +6,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -173,9 +172,9 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 mDrawerLayout.closeDrawers();
                 AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-                builder.setTitle("提醒")
-                        .setMessage("确定注销帐号？")
-                        .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                builder.setTitle("")
+                        .setMessage(getString(R.string.logout_info))
+                        .setPositiveButton(getString(R.string.button_confirm), new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 Global.password = null;
@@ -184,7 +183,7 @@ public class MainActivity extends AppCompatActivity {
                                 startActivity(intent);
                                 finish();
                             }
-                        }).setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                        }).setNegativeButton(getString(R.string.button_cancel), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.dismiss();
@@ -228,9 +227,9 @@ public class MainActivity extends AppCompatActivity {
                                 Intent feedbackIntent = new Intent(Intent.ACTION_SEND);
                                 feedbackIntent.setType("message/rfc822");
                                 feedbackIntent.putExtra(Intent.EXTRA_EMAIL, new String[]{"ihainan72@gmail.com"});
-                                feedbackIntent.putExtra(Intent.EXTRA_SUBJECT, "联盟客户端意见反馈 - 问题概述");
+                                feedbackIntent.putExtra(Intent.EXTRA_SUBJECT, "联盟安卓客户端意见反馈");
                                 feedbackIntent.putExtra(Intent.EXTRA_TEXT, "\n---\n当前版本：" + BuildConfig.VERSION_NAME);
-                                startActivity(Intent.createChooser(feedbackIntent, "Send mail..."));
+                                startActivity(Intent.createChooser(feedbackIntent, "发送邮件..."));
                                 break;
                         }
 
@@ -260,7 +259,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         this.doubleBackToExitPressedOnce = true;
-        Toast.makeText(this, "再次按下返回退出应用", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, getString(R.string.press_back_to_exit), Toast.LENGTH_SHORT).show();
 
         new Handler().postDelayed(new Runnable() {
 

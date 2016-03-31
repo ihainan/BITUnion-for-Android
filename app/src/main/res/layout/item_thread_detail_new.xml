@@ -147,19 +147,6 @@
                     android:layout_centerVertical="true"
                     android:padding="0dp"
                     android:src="@drawable/ic_reply_black_24dp" />
-
-                <ToggleButton
-                    android:id="@+id/btn_favor"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:layout_centerVertical="true"
-                    android:layout_marginRight="15dp"
-                    android:layout_toLeftOf="@id/btn_repost"
-                    android:background="@drawable/toggle_selector"
-                    android:padding="0dp"
-                    android:textOff=""
-                    android:textOn=""
-                    android:visibility="invisible" />
             </RelativeLayout>
         </RelativeLayout>
     </android.support.v7.widget.CardView>

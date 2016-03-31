@@ -51,7 +51,7 @@ public class ForumFragment extends Fragment {
             mExpandableListView.setAdapter(adapter);
             mExpandableListView.setDivider(null);
 
-            mExpandableListView.expandGroup(4);
+            // mExpandableListView.expandGroup(4);
         }
 
         return mRootView;

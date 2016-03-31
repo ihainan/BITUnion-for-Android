@@ -6,7 +6,6 @@ import android.app.Fragment;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.design.widget.Snackbar;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -187,6 +186,8 @@ public class FavoriteListFragment extends Fragment {
                                     mList.addAll(newFavorites);
                                     mAdapter.notifyDataSetChanged();
                                     Global.hasUpdateFavor = false;
+                                } else if (newFavorites.size() == 0) {
+                                    showErrorLayout(getString(R.string.error_no_favorites), getString(R.string.action_refresh));
                                 }
 
                                 // 判断是否到头
@@ -240,6 +241,15 @@ public class FavoriteListFragment extends Fragment {
     }
 
     private void showErrorLayout(String message) {
+        showErrorLayout(message, getString(R.string.action_retry));
+    }
+
+    private void showErrorLayout(String message, String actionStr) {
+        if (actionStr == null) mTvAction.setVisibility(View.GONE);
+        else {
+            mTvAction.setText(actionStr);
+            mTvAction.setVisibility(View.VISIBLE);
+        }
         mList.clear();
         mAdapter.notifyDataSetChanged();
         mErrorLayout.setVisibility(View.VISIBLE);

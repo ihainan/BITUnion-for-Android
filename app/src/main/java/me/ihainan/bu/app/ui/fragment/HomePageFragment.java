@@ -224,7 +224,7 @@ public class HomePageFragment extends Fragment {
     /* 菜单 */
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.home_menu, menu);
+        // inflater.inflate(R.menu.home_menu, menu);
         super.onCreateOptionsMenu(menu, inflater);
     }
 

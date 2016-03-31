@@ -196,6 +196,8 @@ public class TimelineFragment extends Fragment {
                         mCurrentPosition += Global.LOADING_TIMELINE_COUNT;
                         mList.addAll(newEventsFiltered);
                         mAdapter.notifyDataSetChanged();
+                    } else if (newEventsFiltered.size() == 0) {
+                        showErrorLayout(getString(R.string.error_no_new_events), getString(R.string.action_refresh));
                     }
 
                     // 判断是否到头
@@ -265,12 +267,20 @@ public class TimelineFragment extends Fragment {
     }
 
     private void showErrorLayout(String message) {
+        showErrorLayout(message, getString(R.string.action_retry));
+    }
+
+    private void showErrorLayout(String message, String actionStr) {
+        if (actionStr == null) mTvAction.setVisibility(View.GONE);
+        else {
+            mTvAction.setText(actionStr);
+            mTvAction.setVisibility(View.VISIBLE);
+        }
         mList.clear();
         mAdapter.notifyDataSetChanged();
         mErrorLayout.setVisibility(View.VISIBLE);
         mTvErrorMessage.setText(message);
         mTvAction.setVisibility(View.VISIBLE);
-        mTvAction.setText(getString(R.string.action_retry));
         mTvAction.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

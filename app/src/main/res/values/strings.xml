@@ -1,28 +1,18 @@
 <resources>
     <string name="app_name">BITUnion</string>
 
-    <!-- Navigation Drawable -->
-    <string name="action_settings">设置</string>
-    <string name="action_home">首页</string>
-    <string name="action_forum">论坛</string>
-    <string name="action_discover">发现</string>
-    <string name="action_focus">关注</string>
-    <string name="action_topic">热点话题</string>
-    <string name="action_feedback">意见反馈</string>
-    <string name="action_about">关于</string>
-    <string name="title_activity_main">@string/action_home</string>
-    <string name="title_activity_login">登录</string>
+    <!-- Common -->
+    <string name="button_confirm">确定</string>
+    <string name="button_cancel">取消</string>
+    <string name="press_back_to_exit">再次按下返回键退出应用</string>
 
     <!-- Strings related to login -->
     <string name="prompt_username">用户名</string>
     <string name="prompt_password">密码</string>
     <string name="action_sign_in_short">登录</string>
     <string name="login_page_title">北理 FTP 联盟</string>
-    <string name="error_incorrect_password">This password is incorrect</string>
-    <string name="permission_rationale">"Contacts permissions are needed for providing email completions."</string>
     <string name="access_from_out_school">外网访问</string>
-    <string name="auto_connect">自动重连</string>
-
+    <string name="logout_info">确定登出系统？</string>
 
     <!-- Error message -->
     <string name="error_title">错误</string>
@@ -46,7 +36,6 @@
     <string name="error_reach_bottom">底部所有帖子已经加载完毕啦</string>
     <string name="error_reach_top">顶部所有帖子已经加载完毕啦</string>
     <string name="error_unknown_json">服务器返回了未知格式的数据</string>
-    <string name="title_activity_settings">Settings</string>
     <string name="error_not_implement">然而程序猴子还没有开发此功能</string>
     <string name="warning_not_new_data">然而并没有任何更新</string>
     <string name="error_no_storage_permission">无法读取外部存储，请检查是否具备相应的权限</string>
@@ -54,88 +43,43 @@
     <string name="error_storage_file_to_media">存储到图库失败</string>
     <string name="error_download_image">下载图片失败，请检查网络</string>
     <string name="error_no_permission">没有文件写入权限，保存图片失败</string>
-    <string name="action_retry">重试</string>
-
-
+    <string name="error_no_new_events">哎呀并没有动态</string>
+    <string name="error_no_favorites">哎呀并没有收藏</string>
 
     <!-- File Download -->
     <string name="success_download_image">保存图片成功</string>
     <string name="downloading_image">正在下载并保存图片</string>
 
-    <!-- Menu -->
-    <string name="menu_change_order">排序</string>
+    <!-- Actions -->
+    <string name="action_settings">设置</string>
+    <string name="action_home">首页</string>
+    <string name="action_forum">论坛</string>
+    <string name="action_discover">发现</string>
+    <string name="action_focus">关注</string>
+    <string name="action_topic">热点话题</string>
+    <string name="action_feedback">意见反馈</string>
+    <string name="action_about">关于</string>
+    <string name="action_retry">重试</string>
+    <string name="action_refresh">刷新</string>
+    <string name="action_send">提交</string>
+    <string name="action_follow">关注</string>
+    <string name="action_favorite">收藏</string>
+    <string name="action_jump">跳转</string>
+    <string name="action_jump_to_head">跳到首页</string>
+    <string name="action_jump_to_end">跳到末页面</string>
 
-    <!-- Example General settings -->
-    <string name="pref_header_general">General</string>
-
-    <string name="pref_title_social_recommendations">Enable social recommendations</string>
-    <string name="pref_description_social_recommendations">Recommendations for people to contact
-        based on your message history
-    </string>
-
-    <string name="pref_title_display_name">Display name</string>
-    <string name="pref_default_display_name">John Smith</string>
-
-    <string name="pref_title_add_friends_to_messages">Add friends to messages</string>
-    <string-array name="pref_example_list_titles">
-        <item>Always</item>
-        <item>When possible</item>
-        <item>Never</item>
-    </string-array>
-    <string-array name="pref_example_list_values">
-        <item>1</item>
-        <item>0</item>
-        <item>-1</item>
-    </string-array>
-
-    <!-- Example settings for Data & Sync -->
-    <string name="pref_header_data_sync">Data &amp; sync</string>
-
-    <string name="pref_title_sync_frequency">Sync frequency</string>
-    <string-array name="pref_sync_frequency_titles">
-        <item>15 minutes</item>
-        <item>30 minutes</item>
-        <item>1 hour</item>
-        <item>3 hours</item>
-        <item>6 hours</item>
-        <item>Never</item>
-    </string-array>
-    <string-array name="pref_sync_frequency_values">
-        <item>15</item>
-        <item>30</item>
-        <item>60</item>
-        <item>180</item>
-        <item>360</item>
-        <item>-1</item>
-    </string-array>
-
-    <string name="pref_title_system_sync_settings">System sync settings</string>
-
-    <!-- Example settings for Notifications -->
-    <string name="pref_header_notifications">Notifications</string>
-
-    <string name="pref_title_new_message_notifications">New message notifications</string>
-
-    <string name="pref_title_ringtone">Ringtone</string>
-    <string name="pref_ringtone_silent">Silent</string>
-
-    <string name="pref_title_vibrate">Vibrate</string>
-    <string name="title_activity_post_list">PostListActivity</string>
+    <!-- Default Title -->
+    <string name="title_activity_main">@string/action_home</string>
+    <string name="title_activity_login">登录</string>
+    <string name="title_activity_settings">设置</string>
+    <string name="title_activity_post_list">回帖列表</string>
     <string name="title_activity_thread_detail">ThreadDetailActivity</string>
-    <string name="title_activity_thread_detail_with_tab_layout">ThreadDetailWithTabLayoutActivity
-    </string>
-    <string name="title_activity_post_or_reply">PostOrReplyActivity</string>
-    <string name="title_activity_preview">PreviewActivity</string>
-    <string name="title_activity_focus">FocusActivity</string>
-    <string name="title_activity_profile">ProfileActivity</string>
-    <string name="title_activity_thread_detail_new">ThreadDetailNewActivity</string>
-    <string name="title_activity_main2">Main2Activity</string>
-    <string name="title_activity_search_result">SearchResultActivity</string>
-
-    <string name="title_activity_full_screen_photo_viewer">FullScreenPhotoViewerActivity</string>
-    <string name="dummy_button">Dummy Button</string>
-    <string name="dummy_content">DUMMY\nCONTENT</string>
-
-    <string name="title_activity_fullscreen_photo_viewer">FullscreenPhotoViewerActivity</string>
-    <string name="title_activity_photo_viewer">PhotoViewerActivity</string>
+    <string name="title_activity_thread_detail_with_tab_layout">ThreadDetailWithTabLayoutActivity</string>
+    <string name="title_activity_post_or_reply">添加回复</string>
+    <string name="title_activity_preview">预览</string>
+    <string name="title_activity_focus">关注</string>
+    <string name="title_activity_profile">资料</string>
+    <string name="title_activity_thread_detail_new">主题列表</string>
+    <string name="title_activity_search_result">搜索结果</string>
+    <string name="title_activity_fullscreen_photo_viewer">照片浏览器</string>
 </resources>

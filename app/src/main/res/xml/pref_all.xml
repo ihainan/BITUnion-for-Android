@@ -15,25 +15,11 @@
     </PreferenceCategory>
 
     <PreferenceCategory
-        android:key="pref_key_appearance_settings"
-        android:title="外观">
-        <SwitchPreference
-            android:key="pref_theme"
-            android:summary="知乎蓝"
-            android:title="主题" />
-
-        <SwitchPreference
-            android:key="pref_advanced_editor"
-            android:summary="启用高级编辑器，实现更复杂的文本编辑操作"
-            android:title="高级编辑器（实验）" />
-    </PreferenceCategory>
-
-    <PreferenceCategory
         android:key="pref_key_development_settings"
         android:title="开发">
         <SwitchPreference
             android:key="pref_upload_data"
-            android:summary="允许上传设备和异常等统计信息"
+            android:summary="允许自动上传设备信息和崩溃日志给开发者"
             android:title="数据上传" />
 
         <SwitchPreference
@@ -48,7 +34,7 @@
         <Preference
             android:key="pref_version"
             android:summary="0.1.1"
-            android:title="版本" />
+            android:title="应用版本" />
 
         <Preference
             android:key="pref_device_name"

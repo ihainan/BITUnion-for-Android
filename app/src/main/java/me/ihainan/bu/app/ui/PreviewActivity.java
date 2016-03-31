@@ -63,12 +63,73 @@ public class PreviewActivity extends SwipeActivity {
     private byte[] mAttachmentByteArray;
     private String mFilename;
 
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_preview);
+
+        getExtra();
+        setSwipeAnyWhere(false);
+
+        // Toolbar
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+        setTitle("预览");
+
+        // CardView
+        mCardView = (CardView) findViewById(R.id.card_view);
+
+        // Message
+        mMessageView = (TextView) findViewById(R.id.thread_message);
+        mMessageView.setMovementMethod(new CustomSpan.LinkTouchMovementMethod());
+        mMessageView.setLineSpacing(6, 1.2f);
+        SpannableString spannableString = new SpannableString(
+                Html.fromHtml(
+                        mMessageHtmlContent,
+                        new PicassoImageGetter(this, mMessageView),
+                        null));
+        CustomSpan.setUpAllSpans(this, spannableString);
+        mMessageView.setText(spannableString);
+
+        // Floor
+        mFloorView = (TextView) findViewById(R.id.post_floor);
+        mFloorView.setText("#" + mFloor);
+
+        // Date
+        mPostDateView = (TextView) findViewById(R.id.post_date);
+        mPostDateView.setText(CommonUtils.formatDateTime(new Date()));
+
+        // Submit
+        mSubmitBtn = (Button) findViewById(R.id.submit);
+        mSubmitBtn.setOnClickListener(submitListener);
+        if (NewPostActivity.ACTION_POST.equals(mAction)) {
+            mSubmitBtn.setText("发表回复");
+        } else {
+            mSubmitBtn.setText("发布主题");
+        }
+
+        mSubjectView = (TextView) findViewById(R.id.thread_subject);
+        if ("".equals(mSubject)) {
+            mSubjectView.setVisibility(View.GONE);
+        } else {
+            mSubjectView.setVisibility(View.VISIBLE);
+            mSubjectView.setText(mSubject);
+        }
+    }
+
     private void getExtra() {
         Bundle bundle = getIntent().getExtras();
         mMessageContent = bundle.getString(MESSAGE_CONTENT);
         if (mMessageContent != null) {
             // mMessageContent += "\n\n\n[b]发自 " + CommonUtils.getDeviceName() + " @BITUnion for Android[/b]";
-            mMessageHtmlContent = new HtmlUtil(HtmlUtil.ubbToHtml(mMessageContent)).makeAll();
+            mMessageHtmlContent = HtmlUtil.formatHtml(HtmlUtil.ubbToHtml(mMessageContent));
         }
 
         // 提取数据
@@ -150,67 +211,6 @@ public class PreviewActivity extends SwipeActivity {
 
 
         linearLayout.addView(itemView);
-    }
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_preview);
-
-        getExtra();
-        setSwipeAnyWhere(false);
-
-        // Toolbar
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
-        setTitle("预览");
-
-        // CardView
-        mCardView = (CardView) findViewById(R.id.card_view);
-
-        // Message
-        mMessageView = (TextView) findViewById(R.id.thread_message);
-        mMessageView.setMovementMethod(new CustomSpan.LinkTouchMovementMethod());
-        mMessageView.setLineSpacing(6, 1.2f);
-        SpannableString spannableString = new SpannableString(
-                Html.fromHtml(
-                        mMessageHtmlContent,
-                        new PicassoImageGetter(this, mMessageView),
-                        null));
-        CustomSpan.setUpAllSpans(this, spannableString);
-        mMessageView.setText(spannableString);
-
-        // Floor
-        mFloorView = (TextView) findViewById(R.id.post_floor);
-        mFloorView.setText("#" + mFloor);
-
-        // Date
-        mPostDateView = (TextView) findViewById(R.id.post_date);
-        mPostDateView.setText(CommonUtils.formatDateTime(new Date()));
-
-        // Submit
-        mSubmitBtn = (Button) findViewById(R.id.submit);
-        mSubmitBtn.setOnClickListener(submitListener);
-        if (NewPostActivity.ACTION_POST.equals(mAction)) {
-            mSubmitBtn.setText("发表回复");
-        } else {
-            mSubmitBtn.setText("发布主题");
-        }
-
-        mSubjectView = (TextView) findViewById(R.id.thread_subject);
-        if ("".equals(mSubject)) {
-            mSubjectView.setVisibility(View.GONE);
-        } else {
-            mSubjectView.setVisibility(View.VISIBLE);
-            mSubjectView.setText(mSubject);
-        }
     }
 
     private View.OnClickListener submitListener = new View.OnClickListener() {

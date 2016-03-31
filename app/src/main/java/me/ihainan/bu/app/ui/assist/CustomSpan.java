@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Typeface;
-import android.net.Uri;
 import android.support.v4.content.ContextCompat;
 import android.text.Layout;
 import android.text.Spannable;
@@ -39,6 +38,9 @@ import me.ihainan.bu.app.utils.network.BUApi;
 public class CustomSpan {
     public final static String TAG = CustomSpan.class.getSimpleName();
 
+    /**
+     * 自定义引用标签（blockquote)
+     */
     public static class CustomQuoteSpan implements LeadingMarginSpan, LineBackgroundSpan {
         private final int backgroundColor;
         private final int stripeColor;
@@ -86,6 +88,9 @@ public class CustomSpan {
         }
     }
 
+    /**
+     * 自定义链接标签（a）
+     */
     public static class CustomLinkSpan extends ClickableSpan {
         private final int mNormalTextColor;
         private final int mPressedTextColor;
@@ -118,8 +123,12 @@ public class CustomSpan {
                 intent.putExtra(FullscreenPhotoViewerActivity.IMAGE_URL_TAG, newUrl);
                 mContext.startActivity(intent);
                 return;
-            } else if ((mUrl.startsWith(BUApi.IN_SCHOOL_BASE_URL)
-                    || mUrl.startsWith(BUApi.OUT_SCHOOL_BASE_URL))) {
+            } else if (mUrl.startsWith(BUApi.IN_SCHOOL_BASE_URL)
+                    || mUrl.startsWith(BUApi.OUT_SCHOOL_BASE_URL)
+                    || mUrl.startsWith("/forum-")
+                    || mUrl.startsWith("/thread-")
+                    || mUrl.startsWith("/profile-username-")
+                    ) {
                 String newUrl = mUrl.replace(BUApi.IN_SCHOOL_BASE_URL, "/").replace(BUApi.OUT_SCHOOL_BASE_URL, "/");
                 if (newUrl.startsWith("/profile-username-")) {
                     // 个人信息
@@ -176,6 +185,9 @@ public class CustomSpan {
         }
     }
 
+    /**
+     * 链接标签颜色变换
+     */
     public static class LinkTouchMovementMethod extends LinkMovementMethod {
         private CustomLinkSpan mPressedSpan;
 
@@ -206,7 +218,6 @@ public class CustomSpan {
             }
 
             return true;
-            // return super.onTouchEvent(textView, spannable, event);
         }
 
         private CustomLinkSpan getPressedSpan(TextView textView, Spannable spannable, MotionEvent event) {
@@ -230,6 +241,12 @@ public class CustomSpan {
         }
     }
 
+    /**
+     * 批量替换链接标签为自定义标签
+     *
+     * @param context   上下文
+     * @param spannable 文本块
+     */
     public static void replaceClickableSpan(Context context, Spannable spannable) {
         URLSpan[] urlSpans = spannable.getSpans(0, spannable.length(), URLSpan.class);
         // ClickableSpan[] clickableSpans = spannable.getSpans(0, spannable.length(), ClickableSpan.class);
@@ -247,6 +264,12 @@ public class CustomSpan {
         }
     }
 
+    /**
+     * 批量替换引用标签为自定义标签
+     *
+     * @param context   上下文
+     * @param spannable 文本块
+     */
     public static void replaceQuoteSpans(Context context, Spannable spannable) {
         QuoteSpan[] quoteSpans = spannable.getSpans(0, spannable.length(), QuoteSpan.class);
         for (QuoteSpan quoteSpan : quoteSpans) {
@@ -261,6 +284,12 @@ public class CustomSpan {
         }
     }
 
+    /**
+     * 替换所有标签为自定义标签
+     *
+     * @param context   上下文
+     * @param spannable 文本块
+     */
     public static void setUpAllSpans(Context context, Spannable spannable) {
         replaceQuoteSpans(context, spannable);
         replaceClickableSpan(context, spannable);

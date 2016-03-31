@@ -5,7 +5,6 @@ import android.util.Log;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import me.ihainan.bu.app.models.Post;
 import me.ihainan.bu.app.utils.CommonUtils;
 import me.ihainan.bu.app.utils.Global;
 
@@ -13,65 +12,40 @@ import me.ihainan.bu.app.utils.Global;
  * HTML Util
  */
 public class HtmlUtil {
+    // TAGs
+    public final static String TAG = HtmlUtil.class.getSimpleName();
+
+    // Regex
     public final static String[] REGEX_DEVICE_ARRAY = new String[]{"<a .*?>\\.\\.::发自(.*?)::\\.\\.</a>",
             "<br><br>发送自 <a href='.*?' target='_blank'><b>(.*?) @BUApp</b></a>",
             "<i>来自傲立独行的(.*?)客户端</i>",
             "<br><br><i>发自联盟(.*?)客户端</i>",
             "<a href='.*?>..::发自联盟(.*?)客户端::..</a>",
             "<br><br>Sent from my (.+?)$"};
-    public final static String TAG = HtmlUtil.class.getSimpleName();
-
-    private String mBody;
-
-    public HtmlUtil(String html) {
-        this.mBody = html;
-    }
-
-    private StringBuilder mCssBuilder = new StringBuilder("<style type=\"text/css\">");
-
-    public void addCss(String cssStyle) {
-        mCssBuilder.append(cssStyle);
-    }
-
-    public String getCss() {
-        return mCssBuilder.append("</style>").toString();
-    }
-
-    private StringBuilder mHeadBuilder = new StringBuilder("<head>");
-
-    public void addHead(String head) {
-        mHeadBuilder.append(head);
-    }
-
-    public String getHead() {
-        return mHeadBuilder.append("</head>").toString();
-    }
-
-    private StringBuilder mJavascript = new StringBuilder("<script>");
-
-    public void addJavascript(String js) {
-        mJavascript.append(js);
-    }
-
-    public String getJavascript() {
-        return mJavascript.append("</script>").toString();
-    }
-
-    private StringBuilder mHtmlAll = new StringBuilder("<html>");
-
-    public String makeAll() {
-        processBody();
-        // addHead("<link rel=\"stylesheet\" type=\"text/css\" href=\"css/style.css\" />");
-        Log.d(TAG, "Body After = " + mBody);
-        // return mHtmlAll.append(getHead()).append("<body>" + mBody).append("</body></html>").toString();
-        return mBody;
-    }
-
     private static final String QUOTE_HEAD = "<br><br><center><table[^>]+><tr><td>&nbsp;&nbsp;引用(?:\\[<a href='[\\w\\.&\\?=]+?'>查看原帖</a>])*?.</td></tr><tr><td><table.{101,102}bgcolor='ALTBG2'>";
     private static final String QUOTE_TAIL = "</td></tr></table></td></tr></table></center><br>";
     private static final String QUOTE_REGEX = QUOTE_HEAD
             + "(((?!<br><br><center><table border=)[\\w\\W])*?)" + QUOTE_TAIL;
 
+
+    /* START - HTML Format */
+    public static String formatHtml(String html) {
+        html = replaceBase(html); // 基本替换，如换行等
+        html = replaceUBBDel(html);  // 特殊处理 [s] 标签
+        html = replaceImage(html);    // 替换图片地址
+        html = replaceQuote(html);    // 替换引用
+        html = replaceLastEdit(html); // 删除 Last Edit
+        html = replaceOther(html);    // 剩余内容
+
+        return html;
+    }
+
+    /**
+     * 替换 HTML 文本中的图片标签，特殊处理表情图片，非表情图片添加链接标签
+     *
+     * @param str 原始 HTML 文本
+     * @return 处理之后的 HTML 文本
+     */
     public static String replaceImage(String str) {
         // 图片
         Pattern p = Pattern.compile("<img src='([^>']+)'[^>]*(width>)?[^>]*'>");
@@ -91,6 +65,12 @@ public class HtmlUtil {
         return str;
     }
 
+    /**
+     * 替换表情 URL 为本地 URL（file:///android_asset/faces/），避免重复下载
+     *
+     * @param imgUrl 原始表情图片 URL
+     * @return 处理之后的 URL
+     */
     public static String parseLocalImage(String imgUrl) {
         // 检查是否为本地表情文件
         Pattern p = Pattern.compile("\\.\\./images/(smilies|bz)/(.+?)\\.gif$");
@@ -103,6 +83,12 @@ public class HtmlUtil {
         return imgUrl;
     }
 
+    /**
+     * 基础 HTML 文本处理，包含去除 Open API 标志，双引号转单引号，多个换行转换成一个换成等等
+     *
+     * @param str 原始 HTML 文本
+     * @return 处理之后的 HTML 文本
+     */
     public static String replaceBase(String str) {
         // 单引号双引号
         str = str.replaceAll("\"", "'");
@@ -123,6 +109,12 @@ public class HtmlUtil {
         return str;
     }
 
+    /**
+     * 替换 HTML 文本中的引用文本为 blockquote
+     *
+     * @param str 原始 HTML 文本
+     * @return 处理之后的 HTML 文本
+     */
     public static String replaceQuote(String str) {
         Pattern p = Pattern.compile(QUOTE_REGEX);
         Matcher m = p.matcher(str);
@@ -137,18 +129,12 @@ public class HtmlUtil {
         return str;
     }
 
-    public static String replaceDel(String result) {
-        String regex = "\\[s\\](.*?)\\[/s\\]";
-        Pattern pattern = Pattern.compile(regex);
-        Matcher m = pattern.matcher(result);
-        while (m.find()) {
-            System.out.println(m.group());
-            result = result.replace(m.group(0), "<u>" + m.group(1) + "</u>");
-        }
-
-        return result;
-    }
-
+    /**
+     * 去除 HTML 文本中的 Last Edit 字段
+     *
+     * @param str 原始 HTML 文本
+     * @return 处理之后的 HTML 文本
+     */
     public static String replaceLastEdit(String str) {
         // Last Edit
         Pattern p = Pattern.compile("(<br>)*\\[ Last edited by (.*?) on (.*?) at (.*?) \\]");
@@ -160,21 +146,53 @@ public class HtmlUtil {
         return str;
     }
 
+    /**
+     * 去除 HTML 文本中的未被其他方法处理的标签，如去除多余的尾部空行
+     *
+     * @param str 原始 HTML 文本
+     * @return 处理之后的 HTML 文本
+     */
     public static String replaceOther(String str) {
         str = str.replaceAll("(<br>)*$", "");
         return str;
     }
 
-    private void processBody() {
-        mBody = replaceBase(mBody); // 基本替换，如换行，br 等
-        mBody = replaceDel(mBody);  // 特殊处理 [s] 标签
-        mBody = replaceImage(mBody);    // 替换图片地址
-        mBody = replaceQuote(mBody);    // 替换引用
-        mBody = replaceLastEdit(mBody); // 删除 Last Edit
-        mBody = replaceOther(mBody);    // 剩余内容
+    /**
+     * 替换 HTML 文本中的表情为 UBB 代码
+     *
+     * @param htmlStr 原始的 HTML 文本
+     * @return UBB 代码
+     */
+    public static String replaceQuoteSmiles(String htmlStr) {
+        /* Test: 咱能别这样吗？<br><img id = 'face' src='file:///android_asset/faces/smilies_icon18.gif'> */
+        Pattern p = Pattern.compile("<img id = 'face' src='file:///android_asset/faces/(.*?)'>");
+        Matcher m = p.matcher(htmlStr);
+        while (m.find()) {
+            String smileStr = m.group(1);
+            boolean isExisted = false;
+            for (String key : Emoticons.EMOTICONS.keySet()) {
+                if (Emoticons.EMOTICONS.get(key).equals(smileStr)) {
+                    htmlStr = htmlStr.replace(m.group(0), key);
+                    isExisted = true;
+                }
+            }
+
+            if (!isExisted) htmlStr = htmlStr.replace(m.group(0), "");
+        }
+
+        return htmlStr;
     }
 
-    // TODO: 处理原始文本和 UBB Code
+    /* END - HTML Format */
+
+    /* START - UBB to HTML */
+
+    /**
+     * UBB 代码转换成 HTML 代码
+     *
+     * @param ubbStr 原始的 UBB 代码文本
+     * @return 对应的 HTML 代码文本
+     */
     public static String ubbToHtml(String ubbStr) {
         String result = ubbStr.replace("\n", "<br>");
         result = result.replaceAll("\\[b\\]", "<b>");
@@ -201,60 +219,110 @@ public class HtmlUtil {
         return result;
     }
 
-    public static String replaceUrl(String result) {
-        String regex = "\\[url=(.+?)\\](.+?)\\[/url\\]";
+    /**
+     * 替换 UBB 编码中的 [s] 标签为 HTML 标签
+     *
+     * @param ubbCodeStr 原始 UBB 文本
+     * @return 转换之后的文本
+     */
+    public static String replaceUBBDel(String ubbCodeStr) {
+        String regex = "\\[s\\](.*?)\\[/s\\]";
         Pattern pattern = Pattern.compile(regex);
-        Matcher m = pattern.matcher(result);
+        Matcher m = pattern.matcher(ubbCodeStr);
         while (m.find()) {
-            result = result.replace(m.group(0), "<a href='" + m.group(1) + "'>" + m.group(2) + "</a>");
+            System.out.println(m.group());
+            ubbCodeStr = ubbCodeStr.replace(m.group(0), "<u>" + m.group(1) + "</u>");
         }
-        return result;
+
+        return ubbCodeStr;
     }
 
-    public static String replaceEmotion(String result) {
+    /**
+     * 替换 UBB 编码中的 [url] 标签为 HTML 标签
+     *
+     * @param ubbCodeStr 原始 UBB 文本
+     * @return 转换之后的文本
+     */
+    public static String replaceUrl(String ubbCodeStr) {
+        String regex = "\\[url=(.+?)\\](.+?)\\[/url\\]";
+        Pattern pattern = Pattern.compile(regex);
+        Matcher m = pattern.matcher(ubbCodeStr);
+        while (m.find()) {
+            ubbCodeStr = ubbCodeStr.replace(m.group(0), "<a href='" + m.group(1) + "'>" + m.group(2) + "</a>");
+        }
+        return ubbCodeStr;
+    }
+
+    /**
+     * 替换 UBB 编码中的表情标签为 HTML 标签
+     *
+     * @param ubbCodeStr 原始 UBB 文本
+     * @return 转换之后的文本
+     */
+    public static String replaceEmotion(String ubbCodeStr) {
         String regex = ":(\\S{1,10}?):";
         Pattern pattern = Pattern.compile(regex);
-        Matcher m = pattern.matcher(result);
+        Matcher m = pattern.matcher(ubbCodeStr);
         while (m.find()) {
             if (Emoticons.EMOTICONS.keySet().contains(m.group(0))) {
                 System.out.println("Match \"" + m.group() +
                         "\"at positions " +
                         m.start() + " - " + (m.end() - 1));
                 if (Emoticons.EMOTICONS.get(m.group(0)).startsWith("smilies_"))
-                    result = result.replace(m.group(0), "<img src=\"../images/smilies/" + Emoticons.EMOTICONS.get(m.group(0)).substring(8) + "\" align=\"absmiddle\" border=\"0\">");
+                    ubbCodeStr = ubbCodeStr.replace(m.group(0), "<img src=\"../images/smilies/" + Emoticons.EMOTICONS.get(m.group(0)).substring(8) + "\" align=\"absmiddle\" border=\"0\">");
                 else if (Emoticons.EMOTICONS.get(m.group(0)).startsWith("bz_"))
-                    result = result.replace(m.group(0), "<img src=\"../images/bz/" + Emoticons.EMOTICONS.get(m.group(0)).substring(3) + "\" align=\"absmiddle\" border=\"0\">");
+                    ubbCodeStr = ubbCodeStr.replace(m.group(0), "<img src=\"../images/bz/" + Emoticons.EMOTICONS.get(m.group(0)).substring(3) + "\" align=\"absmiddle\" border=\"0\">");
             }
         }
 
-        return result;
+        return ubbCodeStr;
     }
 
-    public static String replaceAt(String result) {
+    /**
+     * 替换 UBB 编码中的 [@] 标签为 HTML 标签
+     *
+     * @param ubbCodeStr 原始 UBB 文本
+     * @return 转换之后的文本
+     */
+    public static String replaceAt(String ubbCodeStr) {
         String regex = "\\[@\\](.+?)\\[/@\\]";
         Pattern pattern = Pattern.compile(regex);
-        Matcher m = pattern.matcher(result);
+        Matcher m = pattern.matcher(ubbCodeStr);
         while (m.find()) {
-            result = result.replace(m.group(0),
+            ubbCodeStr = ubbCodeStr.replace(m.group(0),
                     "<a href = \"/profile-username-"
                             + CommonUtils.encode(m.group(1), "GBK")
                             + ".html\" > " + m.group(1) + "</a >");
         }
 
-        return result;
+        return ubbCodeStr;
     }
 
-    public static String formatHtml(String html) {
-        html = replaceBase(html); // 基本替换，如换行，br 等
-        html = replaceDel(html);  // 特殊处理 [s] 标签
-        html = replaceImage(html);    // 替换图片地址
-        html = replaceQuote(html);    // 替换引用
-        html = replaceLastEdit(html); // 删除 Last Edit
-        html = replaceOther(html);    // 剩余内容
+    /* END - UBB to HTML */
 
-        return html;
+    /* START - Post Message Summary */
+
+    /**
+     * 获取回帖内容摘要，去除设备信息，替换引用、图片，删除其他所有 HTML 标签
+     *
+     * @param html 需要处理的回帖 HTML
+     * @return 处理之后的 HTML 文本
+     */
+    public static String getSummaryOfMessage(String html) {
+        html = removeDeviceInfo(html);
+        html = html.replaceAll("<blockquote>.*?</blockquote>", "");
+        html = html.replaceAll("<img.*?>", "[图片]");
+        html = html.replaceAll("(?s)<[^>]*>(\\s*<[^>]*>)*", " ");
+
+        return html.trim();
     }
 
+    /**
+     * 移除回帖内容中的设备信息和开放 API 信息
+     *
+     * @param message 需要处理的字符串
+     * @return 处理之后的 HTML 文本
+     */
     private static String removeDeviceInfo(String message) {
         for (String regex : HtmlUtil.REGEX_DEVICE_ARRAY) {
             Pattern pattern = Pattern.compile(regex);
@@ -267,12 +335,5 @@ public class HtmlUtil {
         return message;
     }
 
-    public static String getSummaryOfMessage(String html) {
-        html = removeDeviceInfo(html);
-        html = html.replaceAll("<blockquote>.*?</blockquote>", "");
-        html = html.replaceAll("<img.*?>", "[图片]");
-        html = html.replaceAll("(?s)<[^>]*>(\\s*<[^>]*>)*", " ");
-
-        return html.trim();
-    }
+    /* END - Post Message Summary */
 }

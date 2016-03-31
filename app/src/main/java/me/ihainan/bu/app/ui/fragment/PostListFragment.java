@@ -207,8 +207,7 @@ public class PostListFragment extends Fragment {
                                 for (Post reply : newThreads) {
                                     // 处理正文
                                     reply.useMobile = CommonUtils.decode(reply.message).contains("From BIT-Union Open API Project");
-                                    HtmlUtil htmlUtil = new HtmlUtil(CommonUtils.decode(reply.message));
-                                    reply.message = htmlUtil.makeAll();
+                                    reply.message = HtmlUtil.formatHtml(CommonUtils.decode(reply.message));
 
                                     // 楼层
                                     reply.floor = mPagePosition * Global.LOADING_POSTS_COUNT + newThreads.indexOf(reply) + 1;

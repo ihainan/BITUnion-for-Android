@@ -11,6 +11,7 @@ import java.util.regex.Pattern;
 
 import me.ihainan.bu.app.utils.CommonUtils;
 import me.ihainan.bu.app.utils.network.BUApi;
+import me.ihainan.bu.app.utils.ui.HtmlUtil;
 
 /**
  * 回帖模型
@@ -78,13 +79,17 @@ public class Post implements Serializable {
     public String toQuote() {
         String quote = message;
 
-        quote = quote.replaceAll("<blockquote>.*?</blockquote>", "[引用]\n");
-
         // Cut down the message if it's too long
         if (quote.length() > 250)
             quote = quote.substring(0, 250) + "......";
 
-        // Change hypertext reference to Discuz style
+        // 引用
+        quote = quote.replaceAll("<blockquote>.*?</blockquote>", "[引用]\n");
+
+        // 表情
+        quote = HtmlUtil.replaceQuoteSmiles(quote);
+
+        // HTML to UBB
         Pattern p = Pattern.compile("<a href='(.+?)'(?:.target='.+?')>(.+?)</a>");
         Matcher m = p.matcher(quote);
         while (m.find()) {
@@ -93,7 +98,7 @@ public class Post implements Serializable {
             m = p.matcher(quote);
         }
 
-        // Change image to Discuz style
+        // 图片
         p = Pattern.compile("<img src='([^>])'>");
         m = p.matcher(quote);
         while (m.find()) {
@@ -101,7 +106,7 @@ public class Post implements Serializable {
             m = p.matcher(quote);
         }
 
-        // Clear other HTML marks
+        // 其他标签
         quote = Html.fromHtml(quote).toString();
         quote = "[quote=" + pid + "][b]" + CommonUtils.decode(author) + "[/b] "
                 + CommonUtils.formatDateTime(CommonUtils.unixTimeStampToDate(dateline)) + "\n" + quote + "[/quote]\n";

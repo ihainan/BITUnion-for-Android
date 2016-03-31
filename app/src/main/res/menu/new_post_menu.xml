@@ -6,6 +6,6 @@
         android:id="@+id/send"
         android:icon="@drawable/ic_send_white_24dp"
         android:orderInCategory="80"
-        android:title="发送"
-        app:showAsAction="ifRoom" />
+        android:title="@string/action_send"
+        app:showAsAction="always" />
 </menu>
