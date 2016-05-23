@@ -7,6 +7,7 @@
 
     <!-- 存储图片 -->
 
+
     <!-- 友盟统计 SDK 额外要求权限 -->
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
@@ -20,8 +21,6 @@
     <uses-permission android:name="android.permission.GET_TASKS" />
 
     <!-- 附件 -->
-
-
     <application
         android:name=".utils.Global"
         android:allowBackup="true"
@@ -69,12 +68,6 @@
             android:theme="@android:style/Theme.Translucent.NoTitleBar" />
         <activity android:name=".ui.assist.SwipeActivity" />
         <activity
-            android:name=".ui.NewPostActivity"
-            android:configChanges="keyboardHidden|orientation|screenSize"
-            android:label="@string/title_activity_post_or_reply"
-            android:theme="@style/AppTheme.SwipeTheme"
-            android:windowSoftInputMode="adjustResize" />
-        <activity
             android:name=".ui.PreviewActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:label="@string/title_activity_preview"
@@ -98,7 +91,14 @@
             android:name=".ui.FullscreenPhotoViewerActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/title_activity_fullscreen_photo_viewer"
-            android:theme="@style/FullscreenTheme">
+            android:theme="@style/FullscreenTheme"></activity>
+
+        <activity
+            android:name=".ui.BetterPostActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:label="@string/title_activity_better_post"
+            android:theme="@style/AppTheme.SwipeTheme"
+            android:windowSoftInputMode="adjustResize">
 
         </activity>
     </application>

@@ -141,8 +141,7 @@ public class FullscreenPhotoViewerActivity extends Activity {
         mVisible = true;
         mControlsView = findViewById(R.id.fullscreen_content_controls);
         mContentView = findViewById(R.id.iv_photo);
-
-
+        
         // Set up the user interaction to manually show or hide the system UI.
         mContentView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -158,7 +157,6 @@ public class FullscreenPhotoViewerActivity extends Activity {
 
         // Get Image URL
         mImageURL = getIntent().getExtras().getString(IMAGE_URL_TAG, null);
-        // mImageURL = "http://www.15w.com/uploads/allimg/120826/13-120R611334RA.jpg";
 
         // ImageView
         mImageView = (PhotoView) findViewById(R.id.iv_photo);
@@ -206,7 +204,7 @@ public class FullscreenPhotoViewerActivity extends Activity {
             if (mDownloadDialog != null) mDownloadDialog.dismiss();
 
             // 创建文件
-            File pictureFile = getOutputMediaFile();
+            File pictureFile = CommonUtils.getOutputMediaFile(FullscreenPhotoViewerActivity.this);
             if (pictureFile == null) {
                 String message = getString(R.string.error_no_storage_permission);
                 String debugMessage = message + " - " + mImageURL;
@@ -250,40 +248,6 @@ public class FullscreenPhotoViewerActivity extends Activity {
             onBitmapFailed(placeHolderDrawable);
         }
     };
-
-    /**
-     * 创建文件用于存储图片
-     *
-     * @return 用于存储图片的文件实例
-     */
-    private File getOutputMediaFile() {
-        // To be safe, you should check that the SDCard is mounted
-        // using Environment.getExternalStorageState() before doing this.
-        File mediaStorageDir;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            mediaStorageDir = getExternalFilesDirs(null)[0];
-        } else {
-            mediaStorageDir = new File(Environment.getExternalStorageDirectory()
-                    + "/Android/data/"
-                    + getApplicationContext().getPackageName()
-                    + "/Files");
-        }
-
-
-        // Create the storage directory if it does not exist
-        if (!mediaStorageDir.exists()) {
-            if (!mediaStorageDir.mkdirs()) {
-                return null;
-            }
-        }
-
-        // Create a media file name
-        String timeStamp = new SimpleDateFormat("ddMMyyyy_HHmm").format(new Date());
-        File mediaFile;
-        String mImageName = "BU_" + timeStamp + ".jpg";
-        mediaFile = new File(mediaStorageDir.getPath() + File.separator + mImageName);
-        return mediaFile;
-    }
 
     // 菜单
     @Override

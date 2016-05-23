@@ -1,5 +1,6 @@
 package me.ihainan.bu.app.ui;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
@@ -164,10 +165,10 @@ public class ThreadListActivity extends SwipeActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(ThreadListActivity.this, NewPostActivity.class);
-                intent.putExtra(NewPostActivity.NEW_POST_ACTION_TAG, NewPostActivity.ACTION_THREAD);
-                intent.putExtra(NewPostActivity.NEW_POST_FID_TAG, mFid);
-                startActivityForResult(intent, REQUEST_NEW_THREAD);
+                Intent intent = new Intent(ThreadListActivity.this, BetterPostActivity.class);
+                intent.putExtra(BetterPostActivity.ACTION_TAG, BetterPostActivity.ACTION_NEW_THREAD);
+                intent.putExtra(BetterPostActivity.NEW_THREAD_FID_TAG, mFid);
+                startActivityForResult(intent, PostListActivity.REQUEST_NEW_REPLY);
             }
         });
 

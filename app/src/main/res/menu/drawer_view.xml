@@ -29,11 +29,6 @@
             android:id="@+id/nav_focus"
             android:icon="@drawable/ic_remove_red_eye_black_24dp"
             android:title="@string/action_focus" />
-
-        <item
-            android:id="@+id/nav_discover"
-            android:icon="@drawable/ic_discover"
-            android:title="@string/action_discover" />
     </group>
 
     <group

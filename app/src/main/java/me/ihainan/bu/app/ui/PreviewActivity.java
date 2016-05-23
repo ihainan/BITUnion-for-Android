@@ -39,9 +39,11 @@ import java.io.InputStream;
 import java.util.Date;
 
 import me.ihainan.bu.app.R;
+import me.ihainan.bu.app.models.Member;
 import me.ihainan.bu.app.ui.assist.CustomSpan;
 import me.ihainan.bu.app.ui.assist.SwipeActivity;
 import me.ihainan.bu.app.utils.CommonUtils;
+import me.ihainan.bu.app.utils.Global;
 import me.ihainan.bu.app.utils.network.BUApi;
 import me.ihainan.bu.app.utils.ui.HtmlUtil;
 import me.ihainan.bu.app.utils.ui.PicassoImageGetter;
@@ -83,8 +85,56 @@ public class PreviewActivity extends SwipeActivity {
         });
         setTitle("预览");
 
+        // 卡片
+        fillCardView();
+    }
+
+    private void getExtra() {
+        Bundle bundle = getIntent().getExtras();
+
+        // 提取数据
+        mMessageContent = bundle.getString(BetterPostActivity.CONTENT_MESSAGE_TAG);
+        if (mMessageContent != null) {
+            // mMessageContent += "\n\n\n[b]发自 " + CommonUtils.getDeviceName() + " @BITUnion for Android[/b]";
+            mMessageHtmlContent = HtmlUtil.formatHtml(HtmlUtil.ubbToHtml(mMessageContent));
+        }
+        mFloor = bundle.getLong(BetterPostActivity.NEW_POST_MAX_FLOOR_TAG);
+        mAction = bundle.getString(BetterPostActivity.ACTION_TAG);
+        mSubject = bundle.getString(BetterPostActivity.CONTENT_SUBJECT_TAG, "").trim();
+        mTid = bundle.getLong(BetterPostActivity.NEW_POST_TID_TAG);
+        mFid = bundle.getLong(BetterPostActivity.NEW_THREAD_FID_TAG);
+        mActionStr = "发表" + (mAction.endsWith(BetterPostActivity.ACTION_NEW_POST) ? "回复" : "主题");
+
+        // 提取和显示附件
+        if (bundle.getString(BetterPostActivity.CONTENT_ATTACHMENT_URI, null) != null) {
+            mUri = Uri.parse(bundle.getString(BetterPostActivity.CONTENT_ATTACHMENT_URI, null));
+            mAttachmentByteArray = getByteArray(mUri);
+        }
+    }
+
+    private void fillCardView() {
         // CardView
         mCardView = (CardView) findViewById(R.id.card_view);
+
+        // Author
+        TextView author = (TextView) findViewById(R.id.thread_author_name);
+        author.setText(CommonUtils.decode(Global.username));
+
+        // Author
+        final ImageView avatar = (ImageView) findViewById(R.id.thread_author_avatar);
+        CommonUtils.setUserAvatarClickListener(this,
+                avatar, -1,
+                Global.username);
+        CommonUtils.getAndCacheUserInfo(this, Global.username,
+                new CommonUtils.UserInfoAndFillAvatarCallback() {
+                    @Override
+                    public void doSomethingIfHasCached(Member member) {
+                        String avatarURL = CommonUtils.getRealImageURL(member.avatar);
+                        CommonUtils.setAvatarImageView(PreviewActivity.this, avatar,
+                                avatarURL, R.drawable.default_avatar);
+                    }
+                });
+
 
         // Message
         mMessageView = (TextView) findViewById(R.id.thread_message);
@@ -104,17 +154,18 @@ public class PreviewActivity extends SwipeActivity {
 
         // Date
         mPostDateView = (TextView) findViewById(R.id.post_date);
-        mPostDateView.setText(CommonUtils.formatDateTime(new Date()));
+        mPostDateView.setText("Recently");
 
         // Submit
         mSubmitBtn = (Button) findViewById(R.id.submit);
         mSubmitBtn.setOnClickListener(submitListener);
-        if (NewPostActivity.ACTION_POST.equals(mAction)) {
+        if (BetterPostActivity.ACTION_NEW_POST.equals(mAction)) {
             mSubmitBtn.setText("发表回复");
         } else {
             mSubmitBtn.setText("发布主题");
         }
 
+        // Subject
         mSubjectView = (TextView) findViewById(R.id.thread_subject);
         if ("".equals(mSubject)) {
             mSubjectView.setVisibility(View.GONE);
@@ -122,30 +173,13 @@ public class PreviewActivity extends SwipeActivity {
             mSubjectView.setVisibility(View.VISIBLE);
             mSubjectView.setText(mSubject);
         }
-    }
 
-    private void getExtra() {
-        Bundle bundle = getIntent().getExtras();
-        mMessageContent = bundle.getString(MESSAGE_CONTENT);
-        if (mMessageContent != null) {
-            // mMessageContent += "\n\n\n[b]发自 " + CommonUtils.getDeviceName() + " @BITUnion for Android[/b]";
-            mMessageHtmlContent = HtmlUtil.formatHtml(HtmlUtil.ubbToHtml(mMessageContent));
-        }
+        // Device name
+        TextView deviceName = (TextView) findViewById(R.id.device_name);
+        deviceName.setText(CommonUtils.getDeviceName());
 
-        // 提取数据
-        mFloor = bundle.getLong(NewPostActivity.NEW_POST_FLOOR_TAG);
-        mAction = bundle.getString(NewPostActivity.NEW_POST_ACTION_TAG);
-        mSubject = bundle.getString(NewPostActivity.NEW_POST_SUBJECT_TAG, "").trim();
-        mTid = bundle.getLong(NewPostActivity.NEW_POST_TID_TAG);
-        mFid = bundle.getLong(NewPostActivity.NEW_POST_FID_TAG);
-        mActionStr = "发表" + (mAction.endsWith(NewPostActivity.ACTION_POST) ? "回复" : "主题");
-
-        // 提取和显示附件
-        if (bundle.getString(NewPostActivity.NEW_POST_ATTACHMENT_URI, null) != null) {
-            mUri = Uri.parse(bundle.getString(NewPostActivity.NEW_POST_ATTACHMENT_URI, null));
-            mAttachmentByteArray = getByteArray(mUri);
-
-            // 填充 Attachment Layout
+        // Attachment
+        if (mUri != null) {
             showAttachmentView();
         }
     }
@@ -206,9 +240,8 @@ public class PreviewActivity extends SwipeActivity {
                 attachmentImageLayout.setVisibility(View.GONE);
             }
         } finally {
-            cursor.close();
+            if (cursor != null) cursor.close();
         }
-
 
         linearLayout.addView(itemView);
     }
@@ -239,7 +272,7 @@ public class PreviewActivity extends SwipeActivity {
         try {
             dialog = ProgressDialog.show(PreviewActivity.this, "",
                     "正在" + mActionStr, true);
-            if (NewPostActivity.ACTION_POST.equals(mAction)) {
+            if (BetterPostActivity.ACTION_NEW_POST.equals(mAction)) {
                 BUApi.postNewPost(this, mTid, mMessageContent, mFilename, mAttachmentByteArray, listener, errorListener);
             } else {
                 BUApi.postNewThread(this, mFid, mSubject, mMessageContent, mFilename, mAttachmentByteArray, listener, errorListener);

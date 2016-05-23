@@ -1,0 +1,457 @@
+package me.ihainan.bu.app.ui;
+
+import android.app.Activity;
+import android.app.ProgressDialog;
+import android.content.ActivityNotFoundException;
+import android.content.ContentResolver;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.database.Cursor;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
+import android.net.Uri;
+import android.os.Bundle;
+import android.provider.OpenableColumns;
+import android.support.design.widget.Snackbar;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
+import android.util.Log;
+import android.view.Gravity;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.EditText;
+import android.widget.HorizontalScrollView;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+
+import me.ihainan.bu.app.R;
+import me.ihainan.bu.app.ui.fragment.EmoticonFragment;
+import me.ihainan.bu.app.utils.CommonUtils;
+import me.ihainan.bu.app.utils.ui.EditTextUndoRedo;
+
+public class BetterPostActivity extends AppCompatActivity {
+    public final static String TAG = BetterPostActivity.class.getSimpleName();
+
+    // 请求 Tags
+    public final static int REQUEST_CHOOSE_PHOTO_TAG = 0;   // 添加图片附件请求
+    public final static int REQUEST_CHOOSE_FILE_TAG = 1;    // 添加文件附件请求
+    public final static int REQUEST_PREVIEW_TAG = 2;    // 查看发帖预览请求
+
+    // 来源 Intent Tags
+    public final static String ACTION_TAG = "ACTION"; // 预期操作（发主题 / 回帖），对应 ACTION_THREAD / ACTION_POST
+    public final static String ACTION_NEW_POST = "ACTION_NEW_POST";    // 发布新回复操作
+    public final static String ACTION_NEW_THREAD = "ACTION_NEW_THREAD"; // 发布新主题操作
+
+    public final static String NEW_POST_TID_TAG = "NEW_POST_TID"; // 回复帖子 ID
+    public final static String NEW_POST_QUOTE_CONTENT_TAG = "NEW_POST_QUOTE_CONTENT"; // 引用内容
+    public final static String NEW_POST_MAX_FLOOR_TAG = "NEW_POST_MAX_FLOOR"; // 回复帖子当前最高楼层，用于预览显示
+    public final static String NEW_THREAD_FID_TAG = "NEW_THREAD_FID"; // 回复板块 ID
+
+    // 提交给 Preview Activity
+    public final static String CONTENT_SUBJECT_TAG = "CONTENT_SUBJECT_TAG";    // 标题
+    public final static String CONTENT_MESSAGE_TAG = "CONTENT_MESSAGE_TAG";    // 内容
+    public final static String CONTENT_ATTACHMENT_URI = "CONTENT_ATTACHMENT_URI";   // 附件 Uri
+
+
+    // UI References
+    private DrawerLayout mDrawer;
+    private HorizontalScrollView mButtonPanel;
+    private EditText mETMessage, mETSubject;
+    private ImageView mIVUndoAction, mIVRedoAction, mIVEmotionAction, mIVAttachment;
+    private EmoticonFragment mEmoticonFragment;
+    private EditTextUndoRedo mETUndoRedo;
+
+    // Data
+    private String mAction, mQuoteContent;
+    private Long mFid, mTid, mFloor;
+    private Uri mAttachmentUri;   // 附件 URI
+    private String mRealImageName;  // 真实附件名
+    private final static int MAX_COMPRESSED_IMAGE_SIZE = 700;   // 压缩之后的最大图片大小，单位为 KB
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_better_post);
+        getExtra();
+
+        // Toolbar
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                exitEditorAction();
+            }
+        });
+        if (ACTION_NEW_POST.equals(mAction)) setTitle(getString(R.string.title_new_post));
+        else setTitle(getString(R.string.title_new_thread));
+
+        // Editor UI
+        mETSubject = (EditText) findViewById(R.id.subject);
+        if (ACTION_NEW_POST.equals(mAction)) mETSubject.setVisibility(View.GONE);
+        else mETSubject.setVisibility(View.VISIBLE);
+
+        mETMessage = (EditText) findViewById(R.id.message);
+        mETMessage.setLineSpacing(10, 1.3f);
+        mETUndoRedo = new EditTextUndoRedo(mETMessage);
+
+        if (ACTION_NEW_THREAD.equals(mAction))
+            mETSubject.requestFocus();
+        else mETMessage.requestFocus();
+
+        if (mQuoteContent != null) {
+            String message = mETMessage.getText().toString();
+            if (message == null || "".equals(message.trim()) || message.endsWith("\n\n"))
+                mETMessage.append(mQuoteContent);
+            else
+                mETMessage.append("\n\n" + mQuoteContent);
+        }
+        
+        // Fragments
+        mDrawer = (DrawerLayout) findViewById(R.id.post_drawer);
+        mEmoticonFragment = new EmoticonFragment();
+        getFragmentManager().beginTransaction().replace(R.id.post_emoticons, mEmoticonFragment).commit();
+        mEmoticonFragment.setEmoticonListener(new EmoticonFragment.EmoticonListener() {
+            @Override
+            public void onEmoticonSelected(String name) {
+                mETMessage.getText().insert(mETMessage.getSelectionStart(), name);
+                mDrawer.closeDrawer(Gravity.RIGHT);
+            }
+        });
+
+        // Buttons
+        mButtonPanel = (HorizontalScrollView) findViewById(R.id.buttonPanel);
+        mIVUndoAction = (ImageView) findViewById(R.id.undo_action);
+        mIVRedoAction = (ImageView) findViewById(R.id.redo_action);
+        mIVEmotionAction = (ImageView) findViewById(R.id.emotion_action);
+        mIVAttachment = (ImageView) findViewById(R.id.attachment_action);
+
+        // 初始化 UI 和按钮
+        setUpButtonActions();
+    }
+
+    /**
+     * 获取 Bundle 数据
+     */
+    private void getExtra() {
+        Intent intent = getIntent();
+        Bundle bundle = intent.getExtras();
+        if (bundle != null) {
+            mAction = bundle.getString(ACTION_TAG);
+
+            if (ACTION_NEW_POST.equals(mAction)) mTid = bundle.getLong(NEW_POST_TID_TAG);
+            if (ACTION_NEW_THREAD.equals(mAction)) mFid = bundle.getLong(NEW_THREAD_FID_TAG);
+
+            mQuoteContent = bundle.getString(NEW_POST_QUOTE_CONTENT_TAG);
+            mFloor = bundle.getLong(NEW_POST_MAX_FLOOR_TAG, 1);
+
+            // TODO: 检查数据是否合理
+        }
+
+        // TODO: Remove Test!
+        // if (mAction == null || "".equals(mAction)) mAction = ACTION_NEW_THREAD;
+    }
+
+    /**
+     * 设置按钮点击事件
+     */
+    private void setUpButtonActions() {
+        // 撤销操作
+        mIVUndoAction.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mETUndoRedo.undo();
+            }
+        });
+
+        // 重做操作
+        mIVRedoAction.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mETUndoRedo.redo();
+            }
+        });
+
+        // 添加表情
+        mIVEmotionAction.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mDrawer.isDrawerOpen(Gravity.RIGHT)) {
+                    mDrawer.closeDrawer(Gravity.RIGHT);
+                } else {
+                    mDrawer.openDrawer(Gravity.RIGHT);
+                }
+            }
+        });
+
+        // 添加附件
+        mIVAttachment.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showAttachmentDialog(ACTION_ADD_ATTACHMENT);
+            }
+        });
+    }
+
+    private final static int ACTION_ADD_ATTACHMENT = 1;
+    private final static int ACTION_MOD_ATTACHMENT = 2;
+
+    private void showAttachmentDialog(int actionType) {
+        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
+        LayoutInflater inflater = this.getLayoutInflater();
+        final View dialogView = inflater.inflate(R.layout.content_editor_attachment_menu, null);
+        dialogBuilder.setView(dialogView);
+        final AlertDialog alertDialog = dialogBuilder.show();
+
+        LinearLayout addAttachmentLayout = (LinearLayout) dialogView.findViewById(R.id.layout_add_attachment);
+        LinearLayout modAttachmentLayout = (LinearLayout) dialogView.findViewById(R.id.layout_mod_attachment);
+
+        if (actionType == ACTION_ADD_ATTACHMENT) {
+            addAttachmentLayout.setVisibility(View.VISIBLE);
+            dialogView.findViewById(R.id.layout_add_image).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    alertDialog.dismiss();
+                    Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
+                    photoPickerIntent.setType("image/*");
+                    startActivityForResult(photoPickerIntent, REQUEST_CHOOSE_PHOTO_TAG);
+                }
+            });
+
+            dialogView.findViewById(R.id.layout_add_file).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    alertDialog.dismiss();
+                    Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+                    intent.addCategory(Intent.CATEGORY_OPENABLE);
+                    intent.setType("*/*");
+                    startActivityForResult(intent, REQUEST_CHOOSE_FILE_TAG);
+                }
+            });
+        } else if (ACTION_MOD_ATTACHMENT == actionType) {
+            modAttachmentLayout.setVisibility(View.VISIBLE);
+            TextView tvViewAttachment = (TextView) dialogView.findViewById(R.id.tv_view_attachment);
+            TextView tvDelAttachment = (TextView) dialogView.findViewById(R.id.tv_remove_attachment);
+            TextView tvFilename = (TextView) dialogView.findViewById(R.id.tv_file_name);
+
+            tvFilename.setText(mRealImageName);
+
+            // 布局
+            ContentResolver cR = getContentResolver();
+            final String type = cR.getType(mAttachmentUri);
+            if (type.startsWith("image")) {
+                tvViewAttachment.setText(getString(R.string.action_view_image_attachment));
+                tvDelAttachment.setText(getString(R.string.action_remove_image_attachment));
+            } else {
+                tvViewAttachment.setText(getString(R.string.action_view_file_attachment));
+                tvDelAttachment.setText(getString(R.string.action_remove_file_attachment));
+            }
+
+            // 查看附件
+            dialogView.findViewById(R.id.layout_view_attachment).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    alertDialog.dismiss();
+                    Intent intent = new Intent(Intent.ACTION_VIEW, mAttachmentUri);
+                    try {
+                        startActivity(intent);
+                    } catch (ActivityNotFoundException e) {
+                        String message = getString(R.string.error_open_attachment);
+                        Log.e(TAG, message, e);
+                        CommonUtils.debugToast(BetterPostActivity.this, message);
+                        Snackbar.make(mButtonPanel, message, Snackbar.LENGTH_LONG).show();
+                        return;
+                    }
+                }
+            });
+
+            // 删除附件
+            dialogView.findViewById(R.id.layout_remove_attachment).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    alertDialog.dismiss();
+                    mRealImageName = null;
+                    mIVAttachment.setImageResource(R.drawable.ic_attachment_black_24dp);
+                    mAttachmentUri = null;
+                    mIVAttachment.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            showAttachmentDialog(ACTION_ADD_ATTACHMENT);
+                        }
+                    });
+                }
+            });
+        }
+    }
+
+    private void doAfterAddingAttachmentNew() {
+        Cursor cursor = null;
+        try {
+            cursor = getContentResolver().query(mAttachmentUri, null, null, null, null);
+
+            final ProgressDialog dialog = ProgressDialog.show(this, "",
+                    getString(R.string.processing_attachment), true);
+            dialog.show();
+            setFinishOnTouchOutside(false);
+
+            // 文件名
+            if (cursor != null && cursor.moveToFirst()) {
+                if (mRealImageName == null)
+                    mRealImageName = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
+            }
+
+            // 文件大小
+            cursor.moveToFirst();
+            long size = cursor.getLong(cursor.getColumnIndex(OpenableColumns.SIZE));
+
+            // 文件类型
+            ContentResolver cR = getContentResolver();
+            final String type = cR.getType(mAttachmentUri);
+
+            if (size > 1000000) {
+                if (type.startsWith("image")) {
+                    // final long oriSize = size;
+                    // Remove cache directory
+                    CommonUtils.deleteTmpDir(this);
+                    mETMessage.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            mAttachmentUri = CommonUtils.compressImage(BetterPostActivity.this, mAttachmentUri, MAX_COMPRESSED_IMAGE_SIZE);
+                            // mAttachmentUri = CommonUtils.compressImageNew(BetterPostActivity.this, mAttachmentUri, oriSize, MAX_COMPRESSED_IMAGE_SIZE * 1000);
+                            doAfterProcessingAttachment(dialog);
+                        }
+                    }, 1000);
+                } else {
+                    if (dialog != null) dialog.dismiss();
+                    setFinishOnTouchOutside(true);
+
+                    mAttachmentUri = null;
+                    String message = getString(R.string.error_insert_attachment) + ": 文件大小超过 1M";
+                    Log.w(TAG, message);
+                    CommonUtils.debugToast(this, message);
+                    Snackbar.make(mButtonPanel, message, Snackbar.LENGTH_LONG).show();
+                }
+            } else doAfterProcessingAttachment(dialog);
+        } finally {
+            if (cursor != null) cursor.close();
+        }
+    }
+
+    private void doAfterProcessingAttachment(ProgressDialog dialog) {
+        if (dialog != null) dialog.dismiss();
+        setFinishOnTouchOutside(true);
+
+        // 改变 Icon 颜色
+        Drawable newIcon = getResources().getDrawable(R.drawable.ic_attachment_black_24dp);
+        newIcon.mutate().setColorFilter(getResources().getColor(R.color.primary), PorterDuff.Mode.SRC_IN);
+        mIVAttachment.setImageDrawable(newIcon);
+
+        // 监听
+        mIVAttachment.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showAttachmentDialog(ACTION_MOD_ATTACHMENT);
+            }
+        });
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if ((requestCode == REQUEST_CHOOSE_PHOTO_TAG || requestCode == REQUEST_CHOOSE_FILE_TAG)
+                && resultCode == RESULT_OK && data != null) {
+            mAttachmentUri = data.getData();
+            if (mAttachmentUri == null) {
+                String message = getString(R.string.error_insert_attachment) + ": 获取图片失败";
+                Log.w(TAG, message);
+                CommonUtils.debugToast(this, message);
+                Snackbar.make(mButtonPanel, message, Snackbar.LENGTH_LONG).show();
+            } else doAfterAddingAttachmentNew();
+        } else if (requestCode == REQUEST_PREVIEW_TAG) {
+            if (resultCode == RESULT_OK) {
+                Intent resultData = new Intent();
+                setResult(Activity.RESULT_OK, resultData);
+                finish();
+            }
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        exitEditorAction();
+    }
+
+    /**
+     * 退出编辑器前先进行确认
+     */
+    private void exitEditorAction() {
+        if (mAttachmentUri != null || !"".equals(mETSubject.getText().toString())
+                || !"".equals(mETMessage.getText().toString())) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(BetterPostActivity.this);
+            builder.setTitle(getString(R.string.title_warning))
+
+                    .setMessage(getString(R.string.message_exit_editor))
+                    .setPositiveButton(getString(R.string.button_yes), new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            finish();
+                        }
+                    }).setNegativeButton(getString(R.string.button_no), new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                }
+            });
+            builder.show();
+        } else {
+            finish();
+        }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.new_post_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.send:
+                // 进入预览界面
+                View view = getCurrentFocus();
+                ((InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE))
+                        .hideSoftInputFromWindow(view.getWindowToken(), 0);
+
+                if (ACTION_NEW_THREAD.equals(mAction) && ("".equals(mETSubject.getText().toString()))) {
+                    Snackbar.make(mButtonPanel, R.string.error_subject_required, Snackbar.LENGTH_LONG).show();
+                    mETSubject.requestFocus();
+                } else if (mETMessage.getText().toString().length() < 5) {
+                    Snackbar.make(mButtonPanel, R.string.error_message_length_short, Snackbar.LENGTH_LONG).show();
+                    mETMessage.requestFocus();
+                } else {
+                    Intent intent = new Intent(BetterPostActivity.this, PreviewActivity.class);
+                    intent.putExtra(ACTION_TAG, mAction);
+                    intent.putExtra(CONTENT_SUBJECT_TAG, mETSubject.getText().toString());
+                    intent.putExtra(CONTENT_MESSAGE_TAG, mETMessage.getText().toString());
+                    if (mTid != null) intent.putExtra(NEW_POST_TID_TAG, mTid);
+                    if (mFid != null) intent.putExtra(NEW_THREAD_FID_TAG, mFid);
+                    intent.putExtra(NEW_POST_MAX_FLOOR_TAG, mFloor);
+                    intent.putExtra(CONTENT_ATTACHMENT_URI, mAttachmentUri == null ? null : mAttachmentUri.toString());
+
+                    startActivityForResult(intent, REQUEST_PREVIEW_TAG);
+                }
+        }
+
+        return true;
+    }
+}

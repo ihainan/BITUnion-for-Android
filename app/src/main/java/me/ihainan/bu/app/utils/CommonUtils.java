@@ -7,12 +7,16 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Point;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.view.ContextThemeWrapper;
@@ -35,10 +39,9 @@ import com.umeng.update.UpdateStatus;
 
 import org.json.JSONObject;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
@@ -758,5 +761,213 @@ public class CommonUtils {
     public static void openBrowser(Context context, String url) {
         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
         context.startActivity(intent);
+    }
+
+    /**
+     * 创建文件用于存储下载图片
+     *
+     * @return 用于存储图片的文件实例
+     */
+    public static File getOutputMediaFile(Context context) {
+        // To be safe, you should check that the SDCard is mounted
+        // using Environment.getExternalStorageState() before doing this.
+        File mediaStorageDir;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            mediaStorageDir = context.getExternalFilesDirs(null)[0];
+        } else {
+            mediaStorageDir = new File(Environment.getExternalStorageDirectory()
+                    + "/Android/data/"
+                    + context.getApplicationContext().getPackageName()
+                    + "/Files");
+        }
+
+        return getOutputFile(mediaStorageDir, null);
+    }
+
+    /**
+     * 创建文件用于存储临时图片
+     *
+     * @return 用于存储图片的文件实例
+     */
+    public static File getTmpMediaFile(Context context) {
+        // 创建空白目录
+        String NOMEDIA = ".nomedia";
+        File noMediaFile = new File(context.getExternalCacheDir().getAbsolutePath() + File.separator + NOMEDIA);
+        if (!noMediaFile.exists()) {
+            try {
+                noMediaFile.createNewFile();
+            } catch (IOException e) {
+                Log.e(TAG, "无法创建空白文件", e);
+            }
+        }
+
+        // 创建临时文件
+        File outputDir = context.getExternalCacheDir();
+        return getOutputFile(outputDir, null);
+    }
+
+    /**
+     * 清空临时目录
+     *
+     * @param context 程序上下文
+     */
+    public static void deleteTmpDir(Context context) {
+        // 创建临时文件
+        File cacheDir = context.getExternalCacheDir();
+        if (cacheDir.exists()) {
+            if (cacheDir.isDirectory())
+                for (File child : cacheDir.listFiles())
+                    child.delete();
+            cacheDir.delete();
+        }
+    }
+
+    /**
+     * 创建指定目录下的输出文件，如果 filename 为空，则根据时间戳取一个名字
+     *
+     * @param fileDir  指定文件目录
+     * @param filename 文件名
+     * @return 创建的新文件
+     */
+    public static File getOutputFile(File fileDir, String filename) {
+        // Create the storage directory if it does not exist
+        if (!fileDir.exists()) {
+            if (!fileDir.mkdirs()) {
+                return null;
+            }
+        }
+
+        // Create a media file name
+        File mediaFile;
+        if (filename == null) {
+            String timeStamp = new SimpleDateFormat("ddMMyyyy_HHmmss").format(new Date());
+            String mImageName = "BU_" + timeStamp + ".jpg";
+            mediaFile = new File(fileDir.getPath() + File.separator + mImageName);
+        } else {
+            mediaFile = new File(fileDir.getPath() + File.separator + filename);
+            if (mediaFile.exists()) {
+                mediaFile.delete();
+            }
+        }
+        return mediaFile;
+    }
+
+    /**
+     * 保存图片到缓存目录下
+     *
+     * @param context 上下文
+     * @param bitmap  需要保存的图片
+     * @return 新图片的 Uri
+     */
+    public static Uri saveImageToTmpPath(Context context, Bitmap bitmap) {
+        File pictureFile = getTmpMediaFile(context);
+
+        // 压缩并写入到文件中
+        FileOutputStream fos;
+        try {
+            fos = new FileOutputStream(pictureFile);
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
+            fos.flush();
+            fos.close();
+            return getImageContentUri(context, pictureFile);
+        } catch (Exception e) {
+            String message = "saveImageToTmpPath >> 保存图片到缓存目录下失败";
+            Log.e(TAG, message, e);
+            CommonUtils.debugToast(context, message);
+            return null;
+        }
+    }
+
+    /**
+     * 压缩图片到指定大小以内用于附件上传
+     *
+     * @param context     上下文
+     * @param oriImageUri 原始图片 Uri
+     * @param fileSize    最大文件大小
+     * @return 新得到的图片的 Uri
+     */
+    public static Uri compressImage(Context context, Uri oriImageUri, int fileSize) {
+        try {
+            // 压缩图片到指定大小
+            Bitmap bitmap = MediaStore.Images.Media.getBitmap(context.getContentResolver(), oriImageUri);
+
+            double targetWidth = Math.sqrt(fileSize * 1000);
+            if (bitmap.getWidth() > targetWidth || bitmap.getHeight() > targetWidth) {
+                // 创建操作图片用的 matrix 对象
+                Matrix matrix = new Matrix();
+
+                // 计算宽高缩放率
+                double x = Math.min(targetWidth / bitmap.getWidth(), targetWidth
+                        / bitmap.getHeight());
+
+                // 缩放图片动作
+                matrix.postScale((float) x, (float) x);
+                bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(),
+                        bitmap.getHeight(), matrix, true);
+            }
+
+            return saveImageToTmpPath(context, bitmap);
+        } catch (IOException e) {
+            String message = "saveImageToTmpPath >> 压缩图片到指定大小以内用于附件上传失败";
+            Log.e(TAG, message, e);
+            CommonUtils.debugToast(context, message);
+            return null;
+        }
+    }
+
+    /**
+     * 获取图片的 Content Uri
+     *
+     * @param context   上下文
+     * @param imageFile 图片文件
+     * @return 图片的 Content Uri
+     */
+    public static Uri getImageContentUri(Context context, File imageFile) {
+        String filePath = imageFile.getAbsolutePath();
+        Cursor cursor = context.getContentResolver().query(
+                MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                new String[]{MediaStore.Images.Media._ID},
+                MediaStore.Images.Media.DATA + "=? ",
+                new String[]{filePath}, null);
+
+        if (cursor != null && cursor.moveToFirst()) {
+            int id = cursor.getInt(cursor
+                    .getColumnIndex(MediaStore.MediaColumns._ID));
+            Uri baseUri = Uri.parse("content://media/external/images/media");
+            return Uri.withAppendedPath(baseUri, "" + id);
+        } else {
+            if (imageFile.exists()) {
+                ContentValues values = new ContentValues();
+                values.put(MediaStore.Images.Media.DATA, filePath);
+                return context.getContentResolver().insert(
+                        MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+            } else {
+                return null;
+            }
+        }
+    }
+
+    public static Uri compressImageNew(Context context, Uri oriImageUri, long oriFileSize, long distFileSize) {
+        try {
+            // 压缩图片到指定大小
+            Bitmap bitmap = MediaStore.Images.Media.getBitmap(context.getContentResolver(), oriImageUri);
+
+            double scale = Math.sqrt(distFileSize * 1.0 / oriFileSize);
+
+            // 创建操作图片用的 matrix 对象
+            Matrix matrix = new Matrix();
+
+            // 缩放图片动作
+            matrix.postScale((float) scale, (float) scale);
+            bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(),
+                    bitmap.getHeight(), matrix, true);
+
+            return saveImageToTmpPath(context, bitmap);
+        } catch (IOException e) {
+            String message = "saveImageToTmpPath >> 压缩图片到指定大小以内用于附件上传失败";
+            Log.e(TAG, message, e);
+            CommonUtils.debugToast(context, message);
+            return null;
+        }
     }
 }

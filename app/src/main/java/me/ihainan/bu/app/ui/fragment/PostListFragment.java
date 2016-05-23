@@ -230,28 +230,17 @@ public class PostListFragment extends Fragment {
                                 String debugMessage = message + " - " + response;
                                 Log.w(TAG, debugMessage);
                                 CommonUtils.debugToast(mContext, debugMessage);
-                                // Snackbar.make(mRecyclerView, message, Snackbar.LENGTH_LONG).show();
                                 showErrorLayout(message);
                             } else {
                                 String message = getString(R.string.error_unknown_msg) + ": " + response.getString("msg");
                                 String debugMessage = message + " - " + response;
                                 Log.w(TAG, debugMessage);
                                 CommonUtils.debugToast(mContext, debugMessage);
-                                // Snackbar.make(mRecyclerView, message, Snackbar.LENGTH_LONG).show();
                                 showErrorLayout(message);
                             }
                         } catch (Exception e) {
                             Log.e(TAG, getString(R.string.error_parse_json) + "\n" + response, e);
                             showErrorLayout(getString(R.string.error_parse_json));
-
-                            /*
-                            Snackbar.make(mRecyclerView, getString(R.string.error_parse_json),
-                                    Snackbar.LENGTH_LONG).setAction("RETRY", new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    reloadData();
-                                }
-                            }).show(); */
                         }
                     }
                 }, new Response.ErrorListener() {
@@ -265,14 +254,6 @@ public class PostListFragment extends Fragment {
                         CommonUtils.debugToast(mContext, debugMessage);
 
                         showErrorLayout(message);
-                        /*
-                        Snackbar.make(mRecyclerView, message, Snackbar.LENGTH_LONG).setAction("RETRY", new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                reloadData();
-                            }
-                        }).show(); */
-
                         Log.e(TAG, debugMessage, error);
                     }
                 });

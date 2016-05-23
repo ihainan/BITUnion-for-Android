@@ -2,8 +2,11 @@
     <string name="app_name">BITUnion</string>
 
     <!-- Common -->
+    <string name="title_warning">警告</string>
     <string name="button_confirm">确定</string>
     <string name="button_cancel">取消</string>
+    <string name="button_yes">是</string>
+    <string name="button_no">否</string>
     <string name="press_back_to_exit">再次按下返回键退出应用</string>
 
     <!-- Strings related to login -->
@@ -17,6 +20,7 @@
     <!-- Error message -->
     <string name="error_title">错误</string>
     <string name="error_insert_attachment">插入附件失败</string>
+    <string name="error_open_attachment">找不到合适的应用打开该附件</string>
     <string name="error_invalid_password">密码不得为空</string>
     <string name="error_field_required">用户名不得为空</string>
     <string name="error_subject_required">主题不得为空</string>
@@ -53,7 +57,7 @@
     <!-- Actions -->
     <string name="action_settings">设置</string>
     <string name="action_home">首页</string>
-    <string name="action_forum">论坛</string>
+    <string name="action_forum">板块</string>
     <string name="action_discover">发现</string>
     <string name="action_focus">关注</string>
     <string name="action_topic">热点话题</string>
@@ -68,8 +72,15 @@
     <string name="action_jump_to_head">跳到首页</string>
     <string name="action_jump_to_end">跳到末页面</string>
 
+    <string name="action_add_image_attachment">添加图片</string>
+    <string name="action_add_file_attachment">添加文件</string>
+    <string name="action_view_image_attachment">查看图片</string>
+    <string name="action_remove_image_attachment">移除图片</string>
+    <string name="action_view_file_attachment">查看附件</string>
+    <string name="action_remove_file_attachment">移除附件</string>
+
     <!-- Default Title -->
-    <string name="title_activity_main">@string/action_home</string>
+    <string name="title_activity_main">BITUnion</string>
     <string name="title_activity_login">登录</string>
     <string name="title_activity_settings">设置</string>
     <string name="title_activity_post_list">回帖列表</string>
@@ -82,4 +93,12 @@
     <string name="title_activity_thread_detail_new">主题列表</string>
     <string name="title_activity_search_result">搜索结果</string>
     <string name="title_activity_fullscreen_photo_viewer">照片浏览器</string>
+    <string name="title_activity_better_post">发布回复</string>
+    <string name="title_new_post">发布回复</string>
+    <string name="title_new_thread">发布主题</string>
+
+    <!-- Editor -->
+    <string name="message_exit_editor">帖子内容不为空，是否仍然退出编辑器？</string>
+    <string name="compressing_image">正在压缩图片</string>
+    <string name="processing_attachment">正在处理附件</string>
 </resources>

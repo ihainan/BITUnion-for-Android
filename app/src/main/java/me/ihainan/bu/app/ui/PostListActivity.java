@@ -104,10 +104,10 @@ public class PostListActivity extends SwipeActivity {
         mNewPostFAB.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(PostListActivity.this, NewPostActivity.class);
-                intent.putExtra(NewPostActivity.NEW_POST_ACTION_TAG, NewPostActivity.ACTION_POST);
-                intent.putExtra(NewPostActivity.NEW_POST_TID_TAG, mTid);
-                intent.putExtra(NewPostActivity.NEW_POST_FLOOR_TAG, mReplyCount + 1);
+                Intent intent = new Intent(PostListActivity.this, BetterPostActivity.class);
+                intent.putExtra(BetterPostActivity.ACTION_TAG, BetterPostActivity.ACTION_NEW_POST);
+                intent.putExtra(BetterPostActivity.NEW_POST_TID_TAG, mTid);
+                intent.putExtra(BetterPostActivity.NEW_POST_MAX_FLOOR_TAG, mReplyCount + 1);
                 startActivityForResult(intent, REQUEST_NEW_REPLY);
             }
         });
