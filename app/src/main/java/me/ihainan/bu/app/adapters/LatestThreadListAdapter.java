@@ -4,12 +4,10 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Point;
-import android.os.Build;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.util.Log;
-import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,7 +32,7 @@ import me.ihainan.bu.app.ui.PostListActivity;
 import me.ihainan.bu.app.ui.viewholders.DefaultViewHolder;
 import me.ihainan.bu.app.ui.viewholders.SelfieViewHolder;
 import me.ihainan.bu.app.utils.CommonUtils;
-import me.ihainan.bu.app.utils.Global;
+import me.ihainan.bu.app.utils.BUApplication;
 import me.ihainan.bu.app.utils.network.BUApi;
 
 /**
@@ -76,7 +74,7 @@ public class LatestThreadListAdapter extends RecyclerView.Adapter<RecyclerView.V
     @Override
     public int getItemViewType(int position) {
         final LatestThread latestThread = mLatestThreads.get(position);
-        if (Global.saveDataMode || !CommonUtils.decode(latestThread.fname).equals("个人展示区"))
+        if (BUApplication.saveDataMode || !CommonUtils.decode(latestThread.fname).equals("个人展示区"))
             return VIEW_TYPE_DEFAULT;
         else return VIEW_TYPE_SELFIE;
     }
@@ -149,7 +147,7 @@ public class LatestThreadListAdapter extends RecyclerView.Adapter<RecyclerView.V
             holder.authorName.setText(
                     CommonUtils.truncateString(
                             CommonUtils.decode(latestThread.author),
-                            Global.MAX_USER_NAME_LENGTH));
+                            BUApplication.MAX_USER_NAME_LENGTH));
             CommonUtils.setUserAvatarClickListener(mContext,
                     holder.avatar, -1,
                     latestThread.lastreply.who);
@@ -169,7 +167,7 @@ public class LatestThreadListAdapter extends RecyclerView.Adapter<RecyclerView.V
                     });
 
             // 热帖标志
-            if (latestThread.tid_sum >= Global.HOT_TOPIC_THREAD) {
+            if (latestThread.tid_sum >= BUApplication.HOT_TOPIC_THREAD) {
                 holder.isNewOrHot.setVisibility(View.VISIBLE);
                 holder.isNewOrHot.setText("  HOT");
                 holder.isNewOrHot.setTextColor(ContextCompat.getColor(mContext, R.color.hot_topic));
@@ -181,7 +179,7 @@ public class LatestThreadListAdapter extends RecyclerView.Adapter<RecyclerView.V
             holder.authorName.setText(
                     CommonUtils.truncateString(
                             CommonUtils.decode(latestThread.lastreply.who),
-                            Global.MAX_USER_NAME_LENGTH));
+                            BUApplication.MAX_USER_NAME_LENGTH));
             holder.forumName.setText(CommonUtils.decode(latestThread.fname));
             holder.action.setText(" 回复了帖子");
             CommonUtils.setUserAvatarClickListener(mContext,
@@ -220,7 +218,7 @@ public class LatestThreadListAdapter extends RecyclerView.Adapter<RecyclerView.V
             holder.authorName.setText(
                     CommonUtils.truncateString(
                             CommonUtils.decode(latestThread.author),
-                            Global.MAX_USER_NAME_LENGTH));
+                            BUApplication.MAX_USER_NAME_LENGTH));
             CommonUtils.setUserAvatarClickListener(mContext,
                     holder.avatar, -1,
                     latestThread.author);
@@ -233,14 +231,14 @@ public class LatestThreadListAdapter extends RecyclerView.Adapter<RecyclerView.V
             holder.authorName.setText(
                     CommonUtils.truncateString(
                             CommonUtils.decode(latestThread.lastreply.who),
-                            Global.MAX_USER_NAME_LENGTH));
+                            BUApplication.MAX_USER_NAME_LENGTH));
             CommonUtils.setUserAvatarClickListener(mContext,
                     holder.avatar, -1,
                     latestThread.lastreply.who);
             holder.action.setText(" 评价了 " +
                     CommonUtils.truncateString(
                             CommonUtils.decode(latestThread.author),
-                            Global.MAX_USER_NAME_LENGTH) + " 的自拍");
+                            BUApplication.MAX_USER_NAME_LENGTH) + " 的自拍");
 
             // 从缓存中获取用户头像
             CommonUtils.getAndCacheUserInfo(mContext,
@@ -264,7 +262,7 @@ public class LatestThreadListAdapter extends RecyclerView.Adapter<RecyclerView.V
         }
 
         // 获取背景图片
-        Post reply = (Post) Global.getCache(mContext).getAsObject(Global.CACHE_REPLY_CONTENT + "_" + latestThread.tid);
+        Post reply = (Post) BUApplication.getCache(mContext).getAsObject(BUApplication.CACHE_REPLY_CONTENT + "_" + latestThread.tid);
         // Picasso.with(mContext).load(R.drawable.background).into(holder.background);
         if (reply == null) {
             Log.i(TAG, "fillDefaultView >> 拉取回复数据");
@@ -281,7 +279,7 @@ public class LatestThreadListAdapter extends RecyclerView.Adapter<RecyclerView.V
                             if (postReplies != null && postReplies.size() > 0) {
                                 Post firstReply = postReplies.get(0);
                                 Log.i(TAG, "fillSelfieView >> 拉取得到回复数据，放入缓存：" + firstReply);
-                                Global.getCache(mContext).put(Global.CACHE_REPLY_CONTENT + "_" + latestThread.tid, firstReply);
+                                BUApplication.getCache(mContext).put(BUApplication.CACHE_REPLY_CONTENT + "_" + latestThread.tid, firstReply);
 
                                 if (firstReply.attachext.equals("png") || firstReply.attachext.equals("jpg")
                                         || firstReply.attachext.equals("jpeg")) {

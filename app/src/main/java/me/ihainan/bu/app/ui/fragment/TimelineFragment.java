@@ -30,7 +30,7 @@ import me.ihainan.bu.app.models.TimelineEvent;
 import me.ihainan.bu.app.ui.ProfileActivity;
 import me.ihainan.bu.app.ui.assist.SimpleDividerItemDecoration;
 import me.ihainan.bu.app.utils.CommonUtils;
-import me.ihainan.bu.app.utils.Global;
+import me.ihainan.bu.app.utils.BUApplication;
 import me.ihainan.bu.app.utils.network.BUApi;
 import me.ihainan.bu.app.utils.network.ExtraApi;
 
@@ -67,7 +67,7 @@ public class TimelineFragment extends Fragment {
 
             // Username
             mUsername = getArguments().getString(ProfileActivity.USER_NAME_TAG);
-            if (mUsername == null) mUsername = Global.userSession.username;
+            if (mUsername == null) mUsername = BUApplication.userSession.username;
             mAction = getArguments().getString(TIMELINE_ACTION_TAG);
             if (mAction == null) mAction = "SPEC";
 
@@ -113,7 +113,7 @@ public class TimelineFragment extends Fragment {
                 super.onScrolled(recyclerView, dx, dy);
 
                 int mLastVisibleItem = mLayoutManager.findLastVisibleItemPosition();
-                if (dy > 0 && mLastVisibleItem >= mList.size() - Global.LOADING_TIMELINE_COUNT / 2 && !mIsLoading) {
+                if (dy > 0 && mLastVisibleItem >= mList.size() - BUApplication.LOADING_TIMELINE_COUNT / 2 && !mIsLoading) {
                     loadMore(true);
                 }
             }
@@ -121,7 +121,7 @@ public class TimelineFragment extends Fragment {
     }
 
     private void setupSwipeRefreshLayout() {
-        mSwipeRefreshLayout.setDistanceToTriggerSync(Global.SWIPE_LAYOUT_TRIGGER_DISTANCE);
+        mSwipeRefreshLayout.setDistanceToTriggerSync(BUApplication.SWIPE_LAYOUT_TRIGGER_DISTANCE);
 
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -160,7 +160,7 @@ public class TimelineFragment extends Fragment {
             mIsLoading = true;
         }
 
-        refreshData(mCurrentPosition, mCurrentPosition + Global.LOADING_TIMELINE_COUNT);
+        refreshData(mCurrentPosition, mCurrentPosition + BUApplication.LOADING_TIMELINE_COUNT);
     }
 
     // 成功拉取数据事件监听器
@@ -193,7 +193,7 @@ public class TimelineFragment extends Fragment {
 
                     // 更新 RecyclerView
                     if (newEventsFiltered.size() > 0) {
-                        mCurrentPosition += Global.LOADING_TIMELINE_COUNT;
+                        mCurrentPosition += BUApplication.LOADING_TIMELINE_COUNT;
                         mList.addAll(newEventsFiltered);
                         mAdapter.notifyDataSetChanged();
                     } else if (newEventsFiltered.size() == 0) {
@@ -201,7 +201,7 @@ public class TimelineFragment extends Fragment {
                     }
 
                     // 判断是否到头
-                    if (newEvents.size() == Global.LOADING_TIMELINE_COUNT) {
+                    if (newEvents.size() == BUApplication.LOADING_TIMELINE_COUNT) {
                         mIsLoading = false;
                     }
                 } catch (Exception e) {

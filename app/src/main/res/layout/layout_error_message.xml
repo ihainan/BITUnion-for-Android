@@ -18,7 +18,7 @@
         <ImageView
             android:layout_width="150dp"
             android:layout_height="150dp"
-            android:src="@drawable/error_background" />
+            android:src="@drawable/annoying_dog" />
 
         <LinearLayout
             android:layout_width="wrap_content"

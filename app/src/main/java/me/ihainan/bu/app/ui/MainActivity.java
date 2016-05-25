@@ -30,7 +30,8 @@ import me.ihainan.bu.app.ui.fragment.ForumFragment;
 import me.ihainan.bu.app.ui.fragment.HomePageFragment;
 import me.ihainan.bu.app.ui.fragment.SettingFragment;
 import me.ihainan.bu.app.utils.CommonUtils;
-import me.ihainan.bu.app.utils.Global;
+import me.ihainan.bu.app.utils.BUApplication;
+import me.ihainan.bu.app.utils.network.SessionUpdateService;
 
 public class MainActivity extends AppCompatActivity {
     private final static String TAG = MainActivity.class.getSimpleName();
@@ -68,8 +69,8 @@ public class MainActivity extends AppCompatActivity {
         mNavExit = (ImageButton) mNavHead.findViewById(R.id.nav_logout);
 
         // Get user info
-        Global.readConfig(this);
-        if (Global.userSession == null || "".equals(Global.username) || "".equals(Global.password) || Global.username == null || Global.password == null) {
+        BUApplication.readConfig(this);
+        if (BUApplication.userSession == null || "".equals(BUApplication.username) || "".equals(BUApplication.password) || BUApplication.username == null || BUApplication.password == null) {
             Log.i(TAG, "MainActivity >> 尚未登录，返回登录界面");
             CommonUtils.debugToast(this, "尚未登录，即将返回登录界面");
             Intent intent = new Intent(this, LoginActivity.class);
@@ -87,6 +88,10 @@ public class MainActivity extends AppCompatActivity {
             // 用户用户信息
             getUserInfo();
 
+            // 定期更新用户 Session
+            Intent intent = new Intent(this, SessionUpdateService.class);
+            startService(intent);
+
             // Activity content
             if (mFragment == null) {
                 mFragment = getHomeFragment();
@@ -102,13 +107,13 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 mDrawerLayout.closeDrawers();
                 Intent intent = new Intent(MainActivity.this, ProfileActivity.class);
-                intent.putExtra(ProfileActivity.USER_NAME_TAG, Global.username);
+                intent.putExtra(ProfileActivity.USER_NAME_TAG, BUApplication.username);
                 startActivity(intent);
             }
         });
 
         // 从缓存中获取用户头像
-        CommonUtils.getAndCacheUserInfo(this, Global.username,
+        CommonUtils.getAndCacheUserInfo(this, BUApplication.username,
                 new CommonUtils.UserInfoAndFillAvatarCallback() {
                     @Override
                     public void doSomethingIfHasCached(Member member) {
@@ -177,8 +182,8 @@ public class MainActivity extends AppCompatActivity {
                         .setPositiveButton(getString(R.string.button_confirm), new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                Global.password = null;
-                                Global.saveConfig(MainActivity.this);
+                                BUApplication.password = null;
+                                BUApplication.saveConfig(MainActivity.this);
                                 Intent intent = new Intent(MainActivity.this, LoginActivity.class);
                                 startActivity(intent);
                                 finish();
@@ -285,7 +290,7 @@ public class MainActivity extends AppCompatActivity {
         super.onResume();
 
         // 友盟 SDK
-        if (Global.uploadData)
+        if (BUApplication.uploadData)
             MobclickAgent.onResume(this);
     }
 
@@ -294,7 +299,7 @@ public class MainActivity extends AppCompatActivity {
         super.onPause();
 
         // 友盟 SDK
-        if (Global.uploadData)
+        if (BUApplication.uploadData)
             MobclickAgent.onPause(this);
     }
 }

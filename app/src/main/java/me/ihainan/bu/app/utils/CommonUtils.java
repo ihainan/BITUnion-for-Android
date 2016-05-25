@@ -142,7 +142,7 @@ public class CommonUtils {
      * @param message 输出信息
      */
     public static void debugToast(Context context, String message) {
-        if (Global.debugMode)
+        if (BUApplication.debugMode)
             Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
     }
 
@@ -160,7 +160,7 @@ public class CommonUtils {
         builder.setPositiveButton("下次再说", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                if (Global.debugMode)
+                if (BUApplication.debugMode)
                     Toast.makeText(context, "下次再说", Toast.LENGTH_SHORT).show();
                 dialog.dismiss();
             }
@@ -169,7 +169,7 @@ public class CommonUtils {
         builder.setNegativeButton("现在更新", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                if (Global.debugMode)
+                if (BUApplication.debugMode)
                     Toast.makeText(context, "现在更新", Toast.LENGTH_SHORT).show();
 
                 // 非 Wi-Fi 条件下给出提醒
@@ -199,7 +199,7 @@ public class CommonUtils {
             builder.setNeutralButton("不再提醒", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-                    if (Global.debugMode)
+                    if (BUApplication.debugMode)
                         Toast.makeText(context, "不再提醒", Toast.LENGTH_SHORT).show();
                     UmengUpdateAgent.ignoreUpdate(context, updateInfo);
                     dialog.dismiss();
@@ -250,7 +250,7 @@ public class CommonUtils {
     }
 
     public static void setAvatarImageView(final Context context, final ImageView imageView, final String imageSrc, final int errorImageId) {
-        if (Global.badImages.get(imageSrc) != null) {
+        if (BUApplication.badImages.get(imageSrc) != null) {
             Log.d(TAG, "图片在黑名单中 " + imageSrc);
             Picasso.with(context)
                     .load(R.drawable.default_avatar)
@@ -284,7 +284,7 @@ public class CommonUtils {
 
                     @Override
                     public void onError() {
-                        if (!CommonUtils.isWifi(context) && Global.saveDataMode) {
+                        if (!CommonUtils.isWifi(context) && BUApplication.saveDataMode) {
                             // TODO: 以更友好的方式显示默认头像
                             // 节省流量模式，不要下载图片
                             Log.d(TAG, "setImageView >> 节省流量模式且非 Wi-Fi 环境，不下载图片 " + imageSrc);
@@ -310,7 +310,7 @@ public class CommonUtils {
                                         public void onError() {
                                             // 放入黑名单
                                             Log.d(TAG, "图片加入到黑名单中 " + imageSrc);
-                                            Global.badImages.put(imageSrc, true);
+                                            BUApplication.badImages.put(imageSrc, true);
                                         }
                                     });
                             ;
@@ -344,11 +344,11 @@ public class CommonUtils {
         userName = CommonUtils.decode(userName);
 
         // 从缓存中获取用户信息
-        final Member member = (Member) Global.getCache(context)
-                .getAsObject(Global.CACHE_USER_INFO + userName);
+        final Member member = (Member) BUApplication.getCache(context)
+                .getAsObject(BUApplication.CACHE_USER_INFO + userName);
 
         if (member != null) {
-            Log.i(TAG, "从缓存 " + Global.CACHE_USER_INFO + userName + " 中获取用户 " + userName + " 的缓存数据");
+            Log.i(TAG, "从缓存 " + BUApplication.CACHE_USER_INFO + userName + " 中获取用户 " + userName + " 的缓存数据");
 
             // Do something HERE!!!
             callback.doSomethingIfHasCached(member);
@@ -373,11 +373,11 @@ public class CommonUtils {
                                     callback.doSomethingIfHasNotCached(newMember);
 
                                     // 将用户信息放入到缓存当中
-                                    Log.i(TAG, "拉取得到用户 " + finalUserName + " 的数据，放入缓存 " + Global.CACHE_USER_INFO + finalUserName + " 中：" + newMember);
-                                    Global.getCache(context).put(
-                                            Global.CACHE_USER_INFO + finalUserName,
+                                    Log.i(TAG, "拉取得到用户 " + finalUserName + " 的数据，放入缓存 " + BUApplication.CACHE_USER_INFO + finalUserName + " 中：" + newMember);
+                                    BUApplication.getCache(context).put(
+                                            BUApplication.CACHE_USER_INFO + finalUserName,
                                             newMember,
-                                            Global.cacheDays * ACache.TIME_DAY);
+                                            BUApplication.cacheDays * ACache.TIME_DAY);
                                 } else if ("member_nonexistence".equals(response.getString("msg"))) {
                                     String message = context.getString(R.string.error_user_not_exists) + ": " + CommonUtils.decode(finalUserName);
                                     String debugMessage = message + " - " + response;
@@ -439,7 +439,7 @@ public class CommonUtils {
 
         // 完整地址和不完整地址¡¡
         if (originalURL.startsWith("http"))
-            originalURL = Global.isInSchool() ? originalURL : originalURL.replace("www", "out");
+            originalURL = BUApplication.isInSchool() ? originalURL : originalURL.replace("www", "out");
         else originalURL = BUApi.getBaseURL() + originalURL;
 
         originalURL = originalURL.replaceAll("(http://)?(www|v6|kiss|out).bitunion.org/", BUApi.getBaseURL());

@@ -29,7 +29,7 @@ import java.io.IOException;
 import me.ihainan.bu.app.R;
 import me.ihainan.bu.app.models.Session;
 import me.ihainan.bu.app.utils.network.BUApi;
-import me.ihainan.bu.app.utils.Global;
+import me.ihainan.bu.app.utils.BUApplication;
 
 /**
  * A login screen that offers login via username / password.
@@ -56,13 +56,13 @@ public class LoginActivity extends AppCompatActivity {
         mSwitchCompatOutNetwork = (SwitchCompat) findViewById(R.id.switch_compat_out_network);
 
         // 读取配置全局配置信息
-        Global.readConfig(this);
+        BUApplication.readConfig(this);
 
         // 自动填充，并设置最原始的登录节点
-        if (Global.username != null && Global.networkType != null) {
-            mUsername.setText(Global.username);
-            mPassword.setText(Global.password);
-            if (Global.networkType == Global.NETWORK_TYPE.OUT_SCHOOL)
+        if (BUApplication.username != null && BUApplication.networkType != null) {
+            mUsername.setText(BUApplication.username);
+            mPassword.setText(BUApplication.password);
+            if (BUApplication.networkType == BUApplication.NETWORK_TYPE.OUT_SCHOOL)
                 mSwitchCompatOutNetwork.setChecked(true);
             else mSwitchCompatOutNetwork.setChecked(false);
         } else {
@@ -87,8 +87,8 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 BUApi.currentEndPoint = isChecked ? BUApi.OUT_SCHOOL_ENDPOINT : BUApi.IN_SCHOOL_ENDPOINT;
-                Global.networkType = isChecked ? Global.NETWORK_TYPE.OUT_SCHOOL : Global.NETWORK_TYPE.IN_SCHOOL;
-                Global.saveConfig(LoginActivity.this);
+                BUApplication.networkType = isChecked ? BUApplication.NETWORK_TYPE.OUT_SCHOOL : BUApplication.NETWORK_TYPE.IN_SCHOOL;
+                BUApplication.saveConfig(LoginActivity.this);
             }
         });
 
@@ -149,20 +149,20 @@ public class LoginActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(JSONObject response) {
                         if (isFinishing()) return;
-                        Global.username = mUsername.getText().toString();
+                        BUApplication.username = mUsername.getText().toString();
                         if (mDialog != null) mDialog.dismiss();
                         // showProgress(false);
                         try {
                             if (BUApi.checkStatus(response)) {
-                                Global.userSession = BUApi.MAPPER.readValue(response.toString(), Session.class);
+                                BUApplication.userSession = BUApi.MAPPER.readValue(response.toString(), Session.class);
 
-                                if (Global.userSession.credit < 0) {
+                                if (BUApplication.userSession.credit < 0) {
                                     if (mDialog != null) mDialog.dismiss();
                                     mUsername.setError(getString(R.string.error_login_negative_credit));
                                     mUsername.requestFocus();
                                 } else {
-                                    Global.password = mPassword.getText().toString();
-                                    Global.saveConfig(LoginActivity.this);
+                                    BUApplication.password = mPassword.getText().toString();
+                                    BUApplication.saveConfig(LoginActivity.this);
                                     Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                                     startActivity(intent);
                                     finish();
@@ -170,7 +170,7 @@ public class LoginActivity extends AppCompatActivity {
                             } else {
                                 if (mDialog != null) mDialog.dismiss();
                                 mPassword.setError(getString(R.string.error_wrong_password));
-                                Global.saveConfig(LoginActivity.this);
+                                BUApplication.saveConfig(LoginActivity.this);
                                 mPassword.requestFocus();
                                 return;
                             }
@@ -199,7 +199,7 @@ public class LoginActivity extends AppCompatActivity {
         super.onResume();
 
         // 友盟 SDK
-        if (Global.uploadData)
+        if (BUApplication.uploadData)
             MobclickAgent.onResume(this);
     }
 
@@ -208,7 +208,7 @@ public class LoginActivity extends AppCompatActivity {
         super.onPause();
 
         // 友盟 SDK
-        if (Global.uploadData)
+        if (BUApplication.uploadData)
             MobclickAgent.onPause(this);
     }
 }

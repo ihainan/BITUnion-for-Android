@@ -31,7 +31,7 @@ import me.ihainan.bu.app.ui.FullscreenPhotoViewerActivity;
 import me.ihainan.bu.app.ui.ProfileActivity;
 import me.ihainan.bu.app.ui.assist.CustomSpan;
 import me.ihainan.bu.app.utils.CommonUtils;
-import me.ihainan.bu.app.utils.Global;
+import me.ihainan.bu.app.utils.BUApplication;
 import me.ihainan.bu.app.utils.ui.PicassoImageGetter;
 
 /**
@@ -64,7 +64,7 @@ public class BasicInfoFragment extends Fragment {
 
             // Username
             mUsername = getArguments().getString(ProfileActivity.USER_NAME_TAG);
-            if (mUsername == null) mUsername = Global.userSession.username;
+            if (mUsername == null) mUsername = BUApplication.userSession.username;
 
             // UI references
             mSignature = (TextView) mRootView.findViewById(R.id.profile_signature);
@@ -96,13 +96,13 @@ public class BasicInfoFragment extends Fragment {
     }
 
     private void setupSwipeRefreshLayout() {
-        mSwipeRefreshLayout.setDistanceToTriggerSync(Global.SWIPE_LAYOUT_TRIGGER_DISTANCE);
+        mSwipeRefreshLayout.setDistanceToTriggerSync(BUApplication.SWIPE_LAYOUT_TRIGGER_DISTANCE);
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
                 // 重新加载数据
-                Global.getCache(mContext)
-                        .remove(Global.CACHE_USER_INFO + mUsername);
+                BUApplication.getCache(mContext)
+                        .remove(BUApplication.CACHE_USER_INFO + mUsername);
                 getUserInfo();
             }
         });
@@ -122,8 +122,8 @@ public class BasicInfoFragment extends Fragment {
     private void getUserInfo() {
         mSwipeRefreshLayout.setRefreshing(true);
 
-        mMember = (Member) Global.getCache(mContext)
-                .getAsObject(Global.CACHE_USER_INFO + mUsername);
+        mMember = (Member) BUApplication.getCache(mContext)
+                .getAsObject(BUApplication.CACHE_USER_INFO + mUsername);
 
         // 从缓存中获取用户头像
         CommonUtils.getAndCacheUserInfo(mContext, mUsername,

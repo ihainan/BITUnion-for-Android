@@ -17,7 +17,7 @@ import java.io.IOException;
 
 import me.ihainan.bu.app.utils.ACache;
 import me.ihainan.bu.app.utils.CommonUtils;
-import me.ihainan.bu.app.utils.Global;
+import me.ihainan.bu.app.utils.BUApplication;
 
 /**
  * Picasso Image Getter
@@ -55,20 +55,20 @@ public class PicassoImageGetter implements Html.ImageGetter {
                     }
 
                     // 从缓存中获取图片
-                    bitmap = Global.getCache(mContext).getAsBitmap(Global.CACHE_MESSAGE_IMAGE + "_" + source);
+                    bitmap = BUApplication.getCache(mContext).getAsBitmap(BUApplication.CACHE_MESSAGE_IMAGE + "_" + source);
                     if (bitmap != null) {
                         Log.d(TAG, "loadImage >> 从缓存中获取图片 " + source);
                         return bitmap;
                     }
 
                     // Wi-Fi 条件或者非省流量条件下加载图片
-                    if (CommonUtils.isWifi(mContext) || !Global.saveDataMode) {
+                    if (CommonUtils.isWifi(mContext) || !BUApplication.saveDataMode) {
                         Log.d(TAG, "loadImage >> 非节省流量模式或者 Wi-Fi 环境，正常下载图片 " + source);
                         bitmap = picasso.load(source).get();
 
                         // 缓存位图
                         Log.d(TAG, "loadImage >> 缓存图片成功 " + source);
-                        Global.getCache(mContext).put(Global.CACHE_MESSAGE_IMAGE + "_" + source, bitmap, Global.cacheDays * ACache.TIME_DAY);
+                        BUApplication.getCache(mContext).put(BUApplication.CACHE_MESSAGE_IMAGE + "_" + source, bitmap, BUApplication.cacheDays * ACache.TIME_DAY);
 
                         return bitmap;
                     } else {

@@ -24,7 +24,7 @@ import me.ihainan.bu.app.ui.PostListActivity;
 import me.ihainan.bu.app.ui.viewholders.LoadingViewHolder;
 import me.ihainan.bu.app.ui.viewholders.TimelineViewHolder;
 import me.ihainan.bu.app.utils.CommonUtils;
-import me.ihainan.bu.app.utils.Global;
+import me.ihainan.bu.app.utils.BUApplication;
 import me.ihainan.bu.app.utils.network.BUApi;
 import me.ihainan.bu.app.utils.ui.HtmlUtil;
 
@@ -171,7 +171,7 @@ public class TimelineAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             }
 
             // 从缓存中获取用户头像
-            username = username == null ? Global.userSession.username : username;
+            username = username == null ? BUApplication.userSession.username : username;
             CommonUtils.getAndCacheUserInfo(mContext,
                     username,
                     new CommonUtils.UserInfoAndFillAvatarCallback() {

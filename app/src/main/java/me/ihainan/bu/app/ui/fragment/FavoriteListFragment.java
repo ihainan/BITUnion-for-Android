@@ -31,7 +31,7 @@ import me.ihainan.bu.app.adapters.FavoriteListAdapter;
 import me.ihainan.bu.app.models.Favorite;
 import me.ihainan.bu.app.ui.assist.SimpleDividerItemDecoration;
 import me.ihainan.bu.app.utils.CommonUtils;
-import me.ihainan.bu.app.utils.Global;
+import me.ihainan.bu.app.utils.BUApplication;
 import me.ihainan.bu.app.utils.network.BUApi;
 import me.ihainan.bu.app.utils.network.ExtraApi;
 
@@ -103,7 +103,7 @@ public class FavoriteListFragment extends Fragment {
                 super.onScrolled(recyclerView, dx, dy);
 
                 int mLastVisibleItem = mLayoutManager.findLastVisibleItemPosition();
-                if (dy > 0 && mLastVisibleItem >= mList.size() - Global.LOADING_FAVORITES_COUNT / 2 && !mIsLoading) {
+                if (dy > 0 && mLastVisibleItem >= mList.size() - BUApplication.LOADING_FAVORITES_COUNT / 2 && !mIsLoading) {
                     loadMore(true);
                 }
             }
@@ -111,7 +111,7 @@ public class FavoriteListFragment extends Fragment {
     }
 
     private void setupSwipeRefreshLayout() {
-        mSwipeRefreshLayout.setDistanceToTriggerSync(Global.SWIPE_LAYOUT_TRIGGER_DISTANCE);
+        mSwipeRefreshLayout.setDistanceToTriggerSync(BUApplication.SWIPE_LAYOUT_TRIGGER_DISTANCE);
 
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -150,7 +150,7 @@ public class FavoriteListFragment extends Fragment {
             mIsLoading = true;
         }
 
-        refreshData(mCurrentPosition, mCurrentPosition + Global.LOADING_POSTS_COUNT);
+        refreshData(mCurrentPosition, mCurrentPosition + BUApplication.LOADING_POSTS_COUNT);
     }
 
     /**
@@ -182,16 +182,16 @@ public class FavoriteListFragment extends Fragment {
 
                                 // 更新 RecyclerView
                                 if (newFavorites.size() > 0) {
-                                    mCurrentPosition += Global.LOADING_POSTS_COUNT;
+                                    mCurrentPosition += BUApplication.LOADING_POSTS_COUNT;
                                     mList.addAll(newFavorites);
                                     mAdapter.notifyDataSetChanged();
-                                    Global.hasUpdateFavor = false;
+                                    BUApplication.hasUpdateFavor = false;
                                 } else if (newFavorites.size() == 0) {
                                     showErrorLayout(getString(R.string.error_no_favorites), getString(R.string.action_refresh));
                                 }
 
                                 // 判断是否到头
-                                if (newFavorites.size() == Global.LOADING_FAVORITES_COUNT) {
+                                if (newFavorites.size() == BUApplication.LOADING_FAVORITES_COUNT) {
                                     mIsLoading = false;
                                 }
                             } catch (Exception e) {

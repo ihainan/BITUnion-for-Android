@@ -17,7 +17,7 @@ import android.view.ViewGroup;
 import me.ihainan.bu.app.BuildConfig;
 import me.ihainan.bu.app.R;
 import me.ihainan.bu.app.utils.CommonUtils;
-import me.ihainan.bu.app.utils.Global;
+import me.ihainan.bu.app.utils.BUApplication;
 import me.ihainan.bu.app.utils.network.BUApi;
 
 /**
@@ -58,41 +58,41 @@ public class SettingFragment extends PreferenceFragment {
     private Preference version, deviceName, checkUpdate;
 
     private void loadDefaultValue() {
-        Global.readConfig(mContext);
+        BUApplication.readConfig(mContext);
 
         networkType = (SwitchPreference) findPreference("pref_out_school");
         networkType.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
             @Override
             public boolean onPreferenceChange(Preference preference, Object newValue) {
                 Boolean checked = (Boolean) newValue;
-                Global.networkType = checked ? Global.NETWORK_TYPE.OUT_SCHOOL : Global.NETWORK_TYPE.IN_SCHOOL;
+                BUApplication.networkType = checked ? BUApplication.NETWORK_TYPE.OUT_SCHOOL : BUApplication.NETWORK_TYPE.IN_SCHOOL;
                 BUApi.currentEndPoint = checked ? BUApi.OUT_SCHOOL_ENDPOINT : BUApi.IN_SCHOOL_ENDPOINT;
-                Global.saveConfig(mContext);
+                BUApplication.saveConfig(mContext);
                 return true;
             }
         });
-        networkType.setChecked(Global.networkType == Global.NETWORK_TYPE.IN_SCHOOL ? false : true);
+        networkType.setChecked(BUApplication.networkType == BUApplication.NETWORK_TYPE.IN_SCHOOL ? false : true);
 
         saveDataMode = (SwitchPreference) findPreference("pref_save_data");
-        saveDataMode.setChecked(Global.saveDataMode);
+        saveDataMode.setChecked(BUApplication.saveDataMode);
         saveDataMode.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
             @Override
             public boolean onPreferenceChange(Preference preference, Object newValue) {
                 Boolean checked = (Boolean) newValue;
-                Global.saveDataMode = checked;
-                Global.saveConfig(mContext);
+                BUApplication.saveDataMode = checked;
+                BUApplication.saveConfig(mContext);
                 return true;
             }
         });
 
         uploadData = (SwitchPreference) findPreference("pref_upload_data");
-        uploadData.setChecked(Global.uploadData);
+        uploadData.setChecked(BUApplication.uploadData);
         uploadData.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
             @Override
             public boolean onPreferenceChange(Preference preference, Object newValue) {
                 Boolean checked = (Boolean) newValue;
-                Global.uploadData = checked;
-                Global.saveConfig(mContext);
+                BUApplication.uploadData = checked;
+                BUApplication.saveConfig(mContext);
                 return true;
             }
         });
@@ -102,12 +102,12 @@ public class SettingFragment extends PreferenceFragment {
             @Override
             public boolean onPreferenceChange(Preference preference, Object newValue) {
                 Boolean checked = (Boolean) newValue;
-                Global.debugMode = checked;
-                Global.saveConfig(mContext);
+                BUApplication.debugMode = checked;
+                BUApplication.saveConfig(mContext);
                 return true;
             }
         });
-        debugMode.setChecked(Global.debugMode);
+        debugMode.setChecked(BUApplication.debugMode);
 
         version = findPreference("pref_version");
         version.setSummary(BuildConfig.VERSION_NAME);

@@ -40,7 +40,7 @@ import me.ihainan.bu.app.models.Post;
 import me.ihainan.bu.app.ui.assist.SwipeActivity;
 import me.ihainan.bu.app.ui.fragment.PostListFragment;
 import me.ihainan.bu.app.utils.CommonUtils;
-import me.ihainan.bu.app.utils.Global;
+import me.ihainan.bu.app.utils.BUApplication;
 import me.ihainan.bu.app.utils.network.BUApi;
 import me.ihainan.bu.app.utils.network.ExtraApi;
 import biz.kasual.materialnumberpicker.MaterialNumberPicker;
@@ -161,14 +161,14 @@ public class PostListActivity extends SwipeActivity {
             if (mJumpFloor != -1) mJumpFloor += 1;
         }
 
-        if (Global.debugMode && mTid == null) mTid = 10588072L; // For test
+        if (BUApplication.debugMode && mTid == null) mTid = 10588072L; // For test
     }
 
     private static int calculateTotalPage(long floor) {
-        if (floor % Global.LOADING_POSTS_COUNT == 0) {
-            return (int) (floor / Global.LOADING_POSTS_COUNT);
+        if (floor % BUApplication.LOADING_POSTS_COUNT == 0) {
+            return (int) (floor / BUApplication.LOADING_POSTS_COUNT);
         } else {
-            return (int) (floor / Global.LOADING_POSTS_COUNT) + 1;
+            return (int) (floor / BUApplication.LOADING_POSTS_COUNT) + 1;
         }
     }
 
@@ -262,7 +262,7 @@ public class PostListActivity extends SwipeActivity {
         if (mJumpFloor != null) {
             // 要求跳转到特定楼层
             mJumpPage = calculateTotalPage(mJumpFloor) - 1;
-            mJumpPageIndex = mJumpFloor - (mJumpPage) * Global.LOADING_POSTS_COUNT - 1;
+            mJumpPageIndex = mJumpFloor - (mJumpPage) * BUApplication.LOADING_POSTS_COUNT - 1;
         }
 
         // TabLayout
@@ -404,14 +404,14 @@ public class PostListActivity extends SwipeActivity {
                 if (response.getInt("code") == 0) {
                     // 成功添加 / 删除收藏，皆大欢喜
                     String message = hasFavor ? "添加收藏成功" : "删除收藏成功";
-                    Global.hasUpdateFavor = true;
+                    BUApplication.hasUpdateFavor = true;
                     Log.d(TAG, "mFavorListener >> " + message);
                     Toast.makeText(PostListActivity.this, message, Toast.LENGTH_SHORT).show();
                 } else {
                     // Oh no!!!
                     String message = (hasFavor ? "添加" : "删除") + "收藏失败";
                     String debugMessage = message + " - " + response.get("message");
-                    if (Global.debugMode) {
+                    if (BUApplication.debugMode) {
                         CommonUtils.debugToast(PostListActivity.this, debugMessage);
                     } else {
                         Toast.makeText(PostListActivity.this, message, Toast.LENGTH_SHORT).show();
@@ -431,7 +431,7 @@ public class PostListActivity extends SwipeActivity {
             } catch (JSONException e) {
                 String message = (hasFavor ? "添加" : "删除") + "收藏失败";
                 String debugMessage = message + " - " + getString(R.string.error_parse_json) + " " + response;
-                if (Global.debugMode) {
+                if (BUApplication.debugMode) {
                     CommonUtils.debugToast(PostListActivity.this, debugMessage);
                 } else {
                     Toast.makeText(PostListActivity.this, message, Toast.LENGTH_SHORT).show();
@@ -475,7 +475,7 @@ public class PostListActivity extends SwipeActivity {
                             setFavIcon(hasFavor);
                         } else {
                             String message = "获取收藏状态失败，失败原因 " + response.getString("message");
-                            if (Global.debugMode) {
+                            if (BUApplication.debugMode) {
                                 CommonUtils.debugToast(PostListActivity.this, message);
                             }
                             Log.w(TAG, message);

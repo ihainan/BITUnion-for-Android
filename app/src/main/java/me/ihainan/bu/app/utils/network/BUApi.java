@@ -24,7 +24,7 @@ import java.util.Map;
 import me.ihainan.bu.app.R;
 import me.ihainan.bu.app.models.Session;
 import me.ihainan.bu.app.utils.CommonUtils;
-import me.ihainan.bu.app.utils.Global;
+import me.ihainan.bu.app.utils.BUApplication;
 
 /**
  * BIT Union Open APIs
@@ -160,10 +160,10 @@ public class BUApi {
                                    Response.Listener<JSONObject> listener,
                                    Response.ErrorListener errorListener) {
         Map<String, String> parameters = new HashMap<String, String>();
-        parameters.put("username", Global.userSession.username);
-        parameters.put("session", Global.userSession.session);
+        parameters.put("username", BUApplication.userSession.username);
+        parameters.put("session", BUApplication.userSession.session);
 
-        makeRequest(context, getHomePageURL(), "HOME_PAGE", parameters, Global.RETRY_LIMIT, listener, errorListener);
+        makeRequest(context, getHomePageURL(), "HOME_PAGE", parameters, BUApplication.RETRY_LIMIT, listener, errorListener);
     }
 
     /**
@@ -181,12 +181,12 @@ public class BUApi {
                                    Response.ErrorListener errorListener) {
         Map<String, String> parameters = new HashMap<String, String>();
         parameters.put("action", "profile");
-        parameters.put("username", Global.username);
-        parameters.put("session", Global.userSession.session);
+        parameters.put("username", BUApplication.username);
+        parameters.put("session", BUApplication.userSession.session);
         if (username != null) parameters.put("queryusername", username);
         else parameters.put("uid", "" + uid);
 
-        makeRequest(context, getUserInfoURL(), "USER_INFO", parameters, Global.RETRY_LIMIT, listener, errorListener);
+        makeRequest(context, getUserInfoURL(), "USER_INFO", parameters, BUApplication.RETRY_LIMIT, listener, errorListener);
     }
 
     /**
@@ -204,13 +204,13 @@ public class BUApi {
 
         Map<String, String> parameters = new HashMap<String, String>();
         parameters.put("action", "post");
-        parameters.put("username", Global.userSession.username);
-        parameters.put("session", Global.userSession.session);
+        parameters.put("username", BUApplication.userSession.username);
+        parameters.put("session", BUApplication.userSession.session);
         parameters.put("tid", String.valueOf(tid));
         parameters.put("from", String.valueOf(from));
         parameters.put("to", String.valueOf(to));
 
-        makeRequest(context, getThreadDetailURL(), "POST_DETAIL", parameters, Global.RETRY_LIMIT, listener, errorListener);
+        makeRequest(context, getThreadDetailURL(), "POST_DETAIL", parameters, BUApplication.RETRY_LIMIT, listener, errorListener);
     }
 
     /**
@@ -224,9 +224,9 @@ public class BUApi {
 
         Map<String, String> parameters = new HashMap<String, String>();
         parameters.put("action", "forum");
-        parameters.put("username", Global.userSession.username);
-        parameters.put("session", Global.userSession.session);
-        makeRequest(context, getForumListURL(), "FORUM_LIST", parameters, Global.RETRY_LIMIT, listener, errorListener);
+        parameters.put("username", BUApplication.userSession.username);
+        parameters.put("session", BUApplication.userSession.session);
+        makeRequest(context, getForumListURL(), "FORUM_LIST", parameters, BUApplication.RETRY_LIMIT, listener, errorListener);
     }
 
     /**
@@ -244,13 +244,13 @@ public class BUApi {
 
         Map<String, String> parameters = new HashMap<String, String>();
         parameters.put("action", "thread");
-        parameters.put("username", Global.userSession.username);
-        parameters.put("session", Global.userSession.session);
+        parameters.put("username", BUApplication.userSession.username);
+        parameters.put("session", BUApplication.userSession.session);
         parameters.put("fid", String.valueOf(fid));
         parameters.put("from", String.valueOf(from));
         parameters.put("to", String.valueOf(to));
 
-        makeRequest(context, getForumListURL(), "THREAD_LIST", parameters, Global.RETRY_LIMIT, listener, errorListener);
+        makeRequest(context, getForumListURL(), "THREAD_LIST", parameters, BUApplication.RETRY_LIMIT, listener, errorListener);
     }
 
     /**
@@ -270,8 +270,8 @@ public class BUApi {
                                    Response.Listener<NetworkResponse> listener,
                                    Response.ErrorListener errorListener) throws IOException {
         Map<String, Object> parameters = new HashMap<String, Object>();
-        parameters.put("username", Global.userSession.username);    // session 里面的 username 未曾 encode 过
-        parameters.put("session", Global.userSession.session);
+        parameters.put("username", BUApplication.userSession.username);    // session 里面的 username 未曾 encode 过
+        parameters.put("session", BUApplication.userSession.session);
         parameters.put("action", "newreply");
         parameters.put("tid", String.valueOf(tid));
         parameters.put("message", CommonUtils.encode(message));
@@ -307,8 +307,8 @@ public class BUApi {
                                      Response.Listener<NetworkResponse> listener,
                                      Response.ErrorListener errorListener) throws IOException {
         Map<String, Object> parameters = new HashMap<String, Object>();
-        parameters.put("username", Global.userSession.username);    // session 里面的 username 未曾 encode 过
-        parameters.put("session", Global.userSession.session);
+        parameters.put("username", BUApplication.userSession.username);    // session 里面的 username 未曾 encode 过
+        parameters.put("session", BUApplication.userSession.session);
         parameters.put("action", "newthread");
         parameters.put("fid", fid);
         parameters.put("subject", CommonUtils.encode(title));
@@ -354,20 +354,20 @@ public class BUApi {
                         public void onResponse(JSONObject response) {
                             if (checkIfSessionOutOfData(response)) {
                                 // Success + IP+logged，尝试重新登录
-                                Log.i(TAG, "makeRequest " + tag + ">> Session " + Global.userSession.session + " 过期，尝试重新登录 " + retryLimit + " " + url);
-                                BUApi.tryLogin(context, Global.username, Global.password, retryLimit - 1,
+                                Log.i(TAG, "makeRequest " + tag + ">> Session " + BUApplication.userSession.session + " 过期，尝试重新登录 " + retryLimit + " " + url);
+                                BUApi.tryLogin(context, BUApplication.username, BUApplication.password, retryLimit - 1,
                                         new Response.Listener<JSONObject>() {
                                             @Override
                                             public void onResponse(JSONObject response) {
                                                 if (BUApi.checkStatus(response)) {
                                                     // 登录成功，拿到 session
                                                     try {
-                                                        Global.userSession = BUApi.MAPPER.readValue(response.toString(), Session.class);
-                                                        Global.saveConfig(context);
-                                                        CommonUtils.debugToast(context, "makeRequest " + tag + ">> 成功拿到新 Session " + Global.userSession);
-                                                        Log.i(TAG, "makeRequest >> " + tag + "成功拿到新 Session " + Global.userSession);
-                                                        parameters.put("session", Global.userSession.session);
-                                                        Global.saveConfig(context);
+                                                        BUApplication.userSession = BUApi.MAPPER.readValue(response.toString(), Session.class);
+                                                        BUApplication.saveConfig(context);
+                                                        CommonUtils.debugToast(context, "makeRequest " + tag + ">> 成功拿到新 Session " + BUApplication.userSession);
+                                                        Log.i(TAG, "makeRequest >> " + tag + "成功拿到新 Session " + BUApplication.userSession);
+                                                        parameters.put("session", BUApplication.userSession.session);
+                                                        BUApplication.saveConfig(context);
                                                         makeRequest(context, url, tag, parameters, retryLimit - 1, listener, errorListener);
                                                     } catch (Exception e) {
                                                         Log.e(TAG, context.getString(R.string.error_parse_json) + "\n" + response, e);
@@ -375,7 +375,7 @@ public class BUApi {
                                                 } else {
                                                     // 登录失败……继续尝试重新登录，直到成功，或者 retryLimit = 0
                                                     Log.i(TAG, "makeRequest >> 尝试重新登录失败，继续尝试 " + retryLimit + " URL: " + url);
-                                                    BUApi.tryLogin(context, Global.username, Global.password,
+                                                    BUApi.tryLogin(context, BUApplication.username, BUApplication.password,
                                                             retryLimit - 2, listener, errorListener);
                                                 }
                                             }

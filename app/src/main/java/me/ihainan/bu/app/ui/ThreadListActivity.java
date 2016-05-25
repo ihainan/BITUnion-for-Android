@@ -1,11 +1,9 @@
 package me.ihainan.bu.app.ui;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -34,7 +32,7 @@ import me.ihainan.bu.app.ui.assist.SimpleDividerItemDecoration;
 import me.ihainan.bu.app.ui.assist.SwipeActivity;
 import me.ihainan.bu.app.utils.CommonUtils;
 import me.ihainan.bu.app.utils.network.BUApi;
-import me.ihainan.bu.app.utils.Global;
+import me.ihainan.bu.app.utils.BUApplication;
 
 public class ThreadListActivity extends SwipeActivity {
     private final static String TAG = ThreadListActivity.class.getSimpleName();
@@ -70,7 +68,7 @@ public class ThreadListActivity extends SwipeActivity {
         mFid = bundle.getLong(FORUM_FID_TAG);
 
         if (mFid != null && mSubForum == null && mSubForum == null) {
-            for (ForumListGroup forumListGroup : Global.forumListGroupList) {
+            for (ForumListGroup forumListGroup : BUApplication.forumListGroupList) {
                 for (ForumListGroup.ForumList forumList : forumListGroup.getChildItemList()) {
                     if (forumList.getForumId().equals(mFid)) {
                         mMainForum = forumList;
@@ -89,7 +87,7 @@ public class ThreadListActivity extends SwipeActivity {
                 if (mMainForum != null) break;
             }
         } else if (mMainForum == null && mForumName != null) {
-            for (ForumListGroup forumListGroup : Global.forumListGroupList) {
+            for (ForumListGroup forumListGroup : BUApplication.forumListGroupList) {
                 for (ForumListGroup.ForumList forumList : forumListGroup.getChildItemList()) {
                     if (forumList.getForumName().equals(mForumName)) {
                         mMainForum = forumList;
@@ -221,7 +219,7 @@ public class ThreadListActivity extends SwipeActivity {
                     Log.i(TAG, "onScrolled >> 即将到底，准备请求新数据");
                     mThreadList.add(null);
                     mAdapter.notifyItemInserted(mThreadList.size() - 1);
-                    refreshData(mCurrentPosition, mCurrentPosition + Global.LOADING_COUNT);
+                    refreshData(mCurrentPosition, mCurrentPosition + BUApplication.LOADING_COUNT);
                     mIsLoading = true;
                 }
             }
@@ -229,7 +227,7 @@ public class ThreadListActivity extends SwipeActivity {
     }
 
     private void setupSwipeRefreshLayout() {
-        mSwipeRefreshLayout.setDistanceToTriggerSync(Global.SWIPE_LAYOUT_TRIGGER_DISTANCE);
+        mSwipeRefreshLayout.setDistanceToTriggerSync(BUApplication.SWIPE_LAYOUT_TRIGGER_DISTANCE);
 
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -252,7 +250,7 @@ public class ThreadListActivity extends SwipeActivity {
         mThreadList.clear();
         mAdapter.notifyDataSetChanged();
         mCurrentPosition = 0;
-        refreshData(0, Global.LOADING_COUNT);
+        refreshData(0, BUApplication.LOADING_COUNT);
     }
 
     private List<Thread> mThreadList = new ArrayList<>();
@@ -285,7 +283,7 @@ public class ThreadListActivity extends SwipeActivity {
 
                                 // 更新 RecyclerView
                                 if (from == 0) mThreadList.clear();
-                                mCurrentPosition += Global.LOADING_COUNT;
+                                mCurrentPosition += BUApplication.LOADING_COUNT;
                                 mThreadList.addAll(newThreads);
                                 mAdapter.notifyDataSetChanged();
 
@@ -350,7 +348,7 @@ public class ThreadListActivity extends SwipeActivity {
         super.onResume();
 
         // 友盟 SDK
-        if (Global.uploadData)
+        if (BUApplication.uploadData)
             MobclickAgent.onResume(this);
     }
 
@@ -359,7 +357,7 @@ public class ThreadListActivity extends SwipeActivity {
         super.onPause();
 
         // 友盟 SDK
-        if (Global.uploadData)
+        if (BUApplication.uploadData)
             MobclickAgent.onPause(this);
     }
 

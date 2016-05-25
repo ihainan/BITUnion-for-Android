@@ -36,14 +36,13 @@ import org.json.JSONObject;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Date;
 
 import me.ihainan.bu.app.R;
 import me.ihainan.bu.app.models.Member;
 import me.ihainan.bu.app.ui.assist.CustomSpan;
 import me.ihainan.bu.app.ui.assist.SwipeActivity;
 import me.ihainan.bu.app.utils.CommonUtils;
-import me.ihainan.bu.app.utils.Global;
+import me.ihainan.bu.app.utils.BUApplication;
 import me.ihainan.bu.app.utils.network.BUApi;
 import me.ihainan.bu.app.utils.ui.HtmlUtil;
 import me.ihainan.bu.app.utils.ui.PicassoImageGetter;
@@ -118,14 +117,14 @@ public class PreviewActivity extends SwipeActivity {
 
         // Author
         TextView author = (TextView) findViewById(R.id.thread_author_name);
-        author.setText(CommonUtils.decode(Global.username));
+        author.setText(CommonUtils.decode(BUApplication.username));
 
         // Author
         final ImageView avatar = (ImageView) findViewById(R.id.thread_author_avatar);
         CommonUtils.setUserAvatarClickListener(this,
                 avatar, -1,
-                Global.username);
-        CommonUtils.getAndCacheUserInfo(this, Global.username,
+                BUApplication.username);
+        CommonUtils.getAndCacheUserInfo(this, BUApplication.username,
                 new CommonUtils.UserInfoAndFillAvatarCallback() {
                     @Override
                     public void doSomethingIfHasCached(Member member) {

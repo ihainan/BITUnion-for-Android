@@ -5,7 +5,6 @@ import android.app.Fragment;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.design.widget.Snackbar;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -34,7 +33,7 @@ import me.ihainan.bu.app.models.Post;
 import me.ihainan.bu.app.ui.PostListActivity;
 import me.ihainan.bu.app.ui.assist.SimpleDividerItemDecoration;
 import me.ihainan.bu.app.utils.CommonUtils;
-import me.ihainan.bu.app.utils.Global;
+import me.ihainan.bu.app.utils.BUApplication;
 import me.ihainan.bu.app.utils.network.BUApi;
 import me.ihainan.bu.app.utils.ui.HtmlUtil;
 
@@ -141,7 +140,7 @@ public class PostListFragment extends Fragment {
     }
 
     private void setupSwipeRefreshLayout() {
-        mSwipeRefreshLayout.setDistanceToTriggerSync(Global.SWIPE_LAYOUT_TRIGGER_DISTANCE);
+        mSwipeRefreshLayout.setDistanceToTriggerSync(BUApplication.SWIPE_LAYOUT_TRIGGER_DISTANCE);
 
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -181,7 +180,7 @@ public class PostListFragment extends Fragment {
     private void reloadData() {
         mSwipeRefreshLayout.setRefreshing(true);
         mList.clear();
-        refreshData(mPagePosition * Global.LOADING_POSTS_COUNT, (mPagePosition + 1) * Global.LOADING_COUNT);
+        refreshData(mPagePosition * BUApplication.LOADING_POSTS_COUNT, (mPagePosition + 1) * BUApplication.LOADING_COUNT);
     }
 
     /**
@@ -210,7 +209,7 @@ public class PostListFragment extends Fragment {
                                     reply.message = HtmlUtil.formatHtml(CommonUtils.decode(reply.message));
 
                                     // 楼层
-                                    reply.floor = mPagePosition * Global.LOADING_POSTS_COUNT + newThreads.indexOf(reply) + 1;
+                                    reply.floor = mPagePosition * BUApplication.LOADING_POSTS_COUNT + newThreads.indexOf(reply) + 1;
 
                                     // 获取设备信息
                                     getDeviceName(reply);

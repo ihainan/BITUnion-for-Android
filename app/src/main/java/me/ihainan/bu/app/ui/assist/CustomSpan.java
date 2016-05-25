@@ -29,7 +29,7 @@ import me.ihainan.bu.app.ui.PostListActivity;
 import me.ihainan.bu.app.ui.ProfileActivity;
 import me.ihainan.bu.app.ui.ThreadListActivity;
 import me.ihainan.bu.app.utils.CommonUtils;
-import me.ihainan.bu.app.utils.Global;
+import me.ihainan.bu.app.utils.BUApplication;
 import me.ihainan.bu.app.utils.network.BUApi;
 
 /**
@@ -116,9 +116,9 @@ public class CustomSpan {
         @Override
         public void onClick(View widget) {
             if (mUrl == null) return;
-            else if (mUrl.startsWith(Global.IMAGE_URL_PREFIX)) {
+            else if (mUrl.startsWith(BUApplication.IMAGE_URL_PREFIX)) {
                 // 图片
-                String newUrl = mUrl.substring(Global.IMAGE_URL_PREFIX.length());
+                String newUrl = mUrl.substring(BUApplication.IMAGE_URL_PREFIX.length());
                 Intent intent = new Intent(mContext, FullscreenPhotoViewerActivity.class);
                 intent.putExtra(FullscreenPhotoViewerActivity.IMAGE_URL_TAG, newUrl);
                 mContext.startActivity(intent);

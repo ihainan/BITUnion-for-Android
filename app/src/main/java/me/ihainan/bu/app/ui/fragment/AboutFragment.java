@@ -17,7 +17,7 @@ import android.widget.TextView;
 
 import me.ihainan.bu.app.BuildConfig;
 import me.ihainan.bu.app.R;
-import me.ihainan.bu.app.utils.Global;
+import me.ihainan.bu.app.utils.BUApplication;
 
 /**
  * ABout Page
@@ -38,7 +38,7 @@ public class AboutFragment extends Fragment {
 
             mRootView = inflater.inflate(R.layout.fragment_about, container, false);
 
-            Global.makeForumGroupList(mContext);
+            BUApplication.makeForumGroupList(mContext);
 
             // UI references
             mToolbar = (Toolbar) mRootView.findViewById(R.id.toolbar);

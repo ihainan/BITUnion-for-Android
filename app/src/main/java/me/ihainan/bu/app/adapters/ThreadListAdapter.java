@@ -20,7 +20,7 @@ import me.ihainan.bu.app.ui.PostListActivity;
 import me.ihainan.bu.app.ui.viewholders.DefaultViewHolder;
 import me.ihainan.bu.app.ui.viewholders.LoadingViewHolder;
 import me.ihainan.bu.app.utils.CommonUtils;
-import me.ihainan.bu.app.utils.Global;
+import me.ihainan.bu.app.utils.BUApplication;
 
 /**
  * Forum LatestThread List Adapter
@@ -105,7 +105,7 @@ public class ThreadListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             // 其他域
             holder.authorName.setText(CommonUtils.truncateString(
                     CommonUtils.decode(thread.author),
-                    Global.MAX_USER_NAME_LENGTH));
+                    BUApplication.MAX_USER_NAME_LENGTH));
             holder.action.setText(" 发表了新帖");
 
             CommonUtils.setUserAvatarClickListener(mContext,
@@ -127,7 +127,7 @@ public class ThreadListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             holder.isNewOrHot.setVisibility(View.INVISIBLE);
             holder.authorName.setText(CommonUtils.truncateString(
                     CommonUtils.decode(thread.lastposter),
-                    Global.MAX_USER_NAME_LENGTH));
+                    BUApplication.MAX_USER_NAME_LENGTH));
             CommonUtils.setUserAvatarClickListener(mContext,
                     holder.avatar, -1,
                     thread.lastposter);
@@ -135,7 +135,7 @@ public class ThreadListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             holder.action.setText(" 回复了帖子");
 
             // 热点（Hot）
-            if (thread.replies >= Global.HOT_TOPIC_THREAD) {
+            if (thread.replies >= BUApplication.HOT_TOPIC_THREAD) {
                 holder.isNewOrHot.setVisibility(View.VISIBLE);
                 holder.isNewOrHot.setText("  HOT");
                 holder.isNewOrHot.setTextColor(ContextCompat.getColor(mContext, R.color.hot_topic));

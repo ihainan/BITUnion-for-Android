@@ -15,6 +15,7 @@
     <string name="action_sign_in_short">登录</string>
     <string name="login_page_title">北理 FTP 联盟</string>
     <string name="access_from_out_school">外网访问</string>
+    <string name="update_session_success">更新会话成功</string>
     <string name="logout_info">确定登出系统？</string>
 
     <!-- Error message -->

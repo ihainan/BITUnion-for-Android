@@ -15,7 +15,7 @@ import java.util.Map;
 import me.ihainan.bu.app.BuildConfig;
 import me.ihainan.bu.app.R;
 import me.ihainan.bu.app.utils.CommonUtils;
-import me.ihainan.bu.app.utils.Global;
+import me.ihainan.bu.app.utils.BUApplication;
 
 /**
  * Extra API based on BITUnion-Api-Service Project
@@ -82,7 +82,7 @@ public class ExtraApi {
         Map<String, Object> parameters = new HashMap();
         parameters.put("app", context.getString(R.string.app_name));
         parameters.put("version", BuildConfig.VERSION_NAME);
-        parameters.put("username", CommonUtils.decode(Global.username));
+        parameters.put("username", CommonUtils.decode(BUApplication.username));
         parameters.put("tid", tid);
         parameters.put("subject", CommonUtils.decode(subject));
         parameters.put("author", CommonUtils.decode(author));
@@ -102,7 +102,7 @@ public class ExtraApi {
     public static void delFavorite(Context context, long tid,
                                    Response.Listener<JSONObject> listener,
                                    Response.ErrorListener errorListener) {
-        String url = ADD_FAVORITE_ENDPOINT + "/" + CommonUtils.encode(Global.username) + "/" + tid;
+        String url = ADD_FAVORITE_ENDPOINT + "/" + CommonUtils.encode(BUApplication.username) + "/" + tid;
         Log.i(TAG, "delFavorite >> " + url);
 
         Map<String, Object> parameters = new HashMap();
@@ -123,7 +123,7 @@ public class ExtraApi {
                                        long from, long to,
                                        Response.Listener<JSONObject> listener,
                                        Response.ErrorListener errorListener) {
-        String url = ADD_FAVORITE_ENDPOINT + "/list/" + CommonUtils.encode(Global.username) + "?from=" + from + "&to=" + to;
+        String url = ADD_FAVORITE_ENDPOINT + "/list/" + CommonUtils.encode(BUApplication.username) + "?from=" + from + "&to=" + to;
         Log.i(TAG, "getFavoriteList >> " + url);
 
         Map<String, Object> parameters = new HashMap();
@@ -142,7 +142,7 @@ public class ExtraApi {
     public static void getFavoriteStatus(Context context, long tid,
                                          Response.Listener<JSONObject> listener,
                                          Response.ErrorListener errorListener) {
-        String url = ADD_FAVORITE_ENDPOINT + "/status/" + CommonUtils.encode(Global.username) + "/" + tid;
+        String url = ADD_FAVORITE_ENDPOINT + "/status/" + CommonUtils.encode(BUApplication.username) + "/" + tid;
         Log.i(TAG, "getFavoriteStatus >> " + url);
 
         Map<String, Object> parameters = new HashMap();
@@ -171,7 +171,7 @@ public class ExtraApi {
         Map<String, Object> parameters = new HashMap();
         parameters.put("app", context.getString(R.string.app_name));
         parameters.put("version", BuildConfig.VERSION_NAME);
-        parameters.put("follower", CommonUtils.decode(Global.username));
+        parameters.put("follower", CommonUtils.decode(BUApplication.username));
         parameters.put("following", CommonUtils.decode(following));
         makeRequest(Request.Method.POST, context, url,
                 "ADD_FOLLOW", parameters, listener, errorListener);
@@ -188,7 +188,7 @@ public class ExtraApi {
     public static void delFollow(Context context, String following,
                                  Response.Listener<JSONObject> listener,
                                  Response.ErrorListener errorListener) {
-        String url = FOLLOW_ENDPOINT + "/" + CommonUtils.encode(Global.userSession.username) + "/" + CommonUtils.encode(following);
+        String url = FOLLOW_ENDPOINT + "/" + CommonUtils.encode(BUApplication.userSession.username) + "/" + CommonUtils.encode(following);
         Log.i(TAG, "delFollow >> " + url);
 
         Map<String, Object> parameters = new HashMap();
@@ -207,7 +207,7 @@ public class ExtraApi {
     public static void getFollowStatus(Context context, String following,
                                        Response.Listener<JSONObject> listener,
                                        Response.ErrorListener errorListener) {
-        String url = FOLLOW_ENDPOINT + "/status/" + Global.userSession.username + "/" + CommonUtils.encode(following);
+        String url = FOLLOW_ENDPOINT + "/status/" + BUApplication.userSession.username + "/" + CommonUtils.encode(following);
         Log.i(TAG, "getFollowStatus >> " + url);
 
         Map<String, Object> parameters = new HashMap();
@@ -227,7 +227,7 @@ public class ExtraApi {
     public static void getFollowingList(Context context, long from, long to,
                                         Response.Listener<JSONObject> listener,
                                         Response.ErrorListener errorListener) {
-        String url = FOLLOW_ENDPOINT + "/list/" + CommonUtils.encode(Global.userSession.username) + "?" + "from=" + from + "&to=" + to;
+        String url = FOLLOW_ENDPOINT + "/list/" + CommonUtils.encode(BUApplication.userSession.username) + "?" + "from=" + from + "&to=" + to;
         Log.i(TAG, "getFollowingList >> " + url);
 
         Map<String, Object> parameters = new HashMap();
@@ -274,7 +274,7 @@ public class ExtraApi {
                                         Response.Listener<JSONObject> listener,
                                         Response.ErrorListener errorListener) {
 
-        String url = TIMELINE_ENDPOINT + "/focus/" + CommonUtils.encode(Global.username) + "?from=" + from + "&to=" + to;
+        String url = TIMELINE_ENDPOINT + "/focus/" + CommonUtils.encode(BUApplication.username) + "?from=" + from + "&to=" + to;
         Log.i(TAG, "getFocusTimeline >> " + url);
 
         Map<String, Object> parameters = new HashMap();

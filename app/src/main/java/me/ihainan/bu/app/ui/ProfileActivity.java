@@ -33,7 +33,7 @@ import me.ihainan.bu.app.ui.assist.SwipeActivity;
 import me.ihainan.bu.app.ui.fragment.BasicInfoFragment;
 import me.ihainan.bu.app.ui.fragment.TimelineFragment;
 import me.ihainan.bu.app.utils.CommonUtils;
-import me.ihainan.bu.app.utils.Global;
+import me.ihainan.bu.app.utils.BUApplication;
 import me.ihainan.bu.app.utils.network.ExtraApi;
 
 public class ProfileActivity extends SwipeActivity {
@@ -67,7 +67,7 @@ public class ProfileActivity extends SwipeActivity {
         }
 
         if (mUsername == null && mUid == null) {
-            mUsername = Global.userSession.username;
+            mUsername = BUApplication.userSession.username;
         }
 
         // Collasping Toolbar
@@ -119,7 +119,7 @@ public class ProfileActivity extends SwipeActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        if (!CommonUtils.decode(Global.userSession.username).equals(CommonUtils.decode(mUsername))) {
+        if (!CommonUtils.decode(BUApplication.userSession.username).equals(CommonUtils.decode(mUsername))) {
             getMenuInflater().inflate(R.menu.profile_menu, menu);
             mFollowMenuItem = menu.findItem(R.id.follow);
             return true;
@@ -143,7 +143,7 @@ public class ProfileActivity extends SwipeActivity {
                         setFollowIcon(hasFollow);
                     } else {
                         String message = "获取关注状态失败，失败原因 " + response.getString("message");
-                        if (Global.debugMode) {
+                        if (BUApplication.debugMode) {
                             CommonUtils.debugToast(ProfileActivity.this, message);
                         }
                         Log.w(TAG, message);
@@ -192,14 +192,14 @@ public class ProfileActivity extends SwipeActivity {
                 if (response.getInt("code") == 0) {
                     // 成功添加 / 删除收藏，皆大欢喜
                     String message = hasFollow ? "添加关注成功" : "取消关注成功";
-                    Global.hasUpdateFavor = true;
+                    BUApplication.hasUpdateFavor = true;
                     Log.d(TAG, "mFollowListener >> " + message);
                     Toast.makeText(ProfileActivity.this, message, Toast.LENGTH_SHORT).show();
                 } else {
                     // Oh no!!!
                     String message = (hasFollow ? "添加" : "取消") + "关注失败";
                     String debugMessage = message + " - " + response.get("message");
-                    if (Global.debugMode) {
+                    if (BUApplication.debugMode) {
                         CommonUtils.debugToast(ProfileActivity.this, debugMessage);
                     } else {
                         Toast.makeText(ProfileActivity.this, message, Toast.LENGTH_SHORT).show();
@@ -213,7 +213,7 @@ public class ProfileActivity extends SwipeActivity {
             } catch (JSONException e) {
                 String message = (hasFollow ? "添加" : "删除") + "关注失败";
                 String debugMessage = message + " - " + getString(R.string.error_parse_json) + " " + response;
-                if (Global.debugMode) {
+                if (BUApplication.debugMode) {
                     CommonUtils.debugToast(ProfileActivity.this, debugMessage);
                 } else {
                     Toast.makeText(ProfileActivity.this, message, Toast.LENGTH_SHORT).show();

@@ -14,7 +14,7 @@ import android.widget.ExpandableListView;
 
 import me.ihainan.bu.app.R;
 import me.ihainan.bu.app.adapters.SuperParentAdapter;
-import me.ihainan.bu.app.utils.Global;
+import me.ihainan.bu.app.utils.BUApplication;
 
 /**
  * Home Page Fragment
@@ -36,7 +36,7 @@ public class ForumFragment extends Fragment {
 
             mRootView = inflater.inflate(R.layout.fragement_forum, container, false);
 
-            Global.makeForumGroupList(mContext);
+            BUApplication.makeForumGroupList(mContext);
 
             // UI references
             mToolbar = (Toolbar) mRootView.findViewById(R.id.toolbar);
@@ -47,7 +47,7 @@ public class ForumFragment extends Fragment {
 
             mExpandableListView = (ExpandableListView) mRootView.findViewById(R.id.forum_system_admin_lv);
 
-            SuperParentAdapter adapter = new SuperParentAdapter(mContext, Global.forumListGroupList);
+            SuperParentAdapter adapter = new SuperParentAdapter(mContext, BUApplication.forumListGroupList);
             mExpandableListView.setAdapter(adapter);
             mExpandableListView.setDivider(null);
 
