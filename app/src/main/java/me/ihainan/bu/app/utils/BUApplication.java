@@ -11,9 +11,13 @@ import com.umeng.update.UmengUpdateAgent;
 import com.umeng.update.UpdateConfig;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
 
 import me.ihainan.bu.app.models.ForumListGroup;
 import me.ihainan.bu.app.models.Member;
@@ -39,6 +43,8 @@ public class BUApplication extends Application {
     public final static String CACHE_USER_SESSION = "CACHE_SESSION";
     public final static String CACHE_REPLY_CONTENT = "CACHE_REPLY_CONTENT";
     public final static String CACHE_VIEW_POSITION = "CACHE_VIEW_POSITION";
+    public final static String CACHE_MOST_VISITED_FORUMS = "CACHE_MOST_VISITED_FORUMS";
+
     public static int cacheDays = 10;
     public final static Integer VIEW_POSITION_CACHE_DAY = 1;
 
@@ -146,23 +152,29 @@ public class BUApplication extends Application {
 
     /* 论坛列表相关 */
     public static List<ForumListGroup> forumListGroupList;
+    public final static int MAX_MOST_VISITED = 5;
 
     public static void makeForumGroupList(Context context) {
         forumListGroupList = new ArrayList<>();
+        HashMap<Integer, ForumListGroup.ForumList> forumListHashMap = new HashMap<>();
 
         // 系统管理区
         List<ForumListGroup.ForumList> forumLists = new ArrayList<>();
         ForumListGroup.ForumList forumList = new ForumListGroup.ForumList("联盟公告板", 3, "file:///android_asset/forumicon/announce.gif");
+        forumListHashMap.put(3, forumList);
         forumLists.add(forumList);
 
         forumList = new ForumListGroup.ForumList("联盟意见箱", 4, "file:///android_asset/forumicon/chest.gif");
+        forumListHashMap.put(4, forumList);
         forumList.addSubForum(new ForumListGroup.SubForum("处罚通告", 121));
         forumLists.add(forumList);
 
         forumList = new ForumListGroup.ForumList("后台管理区", 170, "file:///android_asset/forumicon/zhPg_aW1nNDE=.jpg");
+        forumListHashMap.put(170, forumList);
         forumLists.add(forumList);
 
         forumList = new ForumListGroup.ForumList("新手交流区", 92, "file:///android_asset/forumicon/newbie.gif");
+        forumListHashMap.put(192, forumList);
         forumList.addSubForum(new ForumListGroup.SubForum("积分恢复申请", 120));
         forumLists.add(forumList);
 
@@ -172,26 +184,32 @@ public class BUApplication extends Application {
         // 直通理工区
         forumLists = new ArrayList<>();
         forumList = new ForumListGroup.ForumList("校园求助热线", 108, "file:///android_asset/forumicon/handshake.gif");
+        forumListHashMap.put(108, forumList);
         forumLists.add(forumList);
 
         forumList = new ForumListGroup.ForumList("叫卖场", 59, "file:///android_asset/forumicon/money.gif");
+        forumListHashMap.put(59, forumList);
         forumList.addSubForum(new ForumListGroup.SubForum("联盟旺铺", 114));
         forumList.addSubForum(new ForumListGroup.SubForum("团购专区", 145));
         forumList.addSubForum(new ForumListGroup.SubForum("已完成交易记录", 93));
         forumLists.add(forumList);
 
         forumList = new ForumListGroup.ForumList("前程似锦", 83, "file:///android_asset/forumicon/scroll.gif");
+        forumListHashMap.put(83, forumList);
         forumList.addSubForum(new ForumListGroup.SubForum("考研兄弟连", 117));
         forumList.addSubForum(new ForumListGroup.SubForum("兼职信息", 153));
         forumLists.add(forumList);
 
         forumList = new ForumListGroup.ForumList("海外BITer", 150, "file:///android_asset/forumicon/graduation.gif");
+        forumListHashMap.put(150, forumList);
         forumLists.add(forumList);
 
         forumList = new ForumListGroup.ForumList("外语园地", 89, "file:///android_asset/forumicon/locale.gif");
+        forumListHashMap.put(89, forumList);
         forumLists.add(forumList);
 
         forumList = new ForumListGroup.ForumList("知识海报", 151, "file:///android_asset/forumicon/93.gif");
+        forumListHashMap.put(151, forumList);
         forumLists.add(forumList);
 
         forumListGroup = new ForumListGroup(forumLists, "直通理工区");
@@ -201,21 +219,27 @@ public class BUApplication extends Application {
         forumLists = new ArrayList<>();
 
         forumList = new ForumListGroup.ForumList("购前咨询", 167, "file:///android_asset/forumicon/CQMr_aGVscDE=.jpg");
+        forumListHashMap.put(167, forumList);
         forumLists.add(forumList);
 
         forumList = new ForumListGroup.ForumList("硬件与数码时尚", 80, "file:///android_asset/forumicon/hwinfo.gif");
+        forumListHashMap.put(80, forumList);
         forumLists.add(forumList);
 
         forumList = new ForumListGroup.ForumList("驴游四海", 168, "file:///android_asset/forumicon/tnT6_MTMxMDEy.jpg");
+        forumListHashMap.put(168, forumList);
         forumLists.add(forumList);
 
         forumList = new ForumListGroup.ForumList("摄影与艺术", 116, "file:///android_asset/forumicon/cam.gif");
+        forumListHashMap.put(116, forumList);
         forumLists.add(forumList);
 
         forumList = new ForumListGroup.ForumList("车行天下", 140, "file:///android_asset/forumicon/tzQr_Mjk3NTk3M18xNDQwMzcwNzFfMg==.jpg");
+        forumListHashMap.put(140, forumList);
         forumLists.add(forumList);
 
         forumList = new ForumListGroup.ForumList("生活会馆", 96, "file:///android_asset/forumicon/cookie.gif");
+        forumListHashMap.put(96, forumList);
         forumLists.add(forumList);
 
         forumListGroup = new ForumListGroup(forumLists, "时尚生活区");
@@ -224,19 +248,24 @@ public class BUApplication extends Application {
         // 技术讨论区
         forumLists = new ArrayList<>();
         forumList = new ForumListGroup.ForumList("网络技术与信息", 10, "file:///android_asset/forumicon/browser.gif");
+        forumListHashMap.put(10, forumList);
         forumLists.add(forumList);
 
         forumList = new ForumListGroup.ForumList("GNU/Linux 交流区", 84, "file:///android_asset/forumicon/linux.gif");
+        forumListHashMap.put(84, forumList);
         forumLists.add(forumList);
 
         forumList = new ForumListGroup.ForumList("嵌入式开发技术", 101, "file:///android_asset/forumicon/embedded.png");
+        forumListHashMap.put(101, forumList);
         forumList.addSubForum(new ForumListGroup.SubForum("嵌入式 LiNUX 开发", 113));
         forumLists.add(forumList);
 
         forumList = new ForumListGroup.ForumList("程序员集中营", 32, "file:///android_asset/forumicon/text_color.gif");
+        forumListHashMap.put(32, forumList);
         forumLists.add(forumList);
 
         forumList = new ForumListGroup.ForumList("软件使用与交流", 21, "file:///android_asset/forumicon/software.gif");
+        forumListHashMap.put(21, forumList);
         forumList.addSubForum(new ForumListGroup.SubForum("新软交流区", 107));
         forumLists.add(forumList);
 
@@ -246,15 +275,19 @@ public class BUApplication extends Application {
         // 苦中作乐区
         forumLists = new ArrayList<>();
         forumList = new ForumListGroup.ForumList("游戏人生", 22, "file:///android_asset/forumicon/game.gif");
+        forumListHashMap.put(22, forumList);
         forumLists.add(forumList);
 
         forumList = new ForumListGroup.ForumList("影视天地", 23, "file:///android_asset/forumicon/movie.gif");
+        forumListHashMap.put(23, forumList);
         forumLists.add(forumList);
 
         forumList = new ForumListGroup.ForumList("音乐殿堂", 25, "file:///android_asset/forumicon/music.gif");
+        forumListHashMap.put(25, forumList);
         forumLists.add(forumList);
 
         forumList = new ForumListGroup.ForumList("灌水乐园", 14, "file:///android_asset/forumicon/water.gif");
+        forumListHashMap.put(14, forumList);
         forumList.addSubForum(new ForumListGroup.SubForum("站庆专版", 65));
         forumList.addSubForum(new ForumListGroup.SubForum("导师风采", 175));
         forumList.addSubForum(new ForumListGroup.SubForum("个人展示区", 106));
@@ -263,19 +296,23 @@ public class BUApplication extends Application {
         forumLists.add(forumList);
 
         forumList = new ForumListGroup.ForumList("贴图欣赏", 24, "file:///android_asset/forumicon/image.gif");
+        forumListHashMap.put(24, forumList);
         forumLists.add(forumList);
 
         forumList = new ForumListGroup.ForumList("动漫天空", 27, "file:///android_asset/forumicon/mascot.gif");
+        forumListHashMap.put(27, forumList);
         forumList.addSubForum(new ForumListGroup.SubForum("动漫美图", 63));
         forumList.addSubForum(new ForumListGroup.SubForum("日语学习交流版", 110));
         forumLists.add(forumList);
 
         forumList = new ForumListGroup.ForumList("体坛风云", 115, "file:///android_asset/forumicon/run.gif");
+        forumListHashMap.put(115, forumList);
         forumList.addSubForum(new ForumListGroup.SubForum("舞动桑巴", 102));
         forumList.addSubForum(new ForumListGroup.SubForum("菠菜组内部版面", 143));
         forumLists.add(forumList);
 
         forumList = new ForumListGroup.ForumList("职场生涯", 124, "file:///android_asset/forumicon/businessmen.gif");
+        forumListHashMap.put(124, forumList);
         forumLists.add(forumList);
 
         forumListGroup = new ForumListGroup(forumLists, "苦中作乐区");
@@ -285,6 +322,7 @@ public class BUApplication extends Application {
         forumLists = new ArrayList<>();
 
         forumList = new ForumListGroup.ForumList("资源分享区", 171, "file:///android_asset/forumicon/Dbfr_z8LU2DE=.jpg");
+        forumListHashMap.put(171, forumList);
         forumList.addSubForum(new ForumListGroup.SubForum("联盟 FTP 专版", 79));
         forumList.addSubForum(new ForumListGroup.SubForum("分享专版", 174));
         forumList.addSubForum(new ForumListGroup.SubForum("索档专版", 15));
@@ -295,7 +333,6 @@ public class BUApplication extends Application {
 
         forumListGroup = new ForumListGroup(forumLists, "联盟交流区");
         forumListGroupList.add(forumListGroup);
-
         for (ForumListGroup group : forumListGroupList) {
             for (ForumListGroup.ForumList forums : group.getChildItemList()) {
                 if (forums.getChildItemList().size() > 0) {
@@ -303,6 +340,36 @@ public class BUApplication extends Application {
                 }
             }
         }
+
+        // 最常访问
+        forumLists = new ArrayList<>();
+        HashMap<Long, Long> visitedForumsMap = (HashMap<Long, Long>) getCache(context).getAsObject(CACHE_MOST_VISITED_FORUMS);
+        if (visitedForumsMap == null || visitedForumsMap.size() == 0) {
+            visitedForumsMap = new HashMap<>();
+            visitedForumsMap.put(3L, 10L);
+            visitedForumsMap.put(59L, 20L);
+        }
+
+        TreeMap<Long, Long> sortedMap = new TreeMap<>(new Comparator() {
+            @Override
+            public int compare(Object lhs, Object rhs) {
+                return (Long) rhs > (Long) lhs ? 1 : -1;
+            }
+        });
+        sortedMap.putAll(visitedForumsMap);
+        Set<Long> mostVisitedForumIndex = sortedMap.keySet();
+
+        int i = 0;
+        for (Long index : mostVisitedForumIndex) {
+            if (forumListHashMap.get(index.intValue()) != null) {
+                forumList = forumListHashMap.get(index.intValue());
+                forumLists.add(forumList);
+                if (++i >= MAX_MOST_VISITED) break;
+            }
+        }
+
+        forumListGroup = new ForumListGroup(forumLists, "最常访问");
+        forumListGroupList.add(0, forumListGroup);
     }
 
     public final static Map<String, Boolean> badImages = new HashMap<>();

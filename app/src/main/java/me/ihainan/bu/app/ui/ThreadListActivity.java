@@ -22,6 +22,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import me.ihainan.bu.app.R;
@@ -114,6 +115,18 @@ public class ThreadListActivity extends SwipeActivity {
             setTitle(mMainForum.getForumName() + " - 主板块");
             mFid = mMainForum.getForumId();
         }
+
+        // Update most visited forums list
+        HashMap<Long, Long> visitedForumsMap = (HashMap<Long, Long>) BUApplication.getCache(this).getAsObject(BUApplication.CACHE_MOST_VISITED_FORUMS);
+        if (visitedForumsMap == null || visitedForumsMap.size() == 0) {
+            visitedForumsMap = new HashMap<>();
+        }
+
+        Long value = visitedForumsMap.get(mMainForum.getForumId());
+        if (value == null) visitedForumsMap.put(mMainForum.getForumId(), 1L);
+        else
+            visitedForumsMap.put(mMainForum.getForumId(), value >= Long.MAX_VALUE ? Long.MAX_VALUE : 1 + value);
+        BUApplication.getCache(this).put(BUApplication.CACHE_MOST_VISITED_FORUMS, visitedForumsMap);
     }
 
     @Override
