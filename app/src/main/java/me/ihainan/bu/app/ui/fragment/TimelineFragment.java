@@ -196,7 +196,7 @@ public class TimelineFragment extends Fragment {
                         mCurrentPosition += BUApplication.LOADING_TIMELINE_COUNT;
                         mList.addAll(newEventsFiltered);
                         mAdapter.notifyDataSetChanged();
-                    } else if (newEventsFiltered.size() == 0) {
+                    } else if (mList.size() == 0 && newEventsFiltered.size() == 0) {
                         showErrorLayout(getString(R.string.error_no_new_events), getString(R.string.action_refresh));
                     }
 

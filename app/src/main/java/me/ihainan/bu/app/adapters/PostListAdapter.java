@@ -281,12 +281,13 @@ public class PostListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             author = (TextView) itemView.findViewById(R.id.thread_author_name);
             subject = (TextView) itemView.findViewById(R.id.thread_subject);
             date = (TextView) itemView.findViewById(R.id.post_date);
-            number = (TextView) itemView.findViewById(R.id.post_floor);
+            number = (TextView) itemView.
+                    findViewById(R.id.post_floor);
             reply = (ImageView) itemView.findViewById(R.id.btn_repost);
 
             message = (TextView) itemView.findViewById(R.id.thread_message);
             message.setMovementMethod(new CustomSpan.LinkTouchMovementMethod());
-            message.setLineSpacing(4, 1.1f);
+            message.setLineSpacing(5, 1.2f);
 
             useMobile = (ImageView) itemView.findViewById(R.id.thread_from_mobile);
             deviceName = (TextView) itemView.findViewById(R.id.device_name);
