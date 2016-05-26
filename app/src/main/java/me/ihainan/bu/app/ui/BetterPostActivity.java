@@ -1,5 +1,6 @@
 package me.ihainan.bu.app.ui;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.ActivityNotFoundException;
@@ -7,6 +8,7 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
@@ -14,6 +16,8 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.OpenableColumns;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -30,6 +34,9 @@ import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.squareup.picasso.Picasso;
 
 import me.ihainan.bu.app.R;
 import me.ihainan.bu.app.ui.fragment.EmoticonFragment;
@@ -38,6 +45,10 @@ import me.ihainan.bu.app.utils.ui.EditTextUndoRedo;
 
 public class BetterPostActivity extends AppCompatActivity {
     public final static String TAG = BetterPostActivity.class.getSimpleName();
+
+    // 权限 Tags
+    public final static int PERMISSIONS_REQUEST_READ_IMAGE = 1;
+    public final static int PERMISSIONS_REQUEST_READ_FILE = 2;
 
     // 请求 Tags
     public final static int REQUEST_CHOOSE_PHOTO_TAG = 0;   // 添加图片附件请求
@@ -114,7 +125,7 @@ public class BetterPostActivity extends AppCompatActivity {
             else
                 mETMessage.append("\n\n" + mQuoteContent);
         }
-        
+
         // Fragments
         mDrawer = (DrawerLayout) findViewById(R.id.post_drawer);
         mEmoticonFragment = new EmoticonFragment();
@@ -220,9 +231,17 @@ public class BetterPostActivity extends AppCompatActivity {
                 @Override
                 public void onClick(View v) {
                     alertDialog.dismiss();
-                    Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
-                    photoPickerIntent.setType("image/*");
-                    startActivityForResult(photoPickerIntent, REQUEST_CHOOSE_PHOTO_TAG);
+                    if (ContextCompat.checkSelfPermission(BetterPostActivity.this,
+                            Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                            != PackageManager.PERMISSION_GRANTED) {
+                        ActivityCompat.requestPermissions(BetterPostActivity.this,
+                                new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                                PERMISSIONS_REQUEST_READ_IMAGE);
+                    } else {
+                        Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
+                        photoPickerIntent.setType("image/*");
+                        startActivityForResult(photoPickerIntent, REQUEST_CHOOSE_PHOTO_TAG);
+                    }
                 }
             });
 
@@ -230,10 +249,18 @@ public class BetterPostActivity extends AppCompatActivity {
                 @Override
                 public void onClick(View v) {
                     alertDialog.dismiss();
-                    Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
-                    intent.addCategory(Intent.CATEGORY_OPENABLE);
-                    intent.setType("*/*");
-                    startActivityForResult(intent, REQUEST_CHOOSE_FILE_TAG);
+                    if (ContextCompat.checkSelfPermission(BetterPostActivity.this,
+                            Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                            != PackageManager.PERMISSION_GRANTED) {
+                        ActivityCompat.requestPermissions(BetterPostActivity.this,
+                                new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                                PERMISSIONS_REQUEST_READ_FILE);
+                    } else {
+                        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+                        intent.addCategory(Intent.CATEGORY_OPENABLE);
+                        intent.setType("*/*");
+                        startActivityForResult(intent, REQUEST_CHOOSE_FILE_TAG);
+                    }
                 }
             });
         } else if (ACTION_MOD_ATTACHMENT == actionType) {
@@ -289,6 +316,32 @@ public class BetterPostActivity extends AppCompatActivity {
                     });
                 }
             });
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        switch (requestCode) {
+            case PERMISSIONS_REQUEST_READ_FILE:
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
+                    photoPickerIntent.setType("image/*");
+                    startActivityForResult(photoPickerIntent, REQUEST_CHOOSE_PHOTO_TAG);
+                } else {
+                    Toast.makeText(this, getString(R.string.error_insert_attachment), Toast.LENGTH_LONG).show();
+                }
+            case PERMISSIONS_REQUEST_READ_IMAGE:
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                    Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+                    intent.addCategory(Intent.CATEGORY_OPENABLE);
+                    intent.setType("*/*");
+                    startActivityForResult(intent, REQUEST_CHOOSE_FILE_TAG);
+                } else {
+                    Toast.makeText(this, getString(R.string.error_insert_attachment), Toast.LENGTH_LONG).show();
+                }
         }
     }
 
