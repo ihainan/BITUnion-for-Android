@@ -105,7 +105,7 @@
                 android:text="姑娘详情：软妹子，1992年北京大兴人，首经贸本科毕业，在创业企业认真做品牌，不给国家添乱，身高160的小型美女，体重分分钟浮动20斤跟玩似的，太瘦了卖不上价钱。 "
                 android:textColor="@android:color/black"
                 android:textIsSelectable="true"
-                android:textSize="16sp" />
+                android:textSize="14sp" />
 
             <LinearLayout
                 android:id="@+id/thread_attachment_layout"

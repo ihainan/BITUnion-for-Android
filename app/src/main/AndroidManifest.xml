@@ -62,7 +62,6 @@
         <service
             android:name="com.umeng.update.net.DownloadingService"
             android:process=":DownloadingService" />
-
         <service android:name=".utils.network.SessionUpdateService" />
 
         <activity
@@ -93,16 +92,18 @@
             android:name=".ui.FullscreenPhotoViewerActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/title_activity_fullscreen_photo_viewer"
-            android:theme="@style/FullscreenTheme"></activity>
-
+            android:theme="@style/FullscreenTheme" />
         <activity
             android:name=".ui.BetterPostActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:label="@string/title_activity_better_post"
             android:theme="@style/AppTheme.SwipeTheme"
-            android:windowSoftInputMode="adjustResize">
-
-        </activity>
+            android:windowSoftInputMode="adjustResize"></activity>
+        <activity
+            android:name=".ui.FollowingListActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:label="@string/title_activity_focus_list"
+            android:theme="@style/AppTheme.SwipeTheme"></activity>
     </application>
 
 </manifest>

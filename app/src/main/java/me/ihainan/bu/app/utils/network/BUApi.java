@@ -315,7 +315,8 @@ public class BUApi {
         parameters.put("message", CommonUtils.encode(message));
         parameters.put("attachment", attachment == null ? "0" : "1");
 
-        String url = "http://ali.ihainan.me:8080/api/v2/multipart/att";
+        // String url = "http://ali.ihainan.me:8080/api/v2/multipart/att";
+        String url = getNewPostURL();
 
         if (attachment == null) {
             CommonUtils.debugToast(context, "POST_NEW_THREAD_NOT_ATT >> " + url);

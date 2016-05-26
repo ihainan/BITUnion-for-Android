@@ -49,6 +49,8 @@
     <string name="error_download_image">下载图片失败，请检查网络</string>
     <string name="error_no_permission">没有文件写入权限，保存图片失败</string>
     <string name="error_no_new_events">哎呀并没有动态</string>
+    <string name="error_no_following">哎呀并没有关注任何用户</string>
+
     <string name="error_no_favorites">哎呀并没有收藏</string>
 
     <!-- File Download -->
@@ -67,6 +69,7 @@
     <string name="action_retry">重试</string>
     <string name="action_refresh">刷新</string>
     <string name="action_send">提交</string>
+    <string name="action_manage_focus">管理关注列表</string>
     <string name="action_follow">关注</string>
     <string name="action_favorite">收藏</string>
     <string name="action_jump">跳转</string>
@@ -102,4 +105,5 @@
     <string name="message_exit_editor">帖子内容不为空，是否仍然退出编辑器？</string>
     <string name="compressing_image">正在压缩图片</string>
     <string name="processing_attachment">正在处理附件</string>
+    <string name="title_activity_focus_list">关注列表</string>
 </resources>

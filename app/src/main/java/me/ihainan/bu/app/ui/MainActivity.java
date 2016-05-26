@@ -94,7 +94,7 @@ public class MainActivity extends AppCompatActivity {
 
             // Activity content
             if (mFragment == null) {
-                mFragment = getHomeFragment();
+                mFragment = getFocusFragment();
                 FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
                 fragmentTransaction.replace(R.id.flContent, mFragment).commit();
             }

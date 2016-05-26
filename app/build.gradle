@@ -72,4 +72,5 @@ dependencies {
     compile 'com.miguelcatalan:materialsearchview:1.4.0'
     compile 'com.lapism:searchview:2.2'
     compile 'com.commit451:PhotoView:1.2.5'
+    compile 'co.dift.ui.swipetoaction:library:1.1'
 }

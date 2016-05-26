@@ -13,7 +13,6 @@ import com.umeng.update.UpdateConfig;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -64,6 +63,8 @@ public class BUApplication extends Application {
     public final static int LOADING_COUNT = 10; // 一次最多 Loading 的帖子数目
     public final static int LOADING_POSTS_COUNT = 10; // 一次最多 Loading 的回复数目
     public final static int LOADING_TIMELINE_COUNT = 10; // 一次最多 Loading 的动态数目
+    public final static int LOADING_FOLLOWING_COUNT = 20; // 一次最多 Loading 的关注用户数目
+
     public final static int LOADING_FAVORITES_COUNT = 10; // 一次最多 Loading 的收藏数目
 
     public final static String IMAGE_URL_PREFIX = "IMAGE_URL_PREFIX"; // 图片 URL 前缀，用于标记某个 URL 是图片

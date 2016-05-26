@@ -94,7 +94,7 @@ public class PreviewActivity extends SwipeActivity {
         // 提取数据
         mMessageContent = bundle.getString(BetterPostActivity.CONTENT_MESSAGE_TAG);
         if (mMessageContent != null) {
-            // mMessageContent += "\n\n\n[b]发自 " + CommonUtils.getDeviceName() + " @BITUnion for Android[/b]";
+            mMessageContent += "\n\n\n[b]发自 " + CommonUtils.getDeviceName() + "@BITUnion for Android[/b]";
             mMessageHtmlContent = HtmlUtil.formatHtml(HtmlUtil.ubbToHtml(mMessageContent));
         }
         mFloor = bundle.getLong(BetterPostActivity.NEW_POST_MAX_FLOOR_TAG);

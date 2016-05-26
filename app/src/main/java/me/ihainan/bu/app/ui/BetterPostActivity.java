@@ -84,7 +84,7 @@ public class BetterPostActivity extends AppCompatActivity {
     private Long mFid, mTid, mFloor;
     private Uri mAttachmentUri;   // 附件 URI
     private String mRealImageName;  // 真实附件名
-    private final static int MAX_COMPRESSED_IMAGE_SIZE = 700;   // 压缩之后的最大图片大小，单位为 KB
+    private final static int MAX_COMPRESSED_IMAGE_SIZE = 900;   // 压缩之后的最大图片大小，单位为 KB
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

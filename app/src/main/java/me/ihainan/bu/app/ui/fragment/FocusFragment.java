@@ -3,6 +3,7 @@ package me.ihainan.bu.app.ui.fragment;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
@@ -12,10 +13,14 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
 import me.ihainan.bu.app.R;
+import me.ihainan.bu.app.ui.FollowingListActivity;
 
 /**
  * 关注列表
@@ -50,15 +55,35 @@ public class FocusFragment extends Fragment {
             mPager = (ViewPager) mRootView.findViewById(R.id.pager);
             mPager.setAdapter(new PagerAdapter(getFragmentManager(), mContext));
             mTabLayout.setupWithViewPager(mPager);
+
+            // Menu
+            setHasOptionsMenu(true);
         }
 
         return mRootView;
     }
 
     @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.focus_menu, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.focus_list:
+                Intent intent = new Intent(mContext, FollowingListActivity.class);
+                startActivity(intent);
+                break;
+        }
+
+        return true;
+    }
+
+    @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
+        setHasOptionsMenu(true);
         mToolbar.setTitle(R.string.action_focus);
     }
 

@@ -2,6 +2,7 @@ package me.ihainan.bu.app.ui.fragment;
 
 import android.app.Fragment;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.ActionBar;
@@ -17,16 +18,20 @@ import me.ihainan.bu.app.adapters.SuperParentAdapter;
 import me.ihainan.bu.app.utils.BUApplication;
 
 /**
- * Home Page Fragment
+ * 板块列表
  */
 public class ForumFragment extends Fragment {
-    private final static String TAG = HomePageFragment.class.getSimpleName();
+    private final static String TAG = ForumFragment.class.getSimpleName();
     private Context mContext;
+    public final static int REQUEST_CODE = 1;
 
     // UI references
     private ExpandableListView mExpandableListView;
     private View mRootView;
     private Toolbar mToolbar;
+
+    // Data
+    private SuperParentAdapter mAdapter;
 
     @Nullable
     @Override
@@ -47,14 +52,21 @@ public class ForumFragment extends Fragment {
 
             mExpandableListView = (ExpandableListView) mRootView.findViewById(R.id.forum_system_admin_lv);
 
-            SuperParentAdapter adapter = new SuperParentAdapter(mContext, BUApplication.forumListGroupList);
-            mExpandableListView.setAdapter(adapter);
+            mAdapter = new SuperParentAdapter(mContext, this, BUApplication.forumListGroupList);
+            mExpandableListView.setAdapter(mAdapter);
             mExpandableListView.setDivider(null);
 
             mExpandableListView.expandGroup(0);
         }
 
         return mRootView;
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == REQUEST_CODE) {
+            mAdapter.notifyDataSetChanged();
+        }
     }
 
     @Override

@@ -1,5 +1,6 @@
 package me.ihainan.bu.app.ui;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
@@ -141,6 +142,7 @@ public class ThreadListActivity extends SwipeActivity {
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                setResult(Activity.RESULT_OK, null);
                 finish();
             }
         });
@@ -184,6 +186,12 @@ public class ThreadListActivity extends SwipeActivity {
         });
 
         setSwipeAnyWhere(false);
+    }
+
+    @Override
+    public void onBackPressed() {
+        setResult(Activity.RESULT_OK, null);
+        finish();
     }
 
     @Override
