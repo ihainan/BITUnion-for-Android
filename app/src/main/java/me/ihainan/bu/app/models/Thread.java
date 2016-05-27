@@ -25,7 +25,6 @@ public class Thread implements Serializable{
     public long views;
     public long replies;
 
-
     @Override
     public String toString() {
         try {

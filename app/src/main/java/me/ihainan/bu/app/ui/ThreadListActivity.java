@@ -118,16 +118,7 @@ public class ThreadListActivity extends SwipeActivity {
         }
 
         // Update most visited forums list
-        HashMap<Long, Long> visitedForumsMap = (HashMap<Long, Long>) BUApplication.getCache(this).getAsObject(BUApplication.CACHE_MOST_VISITED_FORUMS);
-        if (visitedForumsMap == null || visitedForumsMap.size() == 0) {
-            visitedForumsMap = new HashMap<>();
-        }
-
-        Long value = visitedForumsMap.get(mMainForum.getForumId());
-        if (value == null) visitedForumsMap.put(mMainForum.getForumId(), 1L);
-        else
-            visitedForumsMap.put(mMainForum.getForumId(), value >= Long.MAX_VALUE ? Long.MAX_VALUE : 1 + value);
-        BUApplication.getCache(this).put(BUApplication.CACHE_MOST_VISITED_FORUMS, visitedForumsMap);
+        BUApplication.updateForumsMap(this, mMainForum.getForumId());
     }
 
     @Override
@@ -221,7 +212,7 @@ public class ThreadListActivity extends SwipeActivity {
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         mRecyclerView.setLayoutManager(layoutManager);
         mRecyclerView.addItemDecoration(new SimpleDividerItemDecoration(ThreadListActivity.this));
-        mAdapter = new ThreadListAdapter(this, mThreadList);
+        mAdapter = new ThreadListAdapter(this, mSubForum.getSubForumId(), mThreadList);
         mRecyclerView.setAdapter(mAdapter);
 
         mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {

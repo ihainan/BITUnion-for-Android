@@ -11,8 +11,11 @@ import com.umeng.update.UmengUpdateAgent;
 import com.umeng.update.UpdateConfig;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -344,21 +347,16 @@ public class BUApplication extends Application {
 
         // 最常访问
         forumLists = new ArrayList<>();
-        HashMap<Long, Long> visitedForumsMap = (HashMap<Long, Long>) getCache(context).getAsObject(CACHE_MOST_VISITED_FORUMS);
+        Map<Long, Long> visitedForumsMap = (Map<Long, Long>) getCache(context).getAsObject(CACHE_MOST_VISITED_FORUMS);
         if (visitedForumsMap == null || visitedForumsMap.size() == 0) {
             visitedForumsMap = new HashMap<>();
             visitedForumsMap.put(3L, 10L);
             visitedForumsMap.put(59L, 20L);
+            visitedForumsMap.put(14L, 30L);
         }
 
-        TreeMap<Long, Long> sortedMap = new TreeMap<>(new Comparator() {
-            @Override
-            public int compare(Object lhs, Object rhs) {
-                return (Long) rhs > (Long) lhs ? 1 : -1;
-            }
-        });
-        sortedMap.putAll(visitedForumsMap);
-        Set<Long> mostVisitedForumIndex = sortedMap.keySet();
+        visitedForumsMap = sortByValue(visitedForumsMap);
+        Set<Long> mostVisitedForumIndex = visitedForumsMap.keySet();
 
         int i = 0;
         for (Long index : mostVisitedForumIndex) {
@@ -371,6 +369,72 @@ public class BUApplication extends Application {
 
         forumListGroup = new ForumListGroup(forumLists, "最常访问");
         forumListGroupList.add(0, forumListGroup);
+    }
+
+    /**
+     * 寻找一个子板块对应的主板块
+     *
+     * @param subForumID 子板块 ID
+     * @return 子版块归属的主板块 ID
+     */
+    public static Long findMainForumID(Long subForumID) {
+        for (ForumListGroup forumListGroup : BUApplication.forumListGroupList) {
+            for (ForumListGroup.ForumList forumList : forumListGroup.getChildItemList()) {
+                if (forumList.getForumId() == subForumID)
+                    return subForumID;
+                for (ForumListGroup.SubForum subForum : forumList.getChildItemList()) {
+                    if (subForum.getSubForumId().equals(subForumID)) {
+                        return forumList.getForumId();
+                    }
+                }
+            }
+        }
+
+        return -1L;
+    }
+
+    /**
+     * 更新板块访问频率 Map
+     *
+     * @param context     上下文
+     * @param mainForumId 访问的板块对应的主板块 ID
+     */
+    public static void updateForumsMap(Context context, Long mainForumId) {
+        HashMap<Long, Long> visitedForumsMap = (HashMap<Long, Long>) getCache(context).getAsObject(BUApplication.CACHE_MOST_VISITED_FORUMS);
+        if (visitedForumsMap == null || visitedForumsMap.size() == 0) {
+            visitedForumsMap = new HashMap<>();
+        }
+
+        Long value = visitedForumsMap.get(mainForumId);
+        if (value == null) visitedForumsMap.put(mainForumId, 1L);
+        else
+            visitedForumsMap.put(mainForumId, value >= Long.MAX_VALUE ? Long.MAX_VALUE : 1 + value);
+        getCache(context).put(BUApplication.CACHE_MOST_VISITED_FORUMS, visitedForumsMap);
+    }
+
+    /**
+     * 根据 value 对 map 进行排序
+     *
+     * @param map 需要排序的 map
+     * @param <K> key 类型
+     * @param <V> value 类型
+     * @return 排序后的新 map
+     */
+    public static <K, V extends Comparable<? super V>> Map<K, V>
+    sortByValue(Map<K, V> map) {
+        List<Map.Entry<K, V>> list =
+                new LinkedList<Map.Entry<K, V>>(map.entrySet());
+        Collections.sort(list, new Comparator<Map.Entry<K, V>>() {
+            public int compare(Map.Entry<K, V> o1, Map.Entry<K, V> o2) {
+                return (o2.getValue()).compareTo(o1.getValue());
+            }
+        });
+
+        Map<K, V> result = new LinkedHashMap<K, V>();
+        for (Map.Entry<K, V> entry : list) {
+            result.put(entry.getKey(), entry.getValue());
+        }
+        return result;
     }
 
     public final static Map<String, Boolean> badImages = new HashMap<>();

@@ -116,6 +116,7 @@ public class LatestThreadListAdapter extends RecyclerView.Adapter<RecyclerView.V
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(mContext, PostListActivity.class);
+                intent.putExtra(PostListActivity.THREAD_FID_TAG, latestThread.fid);
                 intent.putExtra(PostListActivity.THREAD_ID_TAG, latestThread.tid);
                 intent.putExtra(PostListActivity.THREAD_AUTHOR_NAME_TAG, latestThread.author);
                 intent.putExtra(PostListActivity.THREAD_REPLY_COUNT_TAG, latestThread.tid_sum + 1);
@@ -205,6 +206,7 @@ public class LatestThreadListAdapter extends RecyclerView.Adapter<RecyclerView.V
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(mContext, PostListActivity.class);
+                intent.putExtra(PostListActivity.THREAD_FID_TAG, latestThread.fid);
                 intent.putExtra(PostListActivity.THREAD_ID_TAG, latestThread.tid);
                 intent.putExtra(PostListActivity.THREAD_AUTHOR_NAME_TAG, latestThread.author);
                 intent.putExtra(PostListActivity.THREAD_REPLY_COUNT_TAG, latestThread.tid_sum + 1);

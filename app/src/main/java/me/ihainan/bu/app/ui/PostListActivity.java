@@ -51,6 +51,7 @@ public class PostListActivity extends SwipeActivity {
     public final static int REQUEST_NEW_REPLY = 0;
 
     public final static String THREAD_ID_TAG = "THREAD_ID_TAG";
+    public final static String THREAD_FID_TAG = "THREAD_FID_TAG";
     public final static String THREAD_NAME_TAG = "THREAD_NAME_TAG";
     public final static String THREAD_AUTHOR_NAME_TAG = "THREAD_AUTHOR_NAME_TAG";
     public final static String THREAD_REPLY_COUNT_TAG = "THREAD_REPLY_COUNT_TAG";
@@ -71,6 +72,7 @@ public class PostListActivity extends SwipeActivity {
     private Integer mJumpFloor = null;    // 跳转页面
     private Integer mJumpPage = 0, mJumpPageIndex = 0;   // 需要跳转的页数和页面内位置
     private PostListPageAdapter postListPageAdapter;
+    private Long mFid;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -118,6 +120,13 @@ public class PostListActivity extends SwipeActivity {
         mPager = (ViewPager) findViewById(R.id.pager);
         mPager.setOffscreenPageLimit(0);
 
+        // statistics
+        if (mFid != null) {
+            if (BUApplication.forumListGroupList == null) BUApplication.makeForumGroupList(this);
+            Long mainForumID = BUApplication.findMainForumID(mFid);
+            BUApplication.updateForumsMap(this, mainForumID);
+        }
+
         // Start fetch data and fill views
         startWork();
 
@@ -153,6 +162,7 @@ public class PostListActivity extends SwipeActivity {
         Intent intent = getIntent();
         Bundle bundle = intent.getExtras();
         if (bundle != null) {
+            mFid = bundle.getLong(THREAD_FID_TAG);
             mTid = bundle.getLong(THREAD_ID_TAG);
             mThreadName = bundle.getString(THREAD_NAME_TAG);
             mAuthorName = bundle.getString(THREAD_AUTHOR_NAME_TAG);

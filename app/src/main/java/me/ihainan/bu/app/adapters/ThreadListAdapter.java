@@ -29,13 +29,15 @@ public class ThreadListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     private final static String TAG = ThreadListAdapter.class.getSimpleName();
     private final LayoutInflater mLayoutInflater;
     private final Context mContext;
+    private final Long mFid;
     private List<me.ihainan.bu.app.models.Thread> mPosts;
 
     private final int VIEW_TYPE_ITEM = 0;
     private final int VIEW_TYPE_LOADING = 1;
 
-    public ThreadListAdapter(Context context, List<Thread> posts) {
+    public ThreadListAdapter(Context context, Long fid, List<Thread> posts) {
         mPosts = posts;
+        mFid = fid;
         mContext = context;
         mLayoutInflater = LayoutInflater.from(context);
     }

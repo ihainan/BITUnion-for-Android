@@ -108,6 +108,7 @@ public class TimelineAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                         @Override
                         public void onClick(View v) {
                             Intent intent = new Intent(mContext, PostListActivity.class);
+                            intent.putExtra(PostListActivity.THREAD_FID_TAG, post.fid);
                             intent.putExtra(PostListActivity.THREAD_ID_TAG, post.tid);
                             intent.putExtra(PostListActivity.THREAD_NAME_TAG, post.t_subject);
                             intent.putExtra(PostListActivity.THREAD_JUMP_FLOOR, post.floor);
