@@ -75,6 +75,9 @@
     <string name="action_jump">跳转</string>
     <string name="action_jump_to_head">跳到首页</string>
     <string name="action_jump_to_end">跳到末页面</string>
+    <string name="action_deleted">Deleted</string>
+    <string name="action_remove_following">已经取消关注用户</string>
+
 
     <string name="action_add_image_attachment">添加图片</string>
     <string name="action_add_file_attachment">添加文件</string>

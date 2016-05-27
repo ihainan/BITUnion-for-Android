@@ -21,4 +21,6 @@
     <color name="blockquote_background">#FFFFFF</color>
 
     <color name="black_overlay">#66000000</color>
+
+    <color name="color_delete">#ff5722</color>
 </resources>

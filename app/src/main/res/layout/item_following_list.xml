@@ -1,79 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/root_layout"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:background="@android:color/white"
+    android:clickable="true"
+    android:orientation="horizontal"
+    android:padding="12dp">
 
-    <!-- this view reveals when swipe right -->
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/accent"
-        android:tag="reveal-right">
+    <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/avatar"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginTop="4dp"
+        android:clickable="false"
+        android:src="@drawable/empty_avatar"
+        app:civ_border_color="@android:color/white"
+        app:civ_border_width="2dp" />
 
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_centerVertical="true"
-            android:layout_marginLeft="20dp"
-            android:src="@drawable/ic_action_action_search"
-            android:tint="@color/icons" />
-    </RelativeLayout>
-
-    <!-- this view reveals when swipe left -->
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@android:color/holo_red_dark"
-        android:tag="reveal-left">
-
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_centerVertical="true"
-            android:layout_marginRight="20dp"
-            android:src="@drawable/ic_remove_red_eye_white_24dp"
-            android:tint="@color/icons" />
-    </RelativeLayout>
-
-    <!-- this is the item front view -->
-    <RelativeLayout
+    <TextView
+        android:id="@+id/username"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:tag="front">
-
-        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@android:color/white"
-            android:orientation="horizontal"
-            android:padding="12dp">
-
-            <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
-                android:id="@+id/avatar"
-                android:layout_width="33dp"
-                android:layout_height="33dp"
-                android:layout_marginTop="4dp"
-                android:src="@drawable/empty_avatar"
-                app:civ_border_color="@android:color/white"
-                app:civ_border_width="2dp" />
-
-            <TextView
-                android:id="@+id/username"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/user_name"
-                android:layout_gravity="center"
-                android:layout_marginLeft="13dp"
-                android:ellipsize="end"
-                android:lineSpacingExtra="3dp"
-                android:singleLine="true"
-                android:text="ihainan"
-                android:textColor="@android:color/black"
-                android:textSize="14sp"
-                android:textStyle="bold" />
-        </LinearLayout>
-    </RelativeLayout>
-</FrameLayout>
+        android:layout_below="@id/user_name"
+        android:layout_gravity="center"
+        android:layout_marginLeft="13dp"
+        android:clickable="false"
+        android:ellipsize="end"
+        android:lineSpacingExtra="3dp"
+        android:singleLine="true"
+        android:text="ihainan"
+        android:textColor="@android:color/black"
+        android:textSize="15sp"
+        android:textStyle="bold" />
+</LinearLayout>

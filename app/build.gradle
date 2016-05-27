@@ -6,6 +6,7 @@ android {
 
     repositories {
         mavenCentral()
+        maven { url "https://jitpack.io" }
         flatDir {
             dirs 'libs'
         }
@@ -58,7 +59,7 @@ dependencies {
     compile 'com.mcxiaoke.volley:library:1.0.19'
     compile 'com.squareup.okhttp:okhttp:2.4.0'
     compile 'com.fasterxml.jackson.core:jackson-databind:2.7.0'
-    compile 'com.umeng.analytics:analytics:latest.integration'
+    compile files('libs/umeng-analytics-v6.0.0.jar')
     compile files('libs/umeng-update-v2.6.0.1.jar')
     compile 'com.squareup.picasso:picasso:2.5.2'
     compile 'jp.co.cyberagent.android.gpuimage:gpuimage-library:1.4.1'
@@ -73,4 +74,6 @@ dependencies {
     compile 'com.lapism:searchview:2.2'
     compile 'com.commit451:PhotoView:1.2.5'
     compile 'co.dift.ui.swipetoaction:library:1.1'
+    compile 'com.github.TR4Android:Swipeable-RecyclerView:0.2.0'
+
 }

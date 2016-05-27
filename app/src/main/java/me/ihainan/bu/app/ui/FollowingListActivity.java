@@ -9,7 +9,6 @@ import android.util.Log;
 import android.view.View;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -22,7 +21,7 @@ import java.util.List;
 
 import co.dift.ui.SwipeToAction;
 import me.ihainan.bu.app.R;
-import me.ihainan.bu.app.adapters.FollowingListAdapter;
+import me.ihainan.bu.app.adapters.NewFollowingListAdapter;
 import me.ihainan.bu.app.models.Follow;
 import me.ihainan.bu.app.ui.assist.SimpleDividerItemDecoration;
 import me.ihainan.bu.app.ui.assist.SwipeActivity;
@@ -41,12 +40,11 @@ public class FollowingListActivity extends SwipeActivity {
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private RelativeLayout mErrorLayout;
     private TextView mTvErrorMessage, mTvAction;
-    private SwipeToAction mSwipeToAction;
 
     // Data
     private boolean mIsLoading = false;
     private List<Follow> mList = new ArrayList<>();
-    private FollowingListAdapter mAdapter;
+    private NewFollowingListAdapter mAdapter;
     private long mCurrentPosition = 0;
 
     @Override
@@ -94,7 +92,7 @@ public class FollowingListActivity extends SwipeActivity {
         mRecyclerView.setHasFixedSize(true);
 
         // Adapter
-        mAdapter = new FollowingListAdapter(this, mList);
+        mAdapter = new NewFollowingListAdapter(this, mList);
         mRecyclerView.setAdapter(mAdapter);
 
         // 自动加载
@@ -112,35 +110,6 @@ public class FollowingListActivity extends SwipeActivity {
                 if (dy > 0 && mLastVisibleItem >= mList.size() - BUApplication.LOADING_FOLLOWING_COUNT / 2 && !mIsLoading) {
                     loadMore(true);
                 }
-            }
-        });
-
-        mSwipeToAction = new SwipeToAction(mRecyclerView, new SwipeToAction.SwipeListener<Follow>() {
-            @Override
-            public boolean swipeLeft(final Follow follow) {
-                //do something
-                Toast.makeText(FollowingListActivity.this, "Left", Toast.LENGTH_LONG).show();
-
-                return false; // true will move the front view to its starting position
-            }
-
-            @Override
-            public boolean swipeRight(Follow follow) {
-                Toast.makeText(FollowingListActivity.this, "Right", Toast.LENGTH_LONG).show();
-                return true;
-            }
-
-            @Override
-            public void onClick(Follow follow) {
-                //do something
-                Toast.makeText(FollowingListActivity.this, "Click", Toast.LENGTH_LONG).show();
-            }
-
-            @Override
-            public void onLongClick(Follow follow) {
-                Toast.makeText(FollowingListActivity.this, "Long Click", Toast.LENGTH_LONG).show();
-
-                //do something
             }
         });
     }
