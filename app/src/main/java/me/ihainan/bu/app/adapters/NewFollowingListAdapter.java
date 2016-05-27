@@ -14,6 +14,7 @@ import android.widget.Toast;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.squareup.picasso.Picasso;
 import com.tr4android.recyclerviewslideitem.SwipeAdapter;
 import com.tr4android.recyclerviewslideitem.SwipeConfiguration;
 
@@ -85,6 +86,8 @@ public class NewFollowingListAdapter extends SwipeAdapter {
             });
 
             // 头像
+            Picasso.with(mContext).load(R.drawable.empty_avatar)
+                    .into(viewHolder.avatar);
             CommonUtils.setUserAvatarClickListener(mContext,
                     viewHolder.avatar, -1,
                     follow.following);

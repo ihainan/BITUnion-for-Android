@@ -100,7 +100,6 @@ public class BUApplication extends Application {
     public final static String PREF_DEBUG_MODE = "PREF_DEBUG_MODE";
     public final static String PREF_UPLOAD_DATA = "PREF_UPLOAD_DATA";
 
-
     public static void readConfig(Context context) {
         username = BUApplication.getCache(context).getAsString(PREF_USER_NAME);
 
