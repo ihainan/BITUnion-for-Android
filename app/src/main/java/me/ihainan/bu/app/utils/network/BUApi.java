@@ -364,11 +364,10 @@ public class BUApi {
                                                     // 登录成功，拿到 session
                                                     try {
                                                         BUApplication.userSession = BUApi.MAPPER.readValue(response.toString(), Session.class);
-                                                        BUApplication.saveConfig(context);
+                                                        BUApplication.setCacheSession(context);
                                                         CommonUtils.debugToast(context, "makeRequest " + tag + ">> 成功拿到新 Session " + BUApplication.userSession);
                                                         Log.i(TAG, "makeRequest >> " + tag + "成功拿到新 Session " + BUApplication.userSession);
                                                         parameters.put("session", BUApplication.userSession.session);
-                                                        BUApplication.saveConfig(context);
                                                         makeRequest(context, url, tag, parameters, retryLimit - 1, listener, errorListener);
                                                     } catch (Exception e) {
                                                         Log.e(TAG, context.getString(R.string.error_parse_json) + "\n" + response, e);

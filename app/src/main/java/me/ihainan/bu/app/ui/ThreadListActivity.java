@@ -23,7 +23,6 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import me.ihainan.bu.app.R;
@@ -231,7 +230,7 @@ public class ThreadListActivity extends SwipeActivity {
                     Log.i(TAG, "onScrolled >> 即将到底，准备请求新数据");
                     mThreadList.add(null);
                     mAdapter.notifyItemInserted(mThreadList.size() - 1);
-                    refreshData(mCurrentPosition, mCurrentPosition + BUApplication.LOADING_COUNT);
+                    refreshData(mCurrentPosition, mCurrentPosition + BUApplication.LOADING_THREADS_COUNT);
                     mIsLoading = true;
                 }
             }
@@ -262,7 +261,7 @@ public class ThreadListActivity extends SwipeActivity {
         mThreadList.clear();
         mAdapter.notifyDataSetChanged();
         mCurrentPosition = 0;
-        refreshData(0, BUApplication.LOADING_COUNT);
+        refreshData(0, BUApplication.LOADING_THREADS_COUNT);
     }
 
     private List<Thread> mThreadList = new ArrayList<>();
@@ -295,7 +294,7 @@ public class ThreadListActivity extends SwipeActivity {
 
                                 // 更新 RecyclerView
                                 if (from == 0) mThreadList.clear();
-                                mCurrentPosition += BUApplication.LOADING_COUNT;
+                                mCurrentPosition += BUApplication.LOADING_THREADS_COUNT;
                                 mThreadList.addAll(newThreads);
                                 mAdapter.notifyDataSetChanged();
 

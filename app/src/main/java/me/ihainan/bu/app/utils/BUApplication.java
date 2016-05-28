@@ -37,58 +37,60 @@ public class BUApplication extends Application {
     /* 会话相关 */
     public static Session userSession = null;   // 用户会话实例，向服务器发送请求时候需要附上会话字符串
     public static String username, password;    // 用户名，密码，用于重新登陆
-    public static Member userInfo;  // 用户信息
-    private final static String SESSION_STR = "{\"result\":\"success\",\"uid\":108263,\"username\":\"ihainan\",\"session\":\"SgAIeVTX\",\"status\":\"Member\",\"credit\":\"0\",\"lastactivity\":1454659703}";
 
     /* 缓存相关 */
     private static ACache cache;
-    public final static String CACHE_USER_INFO = "CACHE_USER_INFO";
-    public final static String CACHE_MESSAGE_IMAGE = "CACHE_MESSAGE_IMAGE";
-    public final static String CACHE_USER_SESSION = "CACHE_SESSION";
-    public final static String CACHE_REPLY_CONTENT = "CACHE_REPLY_CONTENT";
-    public final static String CACHE_VIEW_POSITION = "CACHE_VIEW_POSITION";
-    public final static String CACHE_MOST_VISITED_FORUMS = "CACHE_MOST_VISITED_FORUMS";
+    public final static String CACHE_USER_INFO = "CACHE_USER_INFO"; // 缓存的用户信息
+    public final static String CACHE_POST_INNER_IMAGE = "CACHE_POST_INNER_IMAGE";   // 缓存的帖子内图片
+    public final static String CACHE_LATEST_THREAD_FIRST_POST = "CACHE_LATEST_THREAD_FIRST_POST";   // 缓存的主页主题第一个回帖（用户获取背景图）
+    public final static String CACHE_MOST_VISITED_FORUMS = "CACHE_MOST_VISITED_FORUMS"; // 缓存的最常访问论文
 
-    public static int cacheDays = 10;
-    public final static Integer VIEW_POSITION_CACHE_DAY = 1;
+    public static int cacheDays = 50;   // 用户信息、图片缓存时间
 
-
+    /**
+     * 初始化缓存单例
+     *
+     * @param context 上下文
+     */
     private synchronized static void initCache(Context context) {
         if (cache == null) cache = ACache.get(context);
     }
 
+    /**
+     * 获取缓存单例
+     *
+     * @param context 上下文
+     * @return 缓存单例
+     */
     public static ACache getCache(Context context) {
         if (cache == null) initCache(context);
         return cache;
     }
 
     /* 系统配置相关*/
+    public final static int RETRY_LIMIT = 2;    // 重新登录尝试次数
     public final static int MAX_USER_NAME_LENGTH = 15;  // 列表用户名最长显示的长度
-    public final static int HOT_TOPIC_THREAD = 30; // 热门帖子阈值
-    public final static int LOADING_COUNT = 10; // 一次最多 Loading 的帖子数目
-    public final static int LOADING_POSTS_COUNT = 10; // 一次最多 Loading 的回复数目
-    public final static int LOADING_TIMELINE_COUNT = 10; // 一次最多 Loading 的动态数目
-    public final static int LOADING_SEARCH_RESULT_COUNT = 10; // 一次最多 Loading 的搜索结果数目
+    public final static int HOT_TOPIC_THREAD = 30;      // 热门帖子阈值
+    public final static int SWIPE_LAYOUT_TRIGGER_DISTANCE = 400;    // 手指在屏幕下拉多少距离会触发下拉刷新
 
-    public final static int LOADING_FOLLOWING_COUNT = 20; // 一次最多 Loading 的关注用户数目
-
-    public final static int LOADING_FAVORITES_COUNT = 10; // 一次最多 Loading 的收藏数目
+    public final static int LOADING_THREADS_COUNT = 10; // 一次最多 Loading 的主题数目
+    public final static int LOADING_POSTS_COUNT = 10;   // 一次最多 Loading 的帖子数目
+    public final static int LOADING_TIMELINE_COUNT = 10;        // 一次最多 Loading 的动态数目
+    public final static int LOADING_SEARCH_RESULT_COUNT = 10;   // 一次最多 Loading 的搜索结果数目
+    public final static int LOADING_FOLLOWING_COUNT = 20;       // 一次最多 Loading 的关注用户数目
+    public final static int LOADING_FAVORITES_COUNT = 10;       // 一次最多 Loading 的收藏数目
 
     public final static String IMAGE_URL_PREFIX = "IMAGE_URL_PREFIX"; // 图片 URL 前缀，用于标记某个 URL 是图片
-
-    public final static int RETRY_LIMIT = 2;    // 重新登录尝试次数
-    public final static int SWIPE_LAYOUT_TRIGGER_DISTANCE = 400;    // 手指在屏幕下拉多少距离会触发下拉刷新
-    public static Boolean debugMode = true;  // 是否启动 debug 模式
-    public static Boolean saveDataMode = false; // 是否启动省流量模式
-    public static Boolean uploadData = true;    // 是否自动上传数据
-    public static Boolean ascendingOrder = true; // 是否按照升序排序
-    public static boolean hasUpdateFavor = false;
 
     public enum NETWORK_TYPE {
         IN_SCHOOL,
         OUT_SCHOOL,
     }
 
+    public static Boolean debugMode = true;  // 是否启动 debug 模式
+    public static Boolean saveDataMode = false; // 是否启动省流量模式
+    public static Boolean uploadData = true;    // 是否自动上传数据
+    public static boolean hasUpdateFavor = false;
     public static NETWORK_TYPE networkType = NETWORK_TYPE.OUT_SCHOOL;
 
     public static boolean isInSchool() {
@@ -99,63 +101,95 @@ public class BUApplication extends Application {
     public final static String CONF_SESSION_STR = "CONF_SESSION_STR";
     public final static String PREF_PASSWORD = "PREF_PASSWORD";
     public final static String PREF_NETWORK_TYPE = "PREF_NETWORK_TYPE";
-    public final static String PREF_REPLY_ORDER = "PREF_REPLY_ORDER";
     public final static String PREF_SAVE_DATA = "PREF_SAVE_DATA";
     public final static String PREF_DEBUG_MODE = "PREF_DEBUG_MODE";
     public final static String PREF_UPLOAD_DATA = "PREF_UPLOAD_DATA";
 
-    public static void readConfig(Context context) {
+    public static String getCacheUsername(Context context) {
         username = BUApplication.getCache(context).getAsString(PREF_USER_NAME);
+        return username;
+    }
 
+    public static void setCacheUserName(Context context) {
+        Log.d(TAG, "setCacheUserName >> " + BUApplication.username);
+        BUApplication.getCache(context).put(PREF_USER_NAME, BUApplication.username == null ? "" : BUApplication.username);
+    }
+
+    public static Session getCacheSession(Context context) {
         userSession = (Session) BUApplication.getCache(context).getAsObject(CONF_SESSION_STR);
+        return userSession;
+    }
 
+    public static void setCacheSession(Context context) {
+        Log.d(TAG, "setCacheSession >> " + userSession);
+        if (userSession != null) BUApplication.getCache(context).put(CONF_SESSION_STR, userSession);
+    }
+
+    public static String getCachePassword(Context context) {
         password = BUApplication.getCache(context).getAsString(PREF_PASSWORD);
+        return password;
+    }
 
+    public static void setCachePassword(Context context) {
+        Log.d(TAG, "setCachePassword >> " + BUApplication.password);
+        BUApplication.getCache(context).put(PREF_PASSWORD, BUApplication.password == null ? "" : BUApplication.password);
+    }
+
+    public static NETWORK_TYPE getCacheNetworkType(Context context) {
         String networkTypeStr = BUApplication.getCache(context).getAsString(PREF_NETWORK_TYPE);
         networkType = networkTypeStr == null ? NETWORK_TYPE.OUT_SCHOOL : NETWORK_TYPE.valueOf(networkTypeStr);
         BUApi.currentEndPoint = networkType == NETWORK_TYPE.OUT_SCHOOL ? BUApi.OUT_SCHOOL_ENDPOINT : BUApi.IN_SCHOOL_ENDPOINT;
-
-        ascendingOrder = (Boolean) BUApplication.getCache(context).getAsObject(PREF_REPLY_ORDER);
-        if (ascendingOrder == null) ascendingOrder = true;
-
-        uploadData = (Boolean) BUApplication.getCache(context).getAsObject(PREF_UPLOAD_DATA);
-        if (uploadData == null) uploadData = true;
-
-        saveDataMode = (Boolean) BUApplication.getCache(context).getAsObject(PREF_SAVE_DATA);
-        if (saveDataMode == null) saveDataMode = false;
-
-        debugMode = (Boolean) BUApplication.getCache(context).getAsObject(PREF_DEBUG_MODE);
-        if (debugMode == null) debugMode = false;
-
-        printConf();
+        return networkType;
     }
 
-    public static void printConf() {
-        Log.d(TAG, "printConf >> User Name：" + username);
-        Log.d(TAG, "printConf >> User Session：" + userSession);
-        Log.d(TAG, "printConf >> Password：" + (password == null ? "NULL" : "****"));
-        Log.d(TAG, "printConf >> Network Type：" + networkType);
-        Log.d(TAG, "printConf >> Increase Order：" + ascendingOrder);
-        Log.d(TAG, "printConf >> Upload Data：" + uploadData);
-        Log.d(TAG, "printConf >> Save Data Mode：" + saveDataMode);
-        Log.d(TAG, "printConf >> Debug Mode：" + debugMode);
-    }
-
-    public static void saveConfig(Context context) {
-        if (userSession != null) BUApplication.getCache(context).put(CONF_SESSION_STR, userSession);
-        BUApplication.getCache(context).put(PREF_USER_NAME, BUApplication.username == null ? "" : BUApplication.username);
-        BUApplication.getCache(context).put(PREF_PASSWORD, BUApplication.password == null ? "" : BUApplication.password);
-        if (ascendingOrder != null)
-            BUApplication.getCache(context).put(PREF_REPLY_ORDER, ascendingOrder);
+    public static void setCacheNetworkType(Context context) {
+        Log.d(TAG, "setCacheNetworkType >> " + networkType);
         if (networkType != null)
             BUApplication.getCache(context).put(PREF_NETWORK_TYPE, networkType.toString());
-        if (saveDataMode != null) BUApplication.getCache(context).put(PREF_SAVE_DATA, saveDataMode);
-        if (uploadData != null) BUApplication.getCache(context).put(PREF_UPLOAD_DATA, uploadData);
-        if (debugMode != null) BUApplication.getCache(context).put(PREF_DEBUG_MODE, debugMode);
-
-        printConf();
     }
 
+    public static Boolean getCacheSaveDataMode(Context context) {
+        saveDataMode = (Boolean) BUApplication.getCache(context).getAsObject(PREF_SAVE_DATA);
+        if (saveDataMode == null) saveDataMode = false;
+        return saveDataMode;
+    }
+
+    public static void setCacheSaveDataMode(Context context) {
+        Log.d(TAG, "setCacheSaveDataMode >> " + saveDataMode);
+        if (saveDataMode != null) BUApplication.getCache(context).put(PREF_SAVE_DATA, saveDataMode);
+    }
+
+    public static Boolean getCacheDebugMode(Context context) {
+        debugMode = (Boolean) BUApplication.getCache(context).getAsObject(PREF_DEBUG_MODE);
+        if (debugMode == null) debugMode = false;
+        return debugMode;
+    }
+
+    public static void setCacheDebugMode(Context context) {
+        Log.d(TAG, "setCacheDebugMode >> " + debugMode);
+        if (debugMode != null) BUApplication.getCache(context).put(PREF_DEBUG_MODE, debugMode);
+    }
+
+    public static Boolean getCacheUploadData(Context context) {
+        uploadData = (Boolean) BUApplication.getCache(context).getAsObject(PREF_UPLOAD_DATA);
+        if (uploadData == null) uploadData = true;
+        return uploadData;
+    }
+
+    public static void setUploadData(Context context) {
+        Log.d(TAG, "setUploadData >> " + uploadData);
+        if (uploadData != null) BUApplication.getCache(context).put(PREF_UPLOAD_DATA, uploadData);
+    }
+
+    public static void readConfig(Context context) {
+        getCacheUsername(context);
+        getCachePassword(context);
+        getCachePassword(context);
+        getCacheNetworkType(context);
+        getCacheDebugMode(context);
+        getCacheUploadData(context);
+        getCacheSaveDataMode(context);
+    }
 
     /* 论坛列表相关 */
     public static List<ForumListGroup> forumListGroupList;

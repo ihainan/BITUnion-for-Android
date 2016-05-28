@@ -55,7 +55,7 @@ public class PicassoImageGetter implements Html.ImageGetter {
                     }
 
                     // 从缓存中获取图片
-                    bitmap = BUApplication.getCache(mContext).getAsBitmap(BUApplication.CACHE_MESSAGE_IMAGE + "_" + source);
+                    bitmap = BUApplication.getCache(mContext).getAsBitmap(BUApplication.CACHE_POST_INNER_IMAGE + "_" + source);
                     if (bitmap != null) {
                         Log.d(TAG, "loadImage >> 从缓存中获取图片 " + source);
                         return bitmap;
@@ -68,7 +68,7 @@ public class PicassoImageGetter implements Html.ImageGetter {
 
                         // 缓存位图
                         Log.d(TAG, "loadImage >> 缓存图片成功 " + source);
-                        BUApplication.getCache(mContext).put(BUApplication.CACHE_MESSAGE_IMAGE + "_" + source, bitmap, BUApplication.cacheDays * ACache.TIME_DAY);
+                        BUApplication.getCache(mContext).put(BUApplication.CACHE_POST_INNER_IMAGE + "_" + source, bitmap, BUApplication.cacheDays * ACache.TIME_DAY);
 
                         return bitmap;
                     } else {

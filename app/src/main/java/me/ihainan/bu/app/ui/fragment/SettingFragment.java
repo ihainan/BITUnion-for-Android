@@ -67,7 +67,7 @@ public class SettingFragment extends PreferenceFragment {
                 Boolean checked = (Boolean) newValue;
                 BUApplication.networkType = checked ? BUApplication.NETWORK_TYPE.OUT_SCHOOL : BUApplication.NETWORK_TYPE.IN_SCHOOL;
                 BUApi.currentEndPoint = checked ? BUApi.OUT_SCHOOL_ENDPOINT : BUApi.IN_SCHOOL_ENDPOINT;
-                BUApplication.saveConfig(mContext);
+                BUApplication.setCacheNetworkType(mContext);
                 return true;
             }
         });
@@ -80,7 +80,7 @@ public class SettingFragment extends PreferenceFragment {
             public boolean onPreferenceChange(Preference preference, Object newValue) {
                 Boolean checked = (Boolean) newValue;
                 BUApplication.saveDataMode = checked;
-                BUApplication.saveConfig(mContext);
+                BUApplication.setCacheSaveDataMode(mContext);
                 return true;
             }
         });
@@ -92,7 +92,7 @@ public class SettingFragment extends PreferenceFragment {
             public boolean onPreferenceChange(Preference preference, Object newValue) {
                 Boolean checked = (Boolean) newValue;
                 BUApplication.uploadData = checked;
-                BUApplication.saveConfig(mContext);
+                BUApplication.setUploadData(mContext);
                 return true;
             }
         });
@@ -103,7 +103,7 @@ public class SettingFragment extends PreferenceFragment {
             public boolean onPreferenceChange(Preference preference, Object newValue) {
                 Boolean checked = (Boolean) newValue;
                 BUApplication.debugMode = checked;
-                BUApplication.saveConfig(mContext);
+                BUApplication.setCacheDebugMode(mContext);
                 return true;
             }
         });

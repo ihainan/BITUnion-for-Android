@@ -264,8 +264,7 @@ public class LatestThreadListAdapter extends RecyclerView.Adapter<RecyclerView.V
         }
 
         // 获取背景图片
-        Post reply = (Post) BUApplication.getCache(mContext).getAsObject(BUApplication.CACHE_REPLY_CONTENT + "_" + latestThread.tid);
-        // Picasso.with(mContext).load(R.drawable.background).into(holder.background);
+        Post reply = (Post) BUApplication.getCache(mContext).getAsObject(BUApplication.CACHE_LATEST_THREAD_FIRST_POST + "_" + latestThread.tid);
         if (reply == null) {
             Log.i(TAG, "fillDefaultView >> 拉取回复数据");
             BUApi.getPostReplies(mContext, latestThread.tid, 0, 1, new Response.Listener<JSONObject>() {
@@ -281,7 +280,7 @@ public class LatestThreadListAdapter extends RecyclerView.Adapter<RecyclerView.V
                             if (postReplies != null && postReplies.size() > 0) {
                                 Post firstReply = postReplies.get(0);
                                 Log.i(TAG, "fillSelfieView >> 拉取得到回复数据，放入缓存：" + firstReply);
-                                BUApplication.getCache(mContext).put(BUApplication.CACHE_REPLY_CONTENT + "_" + latestThread.tid, firstReply);
+                                BUApplication.getCache(mContext).put(BUApplication.CACHE_LATEST_THREAD_FIRST_POST + "_" + latestThread.tid, firstReply);
 
                                 if (firstReply.attachext.equals("png") || firstReply.attachext.equals("jpg")
                                         || firstReply.attachext.equals("jpeg")) {

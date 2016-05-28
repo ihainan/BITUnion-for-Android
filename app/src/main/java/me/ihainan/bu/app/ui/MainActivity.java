@@ -189,7 +189,7 @@ public class MainActivity extends AppCompatActivity {
                             public void onClick(DialogInterface dialog, int which) {
                                 MiPushClient.unsetUserAccount(MainActivity.this, CommonUtils.decode(BUApplication.username), null);
                                 BUApplication.password = null;
-                                BUApplication.saveConfig(MainActivity.this);
+                                BUApplication.setCachePassword(MainActivity.this);
                                 Intent intent = new Intent(MainActivity.this, LoginActivity.class);
                                 startActivity(intent);
                                 finish();

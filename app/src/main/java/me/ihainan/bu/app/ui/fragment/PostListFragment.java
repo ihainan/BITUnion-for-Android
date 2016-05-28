@@ -180,7 +180,7 @@ public class PostListFragment extends Fragment {
     private void reloadData() {
         mSwipeRefreshLayout.setRefreshing(true);
         mList.clear();
-        refreshData(mPagePosition * BUApplication.LOADING_POSTS_COUNT, (mPagePosition + 1) * BUApplication.LOADING_COUNT);
+        refreshData(mPagePosition * BUApplication.LOADING_POSTS_COUNT, (mPagePosition + 1) * BUApplication.LOADING_POSTS_COUNT);
     }
 
     /**

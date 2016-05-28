@@ -88,7 +88,7 @@ public class LoginActivity extends AppCompatActivity {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 BUApi.currentEndPoint = isChecked ? BUApi.OUT_SCHOOL_ENDPOINT : BUApi.IN_SCHOOL_ENDPOINT;
                 BUApplication.networkType = isChecked ? BUApplication.NETWORK_TYPE.OUT_SCHOOL : BUApplication.NETWORK_TYPE.IN_SCHOOL;
-                BUApplication.saveConfig(LoginActivity.this);
+                BUApplication.setCacheNetworkType(LoginActivity.this);
             }
         });
 
@@ -150,11 +150,13 @@ public class LoginActivity extends AppCompatActivity {
                     public void onResponse(JSONObject response) {
                         if (isFinishing()) return;
                         BUApplication.username = mUsername.getText().toString();
+                        BUApplication.setCacheUserName(LoginActivity.this);
+
                         if (mDialog != null) mDialog.dismiss();
-                        // showProgress(false);
                         try {
                             if (BUApi.checkStatus(response)) {
                                 BUApplication.userSession = BUApi.MAPPER.readValue(response.toString(), Session.class);
+                                BUApplication.setCacheSession(LoginActivity.this);
 
                                 if (BUApplication.userSession.credit < 0) {
                                     if (mDialog != null) mDialog.dismiss();
@@ -162,7 +164,8 @@ public class LoginActivity extends AppCompatActivity {
                                     mUsername.requestFocus();
                                 } else {
                                     BUApplication.password = mPassword.getText().toString();
-                                    BUApplication.saveConfig(LoginActivity.this);
+                                    BUApplication.setCachePassword(LoginActivity.this);
+
                                     Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                                     startActivity(intent);
                                     finish();
@@ -170,7 +173,6 @@ public class LoginActivity extends AppCompatActivity {
                             } else {
                                 if (mDialog != null) mDialog.dismiss();
                                 mPassword.setError(getString(R.string.error_wrong_password));
-                                BUApplication.saveConfig(LoginActivity.this);
                                 mPassword.requestFocus();
                                 return;
                             }
@@ -186,7 +188,6 @@ public class LoginActivity extends AppCompatActivity {
                     public void onErrorResponse(VolleyError error) {
                         if (isFinishing()) return;
                         if (mDialog != null) mDialog.dismiss();
-                        // showProgress(false);
                         mUsername.setError(getString(R.string.error_network));
                         mUsername.requestFocus();
                         Log.e(TAG, getString(R.string.error_network), error);

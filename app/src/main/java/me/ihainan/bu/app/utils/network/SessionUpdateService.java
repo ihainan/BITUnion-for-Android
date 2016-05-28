@@ -52,7 +52,7 @@ public class SessionUpdateService extends IntentService {
                                                 return;
                                             } else {
                                                 Log.i(TAG, getString(R.string.update_session_success));
-                                                BUApplication.saveConfig(SessionUpdateService.this);
+                                                BUApplication.setCacheSession(SessionUpdateService.this);
                                                 return;
                                             }
                                         } else {
