@@ -40,7 +40,11 @@
             android:name=".ui.MainActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:theme="@style/AppTheme.NoActionBar">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
 
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
         <activity
             android:name=".ui.LoginActivity"
@@ -87,11 +91,6 @@
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:label="@string/title_activity_thread_detail_new"
             android:theme="@style/AppTheme.SwipeTheme" />
-        <activity
-            android:name=".ui.SearchResultActivity"
-            android:configChanges="keyboardHidden|orientation|screenSize"
-            android:label="@string/title_activity_search_result"
-            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".ui.FullscreenPhotoViewerActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
@@ -154,12 +153,10 @@
 
         <activity
             android:name=".ui.SearchActivity"
-            android:label="@string/title_activity_search">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:label="@string/title_activity_search"
+            android:theme="@style/AppTheme.SwipeTheme">
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
     </application>
 

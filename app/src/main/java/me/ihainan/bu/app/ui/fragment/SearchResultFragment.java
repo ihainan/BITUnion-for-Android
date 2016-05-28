@@ -90,7 +90,6 @@ public class SearchResultFragment extends Fragment {
             // Setup SwipeRefreshLayout
             mSwipeRefreshLayout = (SwipeRefreshLayout) mRootView.findViewById(R.id.swipe_refresh_layout);
             mSwipeRefreshLayout.setEnabled(false);
-
         }
 
         return mRootView;
@@ -133,8 +132,9 @@ public class SearchResultFragment extends Fragment {
         mKeyword = keyword;
         mIsLoading = true;
         mPostList.clear();
+        mAdapter.notifyDataSetChanged();
         mCurrentPosition = 0;
-        loadMore(false);
+        loadMore(true);
     }
 
     private void loadMore(boolean isAddProgressBar) {
@@ -179,6 +179,7 @@ public class SearchResultFragment extends Fragment {
                         mAdapter.notifyItemRemoved(mPostList.size());
                     }
 
+                    if (mKeyword.equals("")) newPosts.clear();
 
                     // 更新 RecyclerView
                     if (newPosts.size() > 0) {

@@ -35,7 +35,7 @@ import java.util.List;
 import me.ihainan.bu.app.R;
 import me.ihainan.bu.app.adapters.LatestThreadListAdapter;
 import me.ihainan.bu.app.models.LatestThread;
-import me.ihainan.bu.app.ui.SearchResultActivity;
+import me.ihainan.bu.app.ui.SearchActivity;
 import me.ihainan.bu.app.ui.assist.SimpleDividerItemDecoration;
 import me.ihainan.bu.app.utils.CommonUtils;
 import me.ihainan.bu.app.utils.BUApplication;
@@ -223,14 +223,14 @@ public class HomePageFragment extends Fragment {
     /* 菜单 */
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        // inflater.inflate(R.menu.home_menu, menu);
-        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.home_menu, menu);
+        // super.onCreateOptionsMenu(menu, inflater);
     }
 
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_search:
-                Intent intent = new Intent(mContext, SearchResultActivity.class);
+                Intent intent = new Intent(mContext, SearchActivity.class);
                 mContext.startActivity(intent);
                 break;
         }

@@ -8,24 +8,31 @@ import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v13.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.view.KeyEvent;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 
 import com.arlib.floatingsearchview.FloatingSearchView;
+import com.arlib.floatingsearchview.suggestions.model.SearchSuggestion;
 
 import me.ihainan.bu.app.R;
+import me.ihainan.bu.app.ui.assist.SwipeActivity;
 import me.ihainan.bu.app.ui.fragment.SearchResultFragment;
 
 
-public class SearchActivity extends Activity {
+public class SearchActivity extends SwipeActivity {
     private final String TAG = SearchActivity.class.getSimpleName();
 
     // UI
     private FloatingSearchView mSearchView;
-    private ViewGroup mParentView;
     private ViewPager mPager;
     private TabLayout mTabLayout;
     private PagerAdapter mPagerAdapter;
+
+    // Data
+    private String mSearchStr = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,7 +40,6 @@ public class SearchActivity extends Activity {
         setContentView(R.layout.activity_search);
 
         // UI
-        mParentView = (ViewGroup) findViewById(R.id.parent_view);
         mSearchView = (FloatingSearchView) findViewById(R.id.floating_search_view);
 
         // ViewPager & TabLayout
@@ -44,14 +50,54 @@ public class SearchActivity extends Activity {
         mPager.setOffscreenPageLimit(3);
         mTabLayout.setupWithViewPager(mPager);
 
+        // SearchView
+        mSearchView.focusSearch(View.FOCUS_RIGHT);
         mSearchView.setOnMenuItemClickListener(new FloatingSearchView.OnMenuItemClickListener() {
             @Override
             public void onActionMenuItemSelected(MenuItem item) {
-                mPagerAdapter.reloadAll(mSearchView.getQuery());
-                mSearchView.setSearchHint(mSearchView.getQuery());
-                mSearchView.clearFocus();
+                doSearch();
             }
         });
+
+        mSearchView.setOnHomeActionClickListener(
+                new FloatingSearchView.OnHomeActionClickListener() {
+                    @Override
+                    public void onHomeClicked() {
+                        finish();
+                    }
+                });
+
+        mSearchView.setOnQueryChangeListener(new FloatingSearchView.OnQueryChangeListener() {
+            @Override
+            public void onSearchTextChanged(String oldQuery, final String newQuery) {
+                mSearchStr = newQuery;
+            }
+        });
+
+        mSearchView.setOnSearchListener(new FloatingSearchView.OnSearchListener()
+
+                                        {
+                                            @Override
+                                            public void onSuggestionClicked(SearchSuggestion searchSuggestion) {
+
+                                            }
+
+                                            @Override
+                                            public void onSearchAction() {
+                                                doSearch();
+                                                mSearchView.setSearchHint(mSearchView.getQuery());
+                                            }
+                                        }
+
+        );
+
+        setSwipeAnyWhere(false);
+    }
+
+    private void doSearch() {
+        mPagerAdapter.reloadAll(mSearchStr);
+        mSearchView.setSearchHint(mSearchStr);
+        mSearchView.clearSearchFocus();
     }
 
     public class PagerAdapter extends FragmentPagerAdapter {

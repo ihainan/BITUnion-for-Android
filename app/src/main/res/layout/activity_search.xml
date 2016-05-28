@@ -50,7 +50,7 @@
             app:floatingSearch_searchBarMarginRight="@dimen/search_view_inset"
             app:floatingSearch_searchBarMarginTop="@dimen/search_view_inset"
             app:floatingSearch_searchHint="Search..."
-            app:floatingSearch_showSearchKey="false"
+            app:floatingSearch_showSearchKey="true"
             app:floatingSearch_viewTextColor="@android:color/black" />
 
     </RelativeLayout>
