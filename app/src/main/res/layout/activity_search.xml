@@ -1,0 +1,59 @@
+<android.support.v4.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/drawer_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/white">
+
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/parent_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".MainActivity">
+
+        <LinearLayout
+            android:id="@+id/search_view_background"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="@color/primary"
+            android:orientation="horizontal"
+            android:scaleType="centerCrop" />
+
+        <android.support.design.widget.TabLayout
+            android:id="@+id/tab_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/search_view_background"
+            android:background="@color/primary"
+            android:minHeight="?attr/actionBarSize"
+            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+            app:tabGravity="fill"
+            app:tabIndicatorColor="@android:color/white"
+            app:tabMode="fixed" />
+
+        <android.support.v4.view.ViewPager
+            android:id="@+id/pager"
+            android:layout_width="match_parent"
+            android:layout_height="fill_parent"
+            android:layout_below="@id/tab_layout"
+            android:background="@color/background" />
+
+        <com.arlib.floatingsearchview.FloatingSearchView
+            android:id="@+id/floating_search_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:floatingSearch_dismissOnOutsideTouch="true"
+            app:floatingSearch_leftActionMode="showHome"
+            app:floatingSearch_menu="@menu/home_menu"
+            app:floatingSearch_searchBarMarginLeft="@dimen/search_view_inset"
+            app:floatingSearch_searchBarMarginRight="@dimen/search_view_inset"
+            app:floatingSearch_searchBarMarginTop="@dimen/search_view_inset"
+            app:floatingSearch_searchHint="Search..."
+            app:floatingSearch_showSearchKey="false"
+            app:floatingSearch_viewTextColor="@android:color/black" />
+
+    </RelativeLayout>
+
+
+</android.support.v4.widget.DrawerLayout>

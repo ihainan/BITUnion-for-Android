@@ -68,6 +68,8 @@ public class BUApplication extends Application {
     public final static int LOADING_COUNT = 10; // 一次最多 Loading 的帖子数目
     public final static int LOADING_POSTS_COUNT = 10; // 一次最多 Loading 的回复数目
     public final static int LOADING_TIMELINE_COUNT = 10; // 一次最多 Loading 的动态数目
+    public final static int LOADING_SEARCH_RESULT_COUNT = 10; // 一次最多 Loading 的搜索结果数目
+
     public final static int LOADING_FOLLOWING_COUNT = 20; // 一次最多 Loading 的关注用户数目
 
     public final static int LOADING_FAVORITES_COUNT = 10; // 一次最多 Loading 的收藏数目

@@ -8,4 +8,7 @@
     <dimen name="bottom_icon_padding">15dp</dimen>
 
     <dimen name="toolbar_elevation">6dp</dimen>
+
+    <!-- Search Dialog -->
+    <dimen name="search_view_inset">6dp</dimen>
 </resources>

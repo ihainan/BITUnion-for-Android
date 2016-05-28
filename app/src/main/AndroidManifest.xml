@@ -22,9 +22,11 @@
 
     <!-- 小米推送 -->
     <uses-permission android:name="android.permission.VIBRATE" />
+
     <permission
         android:name="me.ihainan.bu.app.permission.MIPUSH_RECEIVE"
         android:protectionLevel="signature" />
+
     <uses-permission android:name="me.ihainan.bu.app.permission.MIPUSH_RECEIVE" />
 
     <application
@@ -38,11 +40,7 @@
             android:name=".ui.MainActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:theme="@style/AppTheme.NoActionBar">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
         <activity
             android:name=".ui.LoginActivity"
@@ -104,12 +102,12 @@
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:label="@string/title_activity_better_post"
             android:theme="@style/AppTheme.SwipeTheme"
-            android:windowSoftInputMode="adjustResize"></activity>
+            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".ui.FollowingListActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:label="@string/title_activity_focus_list"
-            android:theme="@style/AppTheme.SwipeTheme"></activity>
+            android:theme="@style/AppTheme.SwipeTheme" />
 
         <service
             android:name="com.xiaomi.push.service.XMPushService"
@@ -128,6 +126,7 @@
             android:exported="true">
             <intent-filter>
                 <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
+
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </receiver>
@@ -139,7 +138,6 @@
                 <action android:name="com.xiaomi.push.PING_TIMER" />
             </intent-filter>
         </receiver>
-
         <receiver
             android:name=".utils.network.XMMessageReceiver"
             android:exported="true">
@@ -154,6 +152,15 @@
             </intent-filter>
         </receiver>
 
+        <activity
+            android:name=".ui.SearchActivity"
+            android:label="@string/title_activity_search">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>
