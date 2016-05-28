@@ -55,9 +55,6 @@ public class FocusFragment extends Fragment {
             mPager = (ViewPager) mRootView.findViewById(R.id.pager);
             mPager.setAdapter(new PagerAdapter(getFragmentManager(), mContext));
             mTabLayout.setupWithViewPager(mPager);
-
-            // Menu
-            setHasOptionsMenu(true);
         }
 
         return mRootView;

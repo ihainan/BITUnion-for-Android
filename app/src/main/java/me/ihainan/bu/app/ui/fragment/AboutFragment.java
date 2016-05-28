@@ -67,7 +67,7 @@ public class AboutFragment extends Fragment {
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
+        setHasOptionsMenu(false);
         mToolbar.setTitle(R.string.action_about);
     }
 }

@@ -2,6 +2,7 @@ package me.ihainan.bu.app.ui.fragment;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
@@ -16,6 +17,7 @@ import android.view.ViewGroup;
 
 import me.ihainan.bu.app.BuildConfig;
 import me.ihainan.bu.app.R;
+import me.ihainan.bu.app.ui.PostDisplaySettingActivity;
 import me.ihainan.bu.app.utils.CommonUtils;
 import me.ihainan.bu.app.utils.BUApplication;
 import me.ihainan.bu.app.utils.network.BUApi;
@@ -55,7 +57,7 @@ public class SettingFragment extends PreferenceFragment {
     }
 
     private SwitchPreference networkType, saveDataMode, uploadData, debugMode;
-    private Preference version, deviceName, checkUpdate;
+    private Preference version, deviceName, checkUpdate, displaySetting;
 
     private void loadDefaultValue() {
         BUApplication.readConfig(mContext);
@@ -126,5 +128,21 @@ public class SettingFragment extends PreferenceFragment {
                 return false;
             }
         });
+
+        displaySetting = findPreference("pref_post_display");
+        displaySetting.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                Intent intent = new Intent(mContext, PostDisplaySettingActivity.class);
+                mContext.startActivity(intent);
+                return false;
+            }
+        });
+    }
+
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        setHasOptionsMenu(false);
     }
 }

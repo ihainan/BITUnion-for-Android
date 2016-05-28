@@ -43,7 +43,7 @@
                     android:layout_marginLeft="15dp"
                     android:layout_marginTop="7dp"
                     android:layout_toRightOf="@id/thread_author_avatar"
-                    android:text="ihainan"
+                    android:text="用户名"
                     android:textStyle="bold" />
 
                 <TextView
@@ -91,7 +91,7 @@
                 android:layout_below="@id/thread_layout_head"
                 android:layout_marginTop="12dp"
                 android:lineSpacingExtra="5dp"
-                android:text="联盟年度关键词和热贴总结"
+                android:text="回帖标题"
                 android:textColor="@android:color/black"
                 android:textSize="17sp"
                 android:textStyle="bold" />
@@ -102,7 +102,9 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@id/thread_subject"
                 android:layout_marginTop="12dp"
-                android:text="姑娘详情：软妹子，1992年北京大兴人，首经贸本科毕业，在创业企业认真做品牌，不给国家添乱，身高160的小型美女，体重分分钟浮动20斤跟玩似的，太瘦了卖不上价钱。 "
+                android:lineSpacingExtra="0dp"
+                android:lineSpacingMultiplier="1.0"
+                android:text="此处是回帖正文，你可以分别调整字体大小、额外行间距以及行间距倍数。"
                 android:textColor="@android:color/black"
                 android:textIsSelectable="true"
                 android:textSize="15sp" />

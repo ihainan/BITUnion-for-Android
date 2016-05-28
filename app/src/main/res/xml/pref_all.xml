@@ -2,6 +2,23 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
     <PreferenceCategory
+        android:key="pref_key_display_settings"
+        android:title="界面">
+        <CheckBoxPreference
+            android:key="pref_advanced_editor"
+            android:summary="启动高级编辑器，获得更多文本编辑功能"
+            android:title="高级编辑器" />
+
+        <Preference
+            android:key="pref_theme"
+            android:title="主题" />
+
+        <Preference
+            android:key="pref_post_display"
+            android:title="帖子显示" />
+    </PreferenceCategory>
+
+    <PreferenceCategory
         android:key="pref_key_network_settings"
         android:title="网络">
         <SwitchPreference

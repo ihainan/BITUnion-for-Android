@@ -155,6 +155,11 @@
             android:name=".ui.SearchActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:label="@string/title_activity_search"
+            android:theme="@style/AppTheme.SwipeTheme"></activity>
+
+        <activity
+            android:name=".ui.PostDisplaySettingActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
             android:theme="@style/AppTheme.SwipeTheme">
 
         </activity>

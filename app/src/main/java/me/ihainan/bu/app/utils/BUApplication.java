@@ -105,6 +105,53 @@ public class BUApplication extends Application {
     public final static String PREF_DEBUG_MODE = "PREF_DEBUG_MODE";
     public final static String PREF_UPLOAD_DATA = "PREF_UPLOAD_DATA";
 
+    public final static Integer DEFAULT_FONT_SIZE = 15;
+    public final static Integer DEFAULT_LINE_SPACING_EXTRA = 8;
+    public final static Float DEFAULT_LINE_SPACING_MULTIPLIER = 1.2f;
+
+    public final static String PREF_FONT_SIZE = "PREF_FONT_SIZE";
+    public final static String PREF_LINE_SPACING_EXTRA = "PREF_LINE_SPACING_EXTRA";
+    public final static String PREF_LINE_SPACING_MULTIPLIER = "PREF_LINE_SPACING_MULTIPLIER";
+
+    public static Integer fontSize = DEFAULT_FONT_SIZE;
+    public static Integer lineSpacingExtra = DEFAULT_LINE_SPACING_EXTRA;
+    public static Float lineSpacingMultiplier = DEFAULT_LINE_SPACING_MULTIPLIER;
+
+    public static Integer getCacheFontSize(Context context) {
+        fontSize = (Integer) BUApplication.getCache(context).getAsObject(PREF_FONT_SIZE);
+        if (fontSize == null) fontSize = DEFAULT_FONT_SIZE;
+        return fontSize;
+    }
+
+    public static void setCacheFontSize(Context context) {
+        Log.d(TAG, "setCacheFontSize >> " + fontSize);
+        if (fontSize != null) BUApplication.getCache(context).put(PREF_FONT_SIZE, fontSize);
+    }
+
+    public static Integer getCacheLineSpacingExtra(Context context) {
+        lineSpacingExtra = (Integer) BUApplication.getCache(context).getAsObject(PREF_LINE_SPACING_EXTRA);
+        if (lineSpacingExtra == null) lineSpacingExtra = DEFAULT_LINE_SPACING_EXTRA;
+        return lineSpacingExtra;
+    }
+
+    public static void setCacheLineSpacingExtra(Context context) {
+        Log.d(TAG, "setCacheLineSpacingExtra >> " + lineSpacingExtra);
+        if (lineSpacingExtra != null)
+            BUApplication.getCache(context).put(PREF_LINE_SPACING_EXTRA, lineSpacingExtra);
+    }
+
+    public static Float getCacheLineSpacingMultiplier(Context context) {
+        lineSpacingMultiplier = (Float) BUApplication.getCache(context).getAsObject(PREF_LINE_SPACING_MULTIPLIER);
+        if (lineSpacingMultiplier == null) lineSpacingMultiplier = DEFAULT_LINE_SPACING_MULTIPLIER;
+        return lineSpacingMultiplier;
+    }
+
+    public static void setCacheLineSpacingMultiplier(Context context) {
+        Log.d(TAG, "setCacheLineSpacingMultiplier >> " + lineSpacingMultiplier);
+        if (lineSpacingMultiplier != null)
+            BUApplication.getCache(context).put(PREF_LINE_SPACING_MULTIPLIER, lineSpacingMultiplier);
+    }
+
     public static String getCacheUsername(Context context) {
         username = BUApplication.getCache(context).getAsString(PREF_USER_NAME);
         return username;
@@ -184,11 +231,14 @@ public class BUApplication extends Application {
     public static void readConfig(Context context) {
         getCacheUsername(context);
         getCachePassword(context);
-        getCachePassword(context);
+        getCacheSession(context);
         getCacheNetworkType(context);
         getCacheDebugMode(context);
         getCacheUploadData(context);
         getCacheSaveDataMode(context);
+        getCacheFontSize(context);
+        getCacheLineSpacingExtra(context);
+        getCacheLineSpacingMultiplier(context);
     }
 
     /* 论坛列表相关 */

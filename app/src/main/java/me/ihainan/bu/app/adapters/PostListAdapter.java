@@ -10,6 +10,7 @@ import android.text.Html;
 import android.text.SpannableString;
 import android.text.format.DateUtils;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,6 +34,7 @@ import me.ihainan.bu.app.ui.FullscreenPhotoViewerActivity;
 import me.ihainan.bu.app.ui.PostListActivity;
 import me.ihainan.bu.app.ui.assist.CustomSpan;
 import me.ihainan.bu.app.ui.viewholders.LoadingViewHolder;
+import me.ihainan.bu.app.utils.BUApplication;
 import me.ihainan.bu.app.utils.CommonUtils;
 import me.ihainan.bu.app.utils.network.BUApi;
 import me.ihainan.bu.app.utils.ui.PicassoImageGetter;
@@ -287,7 +289,8 @@ public class PostListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
             message = (TextView) itemView.findViewById(R.id.thread_message);
             message.setMovementMethod(new CustomSpan.LinkTouchMovementMethod());
-            message.setLineSpacing(5, 1.2f);
+            message.setTextSize(TypedValue.COMPLEX_UNIT_SP, BUApplication.fontSize);
+            message.setLineSpacing(BUApplication.lineSpacingExtra, BUApplication.lineSpacingMultiplier);
 
             useMobile = (ImageView) itemView.findViewById(R.id.thread_from_mobile);
             deviceName = (TextView) itemView.findViewById(R.id.device_name);
