@@ -17,6 +17,7 @@ import com.xiaomi.mipush.sdk.PushMessageReceiver;
 import org.json.JSONObject;
 
 import java.util.List;
+import java.util.logging.Logger;
 
 import me.ihainan.bu.app.R;
 import me.ihainan.bu.app.models.AtNotification;
@@ -58,13 +59,14 @@ public class XMMessageReceiver extends PushMessageReceiver {
             // Parse message
             try {
                 JSONObject jsonObject = new JSONObject(message.getContent());
+                Log.d(TAG, "onReceivePassThroughMessage >> " + message.getContent() + " " + message.getNotifyId());
                 if (jsonObject.getInt("type") == 1) {
                     AtNotification atNotification = BUApi.MAPPER.readValue(message.getContent(), AtNotification.class);
                     Intent intent = new Intent(context, PostListActivity.class);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    intent.setAction(Long.toString(System.currentTimeMillis()));
                     intent.putExtra(PostListActivity.THREAD_ID_TAG, atNotification.data.tid);
                     intent.putExtra(PostListActivity.THREAD_JUMP_FLOOR, atNotification.data.floor);
-                    PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, 0);
+                    PendingIntent pendingIntent = PendingIntent.getActivity(context, message.getNotifyId(), intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
                     NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context);
                     mBuilder.setContentTitle(message.getTitle());

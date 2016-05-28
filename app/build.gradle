@@ -28,8 +28,8 @@ android {
         applicationId "me.ihainan.bu.app"
         minSdkVersion 15
         targetSdkVersion 23
-        versionCode 5
-        versionName "0.1.4"
+        versionCode 6
+        versionName "0.1.5"
     }
 
     buildTypes {
@@ -77,5 +77,4 @@ dependencies {
     compile 'com.commit451:PhotoView:1.2.5'
     compile 'co.dift.ui.swipetoaction:library:1.1'
     compile 'com.github.TR4Android:Swipeable-RecyclerView:0.2.0'
-
 }

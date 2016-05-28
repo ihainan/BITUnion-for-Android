@@ -69,7 +69,7 @@ public class ThreadListActivity extends SwipeActivity {
         mForumName = bundle.getString(FORUM_NAME_TAG);
         mFid = bundle.getLong(FORUM_FID_TAG);
 
-        if (mFid != null && mSubForum == null && mSubForum == null) {
+        if (mFid != null && mMainForum == null && mSubForum == null) {
             for (ForumListGroup forumListGroup : BUApplication.forumListGroupList) {
                 for (ForumListGroup.ForumList forumList : forumListGroup.getChildItemList()) {
                     if (forumList.getForumId().equals(mFid)) {
@@ -212,7 +212,7 @@ public class ThreadListActivity extends SwipeActivity {
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         mRecyclerView.setLayoutManager(layoutManager);
         mRecyclerView.addItemDecoration(new SimpleDividerItemDecoration(ThreadListActivity.this));
-        mAdapter = new ThreadListAdapter(this, mSubForum.getSubForumId(), mThreadList);
+        mAdapter = new ThreadListAdapter(this, mSubForum == null ? mMainForum.getForumId() : mSubForum.getSubForumId(), mThreadList);
         mRecyclerView.setAdapter(mAdapter);
 
         mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {

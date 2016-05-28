@@ -410,6 +410,9 @@ public class BUApplication extends Application {
         if (value == null) visitedForumsMap.put(mainForumId, 1L);
         else
             visitedForumsMap.put(mainForumId, value >= Long.MAX_VALUE ? Long.MAX_VALUE : 1 + value);
+
+        if (visitedForumsMap.containsKey(-1L))
+            visitedForumsMap.remove(-1L);
         getCache(context).put(BUApplication.CACHE_MOST_VISITED_FORUMS, visitedForumsMap);
     }
 

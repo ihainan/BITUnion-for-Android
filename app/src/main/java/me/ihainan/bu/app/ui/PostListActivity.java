@@ -124,7 +124,7 @@ public class PostListActivity extends SwipeActivity {
         if (mFid != null) {
             if (BUApplication.forumListGroupList == null) BUApplication.makeForumGroupList(this);
             Long mainForumID = BUApplication.findMainForumID(mFid);
-            BUApplication.updateForumsMap(this, mainForumID);
+            if (mainForumID != -1) BUApplication.updateForumsMap(this, mainForumID);
         }
 
         // Start fetch data and fill views
