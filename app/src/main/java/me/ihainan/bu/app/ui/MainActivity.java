@@ -20,6 +20,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.umeng.analytics.MobclickAgent;
+import com.xiaomi.mipush.sdk.MiPushClient;
 
 import me.ihainan.bu.app.BuildConfig;
 import me.ihainan.bu.app.R;
@@ -88,6 +89,9 @@ public class MainActivity extends AppCompatActivity {
             // 用户用户信息
             getUserInfo();
 
+            // 小米推送
+            MiPushClient.setUserAccount(this, CommonUtils.decode(BUApplication.username), null);
+
             // 定期更新用户 Session
             Intent intent = new Intent(this, SessionUpdateService.class);
             startService(intent);
@@ -99,6 +103,7 @@ public class MainActivity extends AppCompatActivity {
                 fragmentTransaction.replace(R.id.flContent, mFragment).commit();
             }
         }
+
     }
 
     private void getUserInfo() {
@@ -182,6 +187,7 @@ public class MainActivity extends AppCompatActivity {
                         .setPositiveButton(getString(R.string.button_confirm), new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
+                                MiPushClient.unsetUserAccount(MainActivity.this, CommonUtils.decode(BUApplication.username), null);
                                 BUApplication.password = null;
                                 BUApplication.saveConfig(MainActivity.this);
                                 Intent intent = new Intent(MainActivity.this, LoginActivity.class);

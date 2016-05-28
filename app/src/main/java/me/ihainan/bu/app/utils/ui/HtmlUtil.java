@@ -121,7 +121,6 @@ public class HtmlUtil {
         while (m.find()) {
             str = str.replace(m.group(0), "<blockquote>" + m.group(1).trim() + "</blockquote>");
             m = p.matcher(str);
-
         }
 
         // 多余的换行

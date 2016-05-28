@@ -1,5 +1,6 @@
 package me.ihainan.bu.app.utils;
 
+import android.app.ActivityManager;
 import android.app.Application;
 import android.content.Context;
 import android.net.Uri;
@@ -9,6 +10,9 @@ import com.squareup.picasso.OkHttpDownloader;
 import com.squareup.picasso.Picasso;
 import com.umeng.update.UmengUpdateAgent;
 import com.umeng.update.UpdateConfig;
+import com.xiaomi.channel.commonutils.logger.LoggerInterface;
+import com.xiaomi.mipush.sdk.Logger;
+import com.xiaomi.mipush.sdk.MiPushClient;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -30,8 +34,6 @@ import me.ihainan.bu.app.utils.network.BUApi;
  * 系统设置与全局变量
  */
 public class BUApplication extends Application {
-    public final static String TAG = BUApplication.class.getSimpleName();
-
     /* 会话相关 */
     public static Session userSession = null;   // 用户会话实例，向服务器发送请求时候需要附上会话字符串
     public static String username, password;    // 用户名，密码，用于重新登陆
@@ -438,9 +440,52 @@ public class BUApplication extends Application {
 
     public final static Map<String, Boolean> badImages = new HashMap<>();
 
+    /* 小米推送 */
+    public static final String APP_ID = "2882303761517451788";
+    public static final String APP_KEY = "5871745172788";
+    public static final String TAG = "me.ihainan.bu.app";
+
+    private boolean shouldInit() {
+        ActivityManager am = ((ActivityManager) getSystemService(Context.ACTIVITY_SERVICE));
+        List<ActivityManager.RunningAppProcessInfo> processInfos = am.getRunningAppProcesses();
+        String mainProcessName = getPackageName();
+        int myPid = android.os.Process.myPid();
+        for (ActivityManager.RunningAppProcessInfo info : processInfos) {
+            if (info.pid == myPid && mainProcessName.equals(info.processName)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     @Override
     public void onCreate() {
         super.onCreate();
+
+        // 小米推送
+        if (shouldInit()) {
+            MiPushClient.registerPush(this, APP_ID, APP_KEY);
+        }
+
+        LoggerInterface newLogger = new LoggerInterface() {
+
+            @Override
+            public void setTag(String tag) {
+                // ignore
+            }
+
+            @Override
+            public void log(String content, Throwable t) {
+                Log.d(TAG, content, t);
+            }
+
+            @Override
+            public void log(String content) {
+                Log.d(TAG, content);
+            }
+        };
+
+        Logger.setLogger(this, newLogger);
 
         // 自动更新配置
         UmengUpdateAgent.setDeltaUpdate(true);  // 增量更新

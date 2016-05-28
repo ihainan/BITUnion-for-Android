@@ -20,7 +20,13 @@
     <!-- 适配低版本 Android -->
     <uses-permission android:name="android.permission.GET_TASKS" />
 
-    <!-- 附件 -->
+    <!-- 小米推送 -->
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <permission
+        android:name="me.ihainan.bu.app.permission.MIPUSH_RECEIVE"
+        android:protectionLevel="signature" />
+    <uses-permission android:name="me.ihainan.bu.app.permission.MIPUSH_RECEIVE" />
+
     <application
         android:name=".utils.BUApplication"
         android:allowBackup="true"
@@ -104,6 +110,50 @@
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:label="@string/title_activity_focus_list"
             android:theme="@style/AppTheme.SwipeTheme"></activity>
+
+        <service
+            android:name="com.xiaomi.push.service.XMPushService"
+            android:enabled="true"
+            android:process=":pushservice" />
+        <service
+            android:name="com.xiaomi.mipush.sdk.PushMessageHandler"
+            android:enabled="true"
+            android:exported="true" />
+        <service
+            android:name="com.xiaomi.mipush.sdk.MessageHandleService"
+            android:enabled="true" />
+
+        <receiver
+            android:name="com.xiaomi.push.service.receivers.NetworkStatusReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </receiver>
+        <receiver
+            android:name="com.xiaomi.push.service.receivers.PingReceiver"
+            android:exported="false"
+            android:process=":pushservice">
+            <intent-filter>
+                <action android:name="com.xiaomi.push.PING_TIMER" />
+            </intent-filter>
+        </receiver>
+
+        <receiver
+            android:name=".utils.network.XMMessageReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.xiaomi.mipush.RECEIVE_MESSAGE" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="com.xiaomi.mipush.MESSAGE_ARRIVED" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="com.xiaomi.mipush.ERROR" />
+            </intent-filter>
+        </receiver>
+
     </application>
 
 </manifest>
