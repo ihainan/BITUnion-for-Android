@@ -67,6 +67,7 @@
     <string name="action_topic">热点话题</string>
     <string name="action_feedback">意见反馈</string>
     <string name="action_about">关于</string>
+    <string name="action_logout">登出</string>
     <string name="action_retry">重试</string>
     <string name="action_refresh">刷新</string>
     <string name="action_send">提交</string>

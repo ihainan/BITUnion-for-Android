@@ -461,7 +461,7 @@ public class BUApi {
 
         // Build MultipartRequest
         MultipartRequest multipartRequest = new MultipartRequest(url, null, mimeType, multipartBody, listener, errorListener);
-        int timeout = fileData != null ? 1000 * 60 : 1000 * 10;
+        int timeout = 1000 * 60;
         multipartRequest.setRetryPolicy(new DefaultRetryPolicy(timeout,
                 DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
                 DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));

@@ -21,7 +21,8 @@ public class HtmlUtil {
             "<i>来自傲立独行的(.*?)客户端</i>",
             "<br><br><i>发自联盟(.*?)客户端</i>",
             "<a href='.*?>..::发自联盟(.*?)客户端::..</a>",
-            "<br><br>Sent from my (.+?)$"};
+            "<br><br>Sent from my (.+?)$",
+            "<br><br><b>发自 (.+?) @BU for Android</b>$"};
     private static final String QUOTE_HEAD = "<br><br><center><table[^>]+><tr><td>&nbsp;&nbsp;引用(?:\\[<a href='[\\w\\.&\\?=]+?'>查看原帖</a>])*?.</td></tr><tr><td><table.{101,102}bgcolor='ALTBG2'>";
     private static final String QUOTE_TAIL = "</td></tr></table></td></tr></table></center><br>";
     private static final String QUOTE_REGEX = QUOTE_HEAD

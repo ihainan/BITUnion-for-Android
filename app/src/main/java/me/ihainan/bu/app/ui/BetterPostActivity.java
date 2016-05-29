@@ -327,7 +327,7 @@ public class BetterPostActivity extends AppCompatActivity {
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
                     photoPickerIntent.setType("image/*");
-                    startActivityForResult(photoPickerIntent, REQUEST_CHOOSE_PHOTO_TAG);
+                    startActivityForResult(photoPickerIntent, REQUEST_CHOOSE_FILE_TAG);
                 } else {
                     Toast.makeText(this, getString(R.string.error_insert_attachment), Toast.LENGTH_LONG).show();
                 }
@@ -338,7 +338,7 @@ public class BetterPostActivity extends AppCompatActivity {
                     Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
                     intent.addCategory(Intent.CATEGORY_OPENABLE);
                     intent.setType("*/*");
-                    startActivityForResult(intent, REQUEST_CHOOSE_FILE_TAG);
+                    startActivityForResult(intent, REQUEST_CHOOSE_PHOTO_TAG);
                 } else {
                     Toast.makeText(this, getString(R.string.error_insert_attachment), Toast.LENGTH_LONG).show();
                 }

@@ -51,6 +51,10 @@
             android:title="设备" />
 
         <Preference
+            android:key="pref_feedback"
+            android:title="意见反馈" />
+
+        <Preference
             android:key="pref_check_update"
             android:title="检查更新" />
     </PreferenceCategory>

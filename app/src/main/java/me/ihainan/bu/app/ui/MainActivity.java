@@ -6,7 +6,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.PersistableBundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -23,7 +22,6 @@ import android.widget.Toast;
 import com.umeng.analytics.MobclickAgent;
 import com.xiaomi.mipush.sdk.MiPushClient;
 
-import me.ihainan.bu.app.BuildConfig;
 import me.ihainan.bu.app.R;
 import me.ihainan.bu.app.models.Member;
 import me.ihainan.bu.app.ui.fragment.AboutFragment;
@@ -31,8 +29,8 @@ import me.ihainan.bu.app.ui.fragment.FocusFragment;
 import me.ihainan.bu.app.ui.fragment.ForumFragment;
 import me.ihainan.bu.app.ui.fragment.HomePageFragment;
 import me.ihainan.bu.app.ui.fragment.SettingFragment;
-import me.ihainan.bu.app.utils.CommonUtils;
 import me.ihainan.bu.app.utils.BUApplication;
+import me.ihainan.bu.app.utils.CommonUtils;
 import me.ihainan.bu.app.utils.network.SessionUpdateService;
 
 public class MainActivity extends AppCompatActivity {
@@ -98,7 +96,7 @@ public class MainActivity extends AppCompatActivity {
 
             // 定期更新用户 Session
             Intent intent = new Intent(this, SessionUpdateService.class);
-            startService(intent);
+            // startService(intent);
 
             // Activity content
             if (mFragment == null) {
@@ -214,6 +212,29 @@ public class MainActivity extends AppCompatActivity {
                         int menuId = menuItem.getItemId();
                         boolean setTitle = false;
                         switch (menuId) {
+                            case R.id.nav_logout:
+                                setTitle = false;
+                                mDrawerLayout.closeDrawers();
+                                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                                builder.setTitle("")
+                                        .setMessage(getString(R.string.logout_info))
+                                        .setPositiveButton(getString(R.string.button_confirm), new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialog, int which) {
+                                                MiPushClient.unsetUserAccount(MainActivity.this, CommonUtils.decode(BUApplication.username), null);
+                                                BUApplication.password = null;
+                                                BUApplication.setCachePassword(MainActivity.this);
+                                                Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+                                                startActivity(intent);
+                                                finish();
+                                            }
+                                        }).setNegativeButton(getString(R.string.button_cancel), new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        dialog.dismiss();
+                                    }
+                                }).show();
+                                break;
                             case R.id.nav_home:
                                 setTitle = true;
                                 mFragment = getHomeFragment();
@@ -234,6 +255,7 @@ public class MainActivity extends AppCompatActivity {
                                 setTitle = true;
                                 mFragment = getFocusFragment();
                                 break;
+                            /*
                             case R.id.nav_feedback:
                                 setTitle = false;
                                 Intent feedbackIntent = new Intent(Intent.ACTION_SEND);
@@ -242,7 +264,7 @@ public class MainActivity extends AppCompatActivity {
                                 feedbackIntent.putExtra(Intent.EXTRA_SUBJECT, "联盟安卓客户端意见反馈");
                                 feedbackIntent.putExtra(Intent.EXTRA_TEXT, "\n---\n当前版本：" + BuildConfig.VERSION_NAME);
                                 startActivity(Intent.createChooser(feedbackIntent, "发送邮件..."));
-                                break;
+                                break; */
                         }
 
                         if (setTitle) {

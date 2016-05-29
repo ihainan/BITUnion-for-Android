@@ -57,7 +57,7 @@ public class SettingFragment extends PreferenceFragment {
     }
 
     private SwitchPreference networkType, saveDataMode, uploadData, debugMode;
-    private Preference version, deviceName, checkUpdate, displaySetting;
+    private Preference version, deviceName, checkUpdate, displaySetting, feedback;
 
     private void loadDefaultValue() {
         BUApplication.readConfig(mContext);
@@ -113,6 +113,20 @@ public class SettingFragment extends PreferenceFragment {
 
         version = findPreference("pref_version");
         version.setSummary(BuildConfig.VERSION_NAME);
+
+        feedback = findPreference("pref_feedback");
+        feedback.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                Intent feedbackIntent = new Intent(Intent.ACTION_SEND);
+                feedbackIntent.setType("message/rfc822");
+                feedbackIntent.putExtra(Intent.EXTRA_EMAIL, new String[]{"ihainan72@gmail.com"});
+                feedbackIntent.putExtra(Intent.EXTRA_SUBJECT, "联盟安卓客户端意见反馈");
+                feedbackIntent.putExtra(Intent.EXTRA_TEXT, "\n---\n当前版本：" + BuildConfig.VERSION_NAME);
+                startActivity(Intent.createChooser(feedbackIntent, "发送邮件..."));
+                return false;
+            }
+        });
 
         deviceName = findPreference("pref_device_name");
         deviceName.setSummary(CommonUtils.getDeviceName());

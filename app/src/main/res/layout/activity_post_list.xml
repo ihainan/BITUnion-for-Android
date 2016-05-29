@@ -50,13 +50,4 @@
         <include layout="@layout/layout_error_message" />
     </RelativeLayout>
 
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fab"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_margin="@dimen/fab_margin"
-        android:src="@drawable/ic_add_white_24dp"
-        app:layout_behavior="me.ihainan.bu.app.ui.assist.FABScrollBehavior" />
-
 </android.support.design.widget.CoordinatorLayout>
