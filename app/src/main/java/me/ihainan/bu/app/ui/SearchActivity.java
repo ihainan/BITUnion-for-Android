@@ -1,6 +1,5 @@
 package me.ihainan.bu.app.ui;
 
-import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Context;
@@ -8,11 +7,8 @@ import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v13.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.inputmethod.InputMethodManager;
 
 import com.arlib.floatingsearchview.FloatingSearchView;
 import com.arlib.floatingsearchview.suggestions.model.SearchSuggestion;
@@ -93,6 +89,7 @@ public class SearchActivity extends SwipeActivity {
 
         setSwipeAnyWhere(false);
     }
+
 
     private void doSearch() {
         mPagerAdapter.reloadAll(mSearchStr);

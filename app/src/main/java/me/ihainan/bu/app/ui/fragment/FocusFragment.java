@@ -21,7 +21,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import me.ihainan.bu.app.R;
-import me.ihainan.bu.app.ui.FollowingListActivity;
+import me.ihainan.bu.app.ui.NewFollowingListActivity;
 
 /**
  * 关注列表
@@ -82,7 +82,7 @@ public class FocusFragment extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.focus_list:
-                Intent intent = new Intent(mContext, FollowingListActivity.class);
+                Intent intent = new Intent(mContext, NewFollowingListActivity.class);
                 startActivity(intent);
                 break;
         }

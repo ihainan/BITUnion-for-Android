@@ -102,6 +102,7 @@ public class PostListActivity extends SwipeActivity {
 
         // FAB
         mNewPostFAB = (FloatingActionButton) findViewById(R.id.fab);
+        mNewPostFAB.setVisibility(View.GONE);
         mNewPostFAB.setVisibility(View.INVISIBLE);
         mNewPostFAB.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -261,7 +262,7 @@ public class PostListActivity extends SwipeActivity {
 
     private void fillViews() {
         setTitle(Html.fromHtml(CommonUtils.decode(mThreadName)));    // 标题
-        mNewPostFAB.setVisibility(View.VISIBLE);    // FAB
+        mNewPostFAB.setVisibility(View.GONE);    // FAB
 
         // Jump Page & Index
         // 没有指定跳转楼层，那就跳转到最后一层
@@ -348,6 +349,15 @@ public class PostListActivity extends SwipeActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+            case R.id.action_reply:
+                Intent intent = new Intent(PostListActivity.this, BetterPostActivity.class);
+                intent.putExtra(BetterPostActivity.ACTION_TAG, BetterPostActivity.ACTION_NEW_POST);
+                if (mTid != null && mReplyCount != null) {
+                    intent.putExtra(BetterPostActivity.NEW_POST_TID_TAG, mTid);
+                    intent.putExtra(BetterPostActivity.NEW_POST_MAX_FLOOR_TAG, mReplyCount + 1);
+                    startActivityForResult(intent, REQUEST_NEW_REPLY);
+                }
+                break;
             case R.id.action_favor:
                 if (favorClickable) {
                     favorClickable = !favorClickable;   // 不允许重复点击

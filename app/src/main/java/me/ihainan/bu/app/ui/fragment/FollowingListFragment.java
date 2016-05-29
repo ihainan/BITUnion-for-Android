@@ -4,42 +4,41 @@ import android.support.v7.widget.RecyclerView;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.List;
 
 import me.ihainan.bu.app.R;
-import me.ihainan.bu.app.adapters.FavoriteListAdapter;
-import me.ihainan.bu.app.models.Favorite;
+import me.ihainan.bu.app.adapters.NewFollowingListAdapter;
+import me.ihainan.bu.app.models.Follow;
 import me.ihainan.bu.app.utils.BUApplication;
 import me.ihainan.bu.app.utils.network.BUApi;
 import me.ihainan.bu.app.utils.network.ExtraApi;
 
 /**
- * 收藏列表 Fragment
+ * 关注列表 Fragment
  */
-public class FavoriteListFragment extends BasicRecyclerViewFragment<Favorite> {
+public class FollowingListFragment extends BasicRecyclerViewFragment<Follow> {
     @Override
     protected String getNoNewDataMessage() {
-        return getString(R.string.error_no_favorites);
+        return getString(R.string.error_no_following);
     }
 
     @Override
     protected String getFragmentTag() {
-        return FavoriteListFragment.class.getSimpleName();
+        return FollowingListFragment.class.getSimpleName();
     }
 
     @Override
-    protected List<Favorite> processList(List<Favorite> list) {
+    protected List<Follow> processList(List<Follow> list) {
         return list;
     }
 
     @Override
-    protected List<Favorite> parseResponse(JSONObject response) throws Exception {
-        JSONArray newListJson = response.getJSONArray("data");
-        return BUApi.MAPPER.readValue(newListJson.toString(), new TypeReference<List<Favorite>>() {
-        });
+    protected List<Follow> parseResponse(JSONObject response) throws Exception {
+        return BUApi.MAPPER.readValue(response.get("data").toString(),
+                new TypeReference<List<Follow>>() {
+                });
     }
 
     @Override
@@ -49,20 +48,21 @@ public class FavoriteListFragment extends BasicRecyclerViewFragment<Favorite> {
 
     @Override
     protected void getExtra() {
+
     }
 
     @Override
     protected RecyclerView.Adapter<RecyclerView.ViewHolder> getAdapter() {
-        return new FavoriteListAdapter(mContext, mList);
+        return new NewFollowingListAdapter(mContext, mList);
     }
 
     @Override
     protected int getLoadingCount() {
-        return BUApplication.LOADING_POSTS_COUNT;
+        return BUApplication.LOADING_FOLLOWING_COUNT;
     }
 
     @Override
     protected void refreshData(long from, long to) {
-        ExtraApi.getFavoriteList(mContext, from, to, listener, errorListener);
+        ExtraApi.getFollowingList(mContext, from, to, listener, errorListener);
     }
 }

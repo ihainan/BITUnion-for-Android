@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:gravity="center"
     android:orientation="vertical">
-    
+
     <android.support.design.widget.AppBarLayout
         android:id="@+id/app_bar_layout"
         android:layout_width="match_parent"
@@ -29,7 +29,8 @@
         <LinearLayout
             android:id="@+id/user_login_form"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
             android:gravity="center"
             android:orientation="vertical"
             android:paddingBottom="75dp">

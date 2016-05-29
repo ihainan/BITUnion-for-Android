@@ -70,15 +70,15 @@
     <string name="action_retry">重试</string>
     <string name="action_refresh">刷新</string>
     <string name="action_send">提交</string>
-    <string name="action_manage_focus">管理关注列表</string>
+    <string name="action_manage_focus">关注列表</string>
     <string name="action_follow">关注</string>
+    <string name="action_reply">回帖</string>
     <string name="action_favorite">收藏</string>
     <string name="action_jump">跳转</string>
     <string name="action_jump_to_head">跳到首页</string>
     <string name="action_jump_to_end">跳到末页面</string>
     <string name="action_deleted">Deleted</string>
     <string name="action_remove_following">已经取消关注用户</string>
-
 
     <string name="action_add_image_attachment">添加图片</string>
     <string name="action_add_file_attachment">添加文件</string>
@@ -111,4 +111,5 @@
     <string name="processing_attachment">正在处理附件</string>
     <string name="title_activity_focus_list">关注列表</string>
     <string name="title_activity_search">SearchActivity</string>
+    <string name="title_activity_new_following_list">NewFollowingListActivity</string>
 </resources>

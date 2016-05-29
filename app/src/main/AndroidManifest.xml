@@ -102,11 +102,6 @@
             android:label="@string/title_activity_better_post"
             android:theme="@style/AppTheme.SwipeTheme"
             android:windowSoftInputMode="adjustResize" />
-        <activity
-            android:name=".ui.FollowingListActivity"
-            android:configChanges="keyboardHidden|orientation|screenSize"
-            android:label="@string/title_activity_focus_list"
-            android:theme="@style/AppTheme.SwipeTheme" />
 
         <service
             android:name="com.xiaomi.push.service.XMPushService"
@@ -155,14 +150,16 @@
             android:name=".ui.SearchActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:label="@string/title_activity_search"
-            android:theme="@style/AppTheme.SwipeTheme"></activity>
-
+            android:theme="@style/AppTheme.SwipeTheme" />
         <activity
             android:name=".ui.PostDisplaySettingActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
-            android:theme="@style/AppTheme.SwipeTheme">
-
-        </activity>
+            android:theme="@style/AppTheme.SwipeTheme"></activity>
+        <activity
+            android:name=".ui.NewFollowingListActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:label="@string/title_activity_new_following_list"
+            android:theme="@style/AppTheme.SwipeTheme"></activity>
     </application>
 
 </manifest>

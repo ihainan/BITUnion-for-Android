@@ -1,6 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/action_reply"
+        android:icon="@drawable/ic_create_white_24dp"
+        android:orderInCategory="80"
+        android:title="@string/action_reply"
+        app:showAsAction="always" />
+
     <item
         android:id="@+id/action_favor"
         android:icon="@drawable/ic_star_border_white_24dp"
