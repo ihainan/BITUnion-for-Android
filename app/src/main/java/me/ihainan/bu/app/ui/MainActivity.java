@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.PersistableBundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -48,6 +49,9 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (savedInstanceState != null) {
+            mFragment = getFragmentManager().getFragment(savedInstanceState, "mFragment");
+        }
 
         // 防止某些 launcher 内部 bug 导致每次返回 activity 都会重启整个应用
         if (!isTaskRoot()) {
@@ -100,10 +104,10 @@ public class MainActivity extends AppCompatActivity {
             if (mFragment == null) {
                 mFragment = getHomeFragment();
                 FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
-                fragmentTransaction.replace(R.id.flContent, mFragment).commit();
+                fragmentTransaction.replace(R.id.flContent, mFragment);
+                fragmentTransaction.commit();
             }
         }
-
     }
 
     private void getUserInfo() {
@@ -130,8 +134,6 @@ public class MainActivity extends AppCompatActivity {
                 });
     }
 
-    // TODO: 退出 activity 时候保存当前的 Fragment，返回时候再恢复该 Fragment
-
     private Fragment mFragment;
     private Fragment homeFragment;
     private Fragment forumFragment;
@@ -156,7 +158,7 @@ public class MainActivity extends AppCompatActivity {
     public Fragment getFocusFragment() {
         setTitle(R.string.action_focus);
         mNavigationView.setCheckedItem(R.id.nav_focus);
-        if (focusFragment == null) focusFragment = new FocusFragment();
+        focusFragment = new FocusFragment();
         return focusFragment;
     }
 
@@ -166,7 +168,6 @@ public class MainActivity extends AppCompatActivity {
         if (settingFragment == null) settingFragment = new SettingFragment();
         return settingFragment;
     }
-
 
     private Fragment getAboutFragment() {
         setTitle(getString(R.string.action_about));
@@ -289,6 +290,12 @@ public class MainActivity extends AppCompatActivity {
                 return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        getFragmentManager().putFragment(outState, "mFragment", mFragment);
     }
 
     @Override

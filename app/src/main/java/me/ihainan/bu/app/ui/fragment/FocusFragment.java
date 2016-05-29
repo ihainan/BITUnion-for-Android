@@ -12,6 +12,7 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -35,12 +36,21 @@ public class FocusFragment extends Fragment {
     private View mRootView;
     private Toolbar mToolbar;
 
+    // Data
+    private PagerAdapter mAdapter;
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        mContext = getActivity();
+        if (mAdapter == null)
+            mAdapter = new PagerAdapter(getChildFragmentManager(), mContext);
+    }
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         if (mRootView == null) {
-            mContext = getActivity();
-
             mRootView = inflater.inflate(R.layout.fragment_focus, container, false);
 
             // Toolbar
@@ -53,9 +63,12 @@ public class FocusFragment extends Fragment {
             // TabLayout
             mTabLayout = (TabLayout) mRootView.findViewById(R.id.tab_layout);
             mPager = (ViewPager) mRootView.findViewById(R.id.pager);
-            mPager.setAdapter(new PagerAdapter(getFragmentManager(), mContext));
-            mTabLayout.setupWithViewPager(mPager);
         }
+
+
+        mPager.setAdapter(mAdapter);
+        mPager.setOffscreenPageLimit(2);
+        mTabLayout.setupWithViewPager(mPager);
 
         return mRootView;
     }
@@ -115,5 +128,11 @@ public class FocusFragment extends Fragment {
             // Generate title based on item position
             return tabTitles[position];
         }
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        Log.d(TAG, "onDestroyView");
     }
 }
