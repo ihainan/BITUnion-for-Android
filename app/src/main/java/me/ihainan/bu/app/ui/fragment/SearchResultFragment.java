@@ -56,6 +56,7 @@ public class SearchResultFragment extends BasicRecyclerViewFragment<Post> {
 
     public void reloadData(String keyword) {
         mKeyword = keyword;
+        ((SearchThreadOrPostResultAdapter) mAdapter).setKeyword(mKeyword);
         super.reloadData();
     }
 
@@ -91,7 +92,7 @@ public class SearchResultFragment extends BasicRecyclerViewFragment<Post> {
 
     @Override
     protected RecyclerView.Adapter<RecyclerView.ViewHolder> getAdapter() {
-        return new SearchThreadOrPostResultAdapter(mContext, mList, mAction.equals(SEARCH_ACTION_THREAD));
+        return new SearchThreadOrPostResultAdapter(mContext, mKeyword, mList, mAction.equals(SEARCH_ACTION_THREAD));
     }
 
     @Override

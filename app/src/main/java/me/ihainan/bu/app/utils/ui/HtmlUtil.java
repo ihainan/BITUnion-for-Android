@@ -309,7 +309,7 @@ public class HtmlUtil {
      */
     public static String getSummaryOfMessage(String html) {
         html = removeDeviceInfo(html);
-        html = html.replaceAll("<blockquote>.*?</blockquote>", "");
+        html = html.replaceAll("<blockquote>.*?</blockquote>", "[引用]");
         html = html.replaceAll("<img.*?>", "[图片]");
         html = html.replaceAll("(?s)<[^>]*>(\\s*<[^>]*>)*", " ");
 
