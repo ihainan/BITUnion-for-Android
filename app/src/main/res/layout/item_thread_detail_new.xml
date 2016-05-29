@@ -104,7 +104,7 @@
                 android:layout_marginTop="12dp"
                 android:lineSpacingExtra="0dp"
                 android:lineSpacingMultiplier="1.0"
-                android:text="此处是回帖正文，你可以分别调整字体大小、额外行间距以及行间距倍数。"
+                android:text="此处是回帖正文，你可以分别调整字体大小、额外行间距以及行间距倍数。\n\n第二行在此。"
                 android:textColor="@android:color/black"
                 android:textIsSelectable="true"
                 android:textSize="15sp" />

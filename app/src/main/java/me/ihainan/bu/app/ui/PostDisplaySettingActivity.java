@@ -71,6 +71,14 @@ public class PostDisplaySettingActivity extends SwipeActivity {
         mFontSize = (SeekBar) findViewById(R.id.sb_font_size);
         mLSExtra = (SeekBar) findViewById(R.id.sb_line_spacing_extra);
         mLSMul = (SeekBar) findViewById(R.id.sb_line_spacing_mul);
+
+        mFontSize.setProgress(BUApplication.getCacheFontSize(this) - 12);
+        mLSExtra.setProgress(BUApplication.getCacheLineSpacingExtra(this));
+        mLSMul.setProgress((int) (BUApplication.getCacheLineSpacingMultiplier(this) * 10) - 10);
+
+        mMessageView.setTextSize(TypedValue.COMPLEX_UNIT_SP, BUApplication.fontSize);
+        mMessageView.setLineSpacing(BUApplication.lineSpacingExtra, BUApplication.lineSpacingMultiplier);
+
         mFontSize.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
@@ -134,10 +142,6 @@ public class PostDisplaySettingActivity extends SwipeActivity {
             }
         });
 
-        mFontSize.setProgress(BUApplication.getCacheFontSize(this) - 12);
-        mLSExtra.setProgress(BUApplication.getCacheLineSpacingExtra(this));
-        mLSMul.setProgress((int) (BUApplication.getCacheLineSpacingMultiplier(this) * 10));
-
         resetBtn = (Button) findViewById(R.id.reset);
         resetBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -150,7 +154,7 @@ public class PostDisplaySettingActivity extends SwipeActivity {
                 BUApplication.setCacheLineSpacingMultiplier(PostDisplaySettingActivity.this);
                 mFontSize.setProgress(BUApplication.getCacheFontSize(PostDisplaySettingActivity.this) - 12);
                 mLSExtra.setProgress(BUApplication.getCacheLineSpacingExtra(PostDisplaySettingActivity.this));
-                mLSMul.setProgress((int) (BUApplication.getCacheLineSpacingMultiplier(PostDisplaySettingActivity.this) * 10));
+                mLSMul.setProgress((int) (BUApplication.getCacheLineSpacingMultiplier(PostDisplaySettingActivity.this) * 10) - 10);
             }
         });
     }
