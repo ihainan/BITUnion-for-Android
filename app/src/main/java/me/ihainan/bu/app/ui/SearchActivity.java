@@ -79,12 +79,10 @@ public class SearchActivity extends SwipeActivity {
                                             }
 
                                             @Override
-                                            public void onSearchAction() {
+                                            public void onSearchAction(String currentQuery) {
                                                 doSearch();
-                                                mSearchView.setSearchHint(mSearchView.getQuery());
                                             }
                                         }
-
         );
 
         setSwipeAnyWhere(false);

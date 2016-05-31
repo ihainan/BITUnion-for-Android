@@ -71,7 +71,31 @@ public class RequestQueueManager {
     public <T> void addToRequestQueue(Request<T> req, String tag) {
         try {
             req.setRetryPolicy(new DefaultRetryPolicy(
-                    1000 * 5,
+                    1000 * 10,
+                    DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                    DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+            Log.d(TAG, "addToRequestQueue >> Making Request " + req.getUrl() + " With parameters " + new String(req.getBody()));
+        } catch (AuthFailureError authFailureError) {
+            authFailureError.printStackTrace();
+            Log.e(TAG, "addToRequestQueue failed >> " + authFailureError);
+        }
+        // set the default tag if tag is empty
+        req.setTag(TextUtils.isEmpty(tag) ? TAG : tag);
+        getRequestQueue(mContext).add(req);
+    }
+
+    /**
+     * Add new request to queue
+     *
+     * @param req     the request need to be added
+     * @param tag     request id
+     * @param timeout 超时时间，单位为妙
+     * @param <T>     request type
+     */
+    public <T> void addToRequestQueue(Request<T> req, String tag, int timeout) {
+        try {
+            req.setRetryPolicy(new DefaultRetryPolicy(
+                    1000 * timeout,
                     DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
                     DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
             Log.d(TAG, "addToRequestQueue >> Making Request " + req.getUrl() + " With parameters " + new String(req.getBody()));

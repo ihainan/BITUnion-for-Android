@@ -262,6 +262,7 @@ public class BUApplication extends Application {
 
         forumList = new ForumListGroup.ForumList("后台管理区", 170, "file:///android_asset/forumicon/zhPg_aW1nNDE=.jpg");
         forumListHashMap.put(170, forumList);
+        forumList.addSubForum(new ForumListGroup.SubForum("测试专用板块", 177));
         forumLists.add(forumList);
 
         forumList = new ForumListGroup.ForumList("新手交流区", 92, "file:///android_asset/forumicon/newbie.gif");

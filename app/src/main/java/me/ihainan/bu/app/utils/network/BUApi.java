@@ -277,6 +277,7 @@ public class BUApi {
         parameters.put("message", CommonUtils.encode(message));
         parameters.put("attachment", attachment == null ? "0" : "1");
 
+        // String url = "http://192.168.56.1:8080/api/v2/multipart/att";
         // String url = "http://ali.ihainan.me:8080/api/v2/multipart/att";
         String url = getNewPostURL();
 
@@ -315,6 +316,8 @@ public class BUApi {
         parameters.put("message", CommonUtils.encode(message));
         parameters.put("attachment", attachment == null ? "0" : "1");
 
+
+        // String url = "http://192.168.56.1:8080/api/v2/multipart/att";
         // String url = "http://ali.ihainan.me:8080/api/v2/multipart/att";
         String url = getNewPostURL();
 
@@ -444,6 +447,8 @@ public class BUApi {
                          final Response.ErrorListener errorListener) throws IOException {
         byte[] multipartBody;
 
+        Log.d(TAG, "Start making multipart request");
+
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         DataOutputStream dos = new DataOutputStream(bos);
 
@@ -461,13 +466,9 @@ public class BUApi {
 
         // Build MultipartRequest
         MultipartRequest multipartRequest = new MultipartRequest(url, null, mimeType, multipartBody, listener, errorListener);
-        int timeout = 1000 * 60;
-        multipartRequest.setRetryPolicy(new DefaultRetryPolicy(timeout,
-                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
-                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
 
         // Add to queue
         Log.d(TAG, "makeMultipartRequest >> " + tag + " - " + url + " " + parameters);
-        RequestQueueManager.getInstance(context).addToRequestQueue(multipartRequest, tag);
+        RequestQueueManager.getInstance(context).addToRequestQueue(multipartRequest, tag, 30);
     }
 }
