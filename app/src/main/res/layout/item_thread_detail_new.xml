@@ -18,7 +18,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:paddingBottom="10dp"
+            android:paddingBottom="7dp"
             android:paddingLeft="@dimen/activity_horizontal_margin"
             android:paddingRight="@dimen/activity_horizontal_margin"
             android:paddingTop="@dimen/activity_horizontal_margin">
@@ -89,11 +89,11 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/thread_layout_head"
-                android:layout_marginTop="12dp"
+                android:layout_marginTop="10dp"
                 android:lineSpacingExtra="5dp"
                 android:text="回帖标题"
                 android:textColor="@android:color/black"
-                android:textSize="17sp"
+                android:textSize="16sp"
                 android:textStyle="bold" />
 
             <TextView
@@ -101,7 +101,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/thread_subject"
-                android:layout_marginTop="12dp"
+                android:layout_marginTop="10dp"
                 android:lineSpacingExtra="0dp"
                 android:lineSpacingMultiplier="1.0"
                 android:text="此处是回帖正文，你可以分别调整字体大小、额外行间距以及行间距倍数。\n\n第二段在此。"
@@ -143,8 +143,8 @@
 
                 <ImageView
                     android:id="@+id/btn_repost"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="19dp"
+                    android:layout_height="19dp"
                     android:layout_alignParentRight="true"
                     android:layout_centerVertical="true"
                     android:padding="0dp"

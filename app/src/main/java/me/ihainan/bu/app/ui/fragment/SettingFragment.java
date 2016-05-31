@@ -160,4 +160,10 @@ public class SettingFragment extends PreferenceFragment {
         mToolbar.setTitle(R.string.action_settings);
         setHasOptionsMenu(false);
     }
+
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        mToolbar.setTitle(R.string.action_settings);
+        setHasOptionsMenu(false);
+    }
 }

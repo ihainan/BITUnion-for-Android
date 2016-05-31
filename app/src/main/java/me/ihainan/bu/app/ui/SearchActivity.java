@@ -48,6 +48,7 @@ public class SearchActivity extends SwipeActivity {
 
         // SearchView
         mSearchView.focusSearch(View.FOCUS_RIGHT);
+        mSearchView.requestFocus();
         mSearchView.setOnMenuItemClickListener(new FloatingSearchView.OnMenuItemClickListener() {
             @Override
             public void onActionMenuItemSelected(MenuItem item) {
@@ -70,9 +71,7 @@ public class SearchActivity extends SwipeActivity {
             }
         });
 
-        mSearchView.setOnSearchListener(new FloatingSearchView.OnSearchListener()
-
-                                        {
+        mSearchView.setOnSearchListener(new FloatingSearchView.OnSearchListener() {
                                             @Override
                                             public void onSuggestionClicked(SearchSuggestion searchSuggestion) {
 
@@ -146,5 +145,4 @@ public class SearchActivity extends SwipeActivity {
             return tabTitles[position];
         }
     }
-
 }

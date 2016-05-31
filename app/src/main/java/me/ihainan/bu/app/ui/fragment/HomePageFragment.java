@@ -104,6 +104,12 @@ public class HomePageFragment extends Fragment {
         return mRootView;
     }
 
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        setHasOptionsMenu(true);
+        mToolbar.setTitle(R.string.action_home);
+    }
+
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);

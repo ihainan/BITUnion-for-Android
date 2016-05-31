@@ -70,4 +70,10 @@ public class AboutFragment extends Fragment {
         setHasOptionsMenu(false);
         mToolbar.setTitle(R.string.action_about);
     }
+
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        setHasOptionsMenu(false);
+        mToolbar.setTitle(R.string.action_about);
+    }
 }

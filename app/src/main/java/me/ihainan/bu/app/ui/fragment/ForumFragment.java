@@ -69,6 +69,12 @@ public class ForumFragment extends Fragment {
         }
     }
 
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        setHasOptionsMenu(false);
+        mToolbar.setTitle(R.string.action_forum);
+    }
+
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);

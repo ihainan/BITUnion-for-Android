@@ -97,6 +97,12 @@ public class FocusFragment extends Fragment {
         mToolbar.setTitle(R.string.action_focus);
     }
 
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        setHasOptionsMenu(true);
+        mToolbar.setTitle(R.string.action_focus);
+    }
+
     public class PagerAdapter extends FragmentPagerAdapter {
         final int PAGE_COUNT = 2;
         private String tabTitles[] = new String[]{"动态", "收藏"};
@@ -132,7 +138,6 @@ public class FocusFragment extends Fragment {
 
     @Override
     public void onDestroyView() {
-        super.onDestroyView();
         super.onDestroyView();
         Log.d(TAG, "onDestroyView");
     }
