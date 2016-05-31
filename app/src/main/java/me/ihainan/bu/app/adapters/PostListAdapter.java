@@ -172,8 +172,8 @@ public class PostListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         final ImageView attachmentImage = (ImageView) itemView.findViewById(R.id.thread_attachment_image);
 
         // 附件名
-        String fileName = CommonUtils.decode(reply.filename);
-        fileName = CommonUtils.truncateString(fileName, 20);
+        String oriFileName = CommonUtils.decode(reply.filename);
+        String fileName = CommonUtils.truncateString(oriFileName, 20);
 
         attachmentName.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -190,7 +190,8 @@ public class PostListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
         // 显示图片
         String fileType = CommonUtils.decode(reply.filetype);
-        if (fileType.startsWith("image")) {
+        if (oriFileName.endsWith("jpg") || oriFileName.endsWith("jpeg")
+                || oriFileName.endsWith("gif") || oriFileName.endsWith("png")) {
             attachmentImageLayout.setVisibility(View.VISIBLE);
 
             // 尝试从缓存中读取图片，如果缓存中没有图片，则用户点击之后就能加载

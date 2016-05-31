@@ -166,9 +166,6 @@ public class BetterPostActivity extends AppCompatActivity {
 
             // TODO: 检查数据是否合理
         }
-
-        // TODO: Remove Test!
-        // if (mAction == null || "".equals(mAction)) mAction = ACTION_NEW_THREAD;
     }
 
     /**
@@ -345,6 +342,8 @@ public class BetterPostActivity extends AppCompatActivity {
         }
     }
 
+    private final static String[] SUPPORT_FILE_TYPE = {"txt", "gif", "jpg", "png", "rar", "zip", "swf", "nfo", "gz", "gz2", "tgz", "bz", "rpm", "deb", "7z", "torrent"};
+
     private void doAfterAddingAttachmentNew() {
         Cursor cursor = null;
         try {
@@ -368,6 +367,27 @@ public class BetterPostActivity extends AppCompatActivity {
             // 文件类型
             ContentResolver cR = getContentResolver();
             final String type = cR.getType(mAttachmentUri);
+
+            boolean isSupport = false;
+            for (String format : SUPPORT_FILE_TYPE) {
+                if (mAttachmentUri.toString().endsWith(format)) {
+                    isSupport = true;
+                    break;
+                }
+            }
+
+            if (!type.startsWith("image") && !isSupport) {
+                if (dialog != null) dialog.dismiss();
+                setFinishOnTouchOutside(true);
+
+                mAttachmentUri = null;
+                String message = getString(R.string.error_insert_attachment) + ": 不支持的文件格式";
+                Log.w(TAG, message);
+                CommonUtils.debugToast(this, message);
+                Snackbar.make(mButtonPanel, message, Snackbar.LENGTH_LONG).show();
+
+                return;
+            }
 
             if (size > 1000000) {
                 if (type.startsWith("image")) {
@@ -456,6 +476,7 @@ public class BetterPostActivity extends AppCompatActivity {
                     .setPositiveButton(getString(R.string.button_yes), new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
+                            CommonUtils.deleteTmpDir(BetterPostActivity.this);
                             finish();
                         }
                     }).setNegativeButton(getString(R.string.button_no), new DialogInterface.OnClickListener() {
@@ -466,6 +487,7 @@ public class BetterPostActivity extends AppCompatActivity {
             });
             builder.show();
         } else {
+            CommonUtils.deleteTmpDir(BetterPostActivity.this);
             finish();
         }
     }

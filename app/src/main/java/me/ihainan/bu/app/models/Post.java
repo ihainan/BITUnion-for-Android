@@ -79,15 +79,11 @@ public class Post implements Serializable {
     public String toQuote() {
         String quote = message;
 
-        // Cut down the message if it's too long
-        if (quote.length() > 250)
-            quote = quote.substring(0, 250) + "......";
+        // 表情
+        quote = HtmlUtil.replaceQuoteSmiles(quote);
 
         // 引用
         quote = quote.replaceAll("<blockquote>.*?</blockquote>", "[引用]\n");
-
-        // 表情
-        quote = HtmlUtil.replaceQuoteSmiles(quote);
 
         // HTML to UBB
         Pattern p = Pattern.compile("<a href='(.+?)'(?:.target='.+?')>(.+?)</a>");
@@ -104,6 +100,23 @@ public class Post implements Serializable {
         while (m.find()) {
             quote = quote.replace(m.group(0), "[img]" + m.group(1) + "[/img]");
             m = p.matcher(quote);
+        }
+
+        // Cut down the message if it's too long
+        String regex = "[.*?].*?[.*?]";
+        p = Pattern.compile(regex);
+        m = p.matcher(quote);
+        boolean hasFound = false;
+        while (m.find()) {
+            if (m.start() < 250 && m.end() >= 250) {
+                hasFound = true;
+                quote = quote.substring(0, m.end() + 1) + "......";
+                break;
+            }
+        }
+
+        if (!hasFound && quote.length() > 250) {
+            quote = quote.substring(0, 250) + "......";
         }
 
         // 其他标签

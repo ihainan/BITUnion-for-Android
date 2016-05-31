@@ -552,6 +552,9 @@ public class BUApplication extends Application {
     public void onCreate() {
         super.onCreate();
 
+        // 删除缓存
+        CommonUtils.deleteTmpDir(this);
+
         // 小米推送
         if (shouldInit()) {
             MiPushClient.registerPush(this, APP_ID, APP_KEY);

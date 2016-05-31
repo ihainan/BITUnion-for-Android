@@ -111,6 +111,6 @@
     <string name="compressing_image">正在压缩图片</string>
     <string name="processing_attachment">正在处理附件</string>
     <string name="title_activity_focus_list">关注列表</string>
-    <string name="title_activity_search">SearchActivity</string>
-    <string name="title_activity_new_following_list">NewFollowingListActivity</string>
+    <string name="title_activity_search">搜索</string>
+    <string name="title_activity_new_following_list">关注页面</string>
 </resources>

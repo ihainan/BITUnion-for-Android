@@ -80,6 +80,7 @@ public class SearchActivity extends SwipeActivity {
 
                                             @Override
                                             public void onSearchAction(String currentQuery) {
+                                                mSearchStr = currentQuery;
                                                 doSearch();
                                             }
                                         }
@@ -91,6 +92,7 @@ public class SearchActivity extends SwipeActivity {
 
     private void doSearch() {
         mPagerAdapter.reloadAll(mSearchStr);
+        mSearchView.setSearchText(mSearchStr);
         mSearchView.setSearchHint(mSearchStr);
         mSearchView.clearSearchFocus();
     }

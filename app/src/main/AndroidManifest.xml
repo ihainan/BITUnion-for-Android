@@ -38,7 +38,8 @@
         android:theme="@style/AppTheme">
         <activity
             android:name=".ui.MainActivity"
-            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:configChanges="keyboardHidden|orientation"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -151,6 +152,7 @@
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:label="@string/title_activity_search"
             android:theme="@style/AppTheme.SwipeTheme" />
+
         <activity
             android:name=".ui.PostDisplaySettingActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"

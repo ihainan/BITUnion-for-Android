@@ -133,6 +133,7 @@ public class FocusFragment extends Fragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        super.onDestroyView();
         Log.d(TAG, "onDestroyView");
     }
 }

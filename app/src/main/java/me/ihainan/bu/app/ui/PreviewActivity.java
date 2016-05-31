@@ -9,6 +9,7 @@ import android.database.Cursor;
 import android.graphics.Point;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.provider.OpenableColumns;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
@@ -36,6 +37,7 @@ import org.json.JSONObject;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URLConnection;
 
 import me.ihainan.bu.app.R;
 import me.ihainan.bu.app.models.Member;

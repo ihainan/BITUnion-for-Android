@@ -154,6 +154,7 @@ public class HtmlUtil {
      */
     public static String replaceOther(String str) {
         str = str.replaceAll("(<br>)*$", "");
+        str = str.replaceAll("&nbsp;", "");
         return str;
     }
 
