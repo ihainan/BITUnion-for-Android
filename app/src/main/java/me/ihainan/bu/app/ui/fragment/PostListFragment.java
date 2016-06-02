@@ -142,6 +142,7 @@ public class PostListFragment extends BasicRecyclerViewFragment<Post> {
 
     @Override
     protected void reloadData() {
+        mErrorLayout.setVisibility(View.GONE);
         mSwipeRefreshLayout.setRefreshing(true);
         mList.clear();
         refreshData(mPagePosition * LOADING_COUNT, (mPagePosition + 1) * LOADING_COUNT);

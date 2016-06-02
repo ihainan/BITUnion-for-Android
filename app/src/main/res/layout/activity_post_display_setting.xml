@@ -79,7 +79,7 @@
                         android:layout_height="25dp"
                         android:layout_below="@id/text_tiny"
                         android:layout_marginTop="5dp"
-                        android:max="5"
+                        android:max="7"
                         android:progress="3" />
                 </RelativeLayout>
 

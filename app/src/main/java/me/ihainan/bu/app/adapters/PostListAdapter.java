@@ -100,11 +100,18 @@ public class PostListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             }
 
             // 标题和正文
-            if (reply.subject.equals("")) {
+            if (reply.subject.trim().equals("")) {
                 viewHolder.subject.setVisibility(View.GONE);
             } else {
                 viewHolder.subject.setVisibility(View.VISIBLE);
             }
+
+            if (reply.message.trim().equals("")) {
+                viewHolder.message.setVisibility(View.GONE);
+            } else {
+                viewHolder.message.setVisibility(View.VISIBLE);
+            }
+
             viewHolder.subject.setText(Html.fromHtml(CommonUtils.decode(reply.subject)));
             SpannableString spannableString = new SpannableString(
                     Html.fromHtml(
@@ -173,7 +180,7 @@ public class PostListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
         // 附件名
         String oriFileName = CommonUtils.decode(reply.filename);
-        String fileName = CommonUtils.truncateString(oriFileName, 20);
+        String fileName = oriFileName; // CommonUtils.truncateString(oriFileName, 20);
 
         attachmentName.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -190,8 +197,8 @@ public class PostListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
         // 显示图片
         String fileType = CommonUtils.decode(reply.filetype);
-        if (oriFileName.endsWith("jpg") || oriFileName.endsWith("jpeg")
-                || oriFileName.endsWith("gif") || oriFileName.endsWith("png")) {
+        if (oriFileName.toLowerCase().endsWith("jpg") || oriFileName.toLowerCase().endsWith("jpeg")
+                || oriFileName.toLowerCase().endsWith("gif") || oriFileName.toLowerCase().endsWith("png")) {
             attachmentImageLayout.setVisibility(View.VISIBLE);
 
             // 尝试从缓存中读取图片，如果缓存中没有图片，则用户点击之后就能加载

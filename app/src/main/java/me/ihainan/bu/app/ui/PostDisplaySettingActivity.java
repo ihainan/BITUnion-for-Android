@@ -1,6 +1,9 @@
 package me.ihainan.bu.app.ui;
 
+import android.content.DialogInterface;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
+import android.support.v7.view.ContextThemeWrapper;
 import android.support.v7.widget.Toolbar;
 import android.util.TypedValue;
 import android.view.View;
@@ -146,15 +149,28 @@ public class PostDisplaySettingActivity extends SwipeActivity {
         resetBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                BUApplication.fontSize = BUApplication.DEFAULT_FONT_SIZE;
-                BUApplication.lineSpacingExtra = BUApplication.DEFAULT_LINE_SPACING_EXTRA;
-                BUApplication.lineSpacingMultiplier = BUApplication.DEFAULT_LINE_SPACING_MULTIPLIER;
-                BUApplication.setCacheFontSize(PostDisplaySettingActivity.this);
-                BUApplication.setCacheLineSpacingExtra(PostDisplaySettingActivity.this);
-                BUApplication.setCacheLineSpacingMultiplier(PostDisplaySettingActivity.this);
-                mFontSize.setProgress(BUApplication.getCacheFontSize(PostDisplaySettingActivity.this) - 12);
-                mLSExtra.setProgress(BUApplication.getCacheLineSpacingExtra(PostDisplaySettingActivity.this));
-                mLSMul.setProgress((int) (BUApplication.getCacheLineSpacingMultiplier(PostDisplaySettingActivity.this) * 10) - 10);
+                AlertDialog.Builder builder = new AlertDialog.Builder(new ContextThemeWrapper(PostDisplaySettingActivity.this, R.style.AlertDialogCustom));
+                builder.setTitle(getString(R.string.title_warning)).setMessage(getString(R.string.warnning_reset_display_setting))
+                        .setPositiveButton(getString(R.string.button_cancel), new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        }).setNegativeButton(getString(R.string.button_confirm), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                        BUApplication.fontSize = BUApplication.DEFAULT_FONT_SIZE;
+                        BUApplication.lineSpacingExtra = BUApplication.DEFAULT_LINE_SPACING_EXTRA;
+                        BUApplication.lineSpacingMultiplier = BUApplication.DEFAULT_LINE_SPACING_MULTIPLIER;
+                        BUApplication.setCacheFontSize(PostDisplaySettingActivity.this);
+                        BUApplication.setCacheLineSpacingExtra(PostDisplaySettingActivity.this);
+                        BUApplication.setCacheLineSpacingMultiplier(PostDisplaySettingActivity.this);
+                        mFontSize.setProgress(BUApplication.getCacheFontSize(PostDisplaySettingActivity.this) - 12);
+                        mLSExtra.setProgress(BUApplication.getCacheLineSpacingExtra(PostDisplaySettingActivity.this));
+                        mLSMul.setProgress((int) (BUApplication.getCacheLineSpacingMultiplier(PostDisplaySettingActivity.this) * 10) - 10);
+                    }
+                }).show();
             }
         });
     }

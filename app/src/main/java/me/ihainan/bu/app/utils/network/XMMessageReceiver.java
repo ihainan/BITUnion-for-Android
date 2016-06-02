@@ -1,5 +1,6 @@
 package me.ihainan.bu.app.utils.network;
 
+import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -72,13 +73,17 @@ public class XMMessageReceiver extends PushMessageReceiver {
                     mBuilder.setContentTitle(message.getTitle());
                     mBuilder.setContentText(message.getDescription());
                     mBuilder.setAutoCancel(true);
-                    mBuilder.setSmallIcon(R.drawable.logo);
+                    mBuilder.setSmallIcon(R.drawable.ic_stat_bu);
                     mBuilder.setColor(context.getResources().getColor(R.color.primary));
                     mBuilder.setContentIntent(pendingIntent);
+                    Notification notify = mBuilder.build();
+                    notify.defaults |= Notification.DEFAULT_VIBRATE;
+                    notify.defaults |= Notification.DEFAULT_SOUND;
+                    notify.defaults |= Notification.DEFAULT_LIGHTS;
                     int mNotificationId = message.getNotifyId();
                     NotificationManager mNotifyMgr =
                             (NotificationManager) context.getSystemService(context.NOTIFICATION_SERVICE);
-                    mNotifyMgr.notify(mNotificationId, mBuilder.build());
+                    mNotifyMgr.notify(mNotificationId, notify);
                 }
             } catch (Exception e) {
                 Log.e(TAG, "解析推送数据失败 " + message.getContent(), e);

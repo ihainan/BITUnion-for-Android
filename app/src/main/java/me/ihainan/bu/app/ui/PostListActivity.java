@@ -9,7 +9,6 @@ import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v13.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
@@ -35,15 +34,15 @@ import org.json.JSONObject;
 
 import java.util.List;
 
+import biz.kasual.materialnumberpicker.MaterialNumberPicker;
 import me.ihainan.bu.app.R;
 import me.ihainan.bu.app.models.Post;
 import me.ihainan.bu.app.ui.assist.SwipeActivity;
 import me.ihainan.bu.app.ui.fragment.PostListFragment;
-import me.ihainan.bu.app.utils.CommonUtils;
 import me.ihainan.bu.app.utils.BUApplication;
+import me.ihainan.bu.app.utils.CommonUtils;
 import me.ihainan.bu.app.utils.network.BUApi;
 import me.ihainan.bu.app.utils.network.ExtraApi;
-import biz.kasual.materialnumberpicker.MaterialNumberPicker;
 
 public class PostListActivity extends SwipeActivity {
     // TAGS
@@ -134,6 +133,7 @@ public class PostListActivity extends SwipeActivity {
         if (requestCode == REQUEST_NEW_REPLY && resultCode == RESULT_OK) {
             CommonUtils.debugToast(this, "发表回复成功");
             Intent intent = getIntent();
+            intent.removeExtra(THREAD_REPLY_COUNT_TAG); // 重新获取回复个数
             intent.removeExtra(THREAD_JUMP_FLOOR);  // 直接跳到最后
             finish();
             startActivity(intent);

@@ -51,8 +51,10 @@
     <string name="error_no_new_events">哎呀并没有动态</string>
     <string name="error_no_search_result">哎呀并没有搜索结果</string>
     <string name="error_no_following">哎呀并没有关注任何用户</string>
-
     <string name="error_no_favorites">哎呀并没有收藏</string>
+
+    <!-- Warnning -->
+    <string name="warnning_reset_display_setting">自定义配置将会丢失，是否还原到默认设置？</string>
 
     <!-- File Download -->
     <string name="success_download_image">保存图片成功</string>
@@ -89,7 +91,7 @@
     <string name="action_remove_file_attachment">移除附件</string>
 
     <!-- Default Title -->
-    <string name="title_activity_main">BITUnion</string>
+    <string name="title_activity_main">首页</string>
     <string name="title_activity_login">登录</string>
     <string name="title_activity_settings">设置</string>
     <string name="title_activity_post_list">回帖列表</string>
@@ -113,4 +115,5 @@
     <string name="title_activity_focus_list">关注列表</string>
     <string name="title_activity_search">搜索</string>
     <string name="title_activity_new_following_list">关注页面</string>
+    <string name="title_activity_demo">DemoActivity</string>
 </resources>

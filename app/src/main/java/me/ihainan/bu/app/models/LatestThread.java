@@ -33,7 +33,6 @@ public class LatestThread implements Serializable {
         }
     }
 
-
     // Json mapping fields
     public String pname;        // 帖子名
     public String fname;        // 论坛名

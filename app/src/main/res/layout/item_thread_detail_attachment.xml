@@ -17,19 +17,15 @@
             android:src="@drawable/ic_attachment_black_24dp" />
 
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_marginLeft="10dp"
-            android:gravity="center"
-            android:text="" />
-
-        <TextView
             android:id="@+id/thread_attachment_name"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginLeft="2dp"
-            android:gravity="center"
-            android:text="filename............"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="20dp"
+            android:ellipsize="middle"
+            android:gravity="center_vertical"
+            android:singleLine="true"
+            android:text="long long long long long long file name (200M)"
             android:textColor="@color/primary"
             android:textStyle="bold" />
     </LinearLayout>
