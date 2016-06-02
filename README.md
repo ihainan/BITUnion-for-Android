@@ -9,57 +9,51 @@ An unofficial BITUnion client for Android based on [BITUnion Open API Project](h
 [Click Me](http://pan.baidu.com/s/1eRfU6qe)
 
 ## Features
-- 登录与登出
-- 用户资料查看
-- 首页帖子列表查看
-- 论坛组、主论坛、子论坛列表查看
-- 论坛帖子列表
-- 帖子内容阅读
-- 帖子附件查看和下载
-- 用户资料与图片缓存机制
-- __当前版本暂不包含发帖和回帖功能__
+- 不算太丑的界面
+- 登录与登出，自动更新过期 Session
+- 查看用户资料，包括基本信息和用户最新动态（发帖、回帖、关注、收藏）
+- 查看论坛板块列表，自动记录最常访问板块
+- 查看首页最新回复帖子列表和板块内主题列表
+- 阅读帖子内容，支持分页浏览和跳楼，可调整帖子内部正文字体大小与行间距
+- 图片查看和保存，附件查看和下载
+- 发布与回复主题，可插入表情，可引用回复，可上传附件，支持大尺寸图片附件自动压缩，支持发帖预览
+- 主题收藏和查看
+- 可关注用户并查看所有关注用户的最新动态，可管理关注列表
+- 主题被回复、帖子被引用、被 @ 等情况下的系统通知提醒
+- 减少用户所消耗的数据流量，支持图片缓存，提供仅 Wi-Fi 下自动下载图片选项
+- 调试模式
+- 主题 / 回帖搜索
+- 自动 / 手动版本更新 
+- 更多细节等待你的发现 :D
 
 ## Screenshots
 
 #### 首页
 ![home](screenshots/homepage.png)
 
-#### 帖子内容一
-![logo](screenshots/thread_detail_quote.png)
+#### 回帖列表
+![logo](screenshots/post_list.png)
 
-#### 帖子内容二
-![logo](screenshots/thread_detail.png)
+#### 搜索页面
+![logo](screenshots/search.png)
 
-#### 论坛列表
-
-![logo](screenshots/forum_list.png)
-
-#### 用户资料
-![logo](screenshots/profile.png)
-
-#### 帖子列表
-![logo](screenshots/thread_list.png)
+#### 关注页面
+![foxus](screenshots/focus.png)
 
 
 ## Known issues
-- 联盟的限制导致某些图片和附件无法获取；
-- RecyclerView 中的 WebView 导致回帖列表有时候不能平滑滑动。
+- 联盟限制导致某些动态链接的附件无法正常获取；
+- 不支持动态图片显示；
+- 界面偶尔会出现显示异常。
 
 ## Todo
-- [ ] 发帖、回帖功能
-- [ ] 设置页面
-- [ ] 帖子收藏
-- [ ] 论坛收藏
-- [ ] 热门帖子
-- [ ] 服务器端程序监控联盟新帖
-- [ ] 图片查看
-- [ ] 记录上一次浏览位置
-- [ ] WebView 优化
-- [ ] 浏览器 Cookie & Session 来获取某些图片和附件
+- [ ] 支持板块内搜索和个人搜索
+- [ ] 模糊搜索
+- [ ] 修复多 Fragments 切换导致界面异常的 Bug
+- [ ] 消息盒子
+- [ ] 界面美化，提供主题选择功能 
 
 ## Thanks
 - [Wuhao Ouyang](https://github.com/wuhao-ouyang)
 - [BITUnion Open API Project](http://out.bitunion.org/thread-10471436-1-1.html).
-
-
-
+- [我要毕业](http://out.bitunion.org/profile-uid-134574.html)
