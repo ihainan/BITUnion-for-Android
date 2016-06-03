@@ -2,9 +2,11 @@
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/root_layout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@android:color/white"
+    android:clickable="true"
     android:orientation="vertical"
     android:paddingBottom="16dp"
     android:paddingLeft="@dimen/activity_horizontal_margin"

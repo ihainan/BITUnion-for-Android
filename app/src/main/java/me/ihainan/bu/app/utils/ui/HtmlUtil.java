@@ -18,6 +18,7 @@ public class HtmlUtil {
     // Regex
     public final static String[] REGEX_DEVICE_ARRAY = new String[]{"<a .*?>\\.\\.::发自(.*?)::\\.\\.</a>",
             "<br><br>发送自 <a href='.*?' target='_blank'><b>(.*?) @BUApp</b></a>",
+            "..::发自(.*?)::..",
             "<i>来自傲立独行的(.*?)客户端</i>",
             "<br><br><i>发自联盟(.*?)客户端</i>",
             "<a href='.*?>..::发自联盟(.*?)客户端::..</a>",
@@ -47,6 +48,7 @@ public class HtmlUtil {
      * @param str 原始 HTML 文本
      * @return 处理之后的 HTML 文本
      */
+
     public static String replaceImage(String str) {
         // 图片
         Pattern p = Pattern.compile("<img src='([^>']+)'[^>]*(width>)?[^>]*'>");
@@ -93,6 +95,7 @@ public class HtmlUtil {
     public static String replaceBase(String str) {
         // 单引号双引号
         str = str.replaceAll("\"", "'");
+        // str = str.replaceAll("&nbsp;", "");
 
         // Open API 标志
         if (str.contains("From BIT-Union Open API Project"))
@@ -104,7 +107,7 @@ public class HtmlUtil {
         Log.d(TAG, "Body Before = " + str);
         str = str.replaceAll("<br />", "<br>");
         str = str.replaceAll("<br/>", "<br>");
-        str = str.replaceAll("(<br>){2,}", "<br>");
+        str = str.replaceAll("(<br>\\s*){2,}", "<br>");
         str = str.replaceAll("<br>", "<br><br>");
 
         return str;
@@ -120,7 +123,17 @@ public class HtmlUtil {
         Pattern p = Pattern.compile(QUOTE_REGEX);
         Matcher m = p.matcher(str);
         while (m.find()) {
-            str = str.replace(m.group(0), "<blockquote>" + m.group(1).trim() + "</blockquote>");
+            String content = m.group(1).trim();
+            for (String regex : HtmlUtil.REGEX_DEVICE_ARRAY) {
+                Pattern pattern = Pattern.compile(regex);
+                Matcher matcher = pattern.matcher(content);
+                while (matcher.find()) {
+                    content = content.replaceAll(matcher.group(0), "");
+                }
+            }
+
+            content = content.replaceAll("[(<br>)\\s]*$", "");
+            str = str.replace(m.group(0), "<blockquote>" + content + "</blockquote>");
             m = p.matcher(str);
         }
 

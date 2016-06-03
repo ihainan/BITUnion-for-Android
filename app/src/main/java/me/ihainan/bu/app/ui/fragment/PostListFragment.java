@@ -173,6 +173,7 @@ public class PostListFragment extends BasicRecyclerViewFragment<Post> {
                 });
     }
 
+
     @Override
     protected boolean checkStatus(JSONObject response) {
         return BUApi.checkStatus(response);

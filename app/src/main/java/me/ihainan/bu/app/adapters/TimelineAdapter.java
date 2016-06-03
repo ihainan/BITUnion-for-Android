@@ -116,8 +116,7 @@ public class TimelineAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                         }
                     };
 
-                    viewHolder.content.setOnClickListener(onClickListener);
-                    viewHolder.title.setOnClickListener(onClickListener);
+                    viewHolder.rootLayout.setOnClickListener(onClickListener);
                 } else if (event.type == 2) {
                     // 收藏
                     final Favorite favorite = BUApi.MAPPER.readValue(BUApi.MAPPER.writeValueAsString(event.content), Favorite.class);
@@ -141,7 +140,7 @@ public class TimelineAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                         }
                     };
 
-                    viewHolder.title.setOnClickListener(onClickListener);
+                    viewHolder.rootLayout.setOnClickListener(onClickListener);
                 } else if (event.type == 3) {
                     // 关注
                     final Follow follow = BUApi.MAPPER.readValue(BUApi.MAPPER.writeValueAsString(event.content), Follow.class);
@@ -165,7 +164,7 @@ public class TimelineAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                         }
                     };
 
-                    viewHolder.title.setOnClickListener(onClickListener);
+                    viewHolder.rootLayout.setOnClickListener(onClickListener);
                 }
             } catch (Exception e) {
                 Log.e(TAG, "解析时间轴事件失败", e);
@@ -177,10 +176,19 @@ public class TimelineAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                     username,
                     new CommonUtils.UserInfoAndFillAvatarCallback() {
                         @Override
-                        public void doSomethingIfHasCached(Member member) {
+                        public void doSomethingIfHasCached(final Member member) {
                             String avatarURL = CommonUtils.getRealImageURL(member.avatar);
                             CommonUtils.setAvatarImageView(mContext, viewHolder.avatar,
                                     avatarURL, R.drawable.default_avatar);
+                            viewHolder.username.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    Intent intent = new Intent(mContext, ProfileActivity.class);
+                                    intent.putExtra(ProfileActivity.USER_ID_TAG, member.uid);
+                                    intent.putExtra(ProfileActivity.USER_NAME_TAG, member.username);
+                                    mContext.startActivity(intent);
+                                }
+                            });
                         }
                     });
 

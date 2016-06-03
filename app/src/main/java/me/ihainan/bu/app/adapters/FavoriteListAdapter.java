@@ -14,6 +14,7 @@ import me.ihainan.bu.app.R;
 import me.ihainan.bu.app.models.Favorite;
 import me.ihainan.bu.app.models.Member;
 import me.ihainan.bu.app.ui.PostListActivity;
+import me.ihainan.bu.app.ui.ProfileActivity;
 import me.ihainan.bu.app.ui.viewholders.LoadingViewHolder;
 import me.ihainan.bu.app.ui.viewholders.TimelineViewHolder;
 import me.ihainan.bu.app.utils.CommonUtils;
@@ -77,7 +78,7 @@ public class FavoriteListAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 }
             };
 
-            viewHolder.title.setOnClickListener(onClickListener);
+            viewHolder.rootLayout.setOnClickListener(onClickListener);
 
             // 从缓存中获取用户头像
             // viewHolder.avatar.setVisibility(View.GONE);
@@ -86,10 +87,19 @@ public class FavoriteListAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                     username,
                     new CommonUtils.UserInfoAndFillAvatarCallback() {
                         @Override
-                        public void doSomethingIfHasCached(Member member) {
+                        public void doSomethingIfHasCached(final Member member) {
                             String avatarURL = CommonUtils.getRealImageURL(member.avatar);
                             CommonUtils.setAvatarImageView(mContext, viewHolder.avatar,
                                     avatarURL, R.drawable.default_avatar);
+                            viewHolder.username.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    Intent intent = new Intent(mContext, ProfileActivity.class);
+                                    intent.putExtra(ProfileActivity.USER_ID_TAG, member.uid);
+                                    intent.putExtra(ProfileActivity.USER_NAME_TAG, member.username);
+                                    mContext.startActivity(intent);
+                                }
+                            });
                         }
                     });
 

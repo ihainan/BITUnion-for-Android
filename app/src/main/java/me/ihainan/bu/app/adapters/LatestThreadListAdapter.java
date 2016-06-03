@@ -29,6 +29,7 @@ import me.ihainan.bu.app.models.LatestThread;
 import me.ihainan.bu.app.models.Member;
 import me.ihainan.bu.app.models.Post;
 import me.ihainan.bu.app.ui.PostListActivity;
+import me.ihainan.bu.app.ui.ProfileActivity;
 import me.ihainan.bu.app.ui.viewholders.DefaultViewHolder;
 import me.ihainan.bu.app.ui.viewholders.SelfieViewHolder;
 import me.ihainan.bu.app.utils.CommonUtils;
@@ -112,7 +113,7 @@ public class LatestThreadListAdapter extends RecyclerView.Adapter<RecyclerView.V
             }
         });
 
-        holder.title.setOnClickListener(new View.OnClickListener() {
+        holder.rootLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(mContext, PostListActivity.class);
@@ -160,7 +161,16 @@ public class LatestThreadListAdapter extends RecyclerView.Adapter<RecyclerView.V
                     latestThread.lastreply.who,
                     new CommonUtils.UserInfoAndFillAvatarCallback() {
                         @Override
-                        public void doSomethingIfHasCached(Member member) {
+                        public void doSomethingIfHasCached(final Member member) {
+                            holder.authorName.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    Intent intent = new Intent(mContext, ProfileActivity.class);
+                                    intent.putExtra(ProfileActivity.USER_ID_TAG, member.uid);
+                                    intent.putExtra(ProfileActivity.USER_NAME_TAG, member.username);
+                                    mContext.startActivity(intent);
+                                }
+                            });
                             String avatarURL = CommonUtils.getRealImageURL(member.avatar);
                             CommonUtils.setAvatarImageView(mContext, holder.avatar,
                                     avatarURL, R.drawable.default_avatar);
@@ -202,7 +212,7 @@ public class LatestThreadListAdapter extends RecyclerView.Adapter<RecyclerView.V
         holder.title.setText(Html.fromHtml(CommonUtils.decode(latestThread.pname)));
         Picasso.with(mContext).load(R.drawable.empty_avatar)
                 .into(holder.avatar);
-        holder.title.setOnClickListener(new View.OnClickListener() {
+        holder.rootLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(mContext, PostListActivity.class);
@@ -247,8 +257,17 @@ public class LatestThreadListAdapter extends RecyclerView.Adapter<RecyclerView.V
                     latestThread.lastreply.who,
                     new CommonUtils.UserInfoAndFillAvatarCallback() {
                         @Override
-                        public void doSomethingIfHasCached(Member member) {
+                        public void doSomethingIfHasCached(final Member member) {
                             String avatarURL = CommonUtils.getRealImageURL(member.avatar);
+                            holder.authorName.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    Intent intent = new Intent(mContext, ProfileActivity.class);
+                                    intent.putExtra(ProfileActivity.USER_ID_TAG, member.uid);
+                                    intent.putExtra(ProfileActivity.USER_NAME_TAG, member.username);
+                                    mContext.startActivity(intent);
+                                }
+                            });
                             // 缓存模式下不会进入本方法，所以直接显示图片
                             if (avatarURL.endsWith("/images/standard/noavatar.gif")) {
                                 Picasso.with(mContext).load(R.drawable.default_avatar)

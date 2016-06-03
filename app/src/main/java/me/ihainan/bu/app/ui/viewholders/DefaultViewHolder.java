@@ -3,6 +3,7 @@ package me.ihainan.bu.app.ui.viewholders;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import me.ihainan.bu.app.R;
@@ -17,9 +18,11 @@ public class DefaultViewHolder extends RecyclerView.ViewHolder {
     public TextView date;
     public TextView isNewOrHot;
     public TextView placeHolderIn;
+    public LinearLayout rootLayout;
 
     public DefaultViewHolder(View view) {
         super(view);
+        rootLayout = (LinearLayout) view.findViewById(R.id.root_layout);
         authorName = (TextView) view.findViewById(R.id.thread_item_author);
         forumName = (TextView) view.findViewById(R.id.thread_item_forum);
         title = (TextView) view.findViewById(R.id.thread_item_title);
