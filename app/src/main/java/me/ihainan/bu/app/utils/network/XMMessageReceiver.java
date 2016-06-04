@@ -18,11 +18,11 @@ import com.xiaomi.mipush.sdk.PushMessageReceiver;
 import org.json.JSONObject;
 
 import java.util.List;
-import java.util.logging.Logger;
 
 import me.ihainan.bu.app.R;
-import me.ihainan.bu.app.models.AtNotification;
+import me.ihainan.bu.app.models.NotificationMessage;
 import me.ihainan.bu.app.ui.PostListActivity;
+import me.ihainan.bu.app.ui.ProfileActivity;
 import me.ihainan.bu.app.utils.BUApplication;
 import me.ihainan.bu.app.utils.CommonUtils;
 
@@ -61,12 +61,34 @@ public class XMMessageReceiver extends PushMessageReceiver {
             try {
                 JSONObject jsonObject = new JSONObject(message.getContent());
                 Log.d(TAG, "onReceivePassThroughMessage >> " + message.getContent() + " " + message.getNotifyId());
-                if (jsonObject.getInt("type") == 1) {
-                    AtNotification atNotification = BUApi.MAPPER.readValue(message.getContent(), AtNotification.class);
+                if (jsonObject.getInt("type") == 0 || jsonObject.getInt("type") == 1 || jsonObject.getInt("type") == 2) {
+                    NotificationMessage.PostNotificationMessageData notificationMessageData = BUApi.MAPPER.readValue(jsonObject.getJSONObject("data").toString(), NotificationMessage.PostNotificationMessageData.class);
                     Intent intent = new Intent(context, PostListActivity.class);
                     intent.setAction(Long.toString(System.currentTimeMillis()));
-                    intent.putExtra(PostListActivity.THREAD_ID_TAG, atNotification.data.tid);
-                    intent.putExtra(PostListActivity.THREAD_JUMP_FLOOR, atNotification.data.floor);
+                    intent.putExtra(PostListActivity.THREAD_ID_TAG, notificationMessageData.tid);
+                    intent.putExtra(PostListActivity.THREAD_JUMP_FLOOR, notificationMessageData.floor);
+                    PendingIntent pendingIntent = PendingIntent.getActivity(context, message.getNotifyId(), intent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+                    NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context);
+                    mBuilder.setContentTitle(message.getTitle());
+                    mBuilder.setContentText(message.getDescription());
+                    mBuilder.setAutoCancel(true);
+                    mBuilder.setSmallIcon(R.drawable.ic_stat_bu);
+                    mBuilder.setColor(context.getResources().getColor(R.color.primary));
+                    mBuilder.setContentIntent(pendingIntent);
+                    Notification notify = mBuilder.build();
+                    notify.defaults |= Notification.DEFAULT_VIBRATE;
+                    notify.defaults |= Notification.DEFAULT_SOUND;
+                    notify.defaults |= Notification.DEFAULT_LIGHTS;
+                    int mNotificationId = message.getNotifyId();
+                    NotificationManager mNotifyMgr =
+                            (NotificationManager) context.getSystemService(context.NOTIFICATION_SERVICE);
+                    mNotifyMgr.notify(mNotificationId, notify);
+                } else if (jsonObject.getInt("type") == 3) {
+                    NotificationMessage.FollowNotificationMessageData followNotificationMessageData = BUApi.MAPPER.readValue(jsonObject.getJSONObject("data").toString(), NotificationMessage.FollowNotificationMessageData.class);
+                    Intent intent = new Intent(context, ProfileActivity.class);
+                    intent.setAction(Long.toString(System.currentTimeMillis()));
+                    intent.putExtra(ProfileActivity.USER_NAME_TAG, followNotificationMessageData.following);
                     PendingIntent pendingIntent = PendingIntent.getActivity(context, message.getNotifyId(), intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
                     NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context);
@@ -109,12 +131,18 @@ public class XMMessageReceiver extends PushMessageReceiver {
         // Parse message
         try {
             JSONObject jsonObject = new JSONObject(message.getContent());
-            if (jsonObject.getInt("type") == 1) {
-                AtNotification atNotification = BUApi.MAPPER.readValue(message.getContent(), AtNotification.class);
+            if (jsonObject.getInt("type") == 0 || jsonObject.getInt("type") == 1 || jsonObject.getInt("type") == 2) {
+                NotificationMessage.PostNotificationMessageData notificationMessageData = BUApi.MAPPER.readValue(jsonObject.getJSONObject("data").toString(), NotificationMessage.PostNotificationMessageData.class);
                 Intent intent = new Intent(context, PostListActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                intent.putExtra(PostListActivity.THREAD_ID_TAG, atNotification.data.tid);
-                intent.putExtra(PostListActivity.THREAD_JUMP_FLOOR, atNotification.data.floor);
+                intent.putExtra(PostListActivity.THREAD_ID_TAG, notificationMessageData.tid);
+                intent.putExtra(PostListActivity.THREAD_JUMP_FLOOR, notificationMessageData.floor);
+                context.startActivity(intent);
+            } else if (jsonObject.getInt("type") == 3) {
+                NotificationMessage.FollowNotificationMessageData followNotificationMessageData = BUApi.MAPPER.readValue(jsonObject.getJSONObject("data").toString(), NotificationMessage.FollowNotificationMessageData.class);
+                Intent intent = new Intent(context, ProfileActivity.class);
+                intent.setAction(Long.toString(System.currentTimeMillis()));
+                intent.putExtra(ProfileActivity.USER_NAME_TAG, followNotificationMessageData.following);
                 context.startActivity(intent);
             }
         } catch (Exception e) {
