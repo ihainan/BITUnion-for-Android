@@ -45,15 +45,12 @@
             android:layout_height="match_parent"
             app:floatingSearch_dismissOnOutsideTouch="true"
             app:floatingSearch_leftActionMode="showHome"
-            app:floatingSearch_menu="@menu/home_menu"
+            app:floatingSearch_menu="@menu/search_menu"
             app:floatingSearch_searchBarMarginLeft="@dimen/search_view_inset"
             app:floatingSearch_searchBarMarginRight="@dimen/search_view_inset"
             app:floatingSearch_searchBarMarginTop="@dimen/search_view_inset"
             app:floatingSearch_searchHint="Search..."
             app:floatingSearch_showSearchKey="true"
             app:floatingSearch_viewTextColor="@android:color/black" />
-
     </RelativeLayout>
-
-
 </android.support.v4.widget.DrawerLayout>

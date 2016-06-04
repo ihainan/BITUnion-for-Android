@@ -13,15 +13,16 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="16dp">
 
-    <RelativeLayout
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
 
         <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
             android:id="@+id/avatar"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:layout_marginTop="4dp"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_gravity="center_vertical"
             android:src="@drawable/empty_avatar"
             app:civ_border_color="@android:color/white"
             app:civ_border_width="2dp" />
@@ -30,47 +31,33 @@
             android:id="@id/user_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
             android:layout_marginLeft="10dp"
-            android:layout_marginTop="4dp"
-            android:layout_toRightOf="@id/avatar"
-            android:text="username"
+            android:text="ihainan"
             android:textColor="@color/primary" />
 
         <TextView
             android:id="@+id/action"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
             android:layout_marginLeft="4dp"
-            android:layout_marginTop="4dp"
             android:layout_toRightOf="@id/user_name"
             android:text="回复了主题" />
+    </LinearLayout>
 
-        <TextView
-            android:id="@+id/title"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/user_name"
-            android:layout_marginLeft="10dp"
-            android:layout_marginTop="6dp"
-            android:layout_toRightOf="@id/avatar"
-            android:ellipsize="end"
-            android:lineSpacingExtra="3dp"
-            android:text="Long Long Long Long Long Long Long Long Long Long Long Long Long Long Long Long Long Long Long Long Long Long Long Long Long Title"
-            android:textColor="@android:color/black"
-            android:textSize="16sp" />
-
-        <TextView
-            android:id="@+id/date"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_below="@id/thread_author_name"
-            android:layout_marginLeft="15dp"
-            android:layout_marginTop="6dp"
-            android:singleLine="true"
-            android:text="2015-01-30 12:30"
-            android:textSize="10sp" />
-    </RelativeLayout>
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:ellipsize="end"
+        android:lineSpacingExtra="6dp"
+        android:maxLines="4"
+        android:text="此处是标题"
+        android:textColor="@android:color/black"
+        android:textSize="15sp"
+        android:textStyle="bold" />
 
     <TextView
         android:id="@+id/content"
@@ -80,7 +67,7 @@
         android:ellipsize="end"
         android:lineSpacingExtra="6dp"
         android:maxLines="4"
-        android:text="Long Long Long Long Long Long Long Long Long Long Long Long Long Long Long Long Long Long Long Long Long Long Long Long Long Content"
+        android:text="此处是正文"
         android:textColor="@android:color/black"
         android:textSize="15sp" />
 </LinearLayout>

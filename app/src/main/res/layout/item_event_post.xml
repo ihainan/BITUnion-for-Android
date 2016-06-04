@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/root_layout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@android:color/white"
+    android:clickable="true"
+    android:orientation="vertical"
+    android:paddingBottom="16dp"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="16dp">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/avatar"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_gravity="center_vertical"
+            android:src="@drawable/default_avatar"
+            app:civ_border_color="@android:color/white"
+            app:civ_border_width="2dp" />
+
+        <TextView
+            android:id="@id/user_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="4dp"
+            android:layout_marginRight="4dp"
+            android:layout_toRightOf="@id/avatar"
+            android:text="ihainan"
+            android:textColor="@color/primary" />
+
+        <TextView
+            android:id="@+id/action"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_gravity="center_vertical"
+            android:layout_toRightOf="@id/user_name"
+            android:text="回复了主题" />
+
+        <TextView
+            android:id="@+id/date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:singleLine="true"
+            android:text="12 hours ago"
+            android:textSize="10sp" />
+    </RelativeLayout>
+
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:ellipsize="end"
+        android:lineSpacingExtra="6dp"
+        android:maxLines="4"
+        android:text="突发兴致画了个联盟的 APP 首页原型图"
+        android:textColor="@android:color/black"
+        android:textSize="16sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/content"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:ellipsize="end"
+        android:lineSpacingExtra="6dp"
+        android:maxLines="4"
+        android:text="设计风格其实是个人喜好罢了，多看看主流应用在 adr 和 ios 的交互设计，看多了对于一个需求你自然会想出多种设计方式实现它
+打算从无到有设计一个应用的话，动手前先理清思路，想好准备做哪些功能，列出来，然后根据场景归类，看结果再决定整体框架
+定好框架后，再细化各场景需求，完善每个细节，考虑把所有功能流程形成闭环"
+        android:textColor="@android:color/black"
+        android:textSize="14sp" />
+</LinearLayout>

@@ -61,8 +61,8 @@ public class SearchThreadOrPostResultAdapter extends RecyclerView.Adapter<Recycl
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view;
         if (viewType == VIEW_TYPE_ITEM) {
-            view = mLayoutInflater.inflate(R.layout.item_timeline, parent, false);
-            return new TimelineViewHolder(view);
+            view = mLayoutInflater.inflate(R.layout.item_event_post, parent, false);
+            return new TimelineViewHolder.TimelinePostViewHolder(view);
         } else {
             view = mLayoutInflater.inflate(R.layout.listview_progress_bar, parent, false);
             return new LoadingViewHolder(view);
@@ -75,10 +75,10 @@ public class SearchThreadOrPostResultAdapter extends RecyclerView.Adapter<Recycl
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, final int position) {
-        if (holder instanceof TimelineViewHolder) {
+        if (holder instanceof TimelineViewHolder.TimelinePostViewHolder) {
             // Do nothing here
             final Post post = mList.get(position);
-            final TimelineViewHolder viewHolder = (TimelineViewHolder) holder;
+            final TimelineViewHolder.TimelinePostViewHolder viewHolder = (TimelineViewHolder.TimelinePostViewHolder) holder;
 
             // 占位头像
             Picasso.with(mContext).load(R.drawable.empty_avatar)
@@ -90,19 +90,29 @@ public class SearchThreadOrPostResultAdapter extends RecyclerView.Adapter<Recycl
             // viewHolder.title.setTextAppearance(mContext, R.style.boldText);
             viewHolder.username.setText(username);
             viewHolder.date.setText(CommonUtils.getRelativeTimeSpanString(CommonUtils.unixTimeStampToDate(post.dateline)));
-            View.OnClickListener onClickListener = new View.OnClickListener() {
+            final Intent intent = new Intent(mContext, PostListActivity.class);
+            intent.putExtra(PostListActivity.THREAD_FID_TAG, post.fid);
+            intent.putExtra(PostListActivity.THREAD_ID_TAG, post.tid);
+            intent.putExtra(PostListActivity.THREAD_NAME_TAG, post.t_subject);
+
+            View.OnClickListener onRootClickListener = new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Intent intent = new Intent(mContext, PostListActivity.class);
-                    intent.putExtra(PostListActivity.THREAD_FID_TAG, post.fid);
-                    intent.putExtra(PostListActivity.THREAD_ID_TAG, post.tid);
-                    intent.putExtra(PostListActivity.THREAD_NAME_TAG, post.t_subject);
                     intent.putExtra(PostListActivity.THREAD_JUMP_FLOOR, post.floor);
                     mContext.startActivity(intent);
                 }
             };
-            viewHolder.content.setOnClickListener(onClickListener);
-            viewHolder.title.setOnClickListener(onClickListener);
+
+            View.OnClickListener onTitleClickListener = new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    intent.putExtra(PostListActivity.THREAD_JUMP_FLOOR, 0);
+                    mContext.startActivity(intent);
+                }
+            };
+
+            viewHolder.rootLayout.setOnClickListener(onRootClickListener);
+            viewHolder.title.setOnClickListener(onTitleClickListener);
 
             if (mIsThread) {
                 viewHolder.content.setVisibility(View.GONE);

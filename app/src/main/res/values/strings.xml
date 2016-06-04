@@ -73,6 +73,7 @@
     <string name="action_retry">重试</string>
     <string name="action_refresh">刷新</string>
     <string name="action_send">提交</string>
+    <string name="action_inbox">消息盒</string>
     <string name="action_manage_focus">关注列表</string>
     <string name="action_follow">关注</string>
     <string name="action_reply">回帖</string>

@@ -52,10 +52,10 @@ public class FavoriteListAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, final int position) {
-        if (holder instanceof TimelineViewHolder) {
+        if (holder instanceof TimelineViewHolder.TimelinePostViewHolder) {
             // Do nothing here
             final Favorite favorite = mList.get(position);
-            final TimelineViewHolder viewHolder = (TimelineViewHolder) holder;
+            final TimelineViewHolder.TimelinePostViewHolder viewHolder = (TimelineViewHolder.TimelinePostViewHolder) holder;
 
             // 收藏
             String username = favorite.author;
@@ -115,8 +115,8 @@ public class FavoriteListAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view;
         if (viewType == VIEW_TYPE_ITEM) {
-            view = mLayoutInflater.inflate(R.layout.item_timeline, parent, false);
-            return new TimelineViewHolder(view);
+            view = mLayoutInflater.inflate(R.layout.item_event_post, parent, false);
+            return new TimelineViewHolder.TimelinePostViewHolder(view);
         } else {
             view = mLayoutInflater.inflate(R.layout.listview_progress_bar, parent, false);
             return new LoadingViewHolder(view);

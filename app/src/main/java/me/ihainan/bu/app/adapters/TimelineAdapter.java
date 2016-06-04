@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 
 import com.squareup.picasso.Picasso;
 
+import java.io.IOException;
 import java.util.List;
 
 import me.ihainan.bu.app.R;
@@ -43,12 +44,16 @@ public class TimelineAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         mLayoutInflater = LayoutInflater.from(context);
     }
 
-    private final int VIEW_TYPE_ITEM = 0;
-    private final int VIEW_TYPE_LOADING = 1;
+    private final int VIEW_TYPE_POST_ITEM = 0;
+    private final int VIEW_TYPE_USER_ITEM = 1;
+    private final int VIEW_TYPE_LOADING = 2;
 
     @Override
     public int getItemViewType(int position) {
-        return mList.get(position) == null ? VIEW_TYPE_LOADING : VIEW_TYPE_ITEM;
+        TimelineEvent event = mList.get(position);
+        if (event == null) return VIEW_TYPE_LOADING;
+        else if (event.type == 3) return VIEW_TYPE_USER_ITEM;
+        else return VIEW_TYPE_POST_ITEM;
     }
 
     @Override
@@ -59,9 +64,12 @@ public class TimelineAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view;
-        if (viewType == VIEW_TYPE_ITEM) {
-            view = mLayoutInflater.inflate(R.layout.item_timeline, parent, false);
-            return new TimelineViewHolder(view);
+        if (viewType == VIEW_TYPE_POST_ITEM) {
+            view = mLayoutInflater.inflate(R.layout.item_event_post, parent, false);
+            return new TimelineViewHolder.TimelinePostViewHolder(view);
+        } else if (viewType == VIEW_TYPE_USER_ITEM) {
+            view = mLayoutInflater.inflate(R.layout.item_event_user, parent, false);
+            return new TimelineViewHolder.TimelineUserViewHolder(view);
         } else {
             view = mLayoutInflater.inflate(R.layout.listview_progress_bar, parent, false);
             return new LoadingViewHolder(view);
@@ -70,10 +78,10 @@ public class TimelineAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, final int position) {
-        if (holder instanceof TimelineViewHolder) {
+        if (holder instanceof TimelineViewHolder.TimelinePostViewHolder) {
             // Do nothing here
             final TimelineEvent event = mList.get(position);
-            final TimelineViewHolder viewHolder = (TimelineViewHolder) holder;
+            final TimelineViewHolder.TimelinePostViewHolder viewHolder = (TimelineViewHolder.TimelinePostViewHolder) holder;
 
             // 占位头像
             Picasso.with(mContext).load(R.drawable.empty_avatar)
@@ -104,19 +112,29 @@ public class TimelineAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                     } else viewHolder.content.setText(Html.fromHtml(htmlContent));
                     viewHolder.date.setText(CommonUtils.getRelativeTimeSpanString(CommonUtils.unixTimeStampToDate(post.dateline)));
 
-                    View.OnClickListener onClickListener = new View.OnClickListener() {
+                    final Intent intent = new Intent(mContext, PostListActivity.class);
+                    intent.putExtra(PostListActivity.THREAD_FID_TAG, post.fid);
+                    intent.putExtra(PostListActivity.THREAD_ID_TAG, post.tid);
+                    intent.putExtra(PostListActivity.THREAD_NAME_TAG, post.t_subject);
+
+                    View.OnClickListener onRootClickListener = new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            Intent intent = new Intent(mContext, PostListActivity.class);
-                            intent.putExtra(PostListActivity.THREAD_FID_TAG, post.fid);
-                            intent.putExtra(PostListActivity.THREAD_ID_TAG, post.tid);
-                            intent.putExtra(PostListActivity.THREAD_NAME_TAG, post.t_subject);
                             intent.putExtra(PostListActivity.THREAD_JUMP_FLOOR, post.floor);
                             mContext.startActivity(intent);
                         }
                     };
 
-                    viewHolder.rootLayout.setOnClickListener(onClickListener);
+                    View.OnClickListener onTitleClickListener = new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            intent.putExtra(PostListActivity.THREAD_JUMP_FLOOR, 0);
+                            mContext.startActivity(intent);
+                        }
+                    };
+
+                    viewHolder.rootLayout.setOnClickListener(onRootClickListener);
+                    viewHolder.title.setOnClickListener(onTitleClickListener);
                 } else if (event.type == 2) {
                     // 收藏
                     final Favorite favorite = BUApi.MAPPER.readValue(BUApi.MAPPER.writeValueAsString(event.content), Favorite.class);
@@ -136,30 +154,6 @@ public class TimelineAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                             intent.putExtra(PostListActivity.THREAD_AUTHOR_NAME_TAG, favorite.author);
                             intent.putExtra(PostListActivity.THREAD_NAME_TAG, favorite.subject);
                             intent.putExtra(PostListActivity.THREAD_JUMP_FLOOR, 0);
-                            mContext.startActivity(intent);
-                        }
-                    };
-
-                    viewHolder.rootLayout.setOnClickListener(onClickListener);
-                } else if (event.type == 3) {
-                    // 关注
-                    final Follow follow = BUApi.MAPPER.readValue(BUApi.MAPPER.writeValueAsString(event.content), Follow.class);
-
-                    username = follow.following;
-                    viewHolder.username.setText(CommonUtils.decode(follow.follower));
-
-                    viewHolder.action.setText("关注了用户");
-                    viewHolder.title.setText(CommonUtils.decode(follow.following));
-
-                    viewHolder.content.setVisibility(View.GONE);
-
-                    viewHolder.date.setText(CommonUtils.getRelativeTimeSpanString(CommonUtils.parseDateString(follow.dt_created)));
-
-                    View.OnClickListener onClickListener = new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            Intent intent = new Intent(mContext, ProfileActivity.class);
-                            intent.putExtra(ProfileActivity.USER_NAME_TAG, follow.following);
                             mContext.startActivity(intent);
                         }
                     };
@@ -194,6 +188,56 @@ public class TimelineAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
             CommonUtils.setUserAvatarClickListener(mContext,
                     viewHolder.avatar, -1, username);
+        } else if (holder instanceof TimelineViewHolder.TimelineUserViewHolder) {
+            // Do nothing here
+            final TimelineEvent event = mList.get(position);
+            final TimelineViewHolder.TimelineUserViewHolder viewHolder = (TimelineViewHolder.TimelineUserViewHolder) holder;
+            // 占位头像
+            Picasso.with(mContext).load(R.drawable.empty_avatar)
+                    .into(viewHolder.avatar);
+
+            final Follow follow;
+            try {
+                follow = BUApi.MAPPER.readValue(BUApi.MAPPER.writeValueAsString(event.content), Follow.class);
+                viewHolder.username.setText(CommonUtils.decode(follow.follower));
+                viewHolder.following.setText(CommonUtils.decode(follow.following));
+                viewHolder.date.setText(CommonUtils.getRelativeTimeSpanString(CommonUtils.parseDateString(follow.dt_created)));
+
+                // 从缓存中获取用户头像
+                String username = follow.following;
+                CommonUtils.getAndCacheUserInfo(mContext,
+                        username,
+                        new CommonUtils.UserInfoAndFillAvatarCallback() {
+                            @Override
+                            public void doSomethingIfHasCached(final Member member) {
+                                String avatarURL = CommonUtils.getRealImageURL(member.avatar);
+                                CommonUtils.setAvatarImageView(mContext, viewHolder.avatar,
+                                        avatarURL, R.drawable.default_avatar);
+                                viewHolder.username.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        Intent intent = new Intent(mContext, ProfileActivity.class);
+                                        intent.putExtra(ProfileActivity.USER_ID_TAG, member.uid);
+                                        intent.putExtra(ProfileActivity.USER_NAME_TAG, member.username);
+                                        mContext.startActivity(intent);
+                                    }
+                                });
+                            }
+                        });
+
+                View.OnClickListener onClickListener = new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent intent = new Intent(mContext, ProfileActivity.class);
+                        intent.putExtra(ProfileActivity.USER_NAME_TAG, follow.following);
+                        mContext.startActivity(intent);
+                    }
+                };
+
+                viewHolder.rootLayout.setOnClickListener(onClickListener);
+            } catch (IOException e) {
+                Log.e(TAG, "解析时间轴事件失败", e);
+            }
         } else {
             LoadingViewHolder loadingViewHolder = (LoadingViewHolder) holder;
             loadingViewHolder.progressBar.setIndeterminate(true);
