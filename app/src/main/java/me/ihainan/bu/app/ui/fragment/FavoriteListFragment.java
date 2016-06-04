@@ -58,7 +58,7 @@ public class FavoriteListFragment extends BasicRecyclerViewFragment<Favorite> {
 
     @Override
     protected int getLoadingCount() {
-        return BUApplication.LOADING_POSTS_COUNT;
+        return BUApplication.LOADING_FAVORITES_COUNT;
     }
 
     @Override

@@ -108,7 +108,7 @@ public class ProfileActivity extends SwipeActivity {
     private void setFollowIcon(boolean isFollow) {
         if (isFollow) {
             Drawable newIcon = getResources().getDrawable(R.drawable.ic_favorite_white_24dp);
-            newIcon.mutate().setColorFilter(Color.argb(255, 255, 76, 82), PorterDuff.Mode.SRC_IN);
+            // newIcon.mutate().setColorFilter(Color.argb(255, 255, 76, 82), PorterDuff.Mode.SRC_IN);
             mFollowMenuItem.setIcon(newIcon);
             mFollowMenuItem.setTitle("取消关注");
         } else {

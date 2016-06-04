@@ -9,9 +9,13 @@ import android.os.Handler;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
@@ -24,11 +28,7 @@ import com.xiaomi.mipush.sdk.MiPushClient;
 
 import me.ihainan.bu.app.R;
 import me.ihainan.bu.app.models.Member;
-import me.ihainan.bu.app.ui.fragment.AboutFragment;
-import me.ihainan.bu.app.ui.fragment.FocusFragment;
-import me.ihainan.bu.app.ui.fragment.ForumFragment;
-import me.ihainan.bu.app.ui.fragment.HomePageFragment;
-import me.ihainan.bu.app.ui.fragment.SettingFragment;
+import me.ihainan.bu.app.ui.fragment.HomeFragment;
 import me.ihainan.bu.app.utils.BUApplication;
 import me.ihainan.bu.app.utils.CommonUtils;
 import me.ihainan.bu.app.utils.network.SessionUpdateService;
@@ -39,6 +39,7 @@ public class MainActivity extends AppCompatActivity {
     // UI elements
     private DrawerLayout mDrawerLayout;
     private View mNavHead;
+    private Toolbar mToolbar;
     private ImageView mNavProfileView;
     private TextView mNavUsername;
     private ImageButton mNavExit;
@@ -47,9 +48,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (savedInstanceState != null) {
-            mFragment = getFragmentManager().getFragment(savedInstanceState, "mFragment");
-        }
 
         // 防止某些 launcher 内部 bug 导致每次返回 activity 都会重启整个应用
         if (!isTaskRoot()) {
@@ -62,6 +60,14 @@ public class MainActivity extends AppCompatActivity {
         }
 
         setContentView(R.layout.activity_main);
+
+        // Toolbar
+        mToolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(mToolbar);
+        final ActionBar ab = getSupportActionBar();
+        ab.setHomeAsUpIndicator(R.drawable.ic_menu_white_24dp);
+        ab.setDisplayHomeAsUpEnabled(true);
+        setTitle(getString(R.string.action_home));
 
         // Navigation view
         mNavigationView = (NavigationView) findViewById(R.id.nav_view);
@@ -79,32 +85,34 @@ public class MainActivity extends AppCompatActivity {
             Intent intent = new Intent(this, LoginActivity.class);
             startActivity(intent);
             finish();
-        } else {
-            // 检查新版本更新并安装
-            CommonUtils.updateVersion(this, true, null);
+        } else initWork();
+    }
 
-            // 配置 Navigation Layout
-            if (mNavigationView != null) {
-                setupDrawerContent(mNavigationView);
-            }
+    private void initWork() {
+        // 检查新版本更新并安装
+        CommonUtils.updateVersion(this, true, null);
 
-            // 用户用户信息
-            getUserInfo();
+        // 配置 Navigation Layout
+        if (mNavigationView != null) {
+            setupDrawerContent(mNavigationView);
+        }
 
-            // 小米推送
-            MiPushClient.setUserAccount(this, CommonUtils.decode(BUApplication.username), null);
+        // 用户用户信息
+        getUserInfo();
 
-            // 定期更新用户 Session
-            Intent intent = new Intent(this, SessionUpdateService.class);
-            // startService(intent);
+        // 小米推送
+        MiPushClient.setUserAccount(this, CommonUtils.decode(BUApplication.username), null);
 
-            // Activity content
-            if (mFragment == null) {
-                mFragment = getHomeFragment();
-                FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
-                fragmentTransaction.replace(R.id.flContent, mFragment);
-                fragmentTransaction.commit();
-            }
+        // 定期更新用户 Session
+        Intent intent = new Intent(this, SessionUpdateService.class);
+        // startService(intent);
+
+        // Activity content
+        if (mFragment == null) {
+            mFragment = new HomeFragment();
+            FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+            fragmentTransaction.replace(R.id.flContent, mFragment);
+            fragmentTransaction.commit();
         }
     }
 
@@ -133,46 +141,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private Fragment mFragment;
-    private Fragment homeFragment;
-    private Fragment forumFragment;
-    private Fragment settingFragment;
-    private Fragment aboutFragment;
-    private Fragment focusFragment;
-
-    private Fragment getHomeFragment() {
-        setTitle(getString(R.string.action_home));
-        mNavigationView.setCheckedItem(R.id.nav_home);
-        if (homeFragment == null) homeFragment = new HomePageFragment();
-        return homeFragment;
-    }
-
-    private Fragment getForumFragment() {
-        setTitle(getString(R.string.action_forum));
-        mNavigationView.setCheckedItem(R.id.nav_forum);
-        if (forumFragment == null) forumFragment = new ForumFragment();
-        return forumFragment;
-    }
-
-    public Fragment getFocusFragment() {
-        setTitle(R.string.action_focus);
-        mNavigationView.setCheckedItem(R.id.nav_focus);
-        focusFragment = new FocusFragment();
-        return focusFragment;
-    }
-
-    public Fragment getSettingFragment() {
-        setTitle(R.string.action_settings);
-        mNavigationView.setCheckedItem(R.id.nav_setting);
-        if (settingFragment == null) settingFragment = new SettingFragment();
-        return settingFragment;
-    }
-
-    private Fragment getAboutFragment() {
-        setTitle(getString(R.string.action_about));
-        mNavigationView.setCheckedItem(R.id.nav_about);
-        if (aboutFragment == null) aboutFragment = new AboutFragment();
-        return aboutFragment;
-    }
 
     private void setupDrawerContent(final NavigationView navigationView) {
 
@@ -211,6 +179,7 @@ public class MainActivity extends AppCompatActivity {
                         // Switch between fragments
                         int menuId = menuItem.getItemId();
                         boolean setTitle = false;
+                        Intent intent = null;
                         switch (menuId) {
                             case R.id.nav_logout:
                                 setTitle = false;
@@ -236,35 +205,20 @@ public class MainActivity extends AppCompatActivity {
                                 }).show();
                                 break;
                             case R.id.nav_home:
-                                setTitle = true;
-                                mFragment = getHomeFragment();
                                 break;
                             case R.id.nav_forum:
-                                setTitle = true;
-                                mFragment = getForumFragment();
-                                break;
-                            case R.id.nav_about:
-                                setTitle = true;
-                                mFragment = getAboutFragment();
+                                intent = new Intent(MainActivity.this, ForumListActivity.class);
                                 break;
                             case R.id.nav_setting:
-                                setTitle = true;
-                                mFragment = getSettingFragment();
+                                intent = new Intent(MainActivity.this, SettingsActivity.class);
                                 break;
                             case R.id.nav_focus:
-                                setTitle = true;
-                                mFragment = getFocusFragment();
+                                intent = new Intent(MainActivity.this, FocusActivity.class);
                                 break;
-                            /*
-                            case R.id.nav_feedback:
-                                setTitle = false;
-                                Intent feedbackIntent = new Intent(Intent.ACTION_SEND);
-                                feedbackIntent.setType("message/rfc822");
-                                feedbackIntent.putExtra(Intent.EXTRA_EMAIL, new String[]{"ihainan72@gmail.com"});
-                                feedbackIntent.putExtra(Intent.EXTRA_SUBJECT, "联盟安卓客户端意见反馈");
-                                feedbackIntent.putExtra(Intent.EXTRA_TEXT, "\n---\n当前版本：" + BuildConfig.VERSION_NAME);
-                                startActivity(Intent.createChooser(feedbackIntent, "发送邮件..."));
-                                break; */
+                        }
+
+                        if (intent != null) {
+                            startActivity(intent);
                         }
 
                         if (setTitle) {
@@ -310,6 +264,10 @@ public class MainActivity extends AppCompatActivity {
             case android.R.id.home:
                 mDrawerLayout.openDrawer(GravityCompat.START);  // OPEN DRAWER
                 return true;
+            case R.id.action_search:
+                Intent intent = new Intent(this, SearchActivity.class);
+                startActivity(intent);
+                return true;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -336,5 +294,12 @@ public class MainActivity extends AppCompatActivity {
         // 友盟 SDK
         if (BUApplication.uploadData)
             MobclickAgent.onPause(this);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.home_menu, menu);
+        return true;
     }
 }

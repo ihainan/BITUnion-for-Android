@@ -163,8 +163,6 @@ public class BetterPostActivity extends AppCompatActivity {
 
             mQuoteContent = bundle.getString(NEW_POST_QUOTE_CONTENT_TAG);
             mFloor = bundle.getLong(NEW_POST_MAX_FLOOR_TAG, 1);
-
-            // TODO: 检查数据是否合理
         }
     }
 

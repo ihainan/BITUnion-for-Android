@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/overview_coordinator_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <include layout="@layout/appbar_layout" />
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@android:color/white"
+            android:orientation="vertical"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp">
+
+            <ExpandableListView
+                android:id="@+id/forum_system_admin_lv"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:childDivider="#00000000"
+                android:groupIndicator="@null"
+                android:scrollbars="none" />
+
+            <include layout="@layout/layout_error_message" />
+        </FrameLayout>
+
+    </LinearLayout>
+</android.support.design.widget.CoordinatorLayout>

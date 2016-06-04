@@ -320,7 +320,7 @@ public class PostListActivity extends SwipeActivity {
     private void setFavIcon(boolean isFav) {
         if (isFav) {
             Drawable newIcon = getResources().getDrawable(R.drawable.ic_star_white_24dp);
-            newIcon.mutate().setColorFilter(Color.argb(255, 255, 250, 76), PorterDuff.Mode.SRC_IN);
+            // newIcon.mutate().setColorFilter(Color.argb(255, 255, 250, 76), PorterDuff.Mode.SRC_IN);
             mFavorItem.setIcon(newIcon);
             mFavorItem.setTitle("取消收藏");
         } else {
@@ -468,7 +468,6 @@ public class PostListActivity extends SwipeActivity {
             public void onResponse(JSONObject response) {
                 try {
                     if (isFinishing()) return;
-                    // TODO: 等待一段时间
                     if (mFavorItem == null) getFavoriteStatus();
                     else {
                         if (response.getInt("code") == 0) {

@@ -116,4 +116,6 @@
     <string name="title_activity_search">搜索</string>
     <string name="title_activity_new_following_list">关注页面</string>
     <string name="title_activity_demo">DemoActivity</string>
+    <string name="title_activity_forum_list">板块</string>
+    <string name="title_activity_preference">PreferenceActivity</string>
 </resources>

@@ -56,12 +56,18 @@ public class XMMessageReceiver extends PushMessageReceiver {
             mAlias = message.getAlias();
         }
 
+        if (!BUApplication.getEnableNotify(context)) return;
         if (message.getUserAccount().equals(CommonUtils.decode(BUApplication.username))) {
             // Parse message
             try {
                 JSONObject jsonObject = new JSONObject(message.getContent());
                 Log.d(TAG, "onReceivePassThroughMessage >> " + message.getContent() + " " + message.getNotifyId());
-                if (jsonObject.getInt("type") == 0 || jsonObject.getInt("type") == 1 || jsonObject.getInt("type") == 2) {
+                int type = jsonObject.getInt("type");
+                if (type == 0 && !BUApplication.getEnableReplyNotify(context)) return;
+                if (type == 1 && !BUApplication.getEnableQuoteNotify(context)) return;
+                if (type == 2 && !BUApplication.getEnableAtNotify(context)) return;
+                if (type == 3 && !BUApplication.getEnableFollowNotify(context)) return;
+                if (type == 0 || type == 1 || type == 2) {
                     NotificationMessage.PostNotificationMessageData notificationMessageData = BUApi.MAPPER.readValue(jsonObject.getJSONObject("data").toString(), NotificationMessage.PostNotificationMessageData.class);
                     Intent intent = new Intent(context, PostListActivity.class);
                     intent.setAction(Long.toString(System.currentTimeMillis()));
@@ -84,7 +90,7 @@ public class XMMessageReceiver extends PushMessageReceiver {
                     NotificationManager mNotifyMgr =
                             (NotificationManager) context.getSystemService(context.NOTIFICATION_SERVICE);
                     mNotifyMgr.notify(mNotificationId, notify);
-                } else if (jsonObject.getInt("type") == 3) {
+                } else if (type == 3) {
                     NotificationMessage.FollowNotificationMessageData followNotificationMessageData = BUApi.MAPPER.readValue(jsonObject.getJSONObject("data").toString(), NotificationMessage.FollowNotificationMessageData.class);
                     Intent intent = new Intent(context, ProfileActivity.class);
                     intent.setAction(Long.toString(System.currentTimeMillis()));

@@ -19,21 +19,17 @@ import java.util.Map;
 
 import me.ihainan.bu.app.R;
 import me.ihainan.bu.app.models.ForumListGroup;
-import me.ihainan.bu.app.ui.MainActivity;
 import me.ihainan.bu.app.ui.ThreadListActivity;
 import de.hdodenhof.circleimageview.CircleImageView;
-import me.ihainan.bu.app.ui.fragment.ForumFragment;
 import me.ihainan.bu.app.utils.BUApplication;
 
 public class SuperParentAdapter extends BaseExpandableListAdapter {
     public final static String TAG = SuperParentAdapter.class.getSimpleName();
     private Context mContext;
-    private Fragment mFragment;
     private List<ForumListGroup> mForumListGroups;
 
-    public SuperParentAdapter(Context context, Fragment fragment, List<ForumListGroup> forumListGroups) {
+    public SuperParentAdapter(Context context, List<ForumListGroup> forumListGroups) {
         mContext = context;
-        mFragment = fragment;
         mForumListGroups = BUApplication.forumListGroupList;
     }
 
@@ -55,7 +51,7 @@ public class SuperParentAdapter extends BaseExpandableListAdapter {
             return secondLevelExpandableListViewMap.get(groupPosition + "-" + childPosition);
         } else {
             SecondLevelExpandableListView secondLevelELV = new SecondLevelExpandableListView(mContext);
-            secondLevelELV.setAdapter(new SecondLevelAdapter(mContext, mFragment, mForumListGroups.get(groupPosition).getChildItemList()));
+            secondLevelELV.setAdapter(new SecondLevelAdapter(mContext, mForumListGroups.get(groupPosition).getChildItemList()));
             secondLevelELV.setGroupIndicator(null);
             secondLevelExpandableListViewMap.put(groupPosition + "-" + childPosition, secondLevelELV);
             return secondLevelELV;
@@ -125,12 +121,10 @@ public class SuperParentAdapter extends BaseExpandableListAdapter {
     public static class SecondLevelAdapter extends BaseExpandableListAdapter {
 
         private Context mContext;
-        private Fragment mFragment;
         private List<ForumListGroup.ForumList> mForumLists;
 
-        public SecondLevelAdapter(Context context, Fragment fragment, List<ForumListGroup.ForumList> forumLists) {
+        public SecondLevelAdapter(Context context, List<ForumListGroup.ForumList> forumLists) {
             mContext = context;
-            mFragment = fragment;
             mForumLists = forumLists;
         }
 
@@ -173,8 +167,7 @@ public class SuperParentAdapter extends BaseExpandableListAdapter {
                         Intent intent = new Intent(mContext, ThreadListActivity.class);
                         intent.putExtra(ThreadListActivity.ACTION_TAG, "THREAD_LIST");
                         intent.putExtra(ThreadListActivity.MAIN_FORUM_TAG, mForumLists.get(groupPosition));
-                        // mContext.startActivity(intent);
-                        mFragment.startActivityForResult(intent, ForumFragment.REQUEST_CODE);
+                        mContext.startActivity(intent);
                     }
 
                     if (isExpanded) {

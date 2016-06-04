@@ -3,11 +3,39 @@
 
     <PreferenceCategory
         android:key="pref_key_display_settings"
-        android:title="界面">
+        android:title="界面与通知">
 
         <Preference
             android:key="pref_post_display"
             android:title="帖子显示" />
+    </PreferenceCategory>
+
+    <PreferenceCategory xmlns:android="http://schemas.android.com/apk/res/android"
+        android:key="pref_notification"
+        android:title="通知提醒">
+        <SwitchPreference
+            android:key="pref_enable_notify"
+            android:title="开启通知提醒" />
+
+        <CheckBoxPreference
+            android:enabled="false"
+            android:key="pref_enable_reply_notify"
+            android:title="回复通知" />
+
+        <CheckBoxPreference
+            android:enabled="false"
+            android:key="pref_enable_quote_notify"
+            android:title="引用通知" />
+
+        <CheckBoxPreference
+            android:enabled="false"
+            android:key="pref_enable_at_notify"
+            android:title="\@ 通知" />
+
+        <CheckBoxPreference
+            android:enabled="false"
+            android:key="pref_enable_follow_notify"
+            android:title="关注通知" />
     </PreferenceCategory>
 
     <PreferenceCategory
@@ -40,11 +68,6 @@
     <PreferenceCategory
         android:key="pref_key_about_settings"
         android:title="关于">
-        <Preference
-            android:key="pref_version"
-            android:summary="0.1.1"
-            android:title="应用版本" />
-
         <Preference
             android:key="pref_device_name"
             android:summary="Sony Xperia Z5 Dual"

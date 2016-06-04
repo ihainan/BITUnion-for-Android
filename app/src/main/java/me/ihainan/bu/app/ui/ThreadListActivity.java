@@ -314,7 +314,6 @@ public class ThreadListActivity extends SwipeActivity {
                                 showErrorLayout(message);
                             }
                         } catch (Exception e) {
-                            // TODO: 判断返回信息
                             // 解析失败的话，说明到头了，移除标志，不允许再次更新（mIsLoading 始终为 true）
                             if (mThreadList.size() > 0) {
                                 Log.d(TAG, "refreshData >> 到头了 " + response);

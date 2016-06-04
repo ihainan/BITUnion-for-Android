@@ -73,6 +73,7 @@ public class BUApplication extends Application {
     public final static int HOT_TOPIC_THREAD = 30;      // 热门帖子阈值
     public final static int SWIPE_LAYOUT_TRIGGER_DISTANCE = 400;    // 手指在屏幕下拉多少距离会触发下拉刷新
 
+    public final static int LOADING_HOME_PAGE_COUNT = 20;        // 一次最多 Loading 的主页动态数目
     public final static int LOADING_THREADS_COUNT = 10; // 一次最多 Loading 的主题数目
     public final static int LOADING_POSTS_COUNT = 10;   // 一次最多 Loading 的帖子数目
     public final static int LOADING_TIMELINE_COUNT = 10;        // 一次最多 Loading 的动态数目
@@ -105,17 +106,89 @@ public class BUApplication extends Application {
     public final static String PREF_DEBUG_MODE = "PREF_DEBUG_MODE";
     public final static String PREF_UPLOAD_DATA = "PREF_UPLOAD_DATA";
 
+    // 字体与行间距
     public final static Integer DEFAULT_FONT_SIZE = 15;
     public final static Integer DEFAULT_LINE_SPACING_EXTRA = 8;
     public final static Float DEFAULT_LINE_SPACING_MULTIPLIER = 1.2f;
-
     public final static String PREF_FONT_SIZE = "PREF_FONT_SIZE";
     public final static String PREF_LINE_SPACING_EXTRA = "PREF_LINE_SPACING_EXTRA";
     public final static String PREF_LINE_SPACING_MULTIPLIER = "PREF_LINE_SPACING_MULTIPLIER";
-
     public static Integer fontSize = DEFAULT_FONT_SIZE;
     public static Integer lineSpacingExtra = DEFAULT_LINE_SPACING_EXTRA;
     public static Float lineSpacingMultiplier = DEFAULT_LINE_SPACING_MULTIPLIER;
+
+    // 推送相关
+    public static Boolean enableNotify = true;
+    public static Boolean enableReplyNotify = true;
+    public static Boolean enableQuoteNotify = true;
+    public static Boolean enableAtNotify = true;
+    public static Boolean enableFollowingNotify = true;
+
+    public final static String PREF_ENABLE_NOTIFY = "PREF_ENABLE_NOTIFY";
+    public final static String PREF_ENABLE_REPLY_NOTIFY = "PREF_ENABLE_REPLY_NOTIFY";
+    public final static String PREF_ENABLE_QUOTE_NOTIFY = "PREF_ENABLE_QUOTE_NOTIFY";
+    public final static String PREF_ENABLE_AT_NOTIFY = "PREF_ENABLE_AT_NOTIFY";
+    public final static String PREF_ENABLE_FOLLOW_NOTIFY = "PREF_ENABLE_FOLLOW_NOTIFY";
+
+    public static Boolean getEnableFollowNotify(Context context) {
+        enableFollowingNotify = (Boolean) BUApplication.getCache(context).getAsObject(PREF_ENABLE_FOLLOW_NOTIFY);
+        if (enableFollowingNotify == null) enableFollowingNotify = true;
+        return enableFollowingNotify;
+    }
+
+    public static void setEnableFollowNotify(Context context) {
+        Log.d(TAG, "setEnableFollowNotify >> " + enableFollowingNotify);
+        if (enableFollowingNotify != null)
+            BUApplication.getCache(context).put(PREF_ENABLE_FOLLOW_NOTIFY, enableFollowingNotify);
+    }
+
+    public static Boolean getEnableAtNotify(Context context) {
+        enableAtNotify = (Boolean) BUApplication.getCache(context).getAsObject(PREF_ENABLE_AT_NOTIFY);
+        if (enableAtNotify == null) enableAtNotify = true;
+        return enableAtNotify;
+    }
+
+    public static void setEnableAtNotify(Context context) {
+        Log.d(TAG, "setEnableAtNotify >> " + enableAtNotify);
+        if (enableAtNotify != null)
+            BUApplication.getCache(context).put(PREF_ENABLE_AT_NOTIFY, enableAtNotify);
+    }
+
+    public static Boolean getEnableQuoteNotify(Context context) {
+        enableQuoteNotify = (Boolean) BUApplication.getCache(context).getAsObject(PREF_ENABLE_QUOTE_NOTIFY);
+        if (enableQuoteNotify == null) enableQuoteNotify = true;
+        return enableQuoteNotify;
+    }
+
+    public static void setEnableQuoteNotify(Context context) {
+        Log.d(TAG, "setEnableReplyNotify >> " + enableQuoteNotify);
+        if (enableQuoteNotify != null)
+            BUApplication.getCache(context).put(PREF_ENABLE_QUOTE_NOTIFY, enableQuoteNotify);
+    }
+
+    public static Boolean getEnableReplyNotify(Context context) {
+        enableReplyNotify = (Boolean) BUApplication.getCache(context).getAsObject(PREF_ENABLE_REPLY_NOTIFY);
+        if (enableReplyNotify == null) enableReplyNotify = true;
+        return enableReplyNotify;
+    }
+
+    public static void setEnableReplyNotify(Context context) {
+        Log.d(TAG, "setEnableReplyNotify >> " + enableReplyNotify);
+        if (enableReplyNotify != null)
+            BUApplication.getCache(context).put(PREF_ENABLE_REPLY_NOTIFY, enableReplyNotify);
+    }
+
+    public static Boolean getEnableNotify(Context context) {
+        enableNotify = (Boolean) BUApplication.getCache(context).getAsObject(PREF_ENABLE_NOTIFY);
+        if (enableNotify == null) enableNotify = true;
+        return enableNotify;
+    }
+
+    public static void setEnableNotify(Context context) {
+        Log.d(TAG, "setEnableNotify >> " + enableNotify);
+        if (enableNotify != null)
+            BUApplication.getCache(context).put(PREF_ENABLE_NOTIFY, enableNotify);
+    }
 
     public static Integer getCacheFontSize(Context context) {
         fontSize = (Integer) BUApplication.getCache(context).getAsObject(PREF_FONT_SIZE);
@@ -239,6 +312,11 @@ public class BUApplication extends Application {
         getCacheFontSize(context);
         getCacheLineSpacingExtra(context);
         getCacheLineSpacingMultiplier(context);
+        getEnableAtNotify(context);
+        getEnableReplyNotify(context);
+        getEnableQuoteNotify(context);
+        getEnableAtNotify(context);
+        getEnableFollowNotify(context);
     }
 
     /* 论坛列表相关 */

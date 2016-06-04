@@ -214,7 +214,6 @@ public class PreviewActivity extends SwipeActivity {
             attachmentName.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    // TODO: NOT WORKING!!
                     Intent i = new Intent(Intent.ACTION_VIEW);
                     i.setData(mUri);
                     startActivity(i);
@@ -352,7 +351,6 @@ public class PreviewActivity extends SwipeActivity {
      * @throws IOException 读取附件失败
      */
     private byte[] getByteArray(Uri uri) {
-        // TODO: FIX OOM!!!!!
         InputStream iStream = null;
         ByteArrayOutputStream byteBuffer = null;
         try {
