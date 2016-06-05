@@ -173,7 +173,7 @@ public class SearchThreadOrPostResultAdapter extends RecyclerView.Adapter<Recycl
                     str = "……" + str.substring(matcher.start() - 70);
                 firstTime = false;
             }
-            str = str.replace(matcher.group(1), "<b><font color = 'red'>" + matcher.group(1) + "</font></b>");
+            str = str.replace(matcher.group(1), "<b><font color = '#426aa3'>" + matcher.group(1) + "</font></b>");
         }
 
         return str;

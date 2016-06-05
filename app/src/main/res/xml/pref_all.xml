@@ -3,7 +3,7 @@
 
     <PreferenceCategory
         android:key="pref_key_display_settings"
-        android:title="界面与通知">
+        android:title="界面">
 
         <Preference
             android:key="pref_post_display"

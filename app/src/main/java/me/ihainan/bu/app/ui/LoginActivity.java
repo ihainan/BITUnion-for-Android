@@ -49,6 +49,7 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
 
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+        getSupportActionBar().hide();
 
         // init UI references
         mUsername = (AutoCompleteTextView) findViewById(R.id.user_name);

@@ -24,7 +24,7 @@ public class HtmlUtil {
             "<a href='.*?>..::发自联盟(.*?)客户端::..</a>",
             "<br><br>Sent from my (.+?)$",
             "<br><br><b>发自 (.+?) @BU for Android</b>$"};
-    private static final String QUOTE_HEAD = "<br><br><center><table[^>]+><tr><td>&nbsp;&nbsp;引用(?:\\[<a href='[\\w\\.&\\?=]+?'>查看原帖</a>])*?.</td></tr><tr><td><table.{101,102}bgcolor='ALTBG2'>";
+    private static final String QUOTE_HEAD = "<br><center><table[^>]+><tr><td>&nbsp;&nbsp;引用(?:\\[<a href='[\\w\\.&\\?=]+?'>查看原帖</a>])*?.</td></tr><tr><td><table.{101,102}bgcolor='ALTBG2'>";
     private static final String QUOTE_TAIL = "</td></tr></table></td></tr></table></center><br>";
     private static final String QUOTE_REGEX = QUOTE_HEAD
             + "(((?!<br><br><center><table border=)[\\w\\W])*?)" + QUOTE_TAIL;
@@ -35,6 +35,7 @@ public class HtmlUtil {
         html = replaceBase(html); // 基本替换，如换行等
         html = replaceUBBDel(html);  // 特殊处理 [s] 标签
         html = replaceImage(html);    // 替换图片地址
+        html = replaceCode(html);   // 替换代码
         html = replaceQuote(html);    // 替换引用
         html = replaceLastEdit(html); // 删除 Last Edit
         html = replaceOther(html);    // 剩余内容
@@ -113,6 +114,25 @@ public class HtmlUtil {
         return str;
     }
 
+    public static String replaceCode(String str) {
+        String regex = "<center><table border=\"0\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\"><tr><td class=\"smalltxt\">&nbsp;&nbsp;代码:</td><td align=\"right\"><a href=\"###\" class=\"smalltxt\" onclick=\"copycode(findobj('code1'));\">[复制到剪贴板]</a>&nbsp;&nbsp;</td></tr><tr><td colspan=\"2\"><table border=\"0\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\"><tr><td width=\"100%\" style=\"word-break:break-all;font-family:宋体\" id=\"code1\"><div class=\"hl-surround\"><ol type=1>(.*?)</div></td></tr></table></td></tr></table></center>";
+        Pattern p = Pattern.compile(regex);
+        Matcher m = p.matcher(str);
+        while (m.find()) {
+            String content = m.group(1).trim();
+            Pattern pattern = Pattern.compile("<li>(.*?)</li>");
+            Matcher matcher = pattern.matcher(content);
+            while (matcher.find()) {
+                content = content.replaceAll(matcher.group(0), "\t•" + matcher.group(1) + "\n");
+            }
+
+            content = content.replaceAll("[(<br>)\\s]*$", "");
+            str = str.replace(m.group(0), "<blockquote>" + content + "</blockquote>");
+            m = p.matcher(str);
+        }
+        return str;
+    }
+
     /**
      * 替换 HTML 文本中的引用文本为 blockquote
      *
@@ -132,13 +152,14 @@ public class HtmlUtil {
                 }
             }
 
-            content = content.replaceAll("[(<br>)\\s]*$", "");
+            content = content.replaceAll("[(<br>)\\s]*$", "<br>");
             str = str.replace(m.group(0), "<blockquote>" + content + "</blockquote>");
             m = p.matcher(str);
         }
 
         // 多余的换行
         str = str.replaceAll("</blockquote>(\\s)*(<br>)+", "</blockquote>");
+        str = str.replaceAll("(<br>)(\\s)*<blockquote>+", "<blockquote>");
         return str;
     }
 

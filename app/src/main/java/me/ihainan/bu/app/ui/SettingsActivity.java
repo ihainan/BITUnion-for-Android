@@ -206,6 +206,11 @@ public class SettingsActivity extends PreferenceActivity {
     }
 
     private void setupNotifySettings(boolean checked) {
+        prefEnableReplyNotify.setChecked(BUApplication.enableReplyNotify);
+        prefEnableQuoteNotify.setChecked(BUApplication.enableQuoteNotify);
+        prefEnableAtNotify.setChecked(BUApplication.enableAtNotify);
+        prefEnableFollowNotify.setChecked(BUApplication.enableFollowingNotify);
+
         prefEnableReplyNotify.setEnabled(checked);
         prefEnableQuoteNotify.setEnabled(checked);
         prefEnableAtNotify.setEnabled(checked);

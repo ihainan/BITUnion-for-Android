@@ -1,4 +1,4 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -17,15 +17,27 @@
 
         <LinearLayout
             android:id="@+id/user_login_form"
-            android:layout_width="match_parent"
+            android:layout_width="250dp"
             android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="20dp"
             android:focusable="true"
             android:focusableInTouchMode="true"
             android:orientation="vertical">
 
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:fontFamily="sans-serif-light"
+                android:text="BU for Android"
+                android:textColor="@color/primary_dark"
+                android:textSize="30sp" />
+
             <android.support.design.widget.TextInputLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:layout_marginTop="22dp">
 
                 <AutoCompleteTextView
                     android:id="@+id/user_name"
@@ -75,13 +87,12 @@
                 android:id="@+id/user_sign_in_button"
                 style="?android:textAppearanceSmall"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="35dp"
                 android:layout_marginTop="16dp"
                 android:background="@color/primary"
                 android:text="@string/action_sign_in_short"
                 android:textColor="#FFF"
                 android:textStyle="bold" />
-
         </LinearLayout>
     </ScrollView>
-</LinearLayout>
+</RelativeLayout>

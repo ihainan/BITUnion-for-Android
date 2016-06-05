@@ -416,6 +416,8 @@ public class CommonUtils {
         // TODO: 重写本函数
         // URL 解码
         originalURL = CommonUtils.decode(originalURL);
+        if (originalURL.endsWith("noavatar.gif"))
+            return "file:///android_asset/avatar/default_avatar.png";
 
         String ori = originalURL;
 
@@ -434,7 +436,7 @@ public class CommonUtils {
 
         // 空地址
         if (originalURL == null || originalURL.equals("")) {
-            return "http:/out.bitunion.org/images/standard/noavatar.gif";
+            return "file:///android_asset/avatar/default_avatar.png";
         }
 
         // 完整地址和不完整地址¡¡
