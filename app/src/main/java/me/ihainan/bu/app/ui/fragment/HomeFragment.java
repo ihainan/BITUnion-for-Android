@@ -80,7 +80,7 @@ public class HomeFragment extends BasicRecyclerViewFragment<LatestThread> {
     }
 
     @Override
-    protected void refreshData(long from, long to) {
+    protected void refreshData() {
         BUApi.getHomePage(mContext, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
@@ -90,6 +90,12 @@ public class HomeFragment extends BasicRecyclerViewFragment<LatestThread> {
 
                     if (BUApi.checkStatus(response)) {
                         List<LatestThread> newItems = parseResponse(response);
+
+                        // 重新加载
+                        if (from == 0) {
+                            mList.clear();
+                            mAdapter.notifyDataSetChanged();
+                        }
 
                         if (newItems == null || newItems.size() == 0) {
                             String message = getString(R.string.error_negative_credit);

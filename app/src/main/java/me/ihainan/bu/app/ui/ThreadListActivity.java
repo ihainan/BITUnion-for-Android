@@ -258,8 +258,6 @@ public class ThreadListActivity extends SwipeActivity {
 
     private void reloadData() {
         mSwipeRefreshLayout.setRefreshing(true);
-        mThreadList.clear();
-        mAdapter.notifyDataSetChanged();
         mCurrentPosition = 0;
         refreshData(0, BUApplication.LOADING_THREADS_COUNT);
     }
@@ -285,6 +283,12 @@ public class ThreadListActivity extends SwipeActivity {
                                 List<me.ihainan.bu.app.models.Thread> newThreads = BUApi.MAPPER.readValue(newListJson.toString(),
                                         new TypeReference<List<Thread>>() {
                                         });
+
+                                // 重新加载
+                                if (from == 0) {
+                                    mThreadList.clear();
+                                    mAdapter.notifyDataSetChanged();
+                                }
 
                                 // 删除 Loading Progress Bar
                                 if (mThreadList.size() > 0) {

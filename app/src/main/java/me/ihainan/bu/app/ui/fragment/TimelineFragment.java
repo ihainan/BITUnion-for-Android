@@ -74,7 +74,7 @@ public class TimelineFragment extends BasicRecyclerViewFragment<TimelineEvent> {
     }
 
     @Override
-    protected void refreshData(long from, long to) {
+    protected void refreshData() {
         if (mAction.equals("SPEC"))
             ExtraApi.getSpecialUserTimeline(mContext, mUsername, from, to, listener, errorListener);
         else ExtraApi.getFocusTimeline(mContext, from, to, listener, errorListener);

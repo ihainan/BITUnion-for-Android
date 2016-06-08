@@ -86,14 +86,23 @@ public class ThreadListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         holder.replyCount.setText(CommonUtils.decode("" + thread.replies + " 回复"));
         holder.title.setText(Html.fromHtml(CommonUtils.decode(thread.subject)));
         holder.date.setText(CommonUtils.getRelativeTimeSpanString(CommonUtils.unixTimeStampToDate((thread.lastpost))));
+        final Intent intent = new Intent(mContext, PostListActivity.class);
+        intent.putExtra(PostListActivity.THREAD_ID_TAG, thread.tid);
+        intent.putExtra(PostListActivity.THREAD_NAME_TAG, thread.subject);
+        intent.putExtra(PostListActivity.THREAD_REPLY_COUNT_TAG, thread.replies + 1);
+        intent.putExtra(PostListActivity.THREAD_AUTHOR_NAME_TAG, thread.author);
+        holder.rootLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                intent.removeExtra(PostListActivity.THREAD_JUMP_FLOOR);
+                mContext.startActivity(intent);
+            }
+        });
+
         holder.title.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(mContext, PostListActivity.class);
-                intent.putExtra(PostListActivity.THREAD_ID_TAG, thread.tid);
-                intent.putExtra(PostListActivity.THREAD_NAME_TAG, thread.subject);
-                intent.putExtra(PostListActivity.THREAD_REPLY_COUNT_TAG, thread.replies + 1);
-                intent.putExtra(PostListActivity.THREAD_AUTHOR_NAME_TAG, thread.author);
+                intent.putExtra(PostListActivity.THREAD_JUMP_FLOOR, 0);
                 mContext.startActivity(intent);
             }
         });

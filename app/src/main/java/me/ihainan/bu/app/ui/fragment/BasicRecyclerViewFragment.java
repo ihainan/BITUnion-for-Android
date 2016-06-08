@@ -44,6 +44,7 @@ public abstract class BasicRecyclerViewFragment<T> extends Fragment {
     protected TextView mTvErrorMessage, mTvAction;
 
     // Data
+    protected long from, to;
     protected boolean mIsLoading = false;
     protected List<T> mList = new ArrayList<>();
     protected RecyclerView.Adapter<RecyclerView.ViewHolder> mAdapter;
@@ -65,10 +66,15 @@ public abstract class BasicRecyclerViewFragment<T> extends Fragment {
                         mAdapter.notifyItemRemoved(mList.size());
                     }
 
+                    // 重新加载
+                    if (from == 0) {
+                        mList.clear();
+                        mAdapter.notifyDataSetChanged();
+                    }
+
                     // 预处理
                     newItems = processList(newItems);
                     CommonUtils.debugToast(mContext, "Loaded " + newItems.size() + " more item(s)");
-
 
                     // 更新 RecyclerView
                     if (newItems.size() > 0) {
@@ -76,7 +82,7 @@ public abstract class BasicRecyclerViewFragment<T> extends Fragment {
                         mList.addAll(newItems);
                         mAdapter.notifyDataSetChanged();
                     } else if (mList.size() == 0 && newItems.size() == 0) {
-                        showErrorLayout(getNoNewDataMessage(), getString(R.string.action_refresh));
+                        showErrorLayout(getNoNewDataMessage(), mContext.getString(R.string.action_refresh));
                     }
 
                     // 判断是否到头
@@ -84,7 +90,7 @@ public abstract class BasicRecyclerViewFragment<T> extends Fragment {
                         mIsLoading = false;
                     }
                 } catch (Exception e) {
-                    String message = getString(R.string.error_parse_json);
+                    String message = mContext.getString(R.string.error_parse_json);
                     String debugMessage = TAG + " >> " + message + " - " + response;
                     Log.e(TAG, debugMessage);
                     CommonUtils.debugToast(mContext, debugMessage);
@@ -94,7 +100,7 @@ public abstract class BasicRecyclerViewFragment<T> extends Fragment {
                         mAdapter.notifyItemRemoved(mList.size());
                     }
 
-                    showErrorLayout(getString(R.string.error_parse_json));
+                    showErrorLayout(mContext.getString(R.string.error_parse_json));
                 }
             }
         }
@@ -105,6 +111,7 @@ public abstract class BasicRecyclerViewFragment<T> extends Fragment {
         @Override
         public void onErrorResponse(VolleyError error) {
             if (((Activity) mContext).isFinishing()) return;
+            if (!isAdded()) return;
 
             // 服务器请求失败，说明网络不好，只能通过 RETRY 来重新拉取数据
             if (mList.size() > 0) {
@@ -114,7 +121,7 @@ public abstract class BasicRecyclerViewFragment<T> extends Fragment {
 
             mSwipeRefreshLayout.setRefreshing(false);
 
-            String message = getString(R.string.error_network);
+            String message = mContext.getString(R.string.error_network);
             String debugMessage = TAG + " >> " + message;
             CommonUtils.debugToast(mContext, debugMessage);
             Log.e(TAG, debugMessage, error);
@@ -179,11 +186,9 @@ public abstract class BasicRecyclerViewFragment<T> extends Fragment {
 
     /**
      * 从服务器获取数据
-     *
-     * @param from 数据在列表中的起点
-     * @param to   数据在列表中的终点
      */
-    protected abstract void refreshData(final long from, final long to);
+    protected abstract void
+    refreshData();
 
     @Nullable
     @Override
@@ -270,7 +275,6 @@ public abstract class BasicRecyclerViewFragment<T> extends Fragment {
     protected void reloadData() {
         mIsLoading = true;
         mSwipeRefreshLayout.setRefreshing(true);
-        mList.clear();
         mCurrentPosition = 0;
         loadMore(false);
     }
@@ -285,11 +289,13 @@ public abstract class BasicRecyclerViewFragment<T> extends Fragment {
         }
 
         mErrorLayout.setVisibility(View.GONE);
-        refreshData(mCurrentPosition, mCurrentPosition + LOADING_COUNT);
+        from = mCurrentPosition;
+        to = mCurrentPosition + LOADING_COUNT;
+        refreshData();
     }
 
     protected void showErrorLayout(String message) {
-        showErrorLayout(message, getString(R.string.action_retry));
+        showErrorLayout(message, mContext.getString(R.string.action_retry));
     }
 
     protected void showErrorLayout(String message, String actionStr) {

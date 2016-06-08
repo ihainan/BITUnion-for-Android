@@ -658,7 +658,7 @@ public class CommonUtils {
     private static Map<String, String> realDeviceName = new HashMap<>();
 
     static {
-        realDeviceName.put("Sony E6683", "Sony Xperia Z5 Dual");
+        // realDeviceName.put("Sony E6683", "Sony Xperia Z5 Dual");
         // TODO: 添加其他设备信息
     }
 

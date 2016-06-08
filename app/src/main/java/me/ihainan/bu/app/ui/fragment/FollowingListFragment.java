@@ -62,7 +62,7 @@ public class FollowingListFragment extends BasicRecyclerViewFragment<Follow> {
     }
 
     @Override
-    protected void refreshData(long from, long to) {
+    protected void refreshData() {
         ExtraApi.getFollowingList(mContext, from, to, listener, errorListener);
     }
 }

@@ -282,7 +282,7 @@ public class PostListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         public ImageView avatar, reply, useMobile;
         public TextView author, subject, date, number;
         public TextView message, deviceName;
-        public LinearLayout attachmentLayout;
+        public LinearLayout attachmentLayout, rootLayout;
 
         public PostViewHolder(View itemView, final Context context) {
             super(itemView);

@@ -62,7 +62,7 @@ public class FavoriteListFragment extends BasicRecyclerViewFragment<Favorite> {
     }
 
     @Override
-    protected void refreshData(long from, long to) {
+    protected void refreshData() {
         ExtraApi.getFavoriteList(mContext, from, to, listener, errorListener);
     }
 }

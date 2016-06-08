@@ -46,7 +46,7 @@ public class SearchResultFragment extends BasicRecyclerViewFragment<Post> {
     /**
      * 更新列表数据
      */
-    protected void refreshData(final long from, final long to) {
+    protected void refreshData() {
         mErrorLayout.setVisibility(View.GONE);
         if (mAction.equals(SEARCH_ACTION_THREAD))
             ExtraApi.searchThreads(mContext, mKeyword, from, to, listener, errorListener);

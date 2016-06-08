@@ -108,20 +108,30 @@ public class LatestThreadListAdapter extends RecyclerView.Adapter<RecyclerView.V
         holder.title.post(new Runnable() {
             @Override
             public void run() {
-                if (holder.title.getLineCount() == 1)
-                    holder.title.setText(holder.title.getText() + "\n     ");
+                if (holder.title.getLineCount() == 1) {
+                    // holder.title.setText(holder.title.getText() + "\n     ");
+                }
             }
         });
 
+        final Intent intent = new Intent(mContext, PostListActivity.class);
+        intent.putExtra(PostListActivity.THREAD_FID_TAG, latestThread.fid);
+        intent.putExtra(PostListActivity.THREAD_ID_TAG, latestThread.tid);
+        intent.putExtra(PostListActivity.THREAD_AUTHOR_NAME_TAG, latestThread.author);
+        intent.putExtra(PostListActivity.THREAD_REPLY_COUNT_TAG, latestThread.tid_sum + 1);
+        intent.putExtra(PostListActivity.THREAD_NAME_TAG, latestThread.pname);
         holder.rootLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(mContext, PostListActivity.class);
-                intent.putExtra(PostListActivity.THREAD_FID_TAG, latestThread.fid);
-                intent.putExtra(PostListActivity.THREAD_ID_TAG, latestThread.tid);
-                intent.putExtra(PostListActivity.THREAD_AUTHOR_NAME_TAG, latestThread.author);
-                intent.putExtra(PostListActivity.THREAD_REPLY_COUNT_TAG, latestThread.tid_sum + 1);
-                intent.putExtra(PostListActivity.THREAD_NAME_TAG, latestThread.pname);
+                intent.removeExtra(PostListActivity.THREAD_JUMP_FLOOR);
+                mContext.startActivity(intent);
+            }
+        });
+
+        holder.title.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                intent.putExtra(PostListActivity.THREAD_JUMP_FLOOR, 0);
                 mContext.startActivity(intent);
             }
         });
@@ -212,15 +222,26 @@ public class LatestThreadListAdapter extends RecyclerView.Adapter<RecyclerView.V
         holder.title.setText(Html.fromHtml(CommonUtils.decode(latestThread.pname)));
         Picasso.with(mContext).load(R.drawable.empty_avatar)
                 .into(holder.avatar);
+
+        final Intent intent = new Intent(mContext, PostListActivity.class);
+        intent.putExtra(PostListActivity.THREAD_FID_TAG, latestThread.fid);
+        intent.putExtra(PostListActivity.THREAD_ID_TAG, latestThread.tid);
+        intent.putExtra(PostListActivity.THREAD_AUTHOR_NAME_TAG, latestThread.author);
+        intent.putExtra(PostListActivity.THREAD_REPLY_COUNT_TAG, latestThread.tid_sum + 1);
+        intent.putExtra(PostListActivity.THREAD_NAME_TAG, latestThread.pname);
+
         holder.rootLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(mContext, PostListActivity.class);
-                intent.putExtra(PostListActivity.THREAD_FID_TAG, latestThread.fid);
-                intent.putExtra(PostListActivity.THREAD_ID_TAG, latestThread.tid);
-                intent.putExtra(PostListActivity.THREAD_AUTHOR_NAME_TAG, latestThread.author);
-                intent.putExtra(PostListActivity.THREAD_REPLY_COUNT_TAG, latestThread.tid_sum + 1);
-                intent.putExtra(PostListActivity.THREAD_NAME_TAG, latestThread.pname);
+                intent.removeExtra(PostListActivity.THREAD_JUMP_FLOOR);
+                mContext.startActivity(intent);
+            }
+        });
+
+        holder.title.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                intent.putExtra(PostListActivity.THREAD_JUMP_FLOOR, 0);
                 mContext.startActivity(intent);
             }
         });

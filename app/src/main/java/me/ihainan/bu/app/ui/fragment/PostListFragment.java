@@ -56,6 +56,12 @@ public class PostListFragment extends BasicRecyclerViewFragment<Post> {
                         // 处理数据
                         newItems = processList(newItems);
 
+                        // 重新加载
+                        if (from == 0) {
+                            mList.clear();
+                            mAdapter.notifyDataSetChanged();
+                        }
+
                         // 更新 RecyclerView
                         mList.addAll(newItems);
                         mAdapter.notifyDataSetChanged();
@@ -145,7 +151,9 @@ public class PostListFragment extends BasicRecyclerViewFragment<Post> {
         mErrorLayout.setVisibility(View.GONE);
         mSwipeRefreshLayout.setRefreshing(true);
         mList.clear();
-        refreshData(mPagePosition * LOADING_COUNT, (mPagePosition + 1) * LOADING_COUNT);
+        from = mPagePosition * LOADING_COUNT;
+        to = (mPagePosition + 1) * LOADING_COUNT;
+        refreshData();
     }
 
     @Override
@@ -199,7 +207,7 @@ public class PostListFragment extends BasicRecyclerViewFragment<Post> {
     }
 
     @Override
-    protected void refreshData(long from, long to) {
+    protected void refreshData() {
         BUApi.getPostReplies(mContext, mTid, from, to, listener, errorListener);
     }
 
