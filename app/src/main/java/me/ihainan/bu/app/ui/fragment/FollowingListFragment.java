@@ -9,7 +9,7 @@ import org.json.JSONObject;
 import java.util.List;
 
 import me.ihainan.bu.app.R;
-import me.ihainan.bu.app.adapters.NewFollowingListAdapter;
+import me.ihainan.bu.app.adapters.FollowingListAdapter;
 import me.ihainan.bu.app.models.Follow;
 import me.ihainan.bu.app.utils.BUApplication;
 import me.ihainan.bu.app.utils.network.BUApi;
@@ -53,7 +53,7 @@ public class FollowingListFragment extends BasicRecyclerViewFragment<Follow> {
 
     @Override
     protected RecyclerView.Adapter<RecyclerView.ViewHolder> getAdapter() {
-        return new NewFollowingListAdapter(mContext, mList);
+        return new FollowingListAdapter(mContext, mList);
     }
 
     @Override

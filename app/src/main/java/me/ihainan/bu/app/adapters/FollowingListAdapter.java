@@ -28,19 +28,20 @@ import me.ihainan.bu.app.models.Follow;
 import me.ihainan.bu.app.models.Member;
 import me.ihainan.bu.app.ui.ProfileActivity;
 import me.ihainan.bu.app.ui.viewholders.LoadingViewHolder;
+import me.ihainan.bu.app.ui.viewholders.UserViewHolder;
 import me.ihainan.bu.app.utils.CommonUtils;
 import me.ihainan.bu.app.utils.network.ExtraApi;
 
 /**
  * 关注列表适配器
  */
-public class NewFollowingListAdapter extends SwipeAdapter {
-    private final static String TAG = NewFollowingListAdapter.class.getSimpleName();
+public class FollowingListAdapter extends SwipeAdapter {
+    private final static String TAG = FollowingListAdapter.class.getSimpleName();
     private final LayoutInflater mLayoutInflater;
     private List<Follow> mList;
     private final Context mContext;
 
-    public NewFollowingListAdapter(Context context, List<Follow> mList) {
+    public FollowingListAdapter(Context context, List<Follow> mList) {
         this.mContext = context;
         this.mList = mList;
         mLayoutInflater = LayoutInflater.from(context);
@@ -60,22 +61,20 @@ public class NewFollowingListAdapter extends SwipeAdapter {
         if (viewType == VIEW_TYPE_ITEM) {
             view = LayoutInflater.from(parent.getContext())
                     .inflate(R.layout.item_following_list, parent, true);
-            // view = mLayoutInflater.inflate(R.layout.item_following_list, parent, false);
-            return new FollowViewHolder(view);
+            return new UserViewHolder(view);
         } else {
             view = LayoutInflater.from(parent.getContext())
                     .inflate(R.layout.listview_progress_bar, parent, true);
-            // view = mLayoutInflater.inflate(R.layout.listview_progress_bar, parent, false);
             return new LoadingViewHolder(view);
         }
     }
 
     @Override
     public void onBindSwipeViewHolder(RecyclerView.ViewHolder holder, int position) {
-        if (holder instanceof FollowViewHolder) {
+        if (holder instanceof UserViewHolder) {
             // Do nothing here
             final Follow follow = mList.get(position);
-            final FollowViewHolder viewHolder = (FollowViewHolder) holder;
+            final UserViewHolder viewHolder = (UserViewHolder) holder;
             viewHolder.rootLayout.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -163,20 +162,6 @@ public class NewFollowingListAdapter extends SwipeAdapter {
                         }
                     }
             );
-        }
-    }
-
-    public class FollowViewHolder extends RecyclerView.ViewHolder {
-        public ImageView avatar;
-        public TextView username;
-        public LinearLayout rootLayout;
-
-        public FollowViewHolder(View itemView) {
-            super(itemView);
-
-            avatar = (ImageView) itemView.findViewById(R.id.avatar);
-            username = (TextView) itemView.findViewById(R.id.username);
-            rootLayout = (LinearLayout) itemView.findViewById(R.id.root_layout);
         }
     }
 }

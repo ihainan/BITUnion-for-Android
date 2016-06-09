@@ -15,11 +15,14 @@ import com.arlib.floatingsearchview.suggestions.model.SearchSuggestion;
 
 import me.ihainan.bu.app.R;
 import me.ihainan.bu.app.ui.assist.SwipeActivity;
-import me.ihainan.bu.app.ui.fragment.SearchResultFragment;
+import me.ihainan.bu.app.ui.fragment.SearchPostResultFragment;
+import me.ihainan.bu.app.ui.fragment.SearchUserResultFragment;
 
 
 public class SearchActivity extends SwipeActivity {
-    private final String TAG = SearchActivity.class.getSimpleName();
+    // TAGs
+    private final static String TAG = SearchActivity.class.getSimpleName();
+    public final static String FID_TAG = TAG + "_FID_TAG";
 
     // UI
     private FloatingSearchView mSearchView;
@@ -29,11 +32,15 @@ public class SearchActivity extends SwipeActivity {
 
     // Data
     private String mSearchStr = "";
+    private Long mFid;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
+
+        // 获取额外数据
+        getExtra();
 
         // UI
         mSearchView = (FloatingSearchView) findViewById(R.id.floating_search_view);
@@ -88,6 +95,15 @@ public class SearchActivity extends SwipeActivity {
         setSwipeAnyWhere(false);
     }
 
+    /**
+     * 获取额外数据
+     */
+    private void getExtra() {
+        Bundle bundle = getIntent().getExtras();
+        if (bundle != null) {
+            mFid = bundle.getLong(FID_TAG, -1);
+        } else mFid = -1L;
+    }
 
     private void doSearch() {
         mPagerAdapter.reloadAll(mSearchStr);
@@ -97,46 +113,56 @@ public class SearchActivity extends SwipeActivity {
     }
 
     public class PagerAdapter extends FragmentPagerAdapter {
-        final int PAGE_COUNT = 2;
-        private String tabTitles[] = new String[]{"主题", "回帖"};
+        private int page_count = 2;
+        private String tabTitles[] = new String[]{"主题", "回帖", "用户"};
         private Context mContext;
-        private Fragment fragments[] = new Fragment[PAGE_COUNT];
+        private Fragment fragments[];
 
         public void reloadAll(String keyword) {
-            for (int i = 0; i < PAGE_COUNT; ++i) {
-                ((SearchResultFragment) fragments[i]).reloadData(keyword);
-            }
+            ((SearchPostResultFragment) fragments[0]).reloadData(keyword);
+            ((SearchPostResultFragment) fragments[1]).reloadData(keyword);
+            if (page_count >= 3) ((SearchUserResultFragment) fragments[2]).reloadData(keyword);
         }
 
         public PagerAdapter(FragmentManager fm, Context context) {
             super(fm);
+            page_count = (mFid == null || mFid == -1) ? 3 : 2;
+            fragments = new Fragment[page_count];
             this.mContext = context;
         }
 
         @Override
         public int getCount() {
-            return PAGE_COUNT;
+            return page_count;
         }
 
         @Override
         public Fragment getItem(int position) {
             if (position == 0) {
-                Fragment fragment = new SearchResultFragment();
+                Fragment fragment = new SearchPostResultFragment();
                 fragments[position] = fragment;
                 Bundle args = new Bundle();
-                args.putString(SearchResultFragment.SEARCH_ACTION_TAG, SearchResultFragment.SEARCH_ACTION_THREAD);
-                args.putString(SearchResultFragment.SEARCH_KEYWORD_TAG, SearchResultFragment.SEARCH_ACTION_THREAD);
+                args.putString(SearchPostResultFragment.SEARCH_ACTION_TAG, SearchPostResultFragment.SEARCH_ACTION_THREAD);
+                if (mFid != -1)
+                    args.putLong(SearchPostResultFragment.SEARCH_FID_TAG, mFid);
                 fragment.setArguments(args);
                 return fragment;
-            } else {
-                Fragment fragment = new SearchResultFragment();
+            } else if (position == 1) {
+                Fragment fragment = new SearchPostResultFragment();
                 fragments[position] = fragment;
                 Bundle args = new Bundle();
-                args.putString(SearchResultFragment.SEARCH_ACTION_TAG, SearchResultFragment.SEARCH_ACTION_POST);
-                args.putString(SearchResultFragment.SEARCH_KEYWORD_TAG, SearchResultFragment.SEARCH_ACTION_THREAD);
+                args.putString(SearchPostResultFragment.SEARCH_ACTION_TAG, SearchPostResultFragment.SEARCH_ACTION_POST);
+                if (mFid != -1)
+                    args.putLong(SearchPostResultFragment.SEARCH_FID_TAG, mFid);
                 fragment.setArguments(args);
+                return fragment;
+            } else if (position == 2) {
+                Fragment fragment = new SearchUserResultFragment();
+                fragments[position] = fragment;
                 return fragment;
             }
+
+            return null;
         }
 
         @Override

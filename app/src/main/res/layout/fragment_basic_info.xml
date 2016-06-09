@@ -43,6 +43,7 @@
                     android:orientation="horizontal">
 
                     <LinearLayout
+                        android:id="@+id/thread_count_layout"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
@@ -69,6 +70,7 @@
                     </LinearLayout>
 
                     <LinearLayout
+                        android:id="@+id/post_count_layout"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"

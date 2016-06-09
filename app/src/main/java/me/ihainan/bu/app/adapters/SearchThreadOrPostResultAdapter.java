@@ -26,7 +26,7 @@ import me.ihainan.bu.app.utils.CommonUtils;
 import me.ihainan.bu.app.utils.ui.HtmlUtil;
 
 /**
- * 主题搜索结果适配器
+ * 帖子相关搜索结果适配器
  */
 public class SearchThreadOrPostResultAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private final static String TAG = SearchThreadOrPostResultAdapter.class.getSimpleName();

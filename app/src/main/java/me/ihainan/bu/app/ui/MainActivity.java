@@ -219,11 +219,6 @@ public class MainActivity extends AppCompatActivity {
                             startActivity(intent);
                         }
 
-                        navigationView.setCheckedItem(menuId);
-                        FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
-                        fragmentTransaction.replace(R.id.flContent, mFragment).commit();
-                        menuItem.setChecked(true);
-
                         return false;
                     }
                 });

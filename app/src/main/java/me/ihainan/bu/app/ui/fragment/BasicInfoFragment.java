@@ -47,7 +47,7 @@ public class BasicInfoFragment extends Fragment {
     private TextView mUserId, mStatus, mCredit, mBday, mEmail, mWebsite, mThreadCount, mPostCount, mRegDate, mLastVisit;
     private TextView mSignature;
     private ImageView mAvatar;
-    private LinearLayout mContactLayout, mSignatureLayout, mBdayLayout;
+    private LinearLayout mContactLayout, mSignatureLayout, mBdayLayout, mThreadCountLayout, mPostCountLayout;
     private RelativeLayout mEmailLayout, mWebsiteLayout;
     private CollapsingToolbarLayout mCollapsingToolbar;
     private NestedScrollView mProfileLayout;
@@ -86,6 +86,8 @@ public class BasicInfoFragment extends Fragment {
 
             mSignatureLayout = (LinearLayout) mRootView.findViewById(R.id.profile_signature_layout);
             mBdayLayout = (LinearLayout) mRootView.findViewById(R.id.profile_bday_layout);
+            mThreadCountLayout = (LinearLayout) mRootView.findViewById(R.id.thread_count_layout);
+            mPostCountLayout = (LinearLayout) mRootView.findViewById(R.id.post_count_layout);
 
             mProfileLayout = (NestedScrollView) mRootView.findViewById(R.id.profile_layout);
             mSwipeRefreshLayout = (SwipeRefreshLayout) mRootView.findViewById(R.id.swipe_refresh_layout);
@@ -191,7 +193,7 @@ public class BasicInfoFragment extends Fragment {
         }
 
         mThreadCount.setText(CommonUtils.decode("" + mMember.threadnum));
-        mThreadCount.setOnClickListener(new View.OnClickListener() {
+        mThreadCountLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(mContext, ActivityWithFrameLayout.class);
@@ -203,7 +205,7 @@ public class BasicInfoFragment extends Fragment {
             }
         });
         mPostCount.setText(CommonUtils.decode("" + mMember.postnum));
-        mPostCount.setOnClickListener(new View.OnClickListener() {
+        mPostCountLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(mContext, ActivityWithFrameLayout.class);

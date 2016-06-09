@@ -21,7 +21,7 @@ import me.ihainan.bu.app.utils.CommonUtils;
  */
 public class ExtraApi {
     public final static String TAG = ExtraApi.class.getSimpleName();
-    public final static String BASE_API = "http://ali.ihainan.me:8080/api/";
+    public final static String BASE_API = "http://bu.ihainan.me:8080/api/";
     // public final static String BASE_API = "http://192.168.56.1:8080/api/";
     // public final static String BASE_API = "http://192.168.31.115:8080/api/";
     public final static String VERSION = "v2";
@@ -341,7 +341,7 @@ public class ExtraApi {
                                      long from, long to,
                                      Response.Listener<JSONObject> listener,
                                      Response.ErrorListener errorListener) {
-        String url = ENDPOINT + "/search/threads?key=" + CommonUtils.encode(keyword) + "&from=" + from + "&to=" + to;
+        String url = SEARCH_ENDPOINT + "/threads?key=" + CommonUtils.encode(keyword) + "&from=" + from + "&to=" + to;
         Log.i(TAG, "searchThreads >> " + url);
 
         HashMap parameters = new HashMap();
@@ -363,11 +363,79 @@ public class ExtraApi {
                                    long from, long to,
                                    Response.Listener<JSONObject> listener,
                                    Response.ErrorListener errorListener) {
-        String url = ENDPOINT + "/search/posts?key=" + CommonUtils.encode(keyword) + "&from=" + from + "&to=" + to;
+        String url = SEARCH_ENDPOINT + "/posts?key=" + CommonUtils.encode(keyword) + "&from=" + from + "&to=" + to;
         Log.i(TAG, "searchPosts >> " + url);
 
         HashMap parameters = new HashMap();
         makeRequest(Request.Method.GET, context, url,
                 "SEARCH THREADS", parameters, listener, errorListener);
+    }
+
+    /**
+     * 在特定板块内根据关键词搜索主题
+     *
+     * @param context       上下文
+     * @param keyword       关键词
+     * @param fid           板块编号
+     * @param from          起始位置
+     * @param to            结束位置
+     * @param listener      response 事件监听器
+     * @param errorListener error 事件监听器
+     */
+    public static void searchThreadsInForum(Context context, String keyword, Long fid,
+                                            long from, long to,
+                                            Response.Listener<JSONObject> listener,
+                                            Response.ErrorListener errorListener) {
+        String url = ENDPOINT + "/search/forum/threads?key=" + CommonUtils.encode(keyword) + "&fid=" + fid + "&from=" + from + "&to=" + to;
+        Log.i(TAG, "searchThreadsInForum >> " + url);
+
+        HashMap parameters = new HashMap();
+        makeRequest(Request.Method.GET, context, url,
+                "SEARCH THREADS IN FORUM", parameters, listener, errorListener);
+    }
+
+    /**
+     * 在特定板块内根据关键词搜索帖子
+     *
+     * @param context       上下文
+     * @param keyword       关键词
+     * @param fid           板块编号
+     * @param from          起始位置
+     * @param to            结束位置
+     * @param listener      response 事件监听器
+     * @param errorListener error 事件监听器
+     */
+    public static void searchPostsInForum(Context context, String keyword, Long fid,
+                                          long from, long to,
+                                          Response.Listener<JSONObject> listener,
+                                          Response.ErrorListener errorListener) {
+        String url = ENDPOINT + "/search/forum/posts?key=" + CommonUtils.encode(keyword) + "&fid=" + fid + "&from=" + from + "&to=" + to;
+        Log.i(TAG, "searchPostsInForum >> " + url);
+
+        HashMap parameters = new HashMap();
+        makeRequest(Request.Method.GET, context, url,
+                "SEARCH THREADS IN FORUM", parameters, listener, errorListener);
+    }
+
+    /**
+     * 搜索用户
+     *
+     * @param context       上下文
+     * @param keyword       关键词
+     * @param from          起始位置
+     * @param to            结束位置
+     * @param listener      response 事件监听器
+     * @param errorListener error 事件监听器
+     */
+    public static void searchUsers(Context context, String keyword,
+                                   long from, long to,
+                                   Response.Listener<JSONObject> listener,
+                                   Response.ErrorListener errorListener) {
+        String url = ENDPOINT + "/search/users?key=" + CommonUtils.encode(keyword) + "&from=" + from + "&to=" + to;
+        Log.i(TAG, "searchUsers >> " + url);
+
+        HashMap parameters = new HashMap();
+        makeRequest(Request.Method.GET, context, url,
+                "SEARCH USERS", parameters, listener, errorListener);
     }
 }

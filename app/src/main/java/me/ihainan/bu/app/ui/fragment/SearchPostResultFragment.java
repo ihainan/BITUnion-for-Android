@@ -1,5 +1,6 @@
 package me.ihainan.bu.app.ui.fragment;
 
+import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
@@ -18,29 +19,31 @@ import me.ihainan.bu.app.utils.network.BUApi;
 import me.ihainan.bu.app.utils.network.ExtraApi;
 
 /**
- * 搜索结果 Fragment
+ * 帖子相关搜索结果 Fragment
  */
-public class SearchResultFragment extends BasicRecyclerViewFragment<Post> {
+public class SearchPostResultFragment extends BasicRecyclerViewFragment<Post> {
     // Tags
+    private final static String TAG = SearchPostResultFragment.class.getSimpleName();
     public final static String SEARCH_ACTION_TAG = "SEARCH_ACTION_TAG";     // 搜索动作，可选 SEARCH_ACTION_THREAD / SEARCH_ACTION_POST / SEARCH_ACTION_USER
     public final static String SEARCH_KEYWORD_TAG = "SEARCH_KEYWORD_TAG";   // 搜索关键词
+    public final static String SEARCH_FID_TAG = TAG + "_FID_TAG";
 
     public final static String SEARCH_ACTION_THREAD = "SEARCH_ACTION_THREAD";     // 搜索动作 - 搜索主题
     public final static String SEARCH_ACTION_POST = "SEARCH_ACTION_POST";     // 搜索动作 - 搜索回帖
-    public final static String SEARCH_ACTION_USER = "SEARCH_ACTION_USER";     // 搜索动作 - 搜索用户
 
     // Data
     private String mKeyword;
     private String mAction;
+    private Long mFid;
 
     @Override
     protected String getNoNewDataMessage() {
-        return getString(R.string.error_no_search_result);
+        return mContext.getString(R.string.error_no_search_result);
     }
 
     @Override
     protected String getFragmentTag() {
-        return SearchResultFragment.class.getSimpleName();
+        return SearchPostResultFragment.class.getSimpleName();
     }
 
     /**
@@ -48,10 +51,15 @@ public class SearchResultFragment extends BasicRecyclerViewFragment<Post> {
      */
     protected void refreshData() {
         mErrorLayout.setVisibility(View.GONE);
-        if (mAction.equals(SEARCH_ACTION_THREAD))
-            ExtraApi.searchThreads(mContext, mKeyword, from, to, listener, errorListener);
-        else if (mAction.endsWith(SEARCH_ACTION_POST))
-            ExtraApi.searchPosts(mContext, mKeyword, from, to, listener, errorListener);
+        if (mAction.equals(SEARCH_ACTION_THREAD)) {
+            if (mFid != -1)
+                ExtraApi.searchThreadsInForum(mContext, mKeyword, mFid, from, to, listener, errorListener);
+            else ExtraApi.searchThreads(mContext, mKeyword, from, to, listener, errorListener);
+        } else if (mAction.endsWith(SEARCH_ACTION_POST)) {
+            if (mFid != -1)
+                ExtraApi.searchPostsInForum(mContext, mKeyword, mFid, from, to, listener, errorListener);
+            else ExtraApi.searchPosts(mContext, mKeyword, from, to, listener, errorListener);
+        }
     }
 
     public void reloadData(String keyword) {
@@ -84,10 +92,15 @@ public class SearchResultFragment extends BasicRecyclerViewFragment<Post> {
 
     @Override
     protected void getExtra() {
-        mAction = getArguments().getString(SEARCH_ACTION_TAG);
-        mKeyword = getArguments().getString(SEARCH_KEYWORD_TAG);
+        Bundle bundle = getArguments();
+        if (bundle != null) {
+            mAction = bundle.getString(SEARCH_ACTION_TAG);
+            mKeyword = bundle.getString(SEARCH_KEYWORD_TAG);
+            mFid = bundle.getLong(SEARCH_FID_TAG, -1);
+        }
+
         if (mKeyword == null) mKeyword = CommonUtils.decode(BUApplication.username);
-        if (mAction == null) mAction = SEARCH_ACTION_USER;
+        if (mAction == null) mAction = SEARCH_ACTION_POST;
     }
 
     @Override
