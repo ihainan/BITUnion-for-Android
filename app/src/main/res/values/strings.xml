@@ -49,9 +49,12 @@
     <string name="error_download_image">下载图片失败，请检查网络</string>
     <string name="error_no_permission">没有文件写入权限，保存图片失败</string>
     <string name="error_no_new_events">哎呀并没有动态</string>
+    <string name="error_no_new_threads">哎呀并没有发帖记录</string>
+    <string name="error_no_new_posts">哎呀并没有回复记录</string>
     <string name="error_no_search_result">哎呀并没有搜索结果</string>
     <string name="error_no_following">哎呀并没有关注任何用户</string>
     <string name="error_no_favorites">哎呀并没有收藏</string>
+    <string name="error_unknown">未知错误</string>
 
     <!-- Warnning -->
     <string name="warnning_reset_display_setting">自定义配置将会丢失，是否还原到默认设置？</string>
@@ -116,7 +119,8 @@
     <string name="title_activity_focus_list">关注列表</string>
     <string name="title_activity_search">搜索</string>
     <string name="title_activity_new_following_list">关注页面</string>
-    <string name="title_activity_demo">DemoActivity</string>
+    <string name="title_activity_demo">测试</string>
     <string name="title_activity_forum_list">板块</string>
-    <string name="title_activity_preference">PreferenceActivity</string>
+    <string name="title_activity_preference">设置</string>
+    <string name="title_activity_with_framelayout">无标题</string>
 </resources>

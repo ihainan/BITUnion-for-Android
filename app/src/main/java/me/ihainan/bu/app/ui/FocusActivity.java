@@ -5,7 +5,6 @@ import android.app.FragmentManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.app.Activity;
 import android.support.design.widget.TabLayout;
 import android.support.v13.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
@@ -18,6 +17,7 @@ import android.view.View;
 import me.ihainan.bu.app.R;
 import me.ihainan.bu.app.ui.assist.SwipeActivity;
 import me.ihainan.bu.app.ui.fragment.FavoriteListFragment;
+import me.ihainan.bu.app.ui.fragment.FollowingListFragment;
 import me.ihainan.bu.app.ui.fragment.TimelineFragment;
 
 public class FocusActivity extends SwipeActivity {
@@ -104,7 +104,10 @@ public class FocusActivity extends SwipeActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.focus_list:
-                Intent intent = new Intent(this, NewFollowingListActivity.class);
+                // Intent intent = new Intent(this, FollowingListActivity.class);
+                Intent intent = new Intent(this, ActivityWithFrameLayout.class);
+                intent.putExtra(ActivityWithFrameLayout.TITLE_TAG, getString(R.string.title_activity_new_following_list));
+                intent.putExtra(ActivityWithFrameLayout.FRAGMENT_TAG, FollowingListFragment.class.getSimpleName());
                 startActivity(intent);
                 break;
         }

@@ -30,7 +30,7 @@ public class TimelineFragment extends BasicRecyclerViewFragment<TimelineEvent> {
 
     @Override
     protected String getNoNewDataMessage() {
-        return getString(R.string.error_no_new_events);
+        return mContext.getString(R.string.error_no_new_events);
     }
 
     @Override

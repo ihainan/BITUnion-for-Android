@@ -160,7 +160,7 @@
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:theme="@style/AppTheme.SwipeTheme" />
         <activity
-            android:name=".ui.NewFollowingListActivity"
+            android:name=".ui.FollowingListActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:label="@string/title_activity_new_following_list"
             android:theme="@style/AppTheme.SwipeTheme" />
@@ -175,6 +175,10 @@
         <activity
             android:name=".ui.SettingsActivity"
             android:label="@string/title_activity_preference"
+            android:theme="@style/AppTheme.SwipeTheme" />
+        <activity
+            android:name=".ui.ActivityWithFrameLayout"
+            android:label="@string/title_activity_with_framelayout"
             android:theme="@style/AppTheme.SwipeTheme"></activity>
     </application>
 

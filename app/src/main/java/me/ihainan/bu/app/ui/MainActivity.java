@@ -105,7 +105,7 @@ public class MainActivity extends AppCompatActivity {
 
         // 定期更新用户 Session
         Intent intent = new Intent(this, SessionUpdateService.class);
-        // startService(intent);
+        startService(intent);
 
         // Activity content
         if (mFragment == null) {

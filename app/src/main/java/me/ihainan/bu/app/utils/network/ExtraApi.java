@@ -150,6 +150,50 @@ public class ExtraApi {
                 "GET_FAVOR_STATUS", parameters, listener, errorListener);
     }
 
+    /* 用户相关接口 */
+    public final static String USER_ENDPOINT = ENDPOINT + "/user";
+
+    /**
+     * 获取用户的主题列表
+     *
+     * @param context       上下文
+     * @param username      用户名
+     * @param from          起始位置
+     * @param to            结束位置
+     * @param listener      response 事件监听器
+     * @param errorListener error 事件监听器
+     */
+    public static void getUserThreadList(Context context, String username, long from, long to,
+                                         Response.Listener<JSONObject> listener,
+                                         Response.ErrorListener errorListener) {
+        String url = USER_ENDPOINT + "/" + CommonUtils.encode(username) + "/threads?" + "from=" + from + "&to=" + to;
+        Log.i(TAG, "getUserThreadList >> " + url);
+
+        Map<String, Object> parameters = new HashMap();
+        makeRequest(Request.Method.GET, context, url,
+                "GET_USER_THREAD_LIST", parameters, listener, errorListener);
+    }
+
+    /**
+     * 获取用户的回帖列表
+     *
+     * @param context       上下文
+     * @param username      用户名
+     * @param from          起始位置
+     * @param to            结束位置
+     * @param listener      response 事件监听器
+     * @param errorListener error 事件监听器
+     */
+    public static void getUserPostList(Context context, String username, long from, long to,
+                                       Response.Listener<JSONObject> listener,
+                                       Response.ErrorListener errorListener) {
+        String url = USER_ENDPOINT + "/" + CommonUtils.encode(username) + "/replies?" + "from=" + from + "&to=" + to;
+        Log.i(TAG, "getUserPostList >> " + url);
+
+        Map<String, Object> parameters = new HashMap();
+        makeRequest(Request.Method.GET, context, url,
+                "GET_USER_POST_LIST", parameters, listener, errorListener);
+    }
 
     /* 关注相关接口 */
     public final static String FOLLOW_ENDPOINT = ENDPOINT + "/follow";

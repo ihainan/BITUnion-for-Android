@@ -24,7 +24,7 @@ import me.ihainan.bu.app.utils.BUApplication;
 public class SessionUpdateService extends IntentService {
     public final static String TAG = SessionUpdateService.class.getSimpleName();
 
-    private final static int UPDATE_DELAY = 12; // 更新间隔，单位为分钟
+    private final static int UPDATE_DELAY = 20; // 更新间隔，单位为分钟
 
     public SessionUpdateService() {
         super("SessionUpdateService");

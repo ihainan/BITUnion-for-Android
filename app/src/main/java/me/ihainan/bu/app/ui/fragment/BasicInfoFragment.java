@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.widget.NestedScrollView;
@@ -27,6 +28,7 @@ import android.widget.Toast;
 
 import me.ihainan.bu.app.R;
 import me.ihainan.bu.app.models.Member;
+import me.ihainan.bu.app.ui.ActivityWithFrameLayout;
 import me.ihainan.bu.app.ui.FullscreenPhotoViewerActivity;
 import me.ihainan.bu.app.ui.ProfileActivity;
 import me.ihainan.bu.app.ui.assist.CustomSpan;
@@ -190,7 +192,29 @@ public class BasicInfoFragment extends Fragment {
         }
 
         mThreadCount.setText(CommonUtils.decode("" + mMember.threadnum));
+        mThreadCount.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(mContext, ActivityWithFrameLayout.class);
+                intent.putExtra(ActivityWithFrameLayout.TITLE_TAG, CommonUtils.decode(mUsername) + " - 发帖列表");
+                intent.putExtra(ActivityWithFrameLayout.FRAGMENT_TAG, PersonalThreadAndPostFragment.class.getSimpleName());
+                intent.putExtra(PersonalThreadAndPostFragment.ACTION_TAG, PersonalThreadAndPostFragment.ACTION_THREAD);
+                intent.putExtra(PersonalThreadAndPostFragment.USERNAME_TAG, mUsername);
+                mContext.startActivity(intent);
+            }
+        });
         mPostCount.setText(CommonUtils.decode("" + mMember.postnum));
+        mPostCount.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(mContext, ActivityWithFrameLayout.class);
+                intent.putExtra(ActivityWithFrameLayout.TITLE_TAG, CommonUtils.decode(mUsername) + " - 回帖列表");
+                intent.putExtra(ActivityWithFrameLayout.FRAGMENT_TAG, PersonalThreadAndPostFragment.class.getSimpleName());
+                intent.putExtra(PersonalThreadAndPostFragment.ACTION_TAG, PersonalThreadAndPostFragment.ACTION_POST);
+                intent.putExtra(PersonalThreadAndPostFragment.USERNAME_TAG, mUsername);
+                mContext.startActivity(intent);
+            }
+        });
         mRegDate.setText(CommonUtils.formatDateTimeToDay(CommonUtils.unixTimeStampToDate(mMember.regdate)));
         mLastVisit.setText(CommonUtils.formatDateTimeToDay(CommonUtils.unixTimeStampToDate(mMember.lastvisit)));
 

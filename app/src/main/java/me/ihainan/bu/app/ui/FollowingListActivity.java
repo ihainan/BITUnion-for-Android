@@ -3,18 +3,16 @@ package me.ihainan.bu.app.ui;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.os.Bundle;
-import android.app.Activity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
-import android.widget.FrameLayout;
 
 import me.ihainan.bu.app.R;
 import me.ihainan.bu.app.ui.assist.SwipeActivity;
 import me.ihainan.bu.app.ui.fragment.FollowingListFragment;
 
-public class NewFollowingListActivity extends SwipeActivity {
+public class FollowingListActivity extends SwipeActivity {
     // Tags
-    private final static String TAG = NewFollowingListActivity.class.getSimpleName();
+    private final static String TAG = FollowingListActivity.class.getSimpleName();
 
     // UI references
     private Toolbar mToolbar;
@@ -22,7 +20,7 @@ public class NewFollowingListActivity extends SwipeActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_new_following_list);
+        setContentView(R.layout.activity_with_framelayout);
 
         // Toolbar
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
