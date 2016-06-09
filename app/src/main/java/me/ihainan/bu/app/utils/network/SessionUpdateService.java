@@ -49,25 +49,20 @@ public class SessionUpdateService extends IntentService {
 
                                             if (BUApplication.userSession.credit < 0) {
                                                 shouldReturn = true;
-                                                return;
                                             } else {
                                                 Log.i(TAG, getString(R.string.update_session_success));
                                                 BUApplication.setCacheSession(SessionUpdateService.this);
-                                                return;
                                             }
                                         } else {
                                             shouldReturn = true;
-                                            return;
                                         }
                                     } catch (IOException e) {
                                         shouldReturn = true;
-                                        return;
                                     }
                                 }
                             }, new Response.ErrorListener() {
                                 @Override
                                 public void onErrorResponse(VolleyError error) {
-                                    return;
                                 }
                             });
 

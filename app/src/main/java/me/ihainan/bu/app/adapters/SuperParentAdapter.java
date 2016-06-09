@@ -1,6 +1,5 @@
 package me.ihainan.bu.app.adapters;
 
-import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
 import android.view.LayoutInflater;
@@ -17,10 +16,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import de.hdodenhof.circleimageview.CircleImageView;
 import me.ihainan.bu.app.R;
 import me.ihainan.bu.app.models.ForumListGroup;
 import me.ihainan.bu.app.ui.ThreadListActivity;
-import de.hdodenhof.circleimageview.CircleImageView;
 import me.ihainan.bu.app.utils.BUApplication;
 
 public class SuperParentAdapter extends BaseExpandableListAdapter {

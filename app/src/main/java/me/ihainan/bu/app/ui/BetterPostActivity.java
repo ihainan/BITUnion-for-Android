@@ -36,8 +36,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.squareup.picasso.Picasso;
-
 import me.ihainan.bu.app.R;
 import me.ihainan.bu.app.ui.fragment.EmoticonFragment;
 import me.ihainan.bu.app.utils.CommonUtils;
@@ -95,7 +93,9 @@ public class BetterPostActivity extends AppCompatActivity {
         // Toolbar
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -120,7 +120,7 @@ public class BetterPostActivity extends AppCompatActivity {
 
         if (mQuoteContent != null) {
             String message = mETMessage.getText().toString();
-            if (message == null || "".equals(message.trim()) || message.endsWith("\n\n"))
+            if ("".equals(message.trim()) || message.endsWith("\n\n"))
                 mETMessage.append(mQuoteContent);
             else
                 mETMessage.append("\n\n" + mQuoteContent);

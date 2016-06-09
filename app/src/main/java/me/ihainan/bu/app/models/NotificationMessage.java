@@ -6,7 +6,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 import java.io.Serializable;
 
-import me.ihainan.bu.app.utils.CommonUtils;
 import me.ihainan.bu.app.utils.network.BUApi;
 
 /**

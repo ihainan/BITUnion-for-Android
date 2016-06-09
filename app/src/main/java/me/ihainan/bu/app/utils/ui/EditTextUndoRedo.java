@@ -220,11 +220,8 @@ public class EditTextUndoRedo {
         }
 
         mEditHistory.mmPosition = sp.getInt(prefix + ".position", -1);
-        if (mEditHistory.mmPosition == -1) {
-            return false;
-        }
+        return mEditHistory.mmPosition != -1;
 
-        return true;
     }
 
     // =================================================================== //
@@ -249,7 +246,7 @@ public class EditTextUndoRedo {
         /**
          * The list of edits in chronological order.
          */
-        private final LinkedList<EditItem> mmHistory = new LinkedList<EditItem>();
+        private final LinkedList<EditItem> mmHistory = new LinkedList<>();
 
         /**
          * Clear history.

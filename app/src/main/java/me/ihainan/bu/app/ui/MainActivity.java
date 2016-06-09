@@ -9,7 +9,6 @@ import android.os.Handler;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -64,9 +63,10 @@ public class MainActivity extends AppCompatActivity {
         // Toolbar
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(mToolbar);
-        final ActionBar ab = getSupportActionBar();
-        ab.setHomeAsUpIndicator(R.drawable.ic_menu_white_24dp);
-        ab.setDisplayHomeAsUpEnabled(true);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_menu_white_24dp);
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
         setTitle(getString(R.string.action_home));
 
         // Navigation view
@@ -178,11 +178,9 @@ public class MainActivity extends AppCompatActivity {
 
                         // Switch between fragments
                         int menuId = menuItem.getItemId();
-                        boolean setTitle = false;
                         Intent intent = null;
                         switch (menuId) {
                             case R.id.nav_logout:
-                                setTitle = false;
                                 mDrawerLayout.closeDrawers();
                                 AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
                                 builder.setTitle("")
@@ -221,13 +219,10 @@ public class MainActivity extends AppCompatActivity {
                             startActivity(intent);
                         }
 
-                        if (setTitle) {
-                            navigationView.setCheckedItem(menuId);
-                            FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
-                            fragmentTransaction.replace(R.id.flContent, mFragment).commit();
-                            menuItem.setChecked(true);
-                            return true;
-                        }
+                        navigationView.setCheckedItem(menuId);
+                        FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+                        fragmentTransaction.replace(R.id.flContent, mFragment).commit();
+                        menuItem.setChecked(true);
 
                         return false;
                     }

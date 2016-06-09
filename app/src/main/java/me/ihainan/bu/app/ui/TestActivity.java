@@ -75,9 +75,7 @@ public class TestActivity extends SwipeActivity {
                         Log.i(TAG, "getFavoriteList >> " + favoriteList);
                         Log.d(TAG, "isFinishing = " + isFinishing());
                         message.setText("Fuck You");
-                    } catch (IOException e) {
-                        Log.e(TAG, "解析收藏列表 JSON 数据失败", e);
-                    } catch (JSONException e) {
+                    } catch (IOException | JSONException e) {
                         Log.e(TAG, "解析收藏列表 JSON 数据失败", e);
                     }
                 }
@@ -123,7 +121,7 @@ public class TestActivity extends SwipeActivity {
         ByteArrayOutputStream byteBuffer = new ByteArrayOutputStream();
         int bufferSize = 1024;
         byte[] buffer = new byte[bufferSize];
-        int len = 0;
+        int len;
         while ((len = iStream.read(buffer)) != -1) {
             byteBuffer.write(buffer, 0, len);
         }
@@ -189,9 +187,7 @@ public class TestActivity extends SwipeActivity {
                                 new TypeReference<List<TimelineEvent>>() {
                                 });
                         parseEvents("getSpecialUserTimeline", events);
-                    } catch (IOException e) {
-                        Log.e(TAG, "解析指定用户动态列表 JSON 数据失败", e);
-                    } catch (JSONException e) {
+                    } catch (IOException | JSONException e) {
                         Log.e(TAG, "解析指定用户动态列表 JSON 数据失败", e);
                     }
                 }
@@ -215,9 +211,7 @@ public class TestActivity extends SwipeActivity {
                                 new TypeReference<List<TimelineEvent>>() {
                                 });
                         parseEvents("getFocusTimeline", events);
-                    } catch (IOException e) {
-                        Log.e(TAG, "解析用户关注列表 JSON 数据失败", e);
-                    } catch (JSONException e) {
+                    } catch (IOException | JSONException e) {
                         Log.e(TAG, "解析用户关注列表 JSON 数据失败", e);
                     }
                 }
@@ -244,9 +238,7 @@ public class TestActivity extends SwipeActivity {
                                 new TypeReference<List<Post>>() {
                                 });
                         Log.i(TAG, "searchThreads >> " + posts);
-                    } catch (IOException e) {
-                        Log.e(TAG, "解析关注列表 JSON 数据失败", e);
-                    } catch (JSONException e) {
+                    } catch (IOException | JSONException e) {
                         Log.e(TAG, "解析关注列表 JSON 数据失败", e);
                     }
                 }
@@ -271,9 +263,7 @@ public class TestActivity extends SwipeActivity {
                                 new TypeReference<List<Post>>() {
                                 });
                         Log.i(TAG, "searchPosts >> " + posts);
-                    } catch (IOException e) {
-                        Log.e(TAG, "解析关注列表 JSON 数据失败", e);
-                    } catch (JSONException e) {
+                    } catch (IOException | JSONException e) {
                         Log.e(TAG, "解析关注列表 JSON 数据失败", e);
                     }
                 }
@@ -317,9 +307,7 @@ public class TestActivity extends SwipeActivity {
                                 new TypeReference<List<Follow>>() {
                                 });
                         Log.i(TAG, "getFollowingList >> " + followList);
-                    } catch (IOException e) {
-                        Log.e(TAG, "解析关注列表 JSON 数据失败", e);
-                    } catch (JSONException e) {
+                    } catch (IOException | JSONException e) {
                         Log.e(TAG, "解析关注列表 JSON 数据失败", e);
                     }
                 }
@@ -402,9 +390,7 @@ public class TestActivity extends SwipeActivity {
                                 new TypeReference<List<Favorite>>() {
                                 });
                         Log.i(TAG, "getFavoriteList >> " + favoriteList);
-                    } catch (IOException e) {
-                        Log.e(TAG, "解析收藏列表 JSON 数据失败", e);
-                    } catch (JSONException e) {
+                    } catch (IOException | JSONException e) {
                         Log.e(TAG, "解析收藏列表 JSON 数据失败", e);
                     }
                 }

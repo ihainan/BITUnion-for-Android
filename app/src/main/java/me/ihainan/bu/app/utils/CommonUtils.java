@@ -294,7 +294,6 @@ public class CommonUtils {
                                     .load(R.drawable.default_avatar)
                                     .error(errorImageId)
                                     .into(imageView);
-                            ;
                         } else {
                             // 非节省流量模式，下载并缓存图片
                             Log.d(TAG, "setImageView >> 非节省流量模式或者 Wi-Fi 环境，正常下载图片 " + imageSrc);
@@ -315,7 +314,6 @@ public class CommonUtils {
                                             BUApplication.badImages.put(imageSrc, true);
                                         }
                                     });
-                            ;
                         }
                     }
                 });
@@ -733,8 +731,8 @@ public class CommonUtils {
     /**
      * 以更友好的方式显示文件大小
      *
-     * @param size
-     * @return 文件大小字符串
+     * @param size 文件大小，单位为 KB
+     * @return 表示文件大小的字符串
      */
     public static String readableFileSize(long size) {
         if (size <= 0) return "0 KB";

@@ -9,7 +9,6 @@ import android.database.Cursor;
 import android.graphics.Point;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.provider.OpenableColumns;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
@@ -37,14 +36,13 @@ import org.json.JSONObject;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URLConnection;
 
 import me.ihainan.bu.app.R;
 import me.ihainan.bu.app.models.Member;
 import me.ihainan.bu.app.ui.assist.CustomSpan;
 import me.ihainan.bu.app.ui.assist.SwipeActivity;
-import me.ihainan.bu.app.utils.CommonUtils;
 import me.ihainan.bu.app.utils.BUApplication;
+import me.ihainan.bu.app.utils.CommonUtils;
 import me.ihainan.bu.app.utils.network.BUApi;
 import me.ihainan.bu.app.utils.ui.HtmlUtil;
 import me.ihainan.bu.app.utils.ui.PicassoImageGetter;
@@ -348,7 +346,6 @@ public class PreviewActivity extends SwipeActivity {
      * 从 URI 中获取文件的 Byte 数组
      *
      * @param uri URI
-     * @throws IOException 读取附件失败
      */
     private byte[] getByteArray(Uri uri) {
         InputStream iStream = null;

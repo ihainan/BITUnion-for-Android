@@ -33,7 +33,7 @@ public class PersonalThreadAndPostFragment extends BasicRecyclerViewFragment<Pos
 
     @Override
     protected String getNoNewDataMessage() {
-        if (ACTION_THREAD.equals(ACTION_THREAD)) {
+        if (ACTION_THREAD.equals(mAction)) {
             return mContext.getString(R.string.error_no_new_threads);
         } else if (ACTION_THREAD.equals(ACTION_POST)) {
             return mContext.getString(R.string.error_no_new_posts);

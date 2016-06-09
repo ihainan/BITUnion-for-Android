@@ -4,8 +4,6 @@ import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
-import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
@@ -32,8 +30,8 @@ import me.ihainan.bu.app.R;
 import me.ihainan.bu.app.ui.assist.SwipeActivity;
 import me.ihainan.bu.app.ui.fragment.BasicInfoFragment;
 import me.ihainan.bu.app.ui.fragment.TimelineFragment;
-import me.ihainan.bu.app.utils.CommonUtils;
 import me.ihainan.bu.app.utils.BUApplication;
+import me.ihainan.bu.app.utils.CommonUtils;
 import me.ihainan.bu.app.utils.network.ExtraApi;
 
 public class ProfileActivity extends SwipeActivity {

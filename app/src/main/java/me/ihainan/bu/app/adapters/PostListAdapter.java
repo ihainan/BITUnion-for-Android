@@ -196,7 +196,7 @@ public class PostListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         Log.d(TAG, "REPLY >> " + reply.toString());
 
         // 显示图片
-        String fileType = CommonUtils.decode(reply.filetype);
+        // String fileType = CommonUtils.decode(reply.filetype);
         if (oriFileName.toLowerCase().endsWith("jpg") || oriFileName.toLowerCase().endsWith("jpeg")
                 || oriFileName.toLowerCase().endsWith("gif") || oriFileName.toLowerCase().endsWith("png")) {
             attachmentImageLayout.setVisibility(View.VISIBLE);

@@ -16,8 +16,8 @@ import me.ihainan.bu.app.utils.ui.Emoticons;
  * Emoticon Fragment
  */
 public class EmoticonFragment extends Fragment implements AdapterView.OnItemClickListener {
-    public static interface EmoticonListener {
-        public void onEmoticonSelected(String name);
+    public interface EmoticonListener {
+        void onEmoticonSelected(String name);
     }
 
     private GridView mGrid;

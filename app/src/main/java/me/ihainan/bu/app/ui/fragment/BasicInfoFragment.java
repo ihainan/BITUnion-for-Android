@@ -7,7 +7,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.Settings;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.widget.NestedScrollView;
@@ -32,8 +31,8 @@ import me.ihainan.bu.app.ui.ActivityWithFrameLayout;
 import me.ihainan.bu.app.ui.FullscreenPhotoViewerActivity;
 import me.ihainan.bu.app.ui.ProfileActivity;
 import me.ihainan.bu.app.ui.assist.CustomSpan;
-import me.ihainan.bu.app.utils.CommonUtils;
 import me.ihainan.bu.app.utils.BUApplication;
+import me.ihainan.bu.app.utils.CommonUtils;
 import me.ihainan.bu.app.utils.ui.PicassoImageGetter;
 
 /**
@@ -258,7 +257,7 @@ public class BasicInfoFragment extends Fragment {
     @Override
     public boolean onContextItemSelected(MenuItem item) {
         Intent i;
-        ClipboardManager clipboardManager = (ClipboardManager) mContext.getSystemService(mContext.CLIPBOARD_SERVICE);
+        ClipboardManager clipboardManager = (ClipboardManager) mContext.getSystemService(Context.CLIPBOARD_SERVICE);
         if (item.getGroupId() == 0) {
             // Email
             switch (item.getItemId()) {

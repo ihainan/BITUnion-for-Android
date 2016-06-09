@@ -10,12 +10,11 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.HashMap;
-import java.util.Map;
 
 import me.ihainan.bu.app.BuildConfig;
 import me.ihainan.bu.app.R;
-import me.ihainan.bu.app.utils.CommonUtils;
 import me.ihainan.bu.app.utils.BUApplication;
+import me.ihainan.bu.app.utils.CommonUtils;
 
 /**
  * Extra API based on BITUnion-Api-Service Project
@@ -34,8 +33,7 @@ public class ExtraApi {
 
     public static boolean checkStatus(JSONObject response) {
         try {
-            if (response.getInt("code") == 0) return true;
-            else return false;
+            return response.getInt("code") == 0;
         } catch (JSONException e) {
             Log.e(TAG, "Fail to parse JSON object " + response, e);
             return false;
@@ -52,7 +50,7 @@ public class ExtraApi {
      * @param errorListener error 事件监听器
      */
     private static void makeRequest(final int requestMethod, final Context context, final String url, final String tag,
-                                    final Map<String, Object> parameters,
+                                    final HashMap parameters,
                                     final Response.Listener<JSONObject> listener,
                                     final Response.ErrorListener errorListener) {
         RequestQueueManager.CustomJsonObjectRequest request = new RequestQueueManager.CustomJsonObjectRequest(requestMethod, url,
@@ -79,7 +77,7 @@ public class ExtraApi {
         String url = ADD_FAVORITE_ENDPOINT;
         Log.i(TAG, "addFavorite >> " + url);
 
-        Map<String, Object> parameters = new HashMap();
+        HashMap parameters = new HashMap<>();
         parameters.put("app", context.getString(R.string.app_name));
         parameters.put("version", BuildConfig.VERSION_NAME);
         parameters.put("username", CommonUtils.decode(BUApplication.username));
@@ -105,7 +103,7 @@ public class ExtraApi {
         String url = ADD_FAVORITE_ENDPOINT + "/" + CommonUtils.encode(BUApplication.username) + "/" + tid;
         Log.i(TAG, "delFavorite >> " + url);
 
-        Map<String, Object> parameters = new HashMap();
+        HashMap parameters = new HashMap();
         makeRequest(Request.Method.DELETE, context, url,
                 "DELETE_FAVOR", parameters, listener, errorListener);
     }
@@ -126,7 +124,7 @@ public class ExtraApi {
         String url = ADD_FAVORITE_ENDPOINT + "/list/" + CommonUtils.encode(BUApplication.username) + "?from=" + from + "&to=" + to;
         Log.i(TAG, "getFavoriteList >> " + url);
 
-        Map<String, Object> parameters = new HashMap();
+        HashMap parameters = new HashMap();
         makeRequest(Request.Method.GET, context, url,
                 "GET_FAVOR_STATUS", parameters, listener, errorListener);
     }
@@ -145,7 +143,7 @@ public class ExtraApi {
         String url = ADD_FAVORITE_ENDPOINT + "/status/" + CommonUtils.encode(BUApplication.username) + "/" + tid;
         Log.i(TAG, "getFavoriteStatus >> " + url);
 
-        Map<String, Object> parameters = new HashMap();
+        HashMap parameters = new HashMap();
         makeRequest(Request.Method.GET, context, url,
                 "GET_FAVOR_STATUS", parameters, listener, errorListener);
     }
@@ -169,7 +167,7 @@ public class ExtraApi {
         String url = USER_ENDPOINT + "/" + CommonUtils.encode(username) + "/threads?" + "from=" + from + "&to=" + to;
         Log.i(TAG, "getUserThreadList >> " + url);
 
-        Map<String, Object> parameters = new HashMap();
+        HashMap parameters = new HashMap();
         makeRequest(Request.Method.GET, context, url,
                 "GET_USER_THREAD_LIST", parameters, listener, errorListener);
     }
@@ -190,7 +188,7 @@ public class ExtraApi {
         String url = USER_ENDPOINT + "/" + CommonUtils.encode(username) + "/replies?" + "from=" + from + "&to=" + to;
         Log.i(TAG, "getUserPostList >> " + url);
 
-        Map<String, Object> parameters = new HashMap();
+        HashMap parameters = new HashMap();
         makeRequest(Request.Method.GET, context, url,
                 "GET_USER_POST_LIST", parameters, listener, errorListener);
     }
@@ -212,7 +210,7 @@ public class ExtraApi {
         String url = FOLLOW_ENDPOINT;
         Log.i(TAG, "addFollow >> " + url);
 
-        Map<String, Object> parameters = new HashMap();
+        HashMap parameters = new HashMap();
         parameters.put("app", context.getString(R.string.app_name));
         parameters.put("version", BuildConfig.VERSION_NAME);
         parameters.put("follower", CommonUtils.decode(BUApplication.username));
@@ -235,7 +233,7 @@ public class ExtraApi {
         String url = FOLLOW_ENDPOINT + "/" + CommonUtils.encode(BUApplication.userSession.username) + "/" + CommonUtils.encode(following);
         Log.i(TAG, "delFollow >> " + url);
 
-        Map<String, Object> parameters = new HashMap();
+        HashMap parameters = new HashMap();
         makeRequest(Request.Method.DELETE, context, url,
                 "DELETE_FOLLOW", parameters, listener, errorListener);
     }
@@ -254,7 +252,7 @@ public class ExtraApi {
         String url = FOLLOW_ENDPOINT + "/status/" + BUApplication.userSession.username + "/" + CommonUtils.encode(following);
         Log.i(TAG, "getFollowStatus >> " + url);
 
-        Map<String, Object> parameters = new HashMap();
+        HashMap parameters = new HashMap();
         makeRequest(Request.Method.GET, context, url,
                 "GET_FOLLOW_STATUS", parameters, listener, errorListener);
     }
@@ -274,7 +272,7 @@ public class ExtraApi {
         String url = FOLLOW_ENDPOINT + "/list/" + CommonUtils.encode(BUApplication.userSession.username) + "?" + "from=" + from + "&to=" + to;
         Log.i(TAG, "getFollowingList >> " + url);
 
-        Map<String, Object> parameters = new HashMap();
+        HashMap parameters = new HashMap();
         makeRequest(Request.Method.GET, context, url,
                 "GET_FOLLOWING_LIST", parameters, listener, errorListener);
     }
@@ -300,7 +298,7 @@ public class ExtraApi {
         String url = TIMELINE_ENDPOINT + "/spec/" + CommonUtils.encode(username) + "?from=" + from + "&to=" + to;
         Log.i(TAG, "getSpecialUserTimeline >> " + url);
 
-        Map<String, Object> parameters = new HashMap();
+        HashMap parameters = new HashMap();
         makeRequest(Request.Method.GET, context, url,
                 "GET_SPEC_USER_TIMELINE", parameters, listener, errorListener);
     }
@@ -321,7 +319,7 @@ public class ExtraApi {
         String url = TIMELINE_ENDPOINT + "/focus/" + CommonUtils.encode(BUApplication.username) + "?from=" + from + "&to=" + to;
         Log.i(TAG, "getFocusTimeline >> " + url);
 
-        Map<String, Object> parameters = new HashMap();
+        HashMap parameters = new HashMap();
         makeRequest(Request.Method.GET, context, url,
                 "GET_FOCUS_TIMELINE", parameters, listener, errorListener);
     }
@@ -346,7 +344,7 @@ public class ExtraApi {
         String url = ENDPOINT + "/search/threads?key=" + CommonUtils.encode(keyword) + "&from=" + from + "&to=" + to;
         Log.i(TAG, "searchThreads >> " + url);
 
-        Map<String, Object> parameters = new HashMap();
+        HashMap parameters = new HashMap();
         makeRequest(Request.Method.GET, context, url,
                 "SEARCH THREADS", parameters, listener, errorListener);
     }
@@ -368,7 +366,7 @@ public class ExtraApi {
         String url = ENDPOINT + "/search/posts?key=" + CommonUtils.encode(keyword) + "&from=" + from + "&to=" + to;
         Log.i(TAG, "searchPosts >> " + url);
 
-        Map<String, Object> parameters = new HashMap();
+        HashMap parameters = new HashMap();
         makeRequest(Request.Method.GET, context, url,
                 "SEARCH THREADS", parameters, listener, errorListener);
     }

@@ -19,9 +19,9 @@ import me.ihainan.bu.app.utils.CommonUtils;
 public class Emoticons {
     public static final String TAG = Emoticons.class.getSimpleName();
 
-    public static final LinkedHashMap<String, String> EMOTICONS = new LinkedHashMap<String, String>();
-    public static final LinkedHashMap<String, Bitmap> EMOTICON_BITMAPS = new LinkedHashMap<String, Bitmap>();
-    public static final LinkedHashMap<String, Bitmap> EMOTICON_BITMAPS_SCALED = new LinkedHashMap<String, Bitmap>();
+    public static final LinkedHashMap<String, String> EMOTICONS = new LinkedHashMap<>();
+    public static final LinkedHashMap<String, Bitmap> EMOTICON_BITMAPS = new LinkedHashMap<>();
+    public static final LinkedHashMap<String, Bitmap> EMOTICON_BITMAPS_SCALED = new LinkedHashMap<>();
 
     static {
         EMOTICONS.put(":sweating:", "smilies_sweatingbullets.gif");
@@ -50,9 +50,7 @@ public class Emoticons {
 
         AssetManager am = context.getAssets();
 
-        Iterator<String> iterator = EMOTICONS.keySet().iterator();
-        while (iterator.hasNext()) {
-            String key = iterator.next();
+        for (String key : EMOTICONS.keySet()) {
             try {
                 Bitmap bitmap = BitmapFactory.decodeStream(am.open("faces/" + EMOTICONS.get(key)));
                 EMOTICON_BITMAPS.put(key, bitmap);

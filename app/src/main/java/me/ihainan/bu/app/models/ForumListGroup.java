@@ -69,7 +69,7 @@ public class ForumListGroup {
             mForumName = forumName;
             mIcon = icon;
             mForumId = forumId;
-            mSubForumList = new ArrayList<SubForum>();
+            mSubForumList = new ArrayList<>();
         }
 
         public void addSubForum(SubForum subForum) {

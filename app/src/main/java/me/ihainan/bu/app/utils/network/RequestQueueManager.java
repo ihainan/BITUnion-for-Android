@@ -135,7 +135,7 @@ public class RequestQueueManager {
 
         @Override
         public Map<String, String> getHeaders() throws AuthFailureError {
-            HashMap<String, String> params = new HashMap<String, String>();
+            HashMap<String, String> params = new HashMap<>();
             String credits = String.format("%s:%s", ExtraApi.BASIC_AUTH_USERNAME, ExtraApi.BASIC_AUTH_PASSWORD);
             String auth = "Basic " + Base64.encodeToString(credits.getBytes(), Base64.NO_WRAP);
             params.put("Authorization", auth);

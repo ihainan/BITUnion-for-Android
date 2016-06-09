@@ -2,6 +2,7 @@ package me.ihainan.bu.app.adapters;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.util.Log;
@@ -80,7 +81,11 @@ public class PersonalThreadAndPostAdapter extends RecyclerView.Adapter<RecyclerV
             // 公共部分
             String username = null;
             viewHolder.content.setVisibility(View.VISIBLE);
-            viewHolder.title.setTextAppearance(mContext, R.style.boldText);
+            if (Build.VERSION.SDK_INT < 23) {
+                viewHolder.title.setTextAppearance(mContext, R.style.boldText);
+            } else {
+                viewHolder.title.setTextAppearance(R.style.boldText);
+            }
 
             try {
                 // 帖子

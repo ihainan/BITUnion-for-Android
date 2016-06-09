@@ -4,7 +4,6 @@ import android.content.Context;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
-import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.NetworkResponse;
 import com.android.volley.Response;
 import com.android.volley.toolbox.JsonObjectRequest;
@@ -23,8 +22,8 @@ import java.util.Map;
 
 import me.ihainan.bu.app.R;
 import me.ihainan.bu.app.models.Session;
-import me.ihainan.bu.app.utils.CommonUtils;
 import me.ihainan.bu.app.utils.BUApplication;
+import me.ihainan.bu.app.utils.CommonUtils;
 
 /**
  * BIT Union Open APIs
@@ -86,8 +85,7 @@ public class BUApi {
      */
     public static boolean checkStatus(JSONObject response) {
         try {
-            if (!response.getString("result").equals("success")) return false;
-            else return true;
+            return response.getString("result").equals("success");
         } catch (JSONException e) {
             Log.e(TAG, "Fail to parse JSON object " + response, e);
             return false;
@@ -159,7 +157,8 @@ public class BUApi {
     public static void getHomePage(Context context,
                                    Response.Listener<JSONObject> listener,
                                    Response.ErrorListener errorListener) {
-        Map<String, String> parameters = new HashMap<String, String>();
+        Map<String, String> parameters;
+        parameters = new HashMap<String, String>();
         parameters.put("username", BUApplication.userSession.username);
         parameters.put("session", BUApplication.userSession.session);
 
@@ -179,7 +178,7 @@ public class BUApi {
                                    long uid, String username,
                                    Response.Listener<JSONObject> listener,
                                    Response.ErrorListener errorListener) {
-        Map<String, String> parameters = new HashMap<String, String>();
+        Map<String, String> parameters = new HashMap<>();
         parameters.put("action", "profile");
         parameters.put("username", BUApplication.username);
         parameters.put("session", BUApplication.userSession.session);
@@ -202,7 +201,7 @@ public class BUApi {
                                       Response.Listener<JSONObject> listener,
                                       Response.ErrorListener errorListener) {
 
-        Map<String, String> parameters = new HashMap<String, String>();
+        Map<String, String> parameters = new HashMap<>();
         parameters.put("action", "post");
         parameters.put("username", BUApplication.userSession.username);
         parameters.put("session", BUApplication.userSession.session);
@@ -222,7 +221,7 @@ public class BUApi {
                                     Response.Listener<JSONObject> listener,
                                     Response.ErrorListener errorListener) {
 
-        Map<String, String> parameters = new HashMap<String, String>();
+        Map<String, String> parameters = new HashMap<>();
         parameters.put("action", "forum");
         parameters.put("username", BUApplication.userSession.username);
         parameters.put("session", BUApplication.userSession.session);
@@ -242,7 +241,7 @@ public class BUApi {
                                        Response.Listener<JSONObject> listener,
                                        Response.ErrorListener errorListener) {
 
-        Map<String, String> parameters = new HashMap<String, String>();
+        Map<String, String> parameters = new HashMap<>();
         parameters.put("action", "thread");
         parameters.put("username", BUApplication.userSession.username);
         parameters.put("session", BUApplication.userSession.session);
@@ -269,7 +268,7 @@ public class BUApi {
                                    @Nullable byte[] attachment,
                                    Response.Listener<NetworkResponse> listener,
                                    Response.ErrorListener errorListener) throws IOException {
-        Map<String, Object> parameters = new HashMap<String, Object>();
+        Map<String, Object> parameters = new HashMap<>();
         parameters.put("username", BUApplication.userSession.username);    // session 里面的 username 未曾 encode 过
         parameters.put("session", BUApplication.userSession.session);
         parameters.put("action", "newreply");
@@ -307,7 +306,7 @@ public class BUApi {
                                      @Nullable byte[] attachment,
                                      Response.Listener<NetworkResponse> listener,
                                      Response.ErrorListener errorListener) throws IOException {
-        Map<String, Object> parameters = new HashMap<String, Object>();
+        Map<String, Object> parameters = new HashMap<>();
         parameters.put("username", BUApplication.userSession.username);    // session 里面的 username 未曾 encode 过
         parameters.put("session", BUApplication.userSession.session);
         parameters.put("action", "newthread");

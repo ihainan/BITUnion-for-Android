@@ -223,7 +223,7 @@ public class XMMessageReceiver extends PushMessageReceiver {
         String command = message.getCommand();
         List<String> arguments = message.getCommandArguments();
         String cmdArg1 = ((arguments != null && arguments.size() > 0) ? arguments.get(0) : null);
-        String cmdArg2 = ((arguments != null && arguments.size() > 1) ? arguments.get(1) : null);
+        // String cmdArg2 = ((arguments != null && arguments.size() > 1) ? arguments.get(1) : null);
         if (MiPushClient.COMMAND_REGISTER.equals(command)) {
             if (message.getResultCode() == ErrorCode.SUCCESS) {
                 mRegId = cmdArg1;
