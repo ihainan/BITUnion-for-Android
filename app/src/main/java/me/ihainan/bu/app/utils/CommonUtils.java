@@ -83,7 +83,9 @@ public class CommonUtils {
                         dialog.dismiss();
                     }
                 });
-        if (isRunning(context)) builder.show();
+        if (!((Activity) context).isFinishing()) {
+            builder.show();
+        }
     }
 
     /**
