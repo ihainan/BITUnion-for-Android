@@ -10,6 +10,7 @@ import android.view.View;
 import me.ihainan.bu.app.R;
 import me.ihainan.bu.app.ui.assist.SwipeActivity;
 import me.ihainan.bu.app.ui.fragment.FollowingListFragment;
+import me.ihainan.bu.app.ui.fragment.NotificationListFragment;
 import me.ihainan.bu.app.ui.fragment.PersonalThreadAndPostFragment;
 
 public class ActivityWithFrameLayout extends SwipeActivity {
@@ -66,6 +67,8 @@ public class ActivityWithFrameLayout extends SwipeActivity {
                 mFragment = new FollowingListFragment();
             } else if ((PersonalThreadAndPostFragment.class.getSimpleName()).equals(fragmentClassName)) {
                 mFragment = new PersonalThreadAndPostFragment();
+            } else if ((NotificationListFragment.class.getSimpleName()).equals(fragmentClassName)) {
+                mFragment = new NotificationListFragment();
             }
 
             if (mFragment != null) mFragment.setArguments(bundle);

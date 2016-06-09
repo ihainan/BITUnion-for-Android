@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/root_layout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -13,61 +12,53 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="16dp">
 
-    <LinearLayout
+    <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/avatar"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_gravity="center_vertical"
+        android:src="@drawable/default_avatar"
+        app:civ_border_color="@android:color/white"
+        app:civ_border_width="2dp" />
+
+    <RelativeLayout
+        android:id="@+id/username_and_date"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
-
-        <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
-            android:id="@+id/avatar"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:layout_gravity="center_vertical"
-            android:src="@drawable/empty_avatar"
-            app:civ_border_color="@android:color/white"
-            app:civ_border_width="2dp" />
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="4dp"
+        android:layout_toRightOf="@id/avatar">
 
         <TextView
-            android:id="@id/user_name"
+            android:id="@+id/username"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:layout_marginLeft="10dp"
-            android:text="ihainan"
-            android:textColor="@color/primary" />
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:text="USERNAME"
+            android:textColor="@android:color/black"
+            android:textSize="15sp"
+            android:textStyle="bold" />
 
         <TextView
-            android:id="@+id/action"
+            android:id="@+id/date"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:layout_marginLeft="4dp"
-            android:layout_toRightOf="@id/user_name"
-            android:text="回复了主题" />
-    </LinearLayout>
-
-    <TextView
-        android:id="@+id/title"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:ellipsize="end"
-        android:lineSpacingExtra="6dp"
-        android:maxLines="4"
-        android:text="此处是标题"
-        android:textColor="@android:color/black"
-        android:textSize="15sp"
-        android:textStyle="bold" />
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:singleLine="true"
+            android:text="12 hours ago"
+            android:textSize="10sp" />
+    </RelativeLayout>
 
     <TextView
         android:id="@+id/content"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:ellipsize="end"
-        android:lineSpacingExtra="6dp"
-        android:maxLines="4"
-        android:text="此处是正文"
-        android:textColor="@android:color/black"
-        android:textSize="15sp" />
-</LinearLayout>
+        android:layout_below="@id/username_and_date"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="4dp"
+        android:layout_toRightOf="@id/avatar"
+        android:lineSpacingExtra="4dp"
+        android:text="在主题 `[台式机 / 笔记本电脑及配件] 便宜出 24 寸显示器` 中引用了你的回复" />
+</RelativeLayout>

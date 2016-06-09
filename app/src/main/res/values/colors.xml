@@ -13,7 +13,9 @@
     <color name="icons">#FFFFFF</color>
     <color name="divider">#B6B6B6</color>
 
+    <color name="background_read">#f9f9f7</color>
     <color name="background">#EBEAE6</color>
+    <color name="background_white">#FFFFFF</color>
     <color name="dark_gray">#E8E8E8</color>
 
 

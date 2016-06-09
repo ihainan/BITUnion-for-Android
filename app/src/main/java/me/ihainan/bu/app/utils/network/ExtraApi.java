@@ -1,6 +1,7 @@
 package me.ihainan.bu.app.utils.network;
 
 import android.content.Context;
+import android.provider.Settings;
 import android.util.Log;
 
 import com.android.volley.Request;
@@ -437,5 +438,42 @@ public class ExtraApi {
         HashMap parameters = new HashMap();
         makeRequest(Request.Method.GET, context, url,
                 "SEARCH USERS", parameters, listener, errorListener);
+    }
+
+    /* 通知相关接口 */
+    public final static String NOTIFICATION_ENDPOINT = ENDPOINT + "/notification";
+
+    public static void getNotificationList(Context context, String username,
+                                           long from, long to,
+                                           Response.Listener<JSONObject> listener,
+                                           Response.ErrorListener errorListener) {
+        String url = NOTIFICATION_ENDPOINT + "/list/" + username + "?from=" + from + "&to=" + to;
+        Log.i(TAG, "getNotificationList >> " + url);
+
+        HashMap parameters = new HashMap();
+        makeRequest(Request.Method.GET, context, url,
+                "GET NOTIFICATION LIST", parameters, listener, errorListener);
+    }
+
+    public static void markAsRead(Context context, long notifyId,
+                                  Response.Listener<JSONObject> listener,
+                                  Response.ErrorListener errorListener) {
+        String url = NOTIFICATION_ENDPOINT + "/" + notifyId + "/read";
+        Log.i(TAG, "markAsRead >> " + url);
+
+        HashMap parameters = new HashMap();
+        makeRequest(Request.Method.PUT, context, url,
+                "MARK AS READ", parameters, listener, errorListener);
+    }
+
+    public static void markAllAsRead(Context context, String username,
+                                     Response.Listener<JSONObject> listener,
+                                     Response.ErrorListener errorListener) {
+        String url = NOTIFICATION_ENDPOINT + "/list/" + CommonUtils.encode(username) + "/all";
+        Log.i(TAG, "markAllAsRead >> " + url);
+
+        HashMap parameters = new HashMap();
+        makeRequest(Request.Method.PUT, context, url,
+                "MARK ALL AS READ", parameters, listener, errorListener);
     }
 }

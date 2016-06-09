@@ -28,7 +28,6 @@ public class NotificationMessage implements Serializable {
     }
 
     public static class NotificationData implements Serializable {
-
         @Override
         public String toString() {
             try {

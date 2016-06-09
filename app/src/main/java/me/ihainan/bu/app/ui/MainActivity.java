@@ -28,6 +28,7 @@ import com.xiaomi.mipush.sdk.MiPushClient;
 import me.ihainan.bu.app.R;
 import me.ihainan.bu.app.models.Member;
 import me.ihainan.bu.app.ui.fragment.HomeFragment;
+import me.ihainan.bu.app.ui.fragment.NotificationListFragment;
 import me.ihainan.bu.app.utils.BUApplication;
 import me.ihainan.bu.app.utils.CommonUtils;
 import me.ihainan.bu.app.utils.network.SessionUpdateService;
@@ -250,12 +251,20 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        Intent intent;
         switch (item.getItemId()) {
             case android.R.id.home:
                 mDrawerLayout.openDrawer(GravityCompat.START);  // OPEN DRAWER
                 return true;
             case R.id.action_search:
-                Intent intent = new Intent(this, SearchActivity.class);
+                intent = new Intent(this, SearchActivity.class);
+                startActivity(intent);
+                return true;
+            case R.id.action_notificaion:
+                intent = new Intent(this, ActivityWithFrameLayout.class);
+                intent.putExtra(ActivityWithFrameLayout.FRAGMENT_TAG, NotificationListFragment.class.getSimpleName());
+                intent.putExtra(ActivityWithFrameLayout.TITLE_TAG, getString(R.string.title_activity_notification_box));
+
                 startActivity(intent);
                 return true;
         }
