@@ -1,43 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-
-    <PreferenceCategory
-        android:key="pref_key_display_settings"
-        android:title="界面">
-
-        <Preference
-            android:key="pref_post_display"
-            android:title="帖子显示" />
-    </PreferenceCategory>
-
-    <PreferenceCategory xmlns:android="http://schemas.android.com/apk/res/android"
-        android:key="pref_notification"
-        android:title="通知提醒">
-        <SwitchPreference
-            android:key="pref_enable_notify"
-            android:title="开启通知提醒" />
-
-        <CheckBoxPreference
-            android:enabled="false"
-            android:key="pref_enable_reply_notify"
-            android:title="回复通知" />
-
-        <CheckBoxPreference
-            android:enabled="false"
-            android:key="pref_enable_quote_notify"
-            android:title="引用通知" />
-
-        <CheckBoxPreference
-            android:enabled="false"
-            android:key="pref_enable_at_notify"
-            android:title="\@ 通知" />
-
-        <CheckBoxPreference
-            android:enabled="false"
-            android:key="pref_enable_follow_notify"
-            android:title="关注通知" />
-    </PreferenceCategory>
-
     <PreferenceCategory
         android:key="pref_key_network_settings"
         android:title="网络">
@@ -49,6 +11,41 @@
             android:key="pref_save_data"
             android:summary="仅在 Wi-Fi 环境下自动加载图片"
             android:title="省流量模式" />
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:key="pref_key_display_settings"
+        android:title="界面">
+
+        <Preference
+            android:key="pref_post_display"
+            android:title="帖子显示" />
+
+        <Preference
+            android:key="pref_home_page_click"
+            android:summary="点击后进尾楼"
+            android:title="首页帖子点击事件" />
+
+        <SwitchPreference
+            android:key="pref_advanced_editor"
+            android:title="高级编辑器" />
+    </PreferenceCategory>
+
+    <PreferenceCategory xmlns:android="http://schemas.android.com/apk/res/android"
+        android:key="pref_notification"
+        android:title="通知提醒">
+        <SwitchPreference
+            android:key="pref_enable_notify"
+            android:title="开启通知提醒" />
+
+        <SwitchPreference
+            android:key="pref_night_silent_mode"
+            android:summary="夜间 23:00 - 次日 08:00 期间不会接收通知"
+            android:title="夜间免打扰模式" />
+
+        <Preference
+            android:key="pref_enable_notify_type"
+            android:title="允许通知类型" />
     </PreferenceCategory>
 
     <PreferenceCategory
@@ -76,6 +73,11 @@
         <Preference
             android:key="pref_feedback"
             android:title="意见反馈" />
+
+        <Preference
+            android:key="pref_donate"
+            android:summary="嗯？想请我一杯咖啡吗？ :D"
+            android:title="捐赠" />
 
         <Preference
             android:key="pref_check_update"

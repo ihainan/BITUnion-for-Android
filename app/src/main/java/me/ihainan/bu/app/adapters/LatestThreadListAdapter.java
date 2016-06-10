@@ -75,9 +75,9 @@ public class LatestThreadListAdapter extends RecyclerView.Adapter<RecyclerView.V
     @Override
     public int getItemViewType(int position) {
         final LatestThread latestThread = mLatestThreads.get(position);
-        if (BUApplication.saveDataMode || !CommonUtils.decode(latestThread.fname).equals("个人展示区"))
-            return VIEW_TYPE_DEFAULT;
-        else return VIEW_TYPE_SELFIE;
+        // if (BUApplication.saveDataMode || !CommonUtils.decode(latestThread.fname).equals("个人展示区"))
+        return VIEW_TYPE_DEFAULT;
+        // else return VIEW_TYPE_SELFIE;
     }
 
     @Override
@@ -123,16 +123,15 @@ public class LatestThreadListAdapter extends RecyclerView.Adapter<RecyclerView.V
         holder.rootLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                intent.removeExtra(PostListActivity.THREAD_JUMP_FLOOR);
-                mContext.startActivity(intent);
-            }
-        });
-
-        holder.title.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                intent.putExtra(PostListActivity.THREAD_JUMP_FLOOR, 0);
-                mContext.startActivity(intent);
+                if (BUApplication.homePageClickEventType == 0) {
+                    // 进入尾楼
+                    intent.removeExtra(PostListActivity.THREAD_JUMP_FLOOR);
+                    mContext.startActivity(intent);
+                } else {
+                    // 进入主楼
+                    intent.putExtra(PostListActivity.THREAD_JUMP_FLOOR, 0);
+                    mContext.startActivity(intent);
+                }
             }
         });
 
@@ -233,16 +232,15 @@ public class LatestThreadListAdapter extends RecyclerView.Adapter<RecyclerView.V
         holder.rootLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                intent.removeExtra(PostListActivity.THREAD_JUMP_FLOOR);
-                mContext.startActivity(intent);
-            }
-        });
-
-        holder.title.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                intent.putExtra(PostListActivity.THREAD_JUMP_FLOOR, 0);
-                mContext.startActivity(intent);
+                if (BUApplication.homePageClickEventType == 0) {
+                    // 进入尾楼
+                    intent.removeExtra(PostListActivity.THREAD_JUMP_FLOOR);
+                    mContext.startActivity(intent);
+                } else {
+                    // 进入主楼
+                    intent.putExtra(PostListActivity.THREAD_JUMP_FLOOR, 0);
+                    mContext.startActivity(intent);
+                }
             }
         });
 
@@ -354,8 +352,8 @@ public class LatestThreadListAdapter extends RecyclerView.Adapter<RecyclerView.V
             });
         } else {
             Log.i(TAG, "fillSelfieView >> 从缓存中拿到回复数据 " + reply);
-            if (reply.attachext.equals("png") || reply.attachext.equals("jpg")
-                    || reply.attachext.equals("jpeg")) {
+            if (reply.attachext != null && (reply.attachext.equals("png") || reply.attachext.equals("jpg")
+                    || reply.attachext.equals("jpeg"))) {
                 String imageURL = CommonUtils.getRealImageURL(reply.attachment);
 
                 final Point displaySize = CommonUtils.getDisplaySize(((Activity) mContext).getWindowManager().getDefaultDisplay());

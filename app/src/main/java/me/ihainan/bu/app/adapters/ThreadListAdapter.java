@@ -94,16 +94,13 @@ public class ThreadListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         holder.rootLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                intent.removeExtra(PostListActivity.THREAD_JUMP_FLOOR);
-                mContext.startActivity(intent);
-            }
-        });
-
-        holder.title.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                intent.putExtra(PostListActivity.THREAD_JUMP_FLOOR, 0);
-                mContext.startActivity(intent);
+                if (BUApplication.homePageClickEventType == 0) {
+                    intent.removeExtra(PostListActivity.THREAD_JUMP_FLOOR);
+                    mContext.startActivity(intent);
+                } else {
+                    intent.putExtra(PostListActivity.THREAD_JUMP_FLOOR, 0);
+                    mContext.startActivity(intent);
+                }
             }
         });
 

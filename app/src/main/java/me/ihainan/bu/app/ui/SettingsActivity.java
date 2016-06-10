@@ -1,6 +1,11 @@
 package me.ihainan.bu.app.ui;
 
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.preference.CheckBoxPreference;
@@ -8,6 +13,7 @@ import android.preference.Preference;
 import android.preference.SwitchPreference;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.widget.Toast;
 
 import com.lb.material_preferences_library.PreferenceActivity;
 
@@ -49,15 +55,15 @@ public class SettingsActivity extends PreferenceActivity {
         loadDefaultValue();
     }
 
-    private SwitchPreference networkType, saveDataMode, uploadData, debugMode, prefEnableNotify;
-    private Preference deviceName, checkUpdate, displaySetting, feedback;
-    private CheckBoxPreference prefEnableReplyNotify, prefEnableQuoteNotify, prefEnableAtNotify, prefEnableFollowNotify;
+    private SwitchPreference prefNetworkType, prefSaveDataMode, prefUploadData, prefDebugMode, prefEnableNotify, prefAdvancedEditor, prefEnableSilentMode;
+    private Preference prefDeviceName, prefCheckUpdate, prefDisplaySetting, prefFeedback, prefHomePageClick, prefEnableNotifyType, prefDonate;
 
     private void loadDefaultValue() {
         BUApplication.readConfig(this);
 
-        networkType = (SwitchPreference) findPreference("pref_out_school");
-        networkType.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+        /* 网络相关 */
+        prefNetworkType = (SwitchPreference) findPreference("pref_out_school");
+        prefNetworkType.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
             @Override
             public boolean onPreferenceChange(Preference preference, Object newValue) {
                 Boolean checked = (Boolean) newValue;
@@ -67,11 +73,11 @@ public class SettingsActivity extends PreferenceActivity {
                 return true;
             }
         });
-        networkType.setChecked(BUApplication.networkType == BUApplication.NETWORK_TYPE.IN_SCHOOL ? false : true);
+        prefNetworkType.setChecked(BUApplication.networkType == BUApplication.NETWORK_TYPE.IN_SCHOOL ? false : true);
 
-        saveDataMode = (SwitchPreference) findPreference("pref_save_data");
-        saveDataMode.setChecked(BUApplication.saveDataMode);
-        saveDataMode.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+        prefSaveDataMode = (SwitchPreference) findPreference("pref_save_data");
+        prefSaveDataMode.setChecked(BUApplication.saveDataMode);
+        prefSaveDataMode.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
             @Override
             public boolean onPreferenceChange(Preference preference, Object newValue) {
                 Boolean checked = (Boolean) newValue;
@@ -81,9 +87,23 @@ public class SettingsActivity extends PreferenceActivity {
             }
         });
 
-        uploadData = (SwitchPreference) findPreference("pref_upload_data");
-        uploadData.setChecked(BUApplication.uploadData);
-        uploadData.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+        /* 开发相关 */
+        prefDebugMode = (SwitchPreference) findPreference("pref_enable_dev_mode");
+        prefDebugMode.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+            @Override
+            public boolean onPreferenceChange(Preference preference, Object newValue) {
+                Boolean checked = (Boolean) newValue;
+                BUApplication.debugMode = checked;
+                BUApplication.setCacheDebugMode(SettingsActivity.this);
+                return true;
+            }
+        });
+
+        prefDebugMode.setChecked(BUApplication.debugMode);
+
+        prefUploadData = (SwitchPreference) findPreference("pref_upload_data");
+        prefUploadData.setChecked(BUApplication.uploadData);
+        prefUploadData.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
             @Override
             public boolean onPreferenceChange(Preference preference, Object newValue) {
                 Boolean checked = (Boolean) newValue;
@@ -93,20 +113,9 @@ public class SettingsActivity extends PreferenceActivity {
             }
         });
 
-        debugMode = (SwitchPreference) findPreference("pref_enable_dev_mode");
-        debugMode.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-            @Override
-            public boolean onPreferenceChange(Preference preference, Object newValue) {
-                Boolean checked = (Boolean) newValue;
-                BUApplication.debugMode = checked;
-                BUApplication.setCacheDebugMode(SettingsActivity.this);
-                return true;
-            }
-        });
-        debugMode.setChecked(BUApplication.debugMode);
-
-        feedback = findPreference("pref_feedback");
-        feedback.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+        /* 关于相关 */
+        prefFeedback = findPreference("pref_feedback");
+        prefFeedback.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
                 Intent feedbackIntent = new Intent(Intent.ACTION_SEND);
@@ -119,12 +128,12 @@ public class SettingsActivity extends PreferenceActivity {
             }
         });
 
-        deviceName = findPreference("pref_device_name");
-        deviceName.setSummary(CommonUtils.getDeviceName());
+        prefDeviceName = findPreference("pref_device_name");
+        prefDeviceName.setSummary(CommonUtils.getDeviceName());
 
-        checkUpdate = findPreference("pref_check_update");
-        checkUpdate.setSummary("当前版本：" + BuildConfig.VERSION_NAME);
-        checkUpdate.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+        prefCheckUpdate = findPreference("pref_check_update");
+        prefCheckUpdate.setSummary("当前版本：" + BuildConfig.VERSION_NAME);
+        prefCheckUpdate.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
                 ProgressDialog dialog = ProgressDialog.show(SettingsActivity.this, "",
@@ -135,21 +144,36 @@ public class SettingsActivity extends PreferenceActivity {
             }
         });
 
-        displaySetting = findPreference("pref_post_display");
-        displaySetting.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+        prefDonate = findPreference("pref_donate");
+        prefDonate.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
-                Intent intent = new Intent(SettingsActivity.this, PostDisplaySettingActivity.class);
-                startActivity(intent);
-                return false;
+                new AlertDialog.Builder(SettingsActivity.this).setTitle("捐赠")
+                        .setMessage("做这个应用纯属爱好，除了付出时间和精力之外，还承担着 Google 开发者帐号、域名和服务器的费用，当然，不算太多，个人承担倒也没什么问题。\n\n总之，感谢你的喜欢，感谢你的咖啡，我今天心情应该会很好。")
+                        .setPositiveButton("复制支付宝用户名", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                ClipboardManager clipboardManager = (ClipboardManager) SettingsActivity.this.getSystemService(Context.CLIPBOARD_SERVICE);
+                                ClipData clipData = ClipData.newPlainText("alipay", CommonUtils.decode("ihainan72@163.com"));
+                                clipboardManager.setPrimaryClip(clipData);
+                                Toast.makeText(SettingsActivity.this, "复制成功", Toast.LENGTH_SHORT).show();
+                                dialog.dismiss();
+                            }
+                        }).setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                }).create().show();
+                return true;
             }
         });
 
+        /* 通知相关 */
         prefEnableNotify = (SwitchPreference) findPreference("pref_enable_notify");
-        prefEnableReplyNotify = (CheckBoxPreference) findPreference("pref_enable_reply_notify");
-        prefEnableQuoteNotify = (CheckBoxPreference) findPreference("pref_enable_quote_notify");
-        prefEnableAtNotify = (CheckBoxPreference) findPreference("pref_enable_at_notify");
-        prefEnableFollowNotify = (CheckBoxPreference) findPreference("pref_enable_follow_notify");
+        prefEnableSilentMode = (SwitchPreference) findPreference("pref_night_silent_mode");
+        prefEnableNotifyType = findPreference("pref_enable_notify_type");
+
         prefEnableNotify.setChecked(BUApplication.enableNotify);
 
         setupNotifySettings(BUApplication.enableNotify);
@@ -164,56 +188,94 @@ public class SettingsActivity extends PreferenceActivity {
             }
         });
 
-        prefEnableReplyNotify.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+        prefEnableSilentMode.setChecked(BUApplication.enableSilentMode);
+        prefEnableSilentMode.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
             @Override
             public boolean onPreferenceChange(Preference preference, Object newValue) {
                 Boolean checked = (Boolean) newValue;
-                BUApplication.enableReplyNotify = checked;
-                BUApplication.setEnableReplyNotify(SettingsActivity.this);
+                BUApplication.enableSilentMode = checked;
+                BUApplication.setEnableSilentMode(SettingsActivity.this);
                 return true;
             }
         });
 
-        prefEnableQuoteNotify.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+        final String[] notifyTypes = new String[]{"回复通知", "引用通知", "@ 通知", "关注通知"};
+        final boolean[] notifyIsEnable = new boolean[]{BUApplication.enableReplyNotify.booleanValue(), BUApplication.enableQuoteNotify.booleanValue(),
+                BUApplication.enableAtNotify.booleanValue(), BUApplication.enableFollowingNotify.booleanValue()};
+        prefEnableNotifyType.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
-            public boolean onPreferenceChange(Preference preference, Object newValue) {
-                Boolean checked = (Boolean) newValue;
-                BUApplication.enableQuoteNotify = checked;
-                BUApplication.setEnableQuoteNotify(SettingsActivity.this);
+            public boolean onPreferenceClick(Preference preference) {
+                new AlertDialog.Builder(SettingsActivity.this)
+                        .setTitle("允许通知类型")
+                        .setMultiChoiceItems(notifyTypes, notifyIsEnable, new DialogInterface.OnMultiChoiceClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int indexSelected, boolean checked) {
+                                if (indexSelected == 0) {
+                                    BUApplication.enableReplyNotify = checked;
+                                    BUApplication.setEnableReplyNotify(SettingsActivity.this);
+                                } else if (indexSelected == 1) {
+                                    BUApplication.enableQuoteNotify = checked;
+                                    BUApplication.setEnableQuoteNotify(SettingsActivity.this);
+                                } else if (indexSelected == 2) {
+                                    BUApplication.enableAtNotify = checked;
+                                    BUApplication.setEnableAtNotify(SettingsActivity.this);
+                                } else if (indexSelected == 3) {
+                                    BUApplication.enableFollowingNotify = checked;
+                                    BUApplication.setEnableFollowNotify(SettingsActivity.this);
+                                }
+                            }
+                        }).create().show();
+
                 return true;
             }
         });
 
-        prefEnableAtNotify.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+        /* 界面相关 */
+        prefDisplaySetting = findPreference("pref_post_display");
+        prefDisplaySetting.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
-            public boolean onPreferenceChange(Preference preference, Object newValue) {
-                Boolean checked = (Boolean) newValue;
-                BUApplication.enableAtNotify = checked;
-                BUApplication.setEnableAtNotify(SettingsActivity.this);
+            public boolean onPreferenceClick(Preference preference) {
+                Intent intent = new Intent(SettingsActivity.this, PostDisplaySettingActivity.class);
+                startActivity(intent);
+                return false;
+            }
+        });
+
+        final String[] actions = new String[]{"查看回帖楼层", "查看主楼"};
+        prefHomePageClick = findPreference("pref_home_page_click");
+        prefHomePageClick.setSummary(actions[BUApplication.homePageClickEventType]);
+        prefHomePageClick.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                new AlertDialog.Builder(SettingsActivity.this).setTitle("首页帖子点击事件").setSingleChoiceItems(actions, BUApplication.homePageClickEventType, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        BUApplication.homePageClickEventType = which;
+                        BUApplication.setHomePageClickEventType(SettingsActivity.this);
+                        prefHomePageClick.setSummary(actions[BUApplication.homePageClickEventType]);
+                        dialog.dismiss();
+                    }
+                }).create().show();
                 return true;
             }
         });
 
-        prefEnableFollowNotify.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+        prefAdvancedEditor = (SwitchPreference) findPreference("pref_advanced_editor");
+        prefAdvancedEditor.setChecked(BUApplication.enableAdvancedEditor);
+        prefAdvancedEditor.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
             @Override
             public boolean onPreferenceChange(Preference preference, Object newValue) {
                 Boolean checked = (Boolean) newValue;
-                BUApplication.enableFollowingNotify = checked;
-                BUApplication.setEnableFollowNotify(SettingsActivity.this);
+                BUApplication.enableAdvancedEditor = checked;
+                BUApplication.setEnableAdvancedEditor(SettingsActivity.this);
                 return true;
             }
         });
     }
 
     private void setupNotifySettings(boolean checked) {
-        prefEnableReplyNotify.setChecked(BUApplication.enableReplyNotify);
-        prefEnableQuoteNotify.setChecked(BUApplication.enableQuoteNotify);
-        prefEnableAtNotify.setChecked(BUApplication.enableAtNotify);
-        prefEnableFollowNotify.setChecked(BUApplication.enableFollowingNotify);
-
-        prefEnableReplyNotify.setEnabled(checked);
-        prefEnableQuoteNotify.setEnabled(checked);
-        prefEnableAtNotify.setEnabled(checked);
-        prefEnableFollowNotify.setEnabled(checked);
+        prefEnableNotifyType.setEnabled(checked);
+        prefEnableSilentMode.setEnabled(checked);
     }
 }

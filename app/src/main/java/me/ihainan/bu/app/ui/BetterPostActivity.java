@@ -38,6 +38,7 @@ import android.widget.Toast;
 
 import me.ihainan.bu.app.R;
 import me.ihainan.bu.app.ui.fragment.EmoticonFragment;
+import me.ihainan.bu.app.utils.BUApplication;
 import me.ihainan.bu.app.utils.CommonUtils;
 import me.ihainan.bu.app.utils.ui.EditTextUndoRedo;
 
@@ -73,7 +74,7 @@ public class BetterPostActivity extends AppCompatActivity {
     private DrawerLayout mDrawer;
     private HorizontalScrollView mButtonPanel;
     private EditText mETMessage, mETSubject;
-    private ImageView mIVUndoAction, mIVRedoAction, mIVEmotionAction, mIVAttachment;
+    private ImageView mIVUndoAction, mIVRedoAction, mIVEmotionAction, mIVAttachment, mIvBold, mIvItalic, mIvQuote;
     private EmoticonFragment mEmoticonFragment;
     private EditTextUndoRedo mETUndoRedo;
 
@@ -144,9 +145,38 @@ public class BetterPostActivity extends AppCompatActivity {
         mIVRedoAction = (ImageView) findViewById(R.id.redo_action);
         mIVEmotionAction = (ImageView) findViewById(R.id.emotion_action);
         mIVAttachment = (ImageView) findViewById(R.id.attachment_action);
+        mIvBold = (ImageView) findViewById(R.id.bold_action);
+        mIvItalic = (ImageView) findViewById(R.id.italic_action);
+        mIvQuote = (ImageView) findViewById(R.id.quote_action);
+        if (BUApplication.enableAdvancedEditor) {
+            mIvBold.setVisibility(View.VISIBLE);
+            mIvItalic.setVisibility(View.VISIBLE);
+            mIvQuote.setVisibility(View.VISIBLE);
+        } else {
+            mIvBold.setVisibility(View.GONE);
+            mIvItalic.setVisibility(View.GONE);
+            mIvQuote.setVisibility(View.GONE);
+        }
 
         // 初始化 UI 和按钮
         setUpButtonActions();
+    }
+
+    private void addTag(String tag, boolean isWrapLine) {
+        int startSelection = mETMessage.getSelectionStart();
+        int endSelection = mETMessage.getSelectionEnd();
+        String wrapLine = isWrapLine ? "\n" : "";
+        String before = wrapLine + "[" + tag + "]";
+        String after = "[/" + tag + "]" + wrapLine;
+        String selectedStr = mETMessage.getText().subSequence(startSelection, endSelection).toString();
+        String replaceStr = before + selectedStr + after;
+        mETMessage.getText().replace(Math.min(startSelection, endSelection), Math.max(startSelection, endSelection),
+                replaceStr, 0, replaceStr.length());
+
+        if (startSelection == endSelection)
+            mETMessage.setSelection(startSelection + before.length());
+        ((InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE))
+                .showSoftInput(mETMessage, InputMethodManager.SHOW_FORCED);
     }
 
     /**
@@ -203,6 +233,30 @@ public class BetterPostActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 showAttachmentDialog(ACTION_ADD_ATTACHMENT);
+            }
+        });
+
+        // 引用
+        mIvQuote.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                addTag("quote", false);
+            }
+        });
+
+        // 加粗
+        mIvBold.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                addTag("b", false);
+            }
+        });
+
+        // 斜体
+        mIvItalic.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                addTag("i", false);
             }
         });
     }

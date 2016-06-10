@@ -17,6 +17,8 @@ import com.xiaomi.mipush.sdk.PushMessageReceiver;
 
 import org.json.JSONObject;
 
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import me.ihainan.bu.app.R;
@@ -63,6 +65,11 @@ public class XMMessageReceiver extends PushMessageReceiver {
                 JSONObject jsonObject = new JSONObject(message.getContent());
                 Log.d(TAG, "onReceivePassThroughMessage >> " + message.getContent() + " " + message.getNotifyId());
                 int type = jsonObject.getInt("type");
+                if (BUApplication.enableSilentMode) {
+                    Calendar rightNow = Calendar.getInstance();
+                    int hour = rightNow.get(Calendar.HOUR_OF_DAY);
+                    if (hour >= 23 || hour < 8) return;
+                }
                 if (type == 0 && !BUApplication.getEnableReplyNotify(context)) return;
                 if (type == 1 && !BUApplication.getEnableQuoteNotify(context)) return;
                 if (type == 2 && !BUApplication.getEnableAtNotify(context)) return;
@@ -97,7 +104,7 @@ public class XMMessageReceiver extends PushMessageReceiver {
                     intent.setAction(Long.toString(System.currentTimeMillis()));
                     intent.putExtra(ProfileActivity.USER_NAME_TAG, followNotificationMessageData.following);
                     intent.putExtra(ProfileActivity.NOTIFY_ID_TAG, message.getNotifyId());
-                    
+
                     PendingIntent pendingIntent = PendingIntent.getActivity(context, message.getNotifyId(), intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
                     NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context);

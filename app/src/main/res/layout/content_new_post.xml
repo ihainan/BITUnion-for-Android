@@ -110,6 +110,30 @@
                                 android:focusable="false"
                                 android:padding="@dimen/bottom_icon_padding"
                                 android:src="@drawable/ic_attachment_black_24dp" />
+
+                            <ImageView
+                                android:id="@+id/bold_action"
+                                android:layout_width="45dp"
+                                android:layout_height="45dp"
+                                android:padding="@dimen/bottom_icon_padding"
+                                android:src="@drawable/ic_bold"
+                                android:visibility="visible" />
+
+                            <ImageView
+                                android:id="@+id/italic_action"
+                                android:layout_width="45dp"
+                                android:layout_height="45dp"
+                                android:padding="@dimen/bottom_icon_padding"
+                                android:src="@drawable/ic_italic"
+                                android:visibility="visible" />
+
+                            <ImageView
+                                android:id="@+id/quote_action"
+                                android:layout_width="50dp"
+                                android:layout_height="50dp"
+                                android:padding="@dimen/bottom_icon_padding"
+                                android:src="@drawable/ic_quote_2"
+                                android:visibility="visible" />
                         </LinearLayout>
                     </HorizontalScrollView>
                 </LinearLayout>

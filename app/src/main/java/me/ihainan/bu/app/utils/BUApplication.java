@@ -122,12 +122,57 @@ public class BUApplication extends Application {
     public static Boolean enableQuoteNotify = true;
     public static Boolean enableAtNotify = true;
     public static Boolean enableFollowingNotify = true;
+    public static Integer homePageClickEventType = 0;   // 0 表示进尾楼，1 表示进 1 楼
+    public static Boolean enableAdvancedEditor = false; // 是否使用高级编辑器
+    public static Boolean enableSilentMode = false; // 夜间免打扰模式
 
     public final static String PREF_ENABLE_NOTIFY = "PREF_ENABLE_NOTIFY";
     public final static String PREF_ENABLE_REPLY_NOTIFY = "PREF_ENABLE_REPLY_NOTIFY";
     public final static String PREF_ENABLE_QUOTE_NOTIFY = "PREF_ENABLE_QUOTE_NOTIFY";
     public final static String PREF_ENABLE_AT_NOTIFY = "PREF_ENABLE_AT_NOTIFY";
     public final static String PREF_ENABLE_FOLLOW_NOTIFY = "PREF_ENABLE_FOLLOW_NOTIFY";
+    public final static String PREF_HOME_PAGE_CLICK_EVENT = "PREF_HOME_PAGE_CLICK_EVENT";
+    public final static String PREF_ENABLE_ADVANCED_EDITOR = "PREF_ENABLE_ADVANCED_EDITOR";
+    public final static String PREF_ENABLE_SILENT_MODE = "PREF_ENABLE_SILENT_MODE";
+
+    public static Boolean getEnableSilentMode(Context context) {
+        enableSilentMode = (Boolean) BUApplication.getCache(context).getAsObject(PREF_ENABLE_SILENT_MODE);
+        if (enableSilentMode == null) enableSilentMode = false;
+        return enableSilentMode;
+    }
+
+    public static void setEnableSilentMode(Context context) {
+        Log.d(TAG, "setEnableSilentMode >> " + enableSilentMode);
+        if (enableSilentMode != null) {
+            BUApplication.getCache(context).put(PREF_ENABLE_SILENT_MODE, enableSilentMode);
+        }
+    }
+
+    public static Boolean getEnableAdvancedEditor(Context context) {
+        enableAdvancedEditor = (Boolean) BUApplication.getCache(context).getAsObject(PREF_ENABLE_ADVANCED_EDITOR);
+        if (enableAdvancedEditor == null) enableAdvancedEditor = false;
+        return enableAdvancedEditor;
+    }
+
+    public static void setEnableAdvancedEditor(Context context) {
+        Log.d(TAG, "setEnableAdvancedEditor >> " + enableAdvancedEditor);
+        if (enableAdvancedEditor != null) {
+            BUApplication.getCache(context).put(PREF_ENABLE_ADVANCED_EDITOR, enableAdvancedEditor);
+        }
+    }
+
+    public static Integer getHomePageClickEventType(Context context) {
+        homePageClickEventType = (Integer) BUApplication.getCache(context).getAsObject(PREF_HOME_PAGE_CLICK_EVENT);
+        if (homePageClickEventType == null) homePageClickEventType = 0;
+        return homePageClickEventType;
+    }
+
+    public static void setHomePageClickEventType(Context context) {
+        Log.d(TAG, "setHomePageClickEventType >> " + homePageClickEventType);
+        if (homePageClickEventType != null) {
+            BUApplication.getCache(context).put(PREF_HOME_PAGE_CLICK_EVENT, homePageClickEventType);
+        }
+    }
 
     public static Boolean getEnableFollowNotify(Context context) {
         enableFollowingNotify = (Boolean) BUApplication.getCache(context).getAsObject(PREF_ENABLE_FOLLOW_NOTIFY);
@@ -316,6 +361,9 @@ public class BUApplication extends Application {
         getEnableQuoteNotify(context);
         getEnableAtNotify(context);
         getEnableFollowNotify(context);
+        getHomePageClickEventType(context);
+        getEnableAdvancedEditor(context);
+        getEnableSilentMode(context);
     }
 
     /* 论坛列表相关 */
