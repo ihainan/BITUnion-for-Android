@@ -15,7 +15,7 @@ public class Notification implements Serializable {
     public final static String TAG = Notification.class.getSimpleName();
 
     // Json mapping fields
-    public Long nt_id;
+    public Integer nt_id;
     public int type = 0;
     public String username;
     public String title;

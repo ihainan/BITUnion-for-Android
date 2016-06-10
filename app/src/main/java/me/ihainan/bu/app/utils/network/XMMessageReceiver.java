@@ -73,6 +73,7 @@ public class XMMessageReceiver extends PushMessageReceiver {
                     intent.setAction(Long.toString(System.currentTimeMillis()));
                     intent.putExtra(PostListActivity.THREAD_ID_TAG, notificationMessageData.tid);
                     intent.putExtra(PostListActivity.THREAD_JUMP_FLOOR, notificationMessageData.floor);
+                    intent.putExtra(PostListActivity.NOTIFY_ID_TAG, message.getNotifyId());
                     PendingIntent pendingIntent = PendingIntent.getActivity(context, message.getNotifyId(), intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
                     NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context);
@@ -95,6 +96,8 @@ public class XMMessageReceiver extends PushMessageReceiver {
                     Intent intent = new Intent(context, ProfileActivity.class);
                     intent.setAction(Long.toString(System.currentTimeMillis()));
                     intent.putExtra(ProfileActivity.USER_NAME_TAG, followNotificationMessageData.following);
+                    intent.putExtra(ProfileActivity.NOTIFY_ID_TAG, message.getNotifyId());
+                    
                     PendingIntent pendingIntent = PendingIntent.getActivity(context, message.getNotifyId(), intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
                     NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context);

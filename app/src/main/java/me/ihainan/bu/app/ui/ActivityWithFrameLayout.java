@@ -4,7 +4,11 @@ import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.view.GravityCompat;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 
 import me.ihainan.bu.app.R;
@@ -73,5 +77,27 @@ public class ActivityWithFrameLayout extends SwipeActivity {
 
             if (mFragment != null) mFragment.setArguments(bundle);
         }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        if (mFragment instanceof NotificationListFragment) {
+            MenuInflater inflater = getMenuInflater();
+            inflater.inflate(R.menu.notification_list_menu, menu);
+            return true;
+        }
+
+        return false;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_check_all:
+                ((NotificationListFragment) mFragment).checkAll();
+                return true;
+
+        }
+        return super.onOptionsItemSelected(item);
     }
 }

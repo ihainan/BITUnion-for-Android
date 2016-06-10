@@ -54,6 +54,7 @@ public class PostListActivity extends SwipeActivity {
     public final static String THREAD_AUTHOR_NAME_TAG = "THREAD_AUTHOR_NAME_TAG";
     public final static String THREAD_REPLY_COUNT_TAG = "THREAD_REPLY_COUNT_TAG";
     public final static String THREAD_JUMP_FLOOR = "THREAD_JUMP_FLOOR";
+    public final static String NOTIFY_ID_TAG = TAG + "_NOTIFY_ID_TAG";
 
     // UI references
     private ViewPager mPager;
@@ -70,6 +71,7 @@ public class PostListActivity extends SwipeActivity {
     private Integer mJumpPage = 0, mJumpPageIndex = 0;   // 需要跳转的页数和页面内位置
     private PostListPageAdapter postListPageAdapter;
     private Long mFid;
+    private Integer mNotifyId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -152,10 +154,14 @@ public class PostListActivity extends SwipeActivity {
             mAuthorName = bundle.getString(THREAD_AUTHOR_NAME_TAG);
             mReplyCount = bundle.getLong(THREAD_REPLY_COUNT_TAG);
             mJumpFloor = bundle.getInt(THREAD_JUMP_FLOOR, -1);
+            mNotifyId = bundle.getInt(NOTIFY_ID_TAG, -1);
             if (mJumpFloor != -1) mJumpFloor += 1;
         }
 
         if (BUApplication.debugMode && mTid == null) mTid = 10588072L; // For test
+        if (mNotifyId != null && mNotifyId != -1) {
+            ExtraApi.markAsRead(this, mNotifyId);
+        }
     }
 
     private static int calculateTotalPage(long floor) {

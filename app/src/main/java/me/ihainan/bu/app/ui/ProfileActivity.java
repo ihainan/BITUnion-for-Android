@@ -39,6 +39,7 @@ public class ProfileActivity extends SwipeActivity {
     private final static String TAG = ProfileActivity.class.getSimpleName();
     public final static String USER_NAME_TAG = "USER_NAME_TAG";
     public final static String USER_ID_TAG = "USER_ID_TAG";
+    public final static String NOTIFY_ID_TAG = TAG + "_NOTIFY_ID_TAG";
 
     // UI references
     private ViewPager mPager;
@@ -50,6 +51,7 @@ public class ProfileActivity extends SwipeActivity {
     // Data
     private String mUsername;
     private Long mUid;
+    private Integer mNotifyId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,10 +64,15 @@ public class ProfileActivity extends SwipeActivity {
         if (bundle != null) {
             mUsername = bundle.getString(USER_NAME_TAG);
             mUid = bundle.getLong(USER_ID_TAG);
+            mNotifyId = bundle.getInt(NOTIFY_ID_TAG, -1);
         }
 
         if (mUsername == null && mUid == null) {
             mUsername = BUApplication.userSession.username;
+        }
+
+        if (mNotifyId != null && mNotifyId != -1) {
+            ExtraApi.markAsRead(this, mNotifyId);
         }
 
         // Collasping Toolbar

@@ -6,6 +6,7 @@ import android.util.Log;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
+import com.android.volley.VolleyError;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -455,10 +456,18 @@ public class ExtraApi {
                 "GET NOTIFICATION LIST", parameters, listener, errorListener);
     }
 
+    /**
+     * 将一条消息标记为已读
+     *
+     * @param context       上下文
+     * @param notifyId      消息 ID
+     * @param listener      response 事件监听器
+     * @param errorListener error 事件监听器
+     */
     public static void markAsRead(Context context, long notifyId,
                                   Response.Listener<JSONObject> listener,
                                   Response.ErrorListener errorListener) {
-        String url = NOTIFICATION_ENDPOINT + "/" + notifyId + "/read";
+        String url = NOTIFICATION_ENDPOINT + "/" + notifyId;
         Log.i(TAG, "markAsRead >> " + url);
 
         HashMap parameters = new HashMap();
@@ -466,10 +475,42 @@ public class ExtraApi {
                 "MARK AS READ", parameters, listener, errorListener);
     }
 
+    /**
+     * 将一条消息标记为已读
+     *
+     * @param context  上下文
+     * @param notifyId 消息 ID
+     */
+    public static void markAsRead(final Context context, Integer notifyId) {
+        ExtraApi.markAsRead(context, notifyId, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                Log.d(TAG, "markAsRead >> " + response.toString());
+                CommonUtils.debugToast(context, "成功标为已读");
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                String message = context.getString(R.string.error_network);
+                String debugMessage = TAG + " >> " + message;
+                CommonUtils.debugToast(context, debugMessage);
+                Log.e(TAG, debugMessage, error);
+            }
+        });
+    }
+
+    /**
+     * 将一个用户所有消息标记为已读
+     *
+     * @param context       上下文
+     * @param username      用户名，需要是 URL 编码
+     * @param listener      response 事件监听器
+     * @param errorListener error 事件监听器
+     */
     public static void markAllAsRead(Context context, String username,
                                      Response.Listener<JSONObject> listener,
                                      Response.ErrorListener errorListener) {
-        String url = NOTIFICATION_ENDPOINT + "/list/" + CommonUtils.encode(username) + "/all";
+        String url = NOTIFICATION_ENDPOINT + "/list/" + username + "/all";
         Log.i(TAG, "markAllAsRead >> " + url);
 
         HashMap parameters = new HashMap();

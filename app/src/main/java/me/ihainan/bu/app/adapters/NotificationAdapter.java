@@ -8,6 +8,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+
 import org.json.JSONObject;
 
 import java.util.List;
@@ -22,6 +25,7 @@ import me.ihainan.bu.app.ui.viewholders.LoadingViewHolder;
 import me.ihainan.bu.app.ui.viewholders.NotificationViewHolder;
 import me.ihainan.bu.app.utils.CommonUtils;
 import me.ihainan.bu.app.utils.network.BUApi;
+import me.ihainan.bu.app.utils.network.ExtraApi;
 
 /**
  * 通知适配器
@@ -68,9 +72,11 @@ public class NotificationAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             if (notification.is_read == 0) {
                 viewHolder.rootLayout.setBackgroundColor(mContext.getResources().getColor(R.color.background_white));
                 viewHolder.content.setTextAppearance(mContext, R.style.boldText);
+                viewHolder.username.setTextAppearance(mContext, R.style.boldText);
             } else {
                 viewHolder.rootLayout.setBackgroundColor(mContext.getResources().getColor(R.color.background_read));
                 viewHolder.content.setTextAppearance(mContext, R.style.normalText);
+                viewHolder.username.setTextAppearance(mContext, R.style.normalText);
             }
 
             // 收藏
@@ -113,11 +119,12 @@ public class NotificationAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                     intent.setAction(Long.toString(System.currentTimeMillis()));
                     intent.putExtra(PostListActivity.THREAD_ID_TAG, notificationMessageData.tid);
                     intent.putExtra(PostListActivity.THREAD_JUMP_FLOOR, notificationMessageData.floor);
-
+                    intent.putExtra(PostListActivity.NOTIFY_ID_TAG, notification.nt_id);
                 } else if (type == 3) {
                     NotificationMessage.FollowNotificationMessageData followNotificationMessageData = BUApi.MAPPER.readValue(jsonObject.getJSONObject("data").toString(), NotificationMessage.FollowNotificationMessageData.class);
                     intent = new Intent(mContext, ProfileActivity.class);
                     intent.setAction(Long.toString(System.currentTimeMillis()));
+                    intent.putExtra(ProfileActivity.NOTIFY_ID_TAG, notification.nt_id);
                     intent.putExtra(ProfileActivity.USER_NAME_TAG, followNotificationMessageData.following);
                 }
 
@@ -126,24 +133,6 @@ public class NotificationAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                     viewHolder.rootLayout.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            if (notification.is_read == 0) {
-                                /*
-                                ExtraApi.markAsRead(mContext, notification.nt_id, new Response.Listener<JSONObject>() {
-                                    @Override
-                                    public void onResponse(JSONObject response) {
-                                        Log.d(TAG, "markAsRead >> " + response.toString());
-                                        CommonUtils.debugToast(mContext, "标为已读成功成功");
-                                    }
-                                }, new Response.ErrorListener() {
-                                    @Override
-                                    public void onErrorResponse(VolleyError error) {
-                                        String message = mContext.getString(R.string.error_network);
-                                        String debugMessage = TAG + " >> " + message;
-                                        CommonUtils.debugToast(mContext, debugMessage);
-                                        Log.e(TAG, debugMessage, error);
-                                    }
-                                }); */
-                            }
                             notification.is_read = 1;
                             notifyDataSetChanged();
                             mContext.startActivity(newIntent);
