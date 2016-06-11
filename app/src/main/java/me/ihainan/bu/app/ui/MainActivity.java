@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -19,11 +20,16 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
 import com.umeng.analytics.MobclickAgent;
 import com.xiaomi.mipush.sdk.MiPushClient;
+
+import org.json.JSONObject;
 
 import me.ihainan.bu.app.R;
 import me.ihainan.bu.app.models.Member;
@@ -31,6 +37,7 @@ import me.ihainan.bu.app.ui.fragment.HomeFragment;
 import me.ihainan.bu.app.ui.fragment.NotificationListFragment;
 import me.ihainan.bu.app.utils.BUApplication;
 import me.ihainan.bu.app.utils.CommonUtils;
+import me.ihainan.bu.app.utils.network.ExtraApi;
 import me.ihainan.bu.app.utils.network.SessionUpdateService;
 
 public class MainActivity extends AppCompatActivity {
@@ -44,6 +51,8 @@ public class MainActivity extends AppCompatActivity {
     private TextView mNavUsername;
     private ImageButton mNavExit;
     private NavigationView mNavigationView;
+    private RelativeLayout mNotificationBadgeLayout;
+    private TextView mBadgeCount;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -260,7 +269,15 @@ public class MainActivity extends AppCompatActivity {
                 intent = new Intent(this, SearchActivity.class);
                 startActivity(intent);
                 return true;
-            case R.id.action_notificaion:
+            case R.id.action_notification:
+                intent = new Intent(this, ActivityWithFrameLayout.class);
+                intent.putExtra(ActivityWithFrameLayout.FRAGMENT_TAG, NotificationListFragment.class.getSimpleName());
+                intent.putExtra(ActivityWithFrameLayout.TITLE_TAG, getString(R.string.title_activity_notification_box));
+
+                startActivity(intent);
+                return true;
+            case R.id.badge_root_layout:
+            case R.id.badge_layout:
                 intent = new Intent(this, ActivityWithFrameLayout.class);
                 intent.putExtra(ActivityWithFrameLayout.FRAGMENT_TAG, NotificationListFragment.class.getSimpleName());
                 intent.putExtra(ActivityWithFrameLayout.TITLE_TAG, getString(R.string.title_activity_notification_box));
@@ -284,6 +301,42 @@ public class MainActivity extends AppCompatActivity {
         // 友盟 SDK
         if (BUApplication.uploadData)
             MobclickAgent.onResume(this);
+
+        getUnreadCount();
+    }
+
+    private void getUnreadCount() {
+        ExtraApi.getUnreadCount(this, BUApplication.username, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                try {
+                    if (ExtraApi.checkStatus(response)) {
+                        Log.d(TAG, "getUnreadCount >> " + response.toString());
+                        int unreadCount = response.getInt("data");
+                        if (unreadCount == 0) {
+                            mBadgeCount.setVisibility(View.GONE);
+                        } else {
+                            String badgeStr = unreadCount > 9 ? "9+" : "" + unreadCount;
+                            mBadgeCount.setVisibility(View.VISIBLE);
+                            mBadgeCount.setText(badgeStr);
+                        }
+                    }
+                } catch (Exception e) {
+                    String message = MainActivity.this.getString(R.string.error_parse_json);
+                    String debugMessage = TAG + " >> " + message;
+                    CommonUtils.debugToast(MainActivity.this, debugMessage);
+                    Log.e(TAG, debugMessage, e);
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                String message = MainActivity.this.getString(R.string.error_network);
+                String debugMessage = TAG + " >> " + message;
+                CommonUtils.debugToast(MainActivity.this, debugMessage);
+                Log.e(TAG, debugMessage, error);
+            }
+        });
     }
 
     @Override
@@ -299,6 +352,28 @@ public class MainActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.home_menu, menu);
-        return true;
+
+        // Notification
+        MenuItem itemNotify = menu.findItem(R.id.action_notification);
+        MenuItemCompat.setActionView(itemNotify, R.layout.notification_update_count_layout);
+        mNotificationBadgeLayout = (RelativeLayout) MenuItemCompat.getActionView(itemNotify);
+
+        mBadgeCount = (TextView) mNotificationBadgeLayout.findViewById(R.id.badge_notification);
+        View.OnClickListener onClickListener = new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, ActivityWithFrameLayout.class);
+                intent.putExtra(ActivityWithFrameLayout.FRAGMENT_TAG, NotificationListFragment.class.getSimpleName());
+                intent.putExtra(ActivityWithFrameLayout.TITLE_TAG, getString(R.string.title_activity_notification_box));
+
+                startActivity(intent);
+            }
+        };
+
+        mNotificationBadgeLayout.setOnClickListener(onClickListener);
+        mNotificationBadgeLayout.findViewById(R.id.badge_layout).setOnClickListener(onClickListener);
+        mNotificationBadgeLayout.findViewById(R.id.button).setOnClickListener(onClickListener);
+
+        return super.onCreateOptionsMenu(menu);
     }
 }

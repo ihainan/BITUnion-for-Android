@@ -477,6 +477,44 @@ public class ExtraApi {
     }
 
     /**
+     * 获取指定用户的未读消息个数
+     *
+     * @param context       上下文
+     * @param username      用户名
+     * @param listener      response 事件监听器
+     * @param errorListener error 事件监听器
+     */
+    public static void getUnreadCount(final Context context, String username,
+                                      Response.Listener<JSONObject> listener,
+                                      Response.ErrorListener errorListener) {
+        String url = NOTIFICATION_ENDPOINT + "/count/" + username + "/unread";
+        Log.i(TAG, "getUnreadCount >> " + url);
+
+        HashMap parameters = new HashMap();
+        makeRequest(Request.Method.GET, context, url,
+                "UNREAD COUNT", parameters, listener, errorListener);
+    }
+
+    /**
+     * 获取指定用户的所有消息的个数
+     *
+     * @param context       上下文
+     * @param username      用户名
+     * @param listener      response 事件监听器
+     * @param errorListener error 事件监听器
+     */
+    public static void getNotificationCount(final Context context, String username,
+                                            Response.Listener<JSONObject> listener,
+                                            Response.ErrorListener errorListener) {
+        String url = NOTIFICATION_ENDPOINT + "/count/" + username + "/all";
+        Log.i(TAG, "getUnreadCount >> " + url);
+
+        HashMap parameters = new HashMap();
+        makeRequest(Request.Method.GET, context, url,
+                "UNREAD COUNT", parameters, listener, errorListener);
+    }
+
+    /**
      * 将一条消息标记为已读
      *
      * @param context  上下文

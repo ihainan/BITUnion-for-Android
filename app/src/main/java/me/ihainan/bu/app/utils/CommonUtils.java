@@ -455,7 +455,7 @@ public class CommonUtils {
         if (originalURL.endsWith(",120,120")) originalURL = originalURL.replace(",120,120", "");
 
         if (originalURL.contains("aid="))
-            originalURL = BUApi.getBaseURL() + "images/standard/noavatar.gif";
+            originalURL = "file:///android_asset/avatar/default_avatar.png";
         Log.d(TAG, "getRealImageURL >> " + ori + " - " + originalURL);
         return originalURL;
     }

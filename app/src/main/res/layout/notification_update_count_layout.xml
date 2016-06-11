@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/badge_root_layout"
+    style="@android:style/Widget.ActionButton"
+    android:layout_width="?attr/actionBarSize"
+    android:layout_height="?attr/actionBarSize"
+    android:layout_gravity="center"
+    android:clickable="true"
+    android:gravity="center"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:id="@+id/badge_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:clickable="true">
+
+        <RelativeLayout
+            android:id="@+id/relative_layout_item_count"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:clickable="true">
+
+            <Button
+                android:id="@+id/button"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:background="@drawable/ic_inbox_white_24dp"
+                android:clickable="true" />
+        </RelativeLayout>
+
+        <TextView
+            android:id="@+id/badge_notification"
+            android:layout_width="13dp"
+            android:layout_height="13dp"
+            android:layout_alignRight="@id/relative_layout_item_count"
+            android:background="@drawable/rounded_square"
+            android:gravity="center"
+            android:text="10+"
+            android:textColor="#FFF"
+            android:textSize="7sp"
+            android:textStyle="bold"
+            android:visibility="gone" />
+    </RelativeLayout>
+</RelativeLayout>
