@@ -180,6 +180,10 @@
             android:name=".ui.ActivityWithFrameLayout"
             android:label="@string/title_activity_with_framelayout"
             android:theme="@style/AppTheme.SwipeTheme" />
+        <activity
+            android:name=".ui.FeedbackActivity"
+            android:label="@string/title_activity_feedback"
+            android:theme="@style/AppTheme.SwipeTheme" />
     </application>
 
 </manifest>

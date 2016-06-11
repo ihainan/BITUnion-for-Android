@@ -8,7 +8,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.preference.CheckBoxPreference;
 import android.preference.Preference;
 import android.preference.SwitchPreference;
 import android.support.v7.widget.Toolbar;
@@ -118,12 +117,15 @@ public class SettingsActivity extends PreferenceActivity {
         prefFeedback.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
+                /*
                 Intent feedbackIntent = new Intent(Intent.ACTION_SEND);
                 feedbackIntent.setType("message/rfc822");
                 feedbackIntent.putExtra(Intent.EXTRA_EMAIL, new String[]{"ihainan72@gmail.com"});
                 feedbackIntent.putExtra(Intent.EXTRA_SUBJECT, "联盟安卓客户端意见反馈");
                 feedbackIntent.putExtra(Intent.EXTRA_TEXT, "\n---\n当前版本：" + BuildConfig.VERSION_NAME);
-                startActivity(Intent.createChooser(feedbackIntent, "发送邮件..."));
+                startActivity(Intent.createChooser(feedbackIntent, "发送邮件...")); */
+                Intent intent = new Intent(SettingsActivity.this, FeedbackActivity.class);
+                startActivity(intent);
                 return false;
             }
         });
@@ -149,7 +151,7 @@ public class SettingsActivity extends PreferenceActivity {
             @Override
             public boolean onPreferenceClick(Preference preference) {
                 new AlertDialog.Builder(SettingsActivity.this).setTitle("捐赠")
-                        .setMessage("做这个应用纯属爱好，除了付出时间和精力之外，还承担着 Google 开发者帐号、域名和服务器的费用，当然，不算太多，个人承担倒也没什么问题。\n\n总之，感谢你的喜欢，感谢你的咖啡，我今天心情应该会很好。")
+                        .setMessage("做这个应用纯属业余爱好。除了时间和精力付出之外，还承担着 Google 开发者帐号、域名和服务器的费用。当然，不算太多，个人承担倒也没什么问题。\n\n总之，感谢你的咖啡，感谢你的喜欢，我今天心情应该会很好 :D")
                         .setPositiveButton("复制支付宝用户名", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
@@ -200,16 +202,19 @@ public class SettingsActivity extends PreferenceActivity {
         });
 
         final String[] notifyTypes = new String[]{"回复通知", "引用通知", "@ 通知", "关注通知"};
-        final boolean[] notifyIsEnable = new boolean[]{BUApplication.enableReplyNotify.booleanValue(), BUApplication.enableQuoteNotify.booleanValue(),
+        final boolean[] notifiesIsEnable = new boolean[]{BUApplication.enableReplyNotify.booleanValue(), BUApplication.enableQuoteNotify.booleanValue(),
                 BUApplication.enableAtNotify.booleanValue(), BUApplication.enableFollowingNotify.booleanValue()};
+        setupPrefEnableNotifyTypeSummary(notifyTypes, notifiesIsEnable);
+
         prefEnableNotifyType.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
                 new AlertDialog.Builder(SettingsActivity.this)
                         .setTitle("允许通知类型")
-                        .setMultiChoiceItems(notifyTypes, notifyIsEnable, new DialogInterface.OnMultiChoiceClickListener() {
+                        .setMultiChoiceItems(notifyTypes, notifiesIsEnable, new DialogInterface.OnMultiChoiceClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int indexSelected, boolean checked) {
+                                setupPrefEnableNotifyTypeSummary(notifyTypes, notifiesIsEnable);
                                 if (indexSelected == 0) {
                                     BUApplication.enableReplyNotify = checked;
                                     BUApplication.setEnableReplyNotify(SettingsActivity.this);
@@ -248,7 +253,7 @@ public class SettingsActivity extends PreferenceActivity {
 
             @Override
             public boolean onPreferenceClick(Preference preference) {
-                new AlertDialog.Builder(SettingsActivity.this).setTitle("首页帖子点击事件").setSingleChoiceItems(actions, BUApplication.homePageClickEventType, new DialogInterface.OnClickListener() {
+                AlertDialog.Builder builder = new AlertDialog.Builder(SettingsActivity.this).setTitle("首页帖子点击事件").setSingleChoiceItems(actions, BUApplication.homePageClickEventType, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         BUApplication.homePageClickEventType = which;
@@ -256,7 +261,8 @@ public class SettingsActivity extends PreferenceActivity {
                         prefHomePageClick.setSummary(actions[BUApplication.homePageClickEventType]);
                         dialog.dismiss();
                     }
-                }).create().show();
+                });
+                builder.create().show();
                 return true;
             }
         });
@@ -277,5 +283,18 @@ public class SettingsActivity extends PreferenceActivity {
     private void setupNotifySettings(boolean checked) {
         prefEnableNotifyType.setEnabled(checked);
         prefEnableSilentMode.setEnabled(checked);
+    }
+
+    private void setupPrefEnableNotifyTypeSummary(final String[] notifyTypes, final boolean[] notifiesIsEnable) {
+        String summary = "";
+        for (int i = 0; i < notifiesIsEnable.length; ++i) {
+            Boolean notifyEnable = notifiesIsEnable[i];
+            if (notifyEnable) summary = summary + notifyTypes[i] + " / ";
+        }
+
+        if (summary.equals("")) summary = "禁用所有通知";
+        else summary = summary.substring(0, summary.length() - 3);
+
+        prefEnableNotifyType.setSummary(summary);
     }
 }

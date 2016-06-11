@@ -35,6 +35,7 @@ import me.ihainan.bu.app.ui.viewholders.SelfieViewHolder;
 import me.ihainan.bu.app.utils.CommonUtils;
 import me.ihainan.bu.app.utils.BUApplication;
 import me.ihainan.bu.app.utils.network.BUApi;
+import me.ihainan.bu.app.utils.ui.HtmlUtil;
 
 /**
  * Forum LatestThread List Adapter
@@ -162,7 +163,7 @@ public class LatestThreadListAdapter extends RecyclerView.Adapter<RecyclerView.V
             CommonUtils.setUserAvatarClickListener(mContext,
                     holder.avatar, -1,
                     latestThread.lastreply.who);
-            holder.forumName.setText(CommonUtils.decode(latestThread.fname));
+            holder.forumName.setText(HtmlUtil.getSummaryOfMessage(CommonUtils.decode(latestThread.fname)));
             holder.action.setText(" 发表了新帖");
         } else {
             // 从缓存中获取用户头像
@@ -200,7 +201,7 @@ public class LatestThreadListAdapter extends RecyclerView.Adapter<RecyclerView.V
                     CommonUtils.truncateString(
                             CommonUtils.decode(latestThread.lastreply.who),
                             BUApplication.MAX_USER_NAME_LENGTH));
-            holder.forumName.setText(CommonUtils.decode(latestThread.fname));
+            holder.forumName.setText(HtmlUtil.getSummaryOfMessage(CommonUtils.decode(latestThread.fname)));
             holder.action.setText(" 回复了帖子");
             CommonUtils.setUserAvatarClickListener(mContext,
                     holder.avatar, -1,

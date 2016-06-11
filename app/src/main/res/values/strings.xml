@@ -18,6 +18,12 @@
     <string name="update_session_success">更新会话成功</string>
     <string name="logout_info">确定登出系统？</string>
 
+    <!-- Feedback -->
+    <string name="prompt_email">邮箱</string>
+    <string name="prompt_feedback">内容</string>
+    <string name="message_success_add_feedback">你的建议已经发给开发者，非常感谢！</string>
+    <string name="message_error_add_feedback">发送反馈失败，请稍后重试</string>
+
     <!-- Error message -->
     <string name="error_title">错误</string>
     <string name="error_insert_attachment">插入附件失败</string>
@@ -113,19 +119,21 @@
     <string name="title_activity_better_post">发布回复</string>
     <string name="title_new_post">发布回复</string>
     <string name="title_new_thread">发布主题</string>
-
-    <!-- Editor -->
-    <string name="message_exit_editor">帖子内容不为空，是否仍然退出编辑器？</string>
-    <string name="compressing_image">正在压缩图片</string>
-    <string name="processing_attachment">正在处理附件</string>
     <string name="title_activity_focus_list">关注列表</string>
+    <string name="title_activity_with_framelayout">无标题</string>
     <string name="title_activity_search">搜索</string>
     <string name="title_activity_new_following_list">关注页面</string>
     <string name="title_activity_demo">测试</string>
     <string name="title_activity_forum_list">板块</string>
     <string name="title_activity_preference">设置</string>
     <string name="title_activity_notification_box">通知列表</string>
-    <string name="title_activity_with_framelayout">无标题</string>
+    <string name="title_activity_feedback">意见反馈</string>
+
+    <!-- Editor -->
+    <string name="message_exit_editor">帖子内容不为空，是否仍然退出编辑器？</string>
+    <string name="compressing_image">正在压缩图片</string>
+    <string name="processing_attachment">正在处理附件</string>
+
 
     <!-- Notification -->
     <string name="message_mark_all_as_read">是否将所有未读消息标记为已读？</string>

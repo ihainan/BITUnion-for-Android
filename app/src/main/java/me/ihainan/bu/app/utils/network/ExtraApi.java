@@ -15,6 +15,7 @@ import java.util.HashMap;
 
 import me.ihainan.bu.app.BuildConfig;
 import me.ihainan.bu.app.R;
+import me.ihainan.bu.app.models.Feedback;
 import me.ihainan.bu.app.utils.BUApplication;
 import me.ihainan.bu.app.utils.CommonUtils;
 
@@ -517,4 +518,28 @@ public class ExtraApi {
         makeRequest(Request.Method.PUT, context, url,
                 "MARK ALL AS READ", parameters, listener, errorListener);
     }
+
+    /* 反馈相关接口 */
+    public final static String FEEDBACK_ENDPOINT = ENDPOINT + "/feedback";
+
+    public static void addFeedback(Context context, Feedback feedback,
+                                   Response.Listener<JSONObject> listener,
+                                   Response.ErrorListener errorListener) {
+        String url = FEEDBACK_ENDPOINT;
+        Log.i(TAG, "addFeedback >> " + url);
+
+        HashMap parameters = new HashMap<>();
+        parameters.put("application", feedback.application);
+        parameters.put("deviceName", feedback.deviceName);
+        parameters.put("version", feedback.version);
+        parameters.put("versionCode", feedback.versionCode);
+        parameters.put("username", feedback.username);
+        parameters.put("email", feedback.email);
+        parameters.put("content", feedback.content);
+        parameters.put("dtCreated", feedback.dtCreated);
+
+        makeRequest(Request.Method.POST, context, url,
+                "ADD_FEEDBACK", parameters, listener, errorListener);
+    }
+
 }
