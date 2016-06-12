@@ -76,7 +76,7 @@ public class PicassoImageGetter implements Html.ImageGetter {
                         return null;
                     }
                 } catch (IOException e) {
-                    Log.e(TAG, "getDrawable >> failed to load image for IOException " + source);
+                    Log.e(TAG, "getDrawable >> failed to load image for IOException " + source, e);
                     return null;
                 }
             }

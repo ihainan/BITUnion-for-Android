@@ -2,13 +2,13 @@ package me.ihainan.bu.app.utils;
 
 /**
  * Copyright (c) 2012-2013, Michael Yang 杨福海 (www.yangfuhai.com).
- * <p/>
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * <p/>
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- * <p/>
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -47,11 +47,14 @@ import android.graphics.Canvas;
 import android.graphics.PixelFormat;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.nfc.Tag;
+import android.util.Log;
 
 /**
  * @author Michael Yang（www.yangfuhai.com） update at 2013.08.07
  */
 public class ACache {
+    protected String TAG = ACache.class.getSimpleName();
     public static final int TIME_HOUR = 60 * 60;
     public static final int TIME_DAY = TIME_HOUR * 24;
     private static final int MAX_SIZE = 1000 * 1000 * 50; // 50 mb
@@ -426,6 +429,7 @@ public class ACache {
             try {
                 oos.close();
             } catch (IOException e) {
+                Log.e(TAG, "Exception", e);
             }
         }
     }

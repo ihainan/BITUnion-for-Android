@@ -7,7 +7,6 @@ import com.fasterxml.jackson.core.type.TypeReference;
 
 import org.json.JSONObject;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import me.ihainan.bu.app.R;

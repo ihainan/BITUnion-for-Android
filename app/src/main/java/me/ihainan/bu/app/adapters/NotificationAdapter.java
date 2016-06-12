@@ -8,9 +8,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-
 import org.json.JSONObject;
 
 import java.util.List;
@@ -25,7 +22,6 @@ import me.ihainan.bu.app.ui.viewholders.LoadingViewHolder;
 import me.ihainan.bu.app.ui.viewholders.NotificationViewHolder;
 import me.ihainan.bu.app.utils.CommonUtils;
 import me.ihainan.bu.app.utils.network.BUApi;
-import me.ihainan.bu.app.utils.network.ExtraApi;
 
 /**
  * 通知适配器

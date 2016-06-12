@@ -13,7 +13,6 @@
     <string name="prompt_username">用户名</string>
     <string name="prompt_password">密码</string>
     <string name="action_sign_in_short">登录</string>
-    <string name="login_page_title">北理 FTP 联盟</string>
     <string name="access_from_out_school">外网访问</string>
     <string name="update_session_success">更新会话成功</string>
     <string name="logout_info">确定登出系统？</string>
@@ -34,9 +33,7 @@
     <string name="error_subject_required">主题不得为空</string>
     <string name="error_message_length_short">回帖内容不得少于 5 个字</string>
     <string name="error_wrong_password">用户名或者密码错误</string>
-    <string name="error_login_timeout">登录超时，请重新登录</string>
     <string name="error_network">连接服务器发生异常</string>
-    <string name="error_unsupported_encoding">不支持的编码格式</string>
     <string name="error_parse_json">解析服务器返回数据失败</string>
     <string name="error_forum_need_password">该板块需要密码，暂时不能访问</string>
     <string name="error_forum_no_permission">你没有权限访问该板块</string>
@@ -45,14 +42,8 @@
     <string name="error_user_not_exists">用户不存在</string>
     <string name="error_negative_credit">积分为负，拉取数据失败</string>
     <string name="error_login_negative_credit">积分为负，不允许登录</string>
-    <string name="error_reach_bottom">底部所有帖子已经加载完毕啦</string>
-    <string name="error_reach_top">顶部所有帖子已经加载完毕啦</string>
-    <string name="error_unknown_json">服务器返回了未知格式的数据</string>
-    <string name="error_not_implement">然而程序猴子还没有开发此功能</string>
-    <string name="warning_not_new_data">然而并没有任何更新</string>
     <string name="error_no_storage_permission">无法读取外部存储，请检查是否具备相应的权限</string>
     <string name="error_storage_file_not_found">存储图片失败，请检查文件是否存在</string>
-    <string name="error_storage_file_to_media">存储到图库失败</string>
     <string name="error_download_image">下载图片失败，请检查网络</string>
     <string name="error_no_permission">没有文件写入权限，保存图片失败</string>
     <string name="error_no_new_events">哎呀并没有动态</string>
@@ -75,11 +66,7 @@
     <string name="action_settings">设置</string>
     <string name="action_home">首页</string>
     <string name="action_forum">板块</string>
-    <string name="action_discover">发现</string>
     <string name="action_focus">关注</string>
-    <string name="action_topic">热点话题</string>
-    <string name="action_feedback">意见反馈</string>
-    <string name="action_about">关于</string>
     <string name="action_logout">登出</string>
     <string name="action_retry">重试</string>
     <string name="action_refresh">刷新</string>
@@ -89,7 +76,6 @@
     <string name="action_manage_focus">关注列表</string>
     <string name="action_follow">关注</string>
     <string name="action_reply">回帖</string>
-    <string name="action_favorite">收藏</string>
     <string name="action_jump">跳转</string>
     <string name="action_jump_to_head">跳到首页</string>
     <string name="action_jump_to_end">跳到末页面</string>
@@ -104,27 +90,19 @@
     <string name="action_remove_file_attachment">移除附件</string>
 
     <!-- Default Title -->
-    <string name="title_activity_main">首页</string>
     <string name="title_activity_login">登录</string>
-    <string name="title_activity_settings">设置</string>
     <string name="title_activity_post_list">回帖列表</string>
-    <string name="title_activity_thread_detail">ThreadDetailActivity</string>
-    <string name="title_activity_thread_detail_with_tab_layout">ThreadDetailWithTabLayoutActivity</string>
-    <string name="title_activity_post_or_reply">添加回复</string>
     <string name="title_activity_preview">预览</string>
     <string name="title_activity_focus">关注</string>
     <string name="title_activity_profile">资料</string>
     <string name="title_activity_thread_detail_new">主题列表</string>
-    <string name="title_activity_search_result">搜索结果</string>
     <string name="title_activity_fullscreen_photo_viewer">照片浏览器</string>
     <string name="title_activity_better_post">发布回复</string>
     <string name="title_new_post">发布回复</string>
     <string name="title_new_thread">发布主题</string>
-    <string name="title_activity_focus_list">关注列表</string>
     <string name="title_activity_with_framelayout">无标题</string>
     <string name="title_activity_search">搜索</string>
     <string name="title_activity_new_following_list">关注页面</string>
-    <string name="title_activity_demo">测试</string>
     <string name="title_activity_forum_list">板块</string>
     <string name="title_activity_preference">设置</string>
     <string name="title_activity_notification_box">通知列表</string>
@@ -132,13 +110,9 @@
 
     <!-- Editor -->
     <string name="message_exit_editor">帖子内容不为空，是否仍然退出编辑器？</string>
-    <string name="compressing_image">正在压缩图片</string>
     <string name="processing_attachment">正在处理附件</string>
 
 
     <!-- Notification -->
     <string name="message_mark_all_as_read">是否将所有未读消息标记为已读？</string>
-
-    <!-- icon fonts -->
-    <string name="icons">&#xe600;</string>
 </resources>

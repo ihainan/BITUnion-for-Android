@@ -92,7 +92,7 @@ public abstract class BasicRecyclerViewFragment<T> extends Fragment {
                 } catch (Exception e) {
                     String message = mContext.getString(R.string.error_parse_json);
                     String debugMessage = TAG + " >> " + message + " - " + response;
-                    Log.e(TAG, debugMessage);
+                    Log.e(TAG, debugMessage, e);
                     CommonUtils.debugToast(mContext, debugMessage);
 
                     if (mList.size() > 0) {

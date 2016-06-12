@@ -49,12 +49,14 @@ public class BasicInfoFragment extends Fragment {
     private ImageView mAvatar;
     private LinearLayout mContactLayout, mSignatureLayout, mBdayLayout, mThreadCountLayout, mPostCountLayout;
     private RelativeLayout mEmailLayout, mWebsiteLayout;
-    private CollapsingToolbarLayout mCollapsingToolbar;
     private NestedScrollView mProfileLayout;
     private SwipeRefreshLayout mSwipeRefreshLayout;
 
     // Data
     private String mUsername;
+
+    public BasicInfoFragment() {
+    }
 
     @Nullable
     @Override

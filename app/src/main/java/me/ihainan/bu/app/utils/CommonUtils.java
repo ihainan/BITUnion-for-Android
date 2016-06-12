@@ -63,7 +63,6 @@ import me.ihainan.bu.app.R;
 import me.ihainan.bu.app.models.Member;
 import me.ihainan.bu.app.ui.ProfileActivity;
 import me.ihainan.bu.app.utils.network.BUApi;
-import me.ihainan.bu.app.utils.network.ExtraApi;
 
 /**
  * 通用工具类

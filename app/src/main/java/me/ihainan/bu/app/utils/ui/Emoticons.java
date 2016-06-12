@@ -7,7 +7,6 @@ import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.util.Log;
 
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 
 import me.ihainan.bu.app.adapters.EmoticonAdapter;

@@ -18,7 +18,6 @@ import com.xiaomi.mipush.sdk.PushMessageReceiver;
 import org.json.JSONObject;
 
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
 import me.ihainan.bu.app.R;

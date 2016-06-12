@@ -57,6 +57,8 @@ public class SessionUpdateService extends IntentService {
                                             shouldReturn = true;
                                         }
                                     } catch (IOException e) {
+                                        String message = "Session is out of date";
+                                        Log.d(TAG, message, e);
                                         shouldReturn = true;
                                     }
                                 }

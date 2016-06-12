@@ -65,10 +65,6 @@ public class BUApi {
         return currentEndPoint + "bu_post.php";
     }
 
-    private static String getThreadListURL() {
-        return currentEndPoint + "bu_thread.php";
-    }
-
     private static String getForumListURL() {
         return currentEndPoint + "bu_thread.php";
     }
@@ -102,6 +98,7 @@ public class BUApi {
         try {
             return LOGGED_MSG.equals(response.getString("msg"));
         } catch (JSONException e) {
+            Log.d(TAG, "Session is out of data", e);
             return false;
         }
     }
@@ -210,22 +207,6 @@ public class BUApi {
         parameters.put("to", String.valueOf(to));
 
         makeRequest(context, getThreadDetailURL(), "POST_DETAIL", parameters, BUApplication.RETRY_LIMIT, listener, errorListener);
-    }
-
-    /**
-     * @param context       上下文
-     * @param listener      response 事件监听器
-     * @param errorListener error 事件监听器
-     */
-    public static void getForumList(Context context,
-                                    Response.Listener<JSONObject> listener,
-                                    Response.ErrorListener errorListener) {
-
-        Map<String, String> parameters = new HashMap<>();
-        parameters.put("action", "forum");
-        parameters.put("username", BUApplication.userSession.username);
-        parameters.put("session", BUApplication.userSession.session);
-        makeRequest(context, getForumListURL(), "FORUM_LIST", parameters, BUApplication.RETRY_LIMIT, listener, errorListener);
     }
 
     /**
@@ -390,6 +371,7 @@ public class BUApi {
                     }, errorListener);
         }
     }
+
 
     private static void makeRequest(final Context context, final String url, final String tag,
                                     final Map<String, String> parameters,

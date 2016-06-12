@@ -28,8 +28,8 @@ android {
         applicationId "me.ihainan.bu.app"
         minSdkVersion 15
         targetSdkVersion 23
-        versionCode 14
-        versionName "0.1.5.8"
+        versionCode 15
+        versionName "0.1.5.9"
     }
 
     buildTypes {

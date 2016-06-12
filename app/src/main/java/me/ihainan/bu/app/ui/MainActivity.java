@@ -68,6 +68,8 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
+        // setTheme(R.style.AppThemeDark_NoActionBar);
+
         setContentView(R.layout.activity_main);
 
         // Toolbar

@@ -50,7 +50,6 @@ import me.ihainan.bu.app.utils.ui.PicassoImageGetter;
 public class PreviewActivity extends SwipeActivity {
     // TAG
     private final static String TAG = PreviewActivity.class.getSimpleName();
-    public final static String MESSAGE_CONTENT = "MESSAGE_CONTENT";
 
     // UI References
     private TextView mMessageView, mSubjectView, mFloorView, mPostDateView;
@@ -360,14 +359,18 @@ public class PreviewActivity extends SwipeActivity {
                 byteBuffer.write(buffer, 0, len);
             }
         } catch (Exception e) {
-            Snackbar.make(mCardView, "提取附件数据失败", Snackbar.LENGTH_LONG).show();
+            String message = "提取附件数据失败";
+            Log.e(TAG, message, e);
+            Snackbar.make(mCardView, message, Snackbar.LENGTH_LONG).show();
             return null;
         } finally {
             try {
                 iStream.close();
                 byteBuffer.close();
             } catch (IOException e) {
-                Snackbar.make(mCardView, "提取附件数据失败", Snackbar.LENGTH_LONG).show();
+                String message = "提取附件数据失败";
+                Log.e(TAG, message, e);
+                Snackbar.make(mCardView, message, Snackbar.LENGTH_LONG).show();
                 return null;
             }
         }
