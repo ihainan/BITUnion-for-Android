@@ -51,6 +51,11 @@ public class FeedbackActivity extends SwipeActivity {
         // UI
         tvEmail = (AutoCompleteTextView) findViewById(R.id.email);
         tvContent = (AutoCompleteTextView) findViewById(R.id.content);
+
+        // 自动填充
+        if (BUApplication.cachedFeedbackEmail != null) {
+            tvEmail.setText(BUApplication.cachedFeedbackEmail);
+        }
     }
 
     @Override
@@ -72,7 +77,14 @@ public class FeedbackActivity extends SwipeActivity {
                     tvEmail.setError(null);
                     tvContent.setError("不准不写反馈内容，哼！");
                     tvContent.requestFocus();
+                } else if (!CommonUtils.isValidEmailAddress(tvEmail.getText().toString())) {
+                    tvEmail.setError("填写正确的邮箱地址好么，不要闹……");
+                    tvContent.setError(null);
+                    tvEmail.requestFocus();
                 } else {
+                    BUApplication.cachedFeedbackEmail = tvEmail.getText().toString();
+                    BUApplication.setCachedFeedbackEmail(this);
+
                     tvContent.setError(null);
                     tvEmail.setError(null);
                     AlertDialog.Builder builder = new AlertDialog.Builder(this).setTitle(getString(R.string.title_warning)).setMessage("确认发生反馈信息给作者？")
@@ -103,8 +115,8 @@ public class FeedbackActivity extends SwipeActivity {
                             });
                     builder.create().show();
                 }
-                return true;
         }
+
         return super.onOptionsItemSelected(item);
     }
 

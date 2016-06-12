@@ -7,6 +7,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
@@ -21,10 +22,13 @@ import android.provider.MediaStore;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.view.ContextThemeWrapper;
 import android.text.format.DateUtils;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Display;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.Response;
@@ -156,9 +160,21 @@ public class CommonUtils {
      * @param updateInfo 升级信息
      */
     public static void showUpdateDialog(final Context context, final UpdateResponse updateInfo, boolean showIgnore) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(new ContextThemeWrapper(context, R.style.AlertDialogCustom));
-        builder.setTitle("发现新版本 version " + updateInfo.version);
-        builder.setMessage(updateInfo.updateLog);
+        LinearLayout layout = new LinearLayout(context);
+        int dpLeftAndRightValue = (int) CommonUtils.convertDpToPixel(24, context);
+        int dpTopAndBottomValue = (int) CommonUtils.convertDpToPixel(17, context);
+        layout.setPadding(dpLeftAndRightValue, dpTopAndBottomValue, dpLeftAndRightValue, dpTopAndBottomValue);
+        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        layout.setOrientation(LinearLayout.VERTICAL);
+        layout.setLayoutParams(layoutParams);
+        TextView tvDonateMessage = new TextView(context);
+        tvDonateMessage.setLineSpacing(7, 1.3f);
+        tvDonateMessage.setTextSize(16);
+        layout.addView(tvDonateMessage);
+        tvDonateMessage.setText(updateInfo.updateLog);
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(new ContextThemeWrapper(context, R.style.AlertDialogCustom)).setView(layout);
+        builder.setTitle("发现新版本 v" + updateInfo.version);
 
         builder.setPositiveButton("下次再说", new DialogInterface.OnClickListener() {
             @Override
@@ -972,5 +988,45 @@ public class CommonUtils {
             CommonUtils.debugToast(context, message);
             return null;
         }
+    }
+
+    /* START - 尺寸、像素相关 */
+
+    /**
+     * This method converts dp unit to equivalent pixels, depending on device density.
+     *
+     * @param dp      A value in dp (density independent pixels) unit. Which we need to convert into pixels
+     * @param context Context to get resources and device specific display metrics
+     * @return A float value to represent px equivalent to dp depending on device density
+     */
+    public static float convertDpToPixel(float dp, Context context) {
+        Resources resources = context.getResources();
+        DisplayMetrics metrics = resources.getDisplayMetrics();
+        float px = dp * ((float) metrics.densityDpi / DisplayMetrics.DENSITY_DEFAULT);
+        return px;
+    }
+
+    /**
+     * This method converts device specific pixels to density independent pixels.
+     *
+     * @param px      A value in px (pixels) unit. Which we need to convert into db
+     * @param context Context to get resources and device specific display metrics
+     * @return A float value to represent dp equivalent to px value
+     */
+    public static float convertPixelsToDp(float px, Context context) {
+        Resources resources = context.getResources();
+        DisplayMetrics metrics = resources.getDisplayMetrics();
+        float dp = px / ((float) metrics.densityDpi / DisplayMetrics.DENSITY_DEFAULT);
+        return dp;
+    }
+
+    /* END - 尺寸、像素相关 */
+
+    public static boolean isValidEmailAddress(String email) {
+        if (email == null || email.equals("")) return false;
+        String ePattern = "^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\])|(([a-zA-Z\\-0-9]+\\.)+[a-zA-Z]{2,}))$";
+        java.util.regex.Pattern p = java.util.regex.Pattern.compile(ePattern);
+        java.util.regex.Matcher m = p.matcher(email);
+        return m.matches();
     }
 }

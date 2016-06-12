@@ -23,6 +23,7 @@
     <string name="prompt_feedback">内容</string>
     <string name="message_success_add_feedback">你的建议已经发给开发者，非常感谢！</string>
     <string name="message_error_add_feedback">发送反馈失败，请稍后重试</string>
+    <string name="message_donate">做这个应用纯属业余爱好，除了时间精力的付出之外，自己还承担了 Google 开发者账号、服务器和域名的费用，不多，问题不大。\n\n当然，感谢你的支持，感谢你的咖啡，我今天心情应该会很好 :D</string>
 
     <!-- Error message -->
     <string name="error_title">错误</string>

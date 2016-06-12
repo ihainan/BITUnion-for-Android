@@ -87,16 +87,7 @@ public class BUApplication extends Application {
         OUT_SCHOOL,
     }
 
-    public static Boolean debugMode = true;  // 是否启动 debug 模式
-    public static Boolean saveDataMode = false; // 是否启动省流量模式
-    public static Boolean uploadData = true;    // 是否自动上传数据
-    public static boolean hasUpdateFavor = false;
-    public static NETWORK_TYPE networkType = NETWORK_TYPE.OUT_SCHOOL;
-
-    public static boolean isInSchool() {
-        return networkType == NETWORK_TYPE.IN_SCHOOL;
-    }
-
+    // 系统配置
     public final static String PREF_USER_NAME = "PREF_USER_NAME";
     public final static String CONF_SESSION_STR = "CONF_SESSION_STR";
     public final static String PREF_PASSWORD = "PREF_PASSWORD";
@@ -104,28 +95,6 @@ public class BUApplication extends Application {
     public final static String PREF_SAVE_DATA = "PREF_SAVE_DATA";
     public final static String PREF_DEBUG_MODE = "PREF_DEBUG_MODE";
     public final static String PREF_UPLOAD_DATA = "PREF_UPLOAD_DATA";
-
-    // 字体与行间距
-    public final static Integer DEFAULT_FONT_SIZE = 15;
-    public final static Integer DEFAULT_LINE_SPACING_EXTRA = 8;
-    public final static Float DEFAULT_LINE_SPACING_MULTIPLIER = 1.2f;
-    public final static String PREF_FONT_SIZE = "PREF_FONT_SIZE";
-    public final static String PREF_LINE_SPACING_EXTRA = "PREF_LINE_SPACING_EXTRA";
-    public final static String PREF_LINE_SPACING_MULTIPLIER = "PREF_LINE_SPACING_MULTIPLIER";
-    public static Integer fontSize = DEFAULT_FONT_SIZE;
-    public static Integer lineSpacingExtra = DEFAULT_LINE_SPACING_EXTRA;
-    public static Float lineSpacingMultiplier = DEFAULT_LINE_SPACING_MULTIPLIER;
-
-    // 推送相关
-    public static Boolean enableNotify = true;
-    public static Boolean enableReplyNotify = true;
-    public static Boolean enableQuoteNotify = true;
-    public static Boolean enableAtNotify = true;
-    public static Boolean enableFollowingNotify = true;
-    public static Integer homePageClickEventType = 0;   // 0 表示进尾楼，1 表示进 1 楼
-    public static Boolean enableAdvancedEditor = false; // 是否使用高级编辑器
-    public static Boolean enableSilentMode = false; // 夜间免打扰模式
-
     public final static String PREF_ENABLE_NOTIFY = "PREF_ENABLE_NOTIFY";
     public final static String PREF_ENABLE_REPLY_NOTIFY = "PREF_ENABLE_REPLY_NOTIFY";
     public final static String PREF_ENABLE_QUOTE_NOTIFY = "PREF_ENABLE_QUOTE_NOTIFY";
@@ -134,6 +103,78 @@ public class BUApplication extends Application {
     public final static String PREF_HOME_PAGE_CLICK_EVENT = "PREF_HOME_PAGE_CLICK_EVENT";
     public final static String PREF_ENABLE_ADVANCED_EDITOR = "PREF_ENABLE_ADVANCED_EDITOR";
     public final static String PREF_ENABLE_SILENT_MODE = "PREF_ENABLE_SILENT_MODE";
+
+    public final static Integer DEFAULT_FONT_SIZE = 15;
+    public final static Integer DEFAULT_LINE_SPACING_EXTRA = 8;
+    public final static Float DEFAULT_LINE_SPACING_MULTIPLIER = 1.2f;
+    public final static String PREF_FONT_SIZE = "PREF_FONT_SIZE";
+    public final static String PREF_LINE_SPACING_EXTRA = "PREF_LINE_SPACING_EXTRA";
+    public final static String PREF_LINE_SPACING_MULTIPLIER = "PREF_LINE_SPACING_MULTIPLIER";
+
+    public final static String CACHED_FEEDBACK_EMAIL = "CACHED_FEEDBACK_EMAIL";
+
+    public static Boolean saveDataMode = false; // 是否启动省流量模式
+    public static Boolean uploadData = true;    // 是否自动上传数据
+    public static NETWORK_TYPE networkType = NETWORK_TYPE.OUT_SCHOOL;   // 外网 / 内网
+
+    public static Boolean enableNotify = true;  // 开启通知
+    public static Boolean enableReplyNotify = true; // 开启回复提醒
+    public static Boolean enableQuoteNotify = true; // 开启引用提醒
+    public static Boolean enableAtNotify = true;    // 开启 @ 提醒
+    public static Boolean enableFollowingNotify = true; // 开启关注提醒
+    public static Boolean enableSilentMode = false; // 夜间免打扰模式
+
+    public static Integer homePageClickEventType = 0;   // 0 表示进尾楼，1 表示进 1 楼
+    public static Boolean enableAdvancedEditor = false; // 是否使用高级编辑器
+
+    public static Boolean debugMode = true;  // 是否启动 debug 模式
+
+    public static boolean hasUpdateFavor = false;
+
+    public static Integer fontSize = DEFAULT_FONT_SIZE; // 字体大小
+    public static Integer lineSpacingExtra = DEFAULT_LINE_SPACING_EXTRA;    // 额外行间距
+    public static Float lineSpacingMultiplier = DEFAULT_LINE_SPACING_MULTIPLIER;    // 额外行间距倍数
+
+    public static String cachedFeedbackEmail = "";
+
+    public static void readConfig(Context context) {
+        getCacheUsername(context);
+        getCachePassword(context);
+        getCacheSession(context);
+        getCacheNetworkType(context);
+        getCacheDebugMode(context);
+        getCacheUploadData(context);
+        getCacheSaveDataMode(context);
+        getCacheFontSize(context);
+        getCacheLineSpacingExtra(context);
+        getCacheLineSpacingMultiplier(context);
+        getEnableAtNotify(context);
+        getEnableReplyNotify(context);
+        getEnableQuoteNotify(context);
+        getEnableAtNotify(context);
+        getEnableFollowNotify(context);
+        getHomePageClickEventType(context);
+        getEnableAdvancedEditor(context);
+        getEnableSilentMode(context);
+        getCachedFeedbackEmail(context);
+    }
+
+    public static boolean isInSchool() {
+        return networkType == NETWORK_TYPE.IN_SCHOOL;
+    }
+
+    public static String getCachedFeedbackEmail(Context context) {
+        cachedFeedbackEmail = BUApplication.getCache(context).getAsString(CACHED_FEEDBACK_EMAIL);
+        if (cachedFeedbackEmail == null) cachedFeedbackEmail = "";
+        return cachedFeedbackEmail;
+    }
+
+    public static void setCachedFeedbackEmail(Context context) {
+        Log.d(TAG, "setCachedFeedbackEmail >> " + cachedFeedbackEmail);
+        if (cachedFeedbackEmail != null) {
+            BUApplication.getCache(context).put(CACHED_FEEDBACK_EMAIL, cachedFeedbackEmail);
+        }
+    }
 
     public static Boolean getEnableSilentMode(Context context) {
         enableSilentMode = (Boolean) BUApplication.getCache(context).getAsObject(PREF_ENABLE_SILENT_MODE);
@@ -343,27 +384,6 @@ public class BUApplication extends Application {
     public static void setUploadData(Context context) {
         Log.d(TAG, "setUploadData >> " + uploadData);
         if (uploadData != null) BUApplication.getCache(context).put(PREF_UPLOAD_DATA, uploadData);
-    }
-
-    public static void readConfig(Context context) {
-        getCacheUsername(context);
-        getCachePassword(context);
-        getCacheSession(context);
-        getCacheNetworkType(context);
-        getCacheDebugMode(context);
-        getCacheUploadData(context);
-        getCacheSaveDataMode(context);
-        getCacheFontSize(context);
-        getCacheLineSpacingExtra(context);
-        getCacheLineSpacingMultiplier(context);
-        getEnableAtNotify(context);
-        getEnableReplyNotify(context);
-        getEnableQuoteNotify(context);
-        getEnableAtNotify(context);
-        getEnableFollowNotify(context);
-        getHomePageClickEventType(context);
-        getEnableAdvancedEditor(context);
-        getEnableSilentMode(context);
     }
 
     /* 论坛列表相关 */
