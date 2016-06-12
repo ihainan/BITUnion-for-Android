@@ -429,7 +429,8 @@ public class CommonUtils {
      * @return 图片的真实 URL
      */
     public static String getRealImageURL(String originalURL) {
-        // TODO: 重写本函数
+        String baseUrl = BUApi.OUT_SCHOOL_BASE_URL;
+
         // URL 解码
         originalURL = CommonUtils.decode(originalURL);
         if (originalURL.endsWith("noavatar.gif"))
@@ -442,8 +443,8 @@ public class CommonUtils {
             return ori;
         }
 
-        originalURL = originalURL.replaceAll("^images/", BUApi.getBaseURL() + "images/");
-        originalURL = originalURL.replaceAll("^../images", BUApi.getBaseURL() + "images/");
+        originalURL = originalURL.replaceAll("^images/", baseUrl + "images/");
+        originalURL = originalURL.replaceAll("^../images", baseUrl + "images/");
 
         // 回帖头像
         if (ori.startsWith("<embed src=") || ori.startsWith("<img src=")) {
@@ -458,13 +459,13 @@ public class CommonUtils {
         // 完整地址和不完整地址¡¡
         if (originalURL.startsWith("http"))
             originalURL = BUApplication.isInSchool() ? originalURL : originalURL.replace("www", "out");
-        else originalURL = BUApi.getBaseURL() + originalURL;
+        else originalURL = baseUrl + originalURL;
 
-        originalURL = originalURL.replaceAll("(http://)?(www|v6|kiss|out).bitunion.org/", BUApi.getBaseURL());
-        originalURL = originalURL.replaceAll("http://bitunion.org/", BUApi.getBaseURL());
+        originalURL = originalURL.replaceAll("(http://)?(www|v6|kiss|out).bitunion.org/", baseUrl);
+        originalURL = originalURL.replaceAll("http://bitunion.org/", baseUrl);
 
         // 图片
-        originalURL = originalURL.replaceAll("^images/", BUApi.getBaseURL() + "images/");
+        originalURL = originalURL.replaceAll("^images/", baseUrl + "images/");
 
         // 特殊情况
         if (originalURL.endsWith(",120,120")) originalURL = originalURL.replace(",120,120", "");
