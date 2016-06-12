@@ -121,7 +121,7 @@ public class NotificationAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                     intent = new Intent(mContext, ProfileActivity.class);
                     intent.setAction(Long.toString(System.currentTimeMillis()));
                     intent.putExtra(ProfileActivity.NOTIFY_ID_TAG, notification.nt_id);
-                    intent.putExtra(ProfileActivity.USER_NAME_TAG, followNotificationMessageData.following);
+                    intent.putExtra(ProfileActivity.USER_NAME_TAG, followNotificationMessageData.follower);
                 }
 
                 if (intent != null) {

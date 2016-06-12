@@ -84,5 +84,5 @@
 打算从无到有设计一个应用的话，动手前先理清思路，想好准备做哪些功能，列出来，然后根据场景归类，看结果再决定整体框架
 定好框架后，再细化各场景需求，完善每个细节，考虑把所有功能流程形成闭环"
         android:textColor="@android:color/black"
-        android:textSize="14sp" />
+        android:textSize="15sp" />
 </LinearLayout>

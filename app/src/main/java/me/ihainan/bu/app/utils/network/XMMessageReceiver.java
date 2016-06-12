@@ -101,7 +101,7 @@ public class XMMessageReceiver extends PushMessageReceiver {
                     NotificationMessage.FollowNotificationMessageData followNotificationMessageData = BUApi.MAPPER.readValue(jsonObject.getJSONObject("data").toString(), NotificationMessage.FollowNotificationMessageData.class);
                     Intent intent = new Intent(context, ProfileActivity.class);
                     intent.setAction(Long.toString(System.currentTimeMillis()));
-                    intent.putExtra(ProfileActivity.USER_NAME_TAG, followNotificationMessageData.following);
+                    intent.putExtra(ProfileActivity.USER_NAME_TAG, followNotificationMessageData.follower);
                     intent.putExtra(ProfileActivity.NOTIFY_ID_TAG, message.getNotifyId());
 
                     PendingIntent pendingIntent = PendingIntent.getActivity(context, message.getNotifyId(), intent, PendingIntent.FLAG_UPDATE_CURRENT);
