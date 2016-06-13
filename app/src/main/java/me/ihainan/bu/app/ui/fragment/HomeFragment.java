@@ -1,9 +1,12 @@
 package me.ihainan.bu.app.ui.fragment;
 
 import android.app.Activity;
+import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.View;
+import android.widget.Toast;
 
 import com.android.volley.Response;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -15,10 +18,12 @@ import java.util.List;
 import me.ihainan.bu.app.R;
 import me.ihainan.bu.app.adapters.LatestThreadListAdapter;
 import me.ihainan.bu.app.models.LatestThread;
+import me.ihainan.bu.app.ui.MainActivity;
 import me.ihainan.bu.app.ui.assist.SimpleDividerItemDecoration;
 import me.ihainan.bu.app.utils.BUApplication;
 import me.ihainan.bu.app.utils.CommonUtils;
 import me.ihainan.bu.app.utils.network.BUApi;
+import me.ihainan.bu.app.utils.ui.CustomOnClickListener;
 
 /**
  * Home Page Fragment
@@ -54,6 +59,12 @@ public class HomeFragment extends BasicRecyclerViewFragment<LatestThread> {
     @Override
     protected void getExtra() {
 
+    }
+
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        getActivity().findViewById(R.id.toolbar).setOnClickListener(CustomOnClickListener.doubleClickToListTop(mContext, mRecyclerView));
     }
 
     @Override

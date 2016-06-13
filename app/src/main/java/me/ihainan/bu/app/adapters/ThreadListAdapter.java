@@ -91,6 +91,7 @@ public class ThreadListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         intent.putExtra(PostListActivity.THREAD_NAME_TAG, thread.subject);
         intent.putExtra(PostListActivity.THREAD_REPLY_COUNT_TAG, thread.replies + 1);
         intent.putExtra(PostListActivity.THREAD_AUTHOR_NAME_TAG, thread.author);
+        intent.putExtra(PostListActivity.THREAD_FID_TAG, mFid);
         holder.rootLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

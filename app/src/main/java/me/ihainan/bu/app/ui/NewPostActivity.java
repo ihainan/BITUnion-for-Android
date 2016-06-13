@@ -42,8 +42,8 @@ import me.ihainan.bu.app.utils.BUApplication;
 import me.ihainan.bu.app.utils.CommonUtils;
 import me.ihainan.bu.app.utils.ui.EditTextUndoRedo;
 
-public class BetterPostActivity extends AppCompatActivity {
-    public final static String TAG = BetterPostActivity.class.getSimpleName();
+public class NewPostActivity extends AppCompatActivity {
+    public final static String TAG = NewPostActivity.class.getSimpleName();
 
     // 权限 Tags
     public final static int PERMISSIONS_REQUEST_READ_IMAGE = 1;
@@ -280,10 +280,10 @@ public class BetterPostActivity extends AppCompatActivity {
                 @Override
                 public void onClick(View v) {
                     alertDialog.dismiss();
-                    if (ContextCompat.checkSelfPermission(BetterPostActivity.this,
+                    if (ContextCompat.checkSelfPermission(NewPostActivity.this,
                             Manifest.permission.WRITE_EXTERNAL_STORAGE)
                             != PackageManager.PERMISSION_GRANTED) {
-                        ActivityCompat.requestPermissions(BetterPostActivity.this,
+                        ActivityCompat.requestPermissions(NewPostActivity.this,
                                 new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
                                 PERMISSIONS_REQUEST_READ_IMAGE);
                     } else {
@@ -298,10 +298,10 @@ public class BetterPostActivity extends AppCompatActivity {
                 @Override
                 public void onClick(View v) {
                     alertDialog.dismiss();
-                    if (ContextCompat.checkSelfPermission(BetterPostActivity.this,
+                    if (ContextCompat.checkSelfPermission(NewPostActivity.this,
                             Manifest.permission.WRITE_EXTERNAL_STORAGE)
                             != PackageManager.PERMISSION_GRANTED) {
-                        ActivityCompat.requestPermissions(BetterPostActivity.this,
+                        ActivityCompat.requestPermissions(NewPostActivity.this,
                                 new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
                                 PERMISSIONS_REQUEST_READ_FILE);
                     } else {
@@ -342,7 +342,7 @@ public class BetterPostActivity extends AppCompatActivity {
                     } catch (ActivityNotFoundException e) {
                         String message = getString(R.string.error_open_attachment);
                         Log.e(TAG, message, e);
-                        CommonUtils.debugToast(BetterPostActivity.this, message);
+                        CommonUtils.debugToast(NewPostActivity.this, message);
                         Snackbar.make(mButtonPanel, message, Snackbar.LENGTH_LONG).show();
                         return;
                     }
@@ -449,8 +449,8 @@ public class BetterPostActivity extends AppCompatActivity {
                     mETMessage.postDelayed(new Runnable() {
                         @Override
                         public void run() {
-                            mAttachmentUri = CommonUtils.compressImage(BetterPostActivity.this, mAttachmentUri, MAX_COMPRESSED_IMAGE_SIZE);
-                            // mAttachmentUri = CommonUtils.compressImageNew(BetterPostActivity.this, mAttachmentUri, oriSize, MAX_COMPRESSED_IMAGE_SIZE * 1000);
+                            mAttachmentUri = CommonUtils.compressImage(NewPostActivity.this, mAttachmentUri, MAX_COMPRESSED_IMAGE_SIZE);
+                            // mAttachmentUri = CommonUtils.compressImageNew(NewPostActivity.this, mAttachmentUri, oriSize, MAX_COMPRESSED_IMAGE_SIZE * 1000);
                             doAfterProcessingAttachment(dialog);
                         }
                     }, 1000);
@@ -521,14 +521,14 @@ public class BetterPostActivity extends AppCompatActivity {
     private void exitEditorAction() {
         if (mAttachmentUri != null || !"".equals(mETSubject.getText().toString())
                 || !"".equals(mETMessage.getText().toString())) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(BetterPostActivity.this);
+            AlertDialog.Builder builder = new AlertDialog.Builder(NewPostActivity.this);
             builder.setTitle(getString(R.string.title_warning))
 
                     .setMessage(getString(R.string.message_exit_editor))
                     .setPositiveButton(getString(R.string.button_yes), new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            CommonUtils.deleteTmpDir(BetterPostActivity.this);
+                            CommonUtils.deleteTmpDir(NewPostActivity.this);
                             finish();
                         }
                     }).setNegativeButton(getString(R.string.button_no), new DialogInterface.OnClickListener() {
@@ -539,7 +539,7 @@ public class BetterPostActivity extends AppCompatActivity {
             });
             builder.show();
         } else {
-            CommonUtils.deleteTmpDir(BetterPostActivity.this);
+            CommonUtils.deleteTmpDir(NewPostActivity.this);
             finish();
         }
     }
@@ -562,11 +562,11 @@ public class BetterPostActivity extends AppCompatActivity {
                 if (ACTION_NEW_THREAD.equals(mAction) && ("".equals(mETSubject.getText().toString()))) {
                     Snackbar.make(mButtonPanel, R.string.error_subject_required, Snackbar.LENGTH_LONG).show();
                     mETSubject.requestFocus();
-                } else if (mETMessage.getText().toString().length() < 5) {
+                } else if (mETMessage.getText().toString().length() < 3) {
                     Snackbar.make(mButtonPanel, R.string.error_message_length_short, Snackbar.LENGTH_LONG).show();
                     mETMessage.requestFocus();
                 } else {
-                    Intent intent = new Intent(BetterPostActivity.this, PreviewActivity.class);
+                    Intent intent = new Intent(NewPostActivity.this, PreviewActivity.class);
                     intent.putExtra(ACTION_TAG, mAction);
                     intent.putExtra(CONTENT_SUBJECT_TAG, mETSubject.getText().toString());
                     intent.putExtra(CONTENT_MESSAGE_TAG, mETMessage.getText().toString());

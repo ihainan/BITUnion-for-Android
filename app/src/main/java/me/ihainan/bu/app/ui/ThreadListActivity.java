@@ -37,6 +37,7 @@ import me.ihainan.bu.app.ui.assist.SwipeActivity;
 import me.ihainan.bu.app.utils.CommonUtils;
 import me.ihainan.bu.app.utils.network.BUApi;
 import me.ihainan.bu.app.utils.BUApplication;
+import me.ihainan.bu.app.utils.ui.CustomOnClickListener;
 
 public class ThreadListActivity extends SwipeActivity {
     private final static String TAG = ThreadListActivity.class.getSimpleName();
@@ -153,16 +154,7 @@ public class ThreadListActivity extends SwipeActivity {
         // UI references
         mRecyclerView = (RecyclerView) findViewById(R.id.detail_recycler_view);
         mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.home_swipe_refresh_layout);
-        toolbar.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (layoutManager == null || layoutManager.findFirstVisibleItemPosition() >= 10) {
-                    mRecyclerView.scrollToPosition(0);
-                } else {
-                    mRecyclerView.smoothScrollToPosition(0);
-                }
-            }
-        });
+        toolbar.setOnClickListener(CustomOnClickListener.doubleClickToListTop(this, mRecyclerView));
         setupRecyclerView();
         setupSwipeRefreshLayout();
 
@@ -171,14 +163,12 @@ public class ThreadListActivity extends SwipeActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(ThreadListActivity.this, BetterPostActivity.class);
-                intent.putExtra(BetterPostActivity.ACTION_TAG, BetterPostActivity.ACTION_NEW_THREAD);
-                intent.putExtra(BetterPostActivity.NEW_THREAD_FID_TAG, mFid);
+                Intent intent = new Intent(ThreadListActivity.this, NewPostActivity.class);
+                intent.putExtra(NewPostActivity.ACTION_TAG, NewPostActivity.ACTION_NEW_THREAD);
+                intent.putExtra(NewPostActivity.NEW_THREAD_FID_TAG, mFid);
                 startActivityForResult(intent, PostListActivity.REQUEST_NEW_REPLY);
             }
         });
-
-        setSwipeAnyWhere(false);
     }
 
     @Override

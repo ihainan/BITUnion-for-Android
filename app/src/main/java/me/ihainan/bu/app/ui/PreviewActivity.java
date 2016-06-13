@@ -91,21 +91,22 @@ public class PreviewActivity extends SwipeActivity {
         Bundle bundle = getIntent().getExtras();
 
         // 提取数据
-        mMessageContent = bundle.getString(BetterPostActivity.CONTENT_MESSAGE_TAG);
+        mMessageContent = bundle.getString(NewPostActivity.CONTENT_MESSAGE_TAG);
         if (mMessageContent != null) {
-            mMessageContent += "\n\n\n[b]发自 " + CommonUtils.getDeviceName() + " @BU for Android[/b]";
+            if (BUApplication.enableDisplayDeviceInfo)
+                mMessageContent += "\n\n\n[b]发自 " + CommonUtils.getDeviceName() + " @BU for Android[/b]";
             mMessageHtmlContent = HtmlUtil.formatHtml(HtmlUtil.ubbToHtml(mMessageContent));
         }
-        mFloor = bundle.getLong(BetterPostActivity.NEW_POST_MAX_FLOOR_TAG);
-        mAction = bundle.getString(BetterPostActivity.ACTION_TAG);
-        mSubject = bundle.getString(BetterPostActivity.CONTENT_SUBJECT_TAG, "").trim();
-        mTid = bundle.getLong(BetterPostActivity.NEW_POST_TID_TAG);
-        mFid = bundle.getLong(BetterPostActivity.NEW_THREAD_FID_TAG);
-        mActionStr = "发表" + (mAction.endsWith(BetterPostActivity.ACTION_NEW_POST) ? "回复" : "主题");
+        mFloor = bundle.getLong(NewPostActivity.NEW_POST_MAX_FLOOR_TAG);
+        mAction = bundle.getString(NewPostActivity.ACTION_TAG);
+        mSubject = bundle.getString(NewPostActivity.CONTENT_SUBJECT_TAG, "").trim();
+        mTid = bundle.getLong(NewPostActivity.NEW_POST_TID_TAG);
+        mFid = bundle.getLong(NewPostActivity.NEW_THREAD_FID_TAG);
+        mActionStr = "发表" + (mAction.endsWith(NewPostActivity.ACTION_NEW_POST) ? "回复" : "主题");
 
         // 提取和显示附件
-        if (bundle.getString(BetterPostActivity.CONTENT_ATTACHMENT_URI, null) != null) {
-            mUri = Uri.parse(bundle.getString(BetterPostActivity.CONTENT_ATTACHMENT_URI, null));
+        if (bundle.getString(NewPostActivity.CONTENT_ATTACHMENT_URI, null) != null) {
+            mUri = Uri.parse(bundle.getString(NewPostActivity.CONTENT_ATTACHMENT_URI, null));
             mAttachmentByteArray = getByteArray(mUri);
         }
     }
@@ -157,7 +158,7 @@ public class PreviewActivity extends SwipeActivity {
         // Submit
         mSubmitBtn = (Button) findViewById(R.id.submit);
         mSubmitBtn.setOnClickListener(submitListener);
-        if (BetterPostActivity.ACTION_NEW_POST.equals(mAction)) {
+        if (NewPostActivity.ACTION_NEW_POST.equals(mAction)) {
             mSubmitBtn.setText("发表回复");
         } else {
             mSubmitBtn.setText("发布主题");
@@ -174,7 +175,11 @@ public class PreviewActivity extends SwipeActivity {
 
         // Device name
         TextView deviceName = (TextView) findViewById(R.id.device_name);
-        deviceName.setText(CommonUtils.getDeviceName());
+        if (BUApplication.enableDisplayDeviceInfo) {
+            deviceName.setText(CommonUtils.getDeviceName());
+        } else {
+            deviceName.setText("");
+        }
 
         // Attachment
         if (mUri != null) {
@@ -269,7 +274,7 @@ public class PreviewActivity extends SwipeActivity {
         try {
             dialog = ProgressDialog.show(PreviewActivity.this, "",
                     "正在" + mActionStr, true);
-            if (BetterPostActivity.ACTION_NEW_POST.equals(mAction)) {
+            if (NewPostActivity.ACTION_NEW_POST.equals(mAction)) {
                 BUApi.postNewPost(this, mTid, mMessageContent, mFilename, mAttachmentByteArray, listener, errorListener);
             } else {
                 BUApi.postNewThread(this, mFid, mSubject, mMessageContent, mFilename, mAttachmentByteArray, listener, errorListener);

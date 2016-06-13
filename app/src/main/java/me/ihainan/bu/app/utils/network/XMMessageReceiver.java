@@ -58,7 +58,8 @@ public class XMMessageReceiver extends PushMessageReceiver {
         }
 
         if (!BUApplication.getEnableNotify(context)) return;
-        if (message.getUserAccount().equals(CommonUtils.decode(BUApplication.username))) {
+        if (BUApplication.password != null && !"".equals(BUApplication.password)
+                && message.getUserAccount().equals(CommonUtils.decode(BUApplication.username))) {
             // Parse message
             try {
                 JSONObject jsonObject = new JSONObject(message.getContent());

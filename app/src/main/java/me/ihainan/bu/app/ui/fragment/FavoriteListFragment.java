@@ -15,11 +15,15 @@ import me.ihainan.bu.app.models.Favorite;
 import me.ihainan.bu.app.utils.BUApplication;
 import me.ihainan.bu.app.utils.network.BUApi;
 import me.ihainan.bu.app.utils.network.ExtraApi;
+import me.ihainan.bu.app.utils.ui.CustomOnClickListener;
 
 /**
  * 收藏列表 Fragment
  */
 public class FavoriteListFragment extends BasicRecyclerViewFragment<Favorite> {
+    // Data
+    public static boolean isSetToolbar = false;
+
     @Override
     protected String getNoNewDataMessage() {
         return getString(R.string.error_no_favorites);
@@ -28,6 +32,23 @@ public class FavoriteListFragment extends BasicRecyclerViewFragment<Favorite> {
     @Override
     protected String getFragmentTag() {
         return FavoriteListFragment.class.getSimpleName();
+    }
+
+    @Override
+    protected void setupRecyclerView() {
+        super.setupRecyclerView();
+        if (!isSetToolbar) {
+            isSetToolbar = !isSetToolbar;
+            getActivity().findViewById(R.id.toolbar).setOnClickListener(CustomOnClickListener.doubleClickToListTop(mContext, mRecyclerView));
+        }
+    }
+
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        if (isVisibleToUser && mContext != null && mRecyclerView != null) {
+            getActivity().findViewById(R.id.toolbar).setOnClickListener(CustomOnClickListener.doubleClickToListTop(mContext, mRecyclerView));
+        }
     }
 
     @Override

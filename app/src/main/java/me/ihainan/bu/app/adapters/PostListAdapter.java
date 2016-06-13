@@ -29,7 +29,7 @@ import java.util.List;
 
 import me.ihainan.bu.app.R;
 import me.ihainan.bu.app.models.Post;
-import me.ihainan.bu.app.ui.BetterPostActivity;
+import me.ihainan.bu.app.ui.NewPostActivity;
 import me.ihainan.bu.app.ui.FullscreenPhotoViewerActivity;
 import me.ihainan.bu.app.ui.PostListActivity;
 import me.ihainan.bu.app.ui.assist.CustomSpan;
@@ -135,12 +135,12 @@ public class PostListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 @Override
                 public void onClick(View v) {
                     // Snackbar.make(mRecyclerView, context.getString(R.string.error_not_implement), Snackbar.LENGTH_LONG).show();
-                    Intent intent = new Intent(mContext, BetterPostActivity.class);
-                    intent.putExtra(BetterPostActivity.ACTION_TAG, BetterPostActivity.ACTION_NEW_POST);
-                    intent.putExtra(BetterPostActivity.NEW_POST_TID_TAG, reply.tid);
+                    Intent intent = new Intent(mContext, NewPostActivity.class);
+                    intent.putExtra(NewPostActivity.ACTION_TAG, NewPostActivity.ACTION_NEW_POST);
+                    intent.putExtra(NewPostActivity.NEW_POST_TID_TAG, reply.tid);
                     String quoteContent = reply.toQuote();
-                    intent.putExtra(BetterPostActivity.NEW_POST_QUOTE_CONTENT_TAG, quoteContent);
-                    intent.putExtra(BetterPostActivity.NEW_POST_MAX_FLOOR_TAG, mReplyCount + 1);
+                    intent.putExtra(NewPostActivity.NEW_POST_QUOTE_CONTENT_TAG, quoteContent);
+                    intent.putExtra(NewPostActivity.NEW_POST_MAX_FLOOR_TAG, mReplyCount + 1);
                     ((Activity) mContext).startActivityForResult(intent, PostListActivity.REQUEST_NEW_REPLY);
                 }
             });
@@ -294,6 +294,8 @@ public class PostListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             number = (TextView) itemView.
                     findViewById(R.id.post_floor);
             reply = (ImageView) itemView.findViewById(R.id.btn_repost);
+
+            subject.setTextSize(TypedValue.COMPLEX_UNIT_SP, BUApplication.titleFontSize);
 
             message = (TextView) itemView.findViewById(R.id.thread_message);
             message.setMovementMethod(new CustomSpan.LinkTouchMovementMethod());

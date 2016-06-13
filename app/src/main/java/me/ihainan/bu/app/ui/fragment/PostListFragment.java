@@ -2,10 +2,12 @@ package me.ihainan.bu.app.ui.fragment;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
 import com.android.volley.Response;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -25,6 +27,7 @@ import me.ihainan.bu.app.ui.assist.SimpleDividerItemDecoration;
 import me.ihainan.bu.app.utils.BUApplication;
 import me.ihainan.bu.app.utils.CommonUtils;
 import me.ihainan.bu.app.utils.network.BUApi;
+import me.ihainan.bu.app.utils.ui.CustomOnClickListener;
 import me.ihainan.bu.app.utils.ui.HtmlUtil;
 
 /**
@@ -36,9 +39,9 @@ public class PostListFragment extends BasicRecyclerViewFragment<Post> {
     public final static String PAGE_INDEX_TAG = "PAGE_INDEX_TAG";
 
     // Data
-    private Long mTid, mReplyCount;
+    private Long mTid, mReplyCount, mFid;
     private Integer mPagePosition, mPageIndex;
-    private String mAuthorName;
+    private String mAuthorName, mThreadName;
     private boolean shouldJump = true;  // 是否需要跳到指定楼层
     public static boolean isSetToolbar = false;
 
@@ -96,14 +99,26 @@ public class PostListFragment extends BasicRecyclerViewFragment<Post> {
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
         if (isVisibleToUser && mContext != null && mRecyclerView != null) {
-            getActivity().findViewById(R.id.toolbar).setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    mRecyclerView.getLayoutManager().smoothScrollToPosition(mRecyclerView, null, 0);
-                }
-            });
+            getActivity().findViewById(R.id.toolbar).setOnClickListener(mCustomOnClickListener);
         }
     }
+
+    private CustomOnClickListener mCustomOnClickListener = new CustomOnClickListener() {
+        @Override
+        public void singleClick() {
+            String message = CommonUtils.decode(mAuthorName) + ": " + CommonUtils.decode(mThreadName);
+            if (mFid != -1) {
+                message += " (" + BUApplication.findForumName(mFid) + ")";
+            }
+
+            Toast.makeText(mContext, message, Toast.LENGTH_SHORT).show();
+        }
+
+        @Override
+        public void doubleClick() {
+            mRecyclerView.getLayoutManager().smoothScrollToPosition(mRecyclerView, null, 0);
+        }
+    };
 
     @Override
     protected void setupRecyclerView() {
@@ -119,12 +134,7 @@ public class PostListFragment extends BasicRecyclerViewFragment<Post> {
         if (!isSetToolbar) {
             isSetToolbar = !isSetToolbar;
             Log.d(TAG, "onCreateView >> " + mPagePosition);
-            getActivity().findViewById(R.id.toolbar).setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    mRecyclerView.getLayoutManager().smoothScrollToPosition(mRecyclerView, null, 0);
-                }
-            });
+            getActivity().findViewById(R.id.toolbar).setOnClickListener(mCustomOnClickListener);
         }
     }
 
@@ -188,11 +198,15 @@ public class PostListFragment extends BasicRecyclerViewFragment<Post> {
 
     @Override
     protected void getExtra() {
-        mTid = getArguments().getLong(PostListActivity.THREAD_ID_TAG);
-        mAuthorName = getArguments().getString(PostListActivity.THREAD_AUTHOR_NAME_TAG);
-        mReplyCount = getArguments().getLong(PostListActivity.THREAD_REPLY_COUNT_TAG);
-        mPagePosition = getArguments().getInt(PAGE_POSITION_TAG);
-        mPageIndex = getArguments().getInt(PAGE_INDEX_TAG);
+        if (getArguments() != null) {
+            mTid = getArguments().getLong(PostListActivity.THREAD_ID_TAG);
+            mAuthorName = getArguments().getString(PostListActivity.THREAD_AUTHOR_NAME_TAG);
+            mReplyCount = getArguments().getLong(PostListActivity.THREAD_REPLY_COUNT_TAG);
+            mPagePosition = getArguments().getInt(PAGE_POSITION_TAG);
+            mPageIndex = getArguments().getInt(PAGE_INDEX_TAG);
+            mThreadName = getArguments().getString(PostListActivity.THREAD_NAME_TAG);
+            mFid = getArguments().getLong(PostListActivity.THREAD_FID_TAG, -1);
+        }
     }
 
     @Override

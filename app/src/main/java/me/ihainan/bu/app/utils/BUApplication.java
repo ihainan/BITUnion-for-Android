@@ -103,11 +103,14 @@ public class BUApplication extends Application {
     public final static String PREF_HOME_PAGE_CLICK_EVENT = "PREF_HOME_PAGE_CLICK_EVENT";
     public final static String PREF_ENABLE_ADVANCED_EDITOR = "PREF_ENABLE_ADVANCED_EDITOR";
     public final static String PREF_ENABLE_SILENT_MODE = "PREF_ENABLE_SILENT_MODE";
+    public final static String PREF_ENABLE_DISPLAY_DEVICE_INFO = "PREF_ENABLE_DISPLAY_DEVICE_INFO";
 
     public final static Integer DEFAULT_FONT_SIZE = 15;
+    public final static Integer DEFAULT_TITLE_FONT_SIZE = 16;
     public final static Integer DEFAULT_LINE_SPACING_EXTRA = 8;
     public final static Float DEFAULT_LINE_SPACING_MULTIPLIER = 1.2f;
     public final static String PREF_FONT_SIZE = "PREF_FONT_SIZE";
+    public final static String PREF_FONT_TITLE_SIZE = "PREF_FONT_TITLE_SIZE";
     public final static String PREF_LINE_SPACING_EXTRA = "PREF_LINE_SPACING_EXTRA";
     public final static String PREF_LINE_SPACING_MULTIPLIER = "PREF_LINE_SPACING_MULTIPLIER";
 
@@ -126,12 +129,14 @@ public class BUApplication extends Application {
 
     public static Integer homePageClickEventType = 0;   // 0 表示进尾楼，1 表示进 1 楼
     public static Boolean enableAdvancedEditor = false; // 是否使用高级编辑器
+    public static Boolean enableDisplayDeviceInfo = true;   // 是否显示回帖尾巴
 
     public static Boolean debugMode = true;  // 是否启动 debug 模式
 
     public static boolean hasUpdateFavor = false;
 
     public static Integer fontSize = DEFAULT_FONT_SIZE; // 字体大小
+    public static Integer titleFontSize = DEFAULT_TITLE_FONT_SIZE; // 标题字体大小
     public static Integer lineSpacingExtra = DEFAULT_LINE_SPACING_EXTRA;    // 额外行间距
     public static Float lineSpacingMultiplier = DEFAULT_LINE_SPACING_MULTIPLIER;    // 额外行间距倍数
 
@@ -157,10 +162,24 @@ public class BUApplication extends Application {
         getEnableAdvancedEditor(context);
         getEnableSilentMode(context);
         getCachedFeedbackEmail(context);
+        getPrefEnableDisplayDeviceInfo(context);
     }
 
     public static boolean isInSchool() {
         return networkType == NETWORK_TYPE.IN_SCHOOL;
+    }
+
+    public static Boolean getPrefEnableDisplayDeviceInfo(Context context) {
+        enableDisplayDeviceInfo = (Boolean) BUApplication.getCache(context).getAsObject(PREF_ENABLE_DISPLAY_DEVICE_INFO);
+        if (enableDisplayDeviceInfo == null) enableDisplayDeviceInfo = true;
+        return enableDisplayDeviceInfo;
+    }
+
+    public static void setPrefEnableDisplayDeviceInfo(Context context) {
+        Log.d(TAG, "setPrefEnableDisplayDeviceInfo >> " + enableDisplayDeviceInfo);
+        if (enableDisplayDeviceInfo != null) {
+            BUApplication.getCache(context).put(PREF_ENABLE_DISPLAY_DEVICE_INFO, enableDisplayDeviceInfo);
+        }
     }
 
     public static String getCachedFeedbackEmail(Context context) {
@@ -273,6 +292,18 @@ public class BUApplication extends Application {
         Log.d(TAG, "setEnableNotify >> " + enableNotify);
         if (enableNotify != null)
             BUApplication.getCache(context).put(PREF_ENABLE_NOTIFY, enableNotify);
+    }
+
+    public static Integer getCacheTitleFontSize(Context context) {
+        titleFontSize = (Integer) BUApplication.getCache(context).getAsObject(PREF_FONT_TITLE_SIZE);
+        if (titleFontSize == null) titleFontSize = DEFAULT_TITLE_FONT_SIZE;
+        return titleFontSize;
+    }
+
+    public static void setCacheTitleFontSize(Context context) {
+        Log.d(TAG, "setCacheTitleFontSize >> " + titleFontSize);
+        if (titleFontSize != null)
+            BUApplication.getCache(context).put(PREF_FONT_TITLE_SIZE, titleFontSize);
     }
 
     public static Integer getCacheFontSize(Context context) {
@@ -627,21 +658,57 @@ public class BUApplication extends Application {
     }
 
     /**
+     * 根据板块 ID 获取得到板块名
+     *
+     * @param fid 板块 ID
+     * @return 板块名
+     */
+    public static String findForumName(Long fid) {
+        for (ForumListGroup forumListGroup : BUApplication.forumListGroupList) {
+            for (ForumListGroup.ForumList forumList : forumListGroup.getChildItemList()) {
+                if (forumList.getForumId().equals(fid)) {
+                    return forumList.getForumName();
+                } else {
+                    for (ForumListGroup.SubForum subForum : forumList.getChildItemList()) {
+                        if (subForum.getSubForumId().equals(fid)) {
+                            return subForum.getSubForumName();
+                        }
+                    }
+                }
+            }
+        }
+
+        return "未知板块";
+    }
+
+    /**
      * 更新板块访问频率 Map
      *
      * @param context     上下文
      * @param mainForumId 访问的板块对应的主板块 ID
      */
     public static void updateForumsMap(Context context, Long mainForumId) {
+        updateForumsMap(context, mainForumId, 1);
+    }
+
+    /**
+     * 更新板块访问频率 Map
+     *
+     * @param context       上下文
+     * @param mainForumId   访问的板块对应的主板块 ID
+     * @param increaseValue 添加数量
+     */
+    public static void updateForumsMap(Context context, Long mainForumId, long increaseValue) {
         HashMap<Long, Long> visitedForumsMap = (HashMap<Long, Long>) getCache(context).getAsObject(BUApplication.CACHE_MOST_VISITED_FORUMS);
         if (visitedForumsMap == null || visitedForumsMap.size() == 0) {
             visitedForumsMap = new HashMap<>();
         }
 
         Long value = visitedForumsMap.get(mainForumId);
-        if (value == null) visitedForumsMap.put(mainForumId, 1L);
-        else
-            visitedForumsMap.put(mainForumId, value >= Long.MAX_VALUE ? Long.MAX_VALUE : 1 + value);
+        if (value == null) visitedForumsMap.put(mainForumId, increaseValue);
+        else {
+            visitedForumsMap.put(mainForumId, value >= Long.MAX_VALUE ? Long.MAX_VALUE : increaseValue + value);
+        }
 
         if (visitedForumsMap.containsKey(-1L))
             visitedForumsMap.remove(-1L);

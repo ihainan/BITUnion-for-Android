@@ -80,12 +80,17 @@ public class FocusActivity extends SwipeActivity {
         @Override
         public Fragment getItem(int position) {
             if (position == 0) {
-                Fragment fragment = new TimelineFragment();
+                TimelineFragment fragment = new TimelineFragment();
                 Bundle args = new Bundle();
                 args.putString(TimelineFragment.TIMELINE_ACTION_TAG, "FOCUS");
                 fragment.setArguments(args);
+                fragment.isSetToolbar = false;
                 return fragment;
-            } else return new FavoriteListFragment();
+            } else {
+                FavoriteListFragment fragment = new FavoriteListFragment();
+                fragment.isSetToolbar = false;
+                return fragment;
+            }
         }
 
         @Override

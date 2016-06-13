@@ -25,6 +25,15 @@
             android:key="pref_home_page_click"
             android:summary="点击后进尾楼"
             android:title="首页帖子点击事件" />
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:key="pref_new_post_settings"
+        android:title="发帖与回复">
+        <SwitchPreference
+            android:key="pref_display_device_information"
+            android:summary="帖子尾部显示 “发自设备名 @BU for Android”"
+            android:title="显示客户端信息尾巴" />
 
         <SwitchPreference
             android:key="pref_advanced_editor"

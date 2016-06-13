@@ -72,7 +72,7 @@ public class SettingsActivity extends PreferenceActivity {
         loadDefaultValue();
     }
 
-    private SwitchPreference prefNetworkType, prefSaveDataMode, prefUploadData, prefDebugMode, prefEnableNotify, prefAdvancedEditor, prefEnableSilentMode;
+    private SwitchPreference prefNetworkType, prefSaveDataMode, prefUploadData, prefDebugMode, prefEnableNotify, prefAdvancedEditor, prefEnableSilentMode, prefDisplayDeviceInfo;
     private Preference prefDeviceName, prefCheckUpdate, prefDisplaySetting, prefFeedback, prefHomePageClick, prefEnableNotifyType, prefDonate;
 
     private void loadDefaultValue() {
@@ -295,6 +295,20 @@ public class SettingsActivity extends PreferenceActivity {
                     }
                 });
                 builder.create().show();
+                return true;
+            }
+        });
+
+        /* 回帖相关 */
+        prefDisplayDeviceInfo = (SwitchPreference) findPreference("pref_display_device_information");
+        prefDisplayDeviceInfo.setSummary("发自 " + CommonUtils.getDeviceName() + " @BU for Android");
+        prefDisplayDeviceInfo.setChecked(BUApplication.enableDisplayDeviceInfo);
+        prefDisplayDeviceInfo.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+            @Override
+            public boolean onPreferenceChange(Preference preference, Object newValue) {
+                boolean checked = (Boolean) newValue;
+                BUApplication.enableDisplayDeviceInfo = checked;
+                BUApplication.setPrefEnableDisplayDeviceInfo(SettingsActivity.this);
                 return true;
             }
         });

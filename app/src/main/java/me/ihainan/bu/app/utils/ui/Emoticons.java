@@ -26,12 +26,12 @@ public class Emoticons {
         EMOTICONS.put(":sweating:", "smilies_sweatingbullets.gif");
         EMOTICONS.put(":nugget:", "smilies_nugget.gif");
         EMOTICONS.put(":cool:", "smilies_cool.gif");
-        EMOTICONS.put(":mad:", "smilies_mad.gif");
+        // EMOTICONS.put(":mad:", "smilies_mad.gif");
         EMOTICONS.put(":sad:", "smilies_sad.gif");
         EMOTICONS.put(":shifty:", "smilies_shifty.gif");
-        EMOTICONS.put(":shocked:", "smilies_shocked.gif");
+        // EMOTICONS.put(":shocked:", "smilies_shocked.gif");
         EMOTICONS.put(":smile:", "smilies_smile.gif");
-        EMOTICONS.put(":tongue:", "smilies_tongue.gif");
+        // EMOTICONS.put(":tongue:", "smilies_tongue.gif");
         EMOTICONS.put(":wink:", "smilies_wink.gif");
 
         for (int i = 71; i <= 142; ++i) {

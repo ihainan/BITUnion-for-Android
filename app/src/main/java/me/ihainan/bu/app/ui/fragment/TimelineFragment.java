@@ -1,6 +1,7 @@
 package me.ihainan.bu.app.ui.fragment;
 
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 
@@ -15,6 +16,7 @@ import me.ihainan.bu.app.ui.ProfileActivity;
 import me.ihainan.bu.app.utils.BUApplication;
 import me.ihainan.bu.app.utils.network.BUApi;
 import me.ihainan.bu.app.utils.network.ExtraApi;
+import me.ihainan.bu.app.utils.ui.CustomOnClickListener;
 
 /**
  * 时间轴 Fragment
@@ -27,6 +29,7 @@ public class TimelineFragment extends BasicRecyclerViewFragment<TimelineEvent> {
     // Data
     private String mUsername;
     private String mAction;
+    public static boolean isSetToolbar = false;
 
     @Override
     protected String getNoNewDataMessage() {
@@ -61,6 +64,23 @@ public class TimelineFragment extends BasicRecyclerViewFragment<TimelineEvent> {
         if (mUsername == null) mUsername = BUApplication.userSession.username;
         mAction = getArguments().getString(TIMELINE_ACTION_TAG);
         if (mAction == null) mAction = "SPEC";
+    }
+
+    @Override
+    protected void setupRecyclerView() {
+        super.setupRecyclerView();
+        if (!isSetToolbar) {
+            isSetToolbar = !isSetToolbar;
+            getActivity().findViewById(R.id.toolbar).setOnClickListener(CustomOnClickListener.doubleClickToListTop(mContext, mRecyclerView));
+        }
+    }
+
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        if (isVisibleToUser && mContext != null && mRecyclerView != null) {
+            getActivity().findViewById(R.id.toolbar).setOnClickListener(CustomOnClickListener.doubleClickToListTop(mContext, mRecyclerView));
+        }
     }
 
     @Override

@@ -24,8 +24,8 @@
 
         <LinearLayout
             android:id="@+id/preview"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content">
+            android:layout_width="300dp"
+            android:layout_height="match_parent">
 
             <include layout="@layout/item_thread_detail_new" />
         </LinearLayout>
@@ -33,8 +33,7 @@
         <ScrollView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/preview"
-            android:layout_marginTop="10dp">
+            android:layout_toRightOf="@id/preview">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -44,50 +43,8 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:padding="6dp"
-                    android:text="标题字体大小"
-                    android:textSize="13sp" />
-
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="@android:color/white"
-                    android:orientation="horizontal"
-                    android:padding="10dp">
-
-                    <TextView
-                        android:id="@+id/title_text_tiny"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:paddingLeft="5dp"
-                        android:text="小号"
-                        android:textColor="@android:color/black"
-                        android:textSize="14sp" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentRight="true"
-                        android:paddingRight="5dp"
-                        android:text="大号"
-                        android:textColor="@android:color/black"
-                        android:textSize="14sp" />
-
-                    <SeekBar
-                        android:id="@+id/sb_title_font_size"
-                        android:layout_width="match_parent"
-                        android:layout_height="25dp"
-                        android:layout_below="@id/title_text_tiny"
-                        android:layout_marginTop="5dp"
-                        android:max="6"
-                        android:progress="1" />
-                </RelativeLayout>
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:padding="6dp"
-                    android:text="正文字体大小"
+                    android:padding="4dp"
+                    android:text="字体大小"
                     android:textSize="13sp" />
 
                 <RelativeLayout
@@ -129,7 +86,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="6dp"
-                    android:padding="6dp"
+                    android:padding="4dp"
                     android:text="额外行间距"
                     android:textSize="13sp" />
 
@@ -172,7 +129,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
-                    android:padding="6dp"
+                    android:padding="4dp"
                     android:text="行间距倍数"
                     android:textSize="13sp" />
 

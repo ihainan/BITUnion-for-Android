@@ -109,7 +109,7 @@ public class PostListActivity extends SwipeActivity {
         if (mFid != null) {
             if (BUApplication.forumListGroupList == null) BUApplication.makeForumGroupList(this);
             Long mainForumID = BUApplication.findMainForumID(mFid);
-            if (mainForumID != -1) BUApplication.updateForumsMap(this, mainForumID);
+            if (mainForumID != -1) BUApplication.updateForumsMap(this, mainForumID, 5L);
         }
 
         // Start fetch data and fill views
@@ -297,6 +297,9 @@ public class PostListActivity extends SwipeActivity {
             args.putInt(PostListFragment.PAGE_POSITION_TAG, position);
             args.putString(THREAD_AUTHOR_NAME_TAG, mAuthorName);
             args.putLong(THREAD_REPLY_COUNT_TAG, mReplyCount);
+            if (mFid != null && mFid > 0)
+                args.putLong(THREAD_FID_TAG, mFid);
+            args.putString(THREAD_NAME_TAG, mThreadName);
 
             if (!(mJumpPage == 0 && mJumpPageIndex == 0) && mJumpPage == position) {
                 args.putInt(PostListFragment.PAGE_INDEX_TAG, mJumpPageIndex);
@@ -338,11 +341,11 @@ public class PostListActivity extends SwipeActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_reply:
-                Intent intent = new Intent(PostListActivity.this, BetterPostActivity.class);
-                intent.putExtra(BetterPostActivity.ACTION_TAG, BetterPostActivity.ACTION_NEW_POST);
+                Intent intent = new Intent(PostListActivity.this, NewPostActivity.class);
+                intent.putExtra(NewPostActivity.ACTION_TAG, NewPostActivity.ACTION_NEW_POST);
                 if (mTid != null && mReplyCount != null) {
-                    intent.putExtra(BetterPostActivity.NEW_POST_TID_TAG, mTid);
-                    intent.putExtra(BetterPostActivity.NEW_POST_MAX_FLOOR_TAG, mReplyCount + 1);
+                    intent.putExtra(NewPostActivity.NEW_POST_TID_TAG, mTid);
+                    intent.putExtra(NewPostActivity.NEW_POST_MAX_FLOOR_TAG, mReplyCount + 1);
                     startActivityForResult(intent, REQUEST_NEW_REPLY);
                 }
                 break;

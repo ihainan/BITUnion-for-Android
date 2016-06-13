@@ -272,6 +272,8 @@ public class ProfileActivity extends SwipeActivity {
         @Override
         public Fragment getItem(int position) {
             Fragment fragment = position == 0 ? new BasicInfoFragment() : new TimelineFragment();
+            if (fragment instanceof TimelineFragment)
+                ((TimelineFragment) fragment).isSetToolbar = false;
             Bundle args = new Bundle();
             args.putString(ProfileActivity.USER_NAME_TAG, mUsername);
             fragment.setArguments(args);
