@@ -371,7 +371,7 @@ public class BetterPostActivity extends AppCompatActivity {
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         switch (requestCode) {
-            case PERMISSIONS_REQUEST_READ_FILE:
+            case PERMISSIONS_REQUEST_READ_IMAGE:
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
@@ -380,7 +380,7 @@ public class BetterPostActivity extends AppCompatActivity {
                 } else {
                     Toast.makeText(this, getString(R.string.error_insert_attachment), Toast.LENGTH_LONG).show();
                 }
-            case PERMISSIONS_REQUEST_READ_IMAGE:
+            case PERMISSIONS_REQUEST_READ_FILE:
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
 
