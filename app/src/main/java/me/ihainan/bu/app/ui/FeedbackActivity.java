@@ -29,10 +29,8 @@ import me.ihainan.bu.app.utils.CommonUtils;
 import me.ihainan.bu.app.utils.network.ExtraApi;
 
 public class FeedbackActivity extends SwipeActivity {
-    public final static String TAG = FeedbackActivity.class.getSimpleName();
+    private final static String TAG = FeedbackActivity.class.getSimpleName();
 
-    // UI
-    private Toolbar mToolbar;
     private AutoCompleteTextView tvEmail, tvContent;
     private ProgressDialog mProgressDialog;
 
@@ -42,7 +40,7 @@ public class FeedbackActivity extends SwipeActivity {
         setContentView(R.layout.activity_feedback);
 
         // Toolbar
-        mToolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar mToolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(mToolbar);
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);

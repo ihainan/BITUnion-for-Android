@@ -22,16 +22,16 @@ import me.ihainan.bu.app.utils.CommonUtils;
  * Extra API based on BITUnion-Api-Service Project
  */
 public class ExtraApi {
-    public final static String TAG = ExtraApi.class.getSimpleName();
-    public final static String BASE_API = "http://bu.ihainan.me:8080/api/";
+    private final static String TAG = ExtraApi.class.getSimpleName();
+    private final static String BASE_API = "http://bu.ihainan.me:8080/api/";
     // public final static String BASE_API = "http://192.168.56.1:8080/api/";
     // public final static String BASE_API = "http://192.168.31.115:8080/api/";
-    public final static String VERSION = "v2";
-    public final static String ENDPOINT = BASE_API + VERSION;
+    private final static String VERSION = "v2";
+    private final static String ENDPOINT = BASE_API + VERSION;
 
     // Basic Authentication
-    public static String BASIC_AUTH_USERNAME = "bitunion_app";
-    public static String BASIC_AUTH_PASSWORD = "bitunion_api";
+    public static final String BASIC_AUTH_USERNAME = "bitunion_app";
+    public static final String BASIC_AUTH_PASSWORD = "bitunion_api";
 
     public static boolean checkStatus(JSONObject response) {
         try {
@@ -61,7 +61,7 @@ public class ExtraApi {
     }
 
     /* 收藏相关接口 */
-    public final static String ADD_FAVORITE_ENDPOINT = ENDPOINT + "/favorite";
+    private final static String ADD_FAVORITE_ENDPOINT = ENDPOINT + "/favorite";
 
     /**
      * 收藏帖子
@@ -151,7 +151,7 @@ public class ExtraApi {
     }
 
     /* 用户相关接口 */
-    public final static String USER_ENDPOINT = ENDPOINT + "/user";
+    private final static String USER_ENDPOINT = ENDPOINT + "/user";
 
     /**
      * 获取用户的主题列表
@@ -196,7 +196,7 @@ public class ExtraApi {
     }
 
     /* 关注相关接口 */
-    public final static String FOLLOW_ENDPOINT = ENDPOINT + "/follow";
+    private final static String FOLLOW_ENDPOINT = ENDPOINT + "/follow";
 
     /**
      * 添加对特定用户的关注
@@ -281,7 +281,7 @@ public class ExtraApi {
 
 
     /* 时间轴相关接口 */
-    public final static String TIMELINE_ENDPOINT = ENDPOINT + "/timeline";
+    private final static String TIMELINE_ENDPOINT = ENDPOINT + "/timeline";
 
     /**
      * 获得指定用户的时间轴动态
@@ -327,7 +327,7 @@ public class ExtraApi {
     }
 
     /* 时间轴相关接口 */
-    public final static String SEARCH_ENDPOINT = ENDPOINT + "/search";
+    private final static String SEARCH_ENDPOINT = ENDPOINT + "/search";
 
     /**
      * 根据关键词搜索主题
@@ -442,7 +442,7 @@ public class ExtraApi {
     }
 
     /* 通知相关接口 */
-    public final static String NOTIFICATION_ENDPOINT = ENDPOINT + "/notification";
+    private final static String NOTIFICATION_ENDPOINT = ENDPOINT + "/notification";
 
     public static void getNotificationList(Context context, String username,
                                            long from, long to,
@@ -464,9 +464,9 @@ public class ExtraApi {
      * @param listener      response 事件监听器
      * @param errorListener error 事件监听器
      */
-    public static void markAsRead(Context context, long notifyId,
-                                  Response.Listener<JSONObject> listener,
-                                  Response.ErrorListener errorListener) {
+    private static void markAsRead(Context context, long notifyId,
+                                   Response.Listener<JSONObject> listener,
+                                   Response.ErrorListener errorListener) {
         String url = NOTIFICATION_ENDPOINT + "/" + notifyId;
         Log.i(TAG, "markAsRead >> " + url);
 
@@ -557,7 +557,7 @@ public class ExtraApi {
     }
 
     /* 反馈相关接口 */
-    public final static String FEEDBACK_ENDPOINT = ENDPOINT + "/feedback";
+    private final static String FEEDBACK_ENDPOINT = ENDPOINT + "/feedback";
 
     public static void addFeedback(Context context, Feedback feedback,
                                    Response.Listener<JSONObject> listener,

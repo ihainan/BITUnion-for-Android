@@ -22,7 +22,7 @@ import java.util.Map;
  * HTTP Request Manager
  */
 public class RequestQueueManager {
-    public final static String TAG = RequestQueueManager.class.getName();   // Default tag for one request
+    private final static String TAG = RequestQueueManager.class.getName();   // Default tag for one request
 
     private RequestQueue mRequestQueue;
     private static RequestQueueManager mInstance;
@@ -54,7 +54,7 @@ public class RequestQueueManager {
      * @param context Context
      * @return Request queue instance
      */
-    public RequestQueue getRequestQueue(Context context) {
+    private RequestQueue getRequestQueue(Context context) {
         if (mRequestQueue == null) {
             mRequestQueue = Volley.newRequestQueue(context);
         }
@@ -119,7 +119,7 @@ public class RequestQueueManager {
         }
     }
 
-    protected static class CustomJsonObjectRequest extends JsonObjectRequest {
+    static class CustomJsonObjectRequest extends JsonObjectRequest {
 
         public CustomJsonObjectRequest(int method, String url, JSONObject jsonRequest, Response.Listener<JSONObject> listener, Response.ErrorListener errorListener) {
             super(method, url, jsonRequest, listener, errorListener);

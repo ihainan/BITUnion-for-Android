@@ -12,7 +12,7 @@ import me.ihainan.bu.app.utils.network.BUApi;
  * 回话模型
  */
 public class Session implements Serializable {
-    public final static String TAG = Session.class.getSimpleName();
+    private final static String TAG = Session.class.getSimpleName();
 
     // Json mapping fields
     public int uid; // 用户 ID

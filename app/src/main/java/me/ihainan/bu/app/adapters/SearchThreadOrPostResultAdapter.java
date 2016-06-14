@@ -30,7 +30,7 @@ import me.ihainan.bu.app.utils.ui.HtmlUtil;
  */
 public class SearchThreadOrPostResultAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private final static String TAG = SearchThreadOrPostResultAdapter.class.getSimpleName();
-    private List<Post> mList;
+    private final List<Post> mList;
     private String mKeyword;
     private final LayoutInflater mLayoutInflater;
     private final Context mContext;
@@ -45,10 +45,10 @@ public class SearchThreadOrPostResultAdapter extends RecyclerView.Adapter<Recycl
     }
 
     private final int VIEW_TYPE_ITEM = 0;
-    private final int VIEW_TYPE_LOADING = 1;
 
     @Override
     public int getItemViewType(int position) {
+        int VIEW_TYPE_LOADING = 1;
         return mList.get(position) == null ? VIEW_TYPE_LOADING : VIEW_TYPE_ITEM;
     }
 

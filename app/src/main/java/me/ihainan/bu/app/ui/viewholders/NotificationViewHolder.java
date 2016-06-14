@@ -12,9 +12,11 @@ import me.ihainan.bu.app.R;
  * 通知 Notification
  */
 public class NotificationViewHolder extends RecyclerView.ViewHolder {
-    public ImageView avatar;
-    public TextView username, content, date;
-    public RelativeLayout rootLayout;
+    public final ImageView avatar;
+    public final TextView username;
+    public final TextView content;
+    public final TextView date;
+    public final RelativeLayout rootLayout;
 
     public NotificationViewHolder(View itemView) {
         super(itemView);

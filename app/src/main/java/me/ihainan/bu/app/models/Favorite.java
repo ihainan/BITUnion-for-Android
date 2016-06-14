@@ -10,7 +10,7 @@ import me.ihainan.bu.app.utils.network.BUApi;
  * 收藏模型
  */
 public class Favorite {
-    public final static String TAG = Favorite.class.getSimpleName();
+    private final static String TAG = Favorite.class.getSimpleName();
 
     public Long fav_id;
     public String username;

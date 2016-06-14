@@ -8,8 +8,8 @@ import java.util.List;
  * 论坛组模型（一个论坛组包含多个主论坛，主论坛内部可能会包含多个子论坛）
  */
 public class ForumListGroup {
-    public List<ForumList> mForumLists;    // 一个论坛组
-    public String mForumGroupName;
+    private final List<ForumList> mForumLists;    // 一个论坛组
+    private final String mForumGroupName;
 
     public ForumListGroup(List<ForumList> list, String forumGroupName) {
         mForumLists = list;
@@ -38,10 +38,10 @@ public class ForumListGroup {
      * 主论坛
      */
     public static class ForumList implements Serializable {
-        private String mForumName;
-        private String mIcon;
-        private Long mForumId;
-        private List<SubForum> mSubForumList;
+        private final String mForumName;
+        private final String mIcon;
+        private final Long mForumId;
+        private final List<SubForum> mSubForumList;
 
         /**
          * 获取论坛名
@@ -89,8 +89,8 @@ public class ForumListGroup {
      * 子论坛
      */
     public static class SubForum implements Serializable {
-        private String mForumName;
-        private Long mSubForumId;
+        private final String mForumName;
+        private final Long mSubForumId;
 
         public SubForum(String forumName, long fid) {
             mForumName = forumName;

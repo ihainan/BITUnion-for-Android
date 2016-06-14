@@ -38,10 +38,11 @@ import me.ihainan.bu.app.utils.CommonUtils;
 import me.ihainan.bu.app.utils.network.BUApi;
 import me.ihainan.bu.app.utils.BUApplication;
 import me.ihainan.bu.app.utils.ui.CustomOnClickListener;
+import me.ihainan.bu.app.utils.ui.IconFontHelper;
 
 public class ThreadListActivity extends SwipeActivity {
     private final static String TAG = ThreadListActivity.class.getSimpleName();
-    public final static int REQUEST_NEW_THREAD = 0;
+    private final static int REQUEST_NEW_THREAD = 0;
 
     // UI references
     private RecyclerView mRecyclerView;
@@ -53,10 +54,9 @@ public class ThreadListActivity extends SwipeActivity {
     public final static String ACTION_TAG = "ACTION_TAG";
     public final static String MAIN_FORUM_TAG = "MAIN_FORUM_TAG";
     public final static String SUB_FORUM_TAG = "SUB_FORUM_TAG";
-    public final static String FORUM_NAME_TAG = "FORUM_NAME_TAG";
+    private final static String FORUM_NAME_TAG = "FORUM_NAME_TAG";
     public final static String FORUM_FID_TAG = "FORUM_FID_TAG";
 
-    private String mAction, mForumName;
     private ForumListGroup.SubForum mSubForum;
     private ForumListGroup.ForumList mMainForum;
     private Long mFid;
@@ -66,10 +66,10 @@ public class ThreadListActivity extends SwipeActivity {
         // Get mAction and forum id
         Intent intent = getIntent();
         Bundle bundle = intent.getExtras();
-        mAction = bundle.getString(ACTION_TAG);
+        String mAction = bundle.getString(ACTION_TAG);
         mMainForum = (ForumListGroup.ForumList) bundle.getSerializable(MAIN_FORUM_TAG);
         mSubForum = (ForumListGroup.SubForum) bundle.getSerializable(SUB_FORUM_TAG);
-        mForumName = bundle.getString(FORUM_NAME_TAG);
+        String mForumName = bundle.getString(FORUM_NAME_TAG);
         mFid = bundle.getLong(FORUM_FID_TAG);
 
         if (mFid != null && mMainForum == null && mSubForum == null) {
@@ -197,7 +197,7 @@ public class ThreadListActivity extends SwipeActivity {
 
     private boolean mIsLoading = false;
 
-    LinearLayoutManager layoutManager;
+    private LinearLayoutManager layoutManager;
 
     private void setupRecyclerView() {
         layoutManager = new LinearLayoutManager(this);
@@ -208,10 +208,6 @@ public class ThreadListActivity extends SwipeActivity {
         mRecyclerView.setAdapter(mAdapter);
 
         mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-                super.onScrollStateChanged(recyclerView, newState);
-            }
 
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
@@ -255,7 +251,7 @@ public class ThreadListActivity extends SwipeActivity {
         refreshData(0, BUApplication.LOADING_THREADS_COUNT);
     }
 
-    private List<Thread> mThreadList = new ArrayList<>();
+    private final List<Thread> mThreadList = new ArrayList<>();
     private ThreadListAdapter mAdapter;
 
     /**
@@ -385,6 +381,18 @@ public class ThreadListActivity extends SwipeActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.thread_list_menu, menu);
+
+        // Search
+        MenuItem itemSearch = menu.findItem(R.id.action_search);
+        IconFontHelper.setupMenuIcon(this, itemSearch, getString(R.string.search_icon), new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(ThreadListActivity.this, SearchActivity.class);
+                intent.putExtra(SearchActivity.FID_TAG, mFid);
+                startActivity(intent);
+            }
+        });
+
         return true;
     }
 

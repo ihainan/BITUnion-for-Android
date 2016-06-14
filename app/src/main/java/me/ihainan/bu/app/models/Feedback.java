@@ -12,7 +12,7 @@ import me.ihainan.bu.app.utils.network.BUApi;
  * 反馈内容
  */
 public class Feedback implements Serializable {
-    public final static String TAG = Feedback.class.getSimpleName();
+    private final static String TAG = Feedback.class.getSimpleName();
 
     public String email;
     public String content;

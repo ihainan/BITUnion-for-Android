@@ -51,9 +51,6 @@ public class PreviewActivity extends SwipeActivity {
     // TAG
     private final static String TAG = PreviewActivity.class.getSimpleName();
 
-    // UI References
-    private TextView mMessageView, mSubjectView, mFloorView, mPostDateView;
-    private Button mSubmitBtn;
     private CardView mCardView;
 
     // Data
@@ -136,7 +133,7 @@ public class PreviewActivity extends SwipeActivity {
 
 
         // Message
-        mMessageView = (TextView) findViewById(R.id.thread_message);
+        TextView mMessageView = (TextView) findViewById(R.id.thread_message);
         mMessageView.setMovementMethod(new CustomSpan.LinkTouchMovementMethod());
         mMessageView.setLineSpacing(6, 1.2f);
         SpannableString spannableString = new SpannableString(
@@ -148,15 +145,15 @@ public class PreviewActivity extends SwipeActivity {
         mMessageView.setText(spannableString);
 
         // Floor
-        mFloorView = (TextView) findViewById(R.id.post_floor);
+        TextView mFloorView = (TextView) findViewById(R.id.post_floor);
         mFloorView.setText("#" + mFloor);
 
         // Date
-        mPostDateView = (TextView) findViewById(R.id.post_date);
+        TextView mPostDateView = (TextView) findViewById(R.id.post_date);
         mPostDateView.setText("Recently");
 
         // Submit
-        mSubmitBtn = (Button) findViewById(R.id.submit);
+        Button mSubmitBtn = (Button) findViewById(R.id.submit);
         mSubmitBtn.setOnClickListener(submitListener);
         if (NewPostActivity.ACTION_NEW_POST.equals(mAction)) {
             mSubmitBtn.setText("发表回复");
@@ -165,7 +162,7 @@ public class PreviewActivity extends SwipeActivity {
         }
 
         // Subject
-        mSubjectView = (TextView) findViewById(R.id.thread_subject);
+        TextView mSubjectView = (TextView) findViewById(R.id.thread_subject);
         if ("".equals(mSubject)) {
             mSubjectView.setVisibility(View.GONE);
         } else {
@@ -248,7 +245,7 @@ public class PreviewActivity extends SwipeActivity {
         linearLayout.addView(itemView);
     }
 
-    private View.OnClickListener submitListener = new View.OnClickListener() {
+    private final View.OnClickListener submitListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             AlertDialog.Builder builder = new AlertDialog.Builder(PreviewActivity.this);
@@ -268,7 +265,7 @@ public class PreviewActivity extends SwipeActivity {
         }
     };
 
-    ProgressDialog dialog;
+    private ProgressDialog dialog;
 
     private void postNew() {
         try {
@@ -285,7 +282,7 @@ public class PreviewActivity extends SwipeActivity {
     }
 
     // 成功拉取数据事件监听器
-    private Response.Listener<NetworkResponse> listener = new Response.Listener<NetworkResponse>() {
+    private final Response.Listener<NetworkResponse> listener = new Response.Listener<NetworkResponse>() {
         @Override
         public void onResponse(NetworkResponse response) {
             if (isFinishing()) return;
@@ -331,7 +328,7 @@ public class PreviewActivity extends SwipeActivity {
     };
 
     // 拉取数据失败事件监听器
-    private Response.ErrorListener errorListener = new Response.ErrorListener() {
+    private final Response.ErrorListener errorListener = new Response.ErrorListener() {
         @Override
         public void onErrorResponse(VolleyError error) {
             if (isFinishing()) return;

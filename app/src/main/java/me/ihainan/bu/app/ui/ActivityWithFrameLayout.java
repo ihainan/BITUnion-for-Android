@@ -22,9 +22,6 @@ public class ActivityWithFrameLayout extends SwipeActivity {
     public final static String TITLE_TAG = TAG + "TITLE_TAG";
     public final static String FRAGMENT_TAG = TAG + "FRAGMENT_TAG";
 
-    // UI references
-    private Toolbar mToolbar;
-
     // Data
     private String mTitle;
     private Fragment mFragment;
@@ -38,7 +35,7 @@ public class ActivityWithFrameLayout extends SwipeActivity {
         getExtra();
 
         // Toolbar
-        mToolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar mToolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(mToolbar);
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);

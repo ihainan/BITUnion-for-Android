@@ -39,11 +39,11 @@ import me.ihainan.bu.app.utils.ui.HtmlUtil;
 /**
  * 最新回复适配器
  */
-public class NewLatestThreadListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+class NewLatestThreadListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private final static String TAG = LatestThreadListAdapter.class.getSimpleName();
     private final LayoutInflater mLayoutInflater;
     private final Context mContext;
-    private List<LatestThread> mLatestThreads;
+    private final List<LatestThread> mLatestThreads;
 
     public NewLatestThreadListAdapter(Context context, List<LatestThread> latestThreads) {
         mLatestThreads = latestThreads;

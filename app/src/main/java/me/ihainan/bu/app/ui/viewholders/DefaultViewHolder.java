@@ -9,16 +9,16 @@ import android.widget.TextView;
 import me.ihainan.bu.app.R;
 
 public class DefaultViewHolder extends RecyclerView.ViewHolder {
-    public TextView authorName;
-    public TextView forumName;
-    public TextView action;
-    public TextView title;
-    public ImageView avatar;
-    public TextView replyCount;
-    public TextView date;
-    public TextView isNewOrHot;
-    public TextView placeHolderIn;
-    public LinearLayout rootLayout;
+    public final TextView authorName;
+    public final TextView forumName;
+    public final TextView action;
+    public final TextView title;
+    public final ImageView avatar;
+    public final TextView replyCount;
+    public final TextView date;
+    public final TextView isNewOrHot;
+    public final TextView placeHolderIn;
+    public final LinearLayout rootLayout;
 
     public DefaultViewHolder(View view) {
         super(view);

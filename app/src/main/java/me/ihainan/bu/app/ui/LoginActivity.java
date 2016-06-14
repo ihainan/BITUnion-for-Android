@@ -1,6 +1,7 @@
 package me.ihainan.bu.app.ui;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -12,6 +13,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.CompoundButton;
@@ -35,13 +37,13 @@ import me.ihainan.bu.app.utils.BUApplication;
  * A login screen that offers login via username / password.
  */
 public class LoginActivity extends AppCompatActivity {
-    public final static String TAG = LoginActivity.class.getSimpleName();
+    private final static String TAG = LoginActivity.class.getSimpleName();
+    private final Context mContext = this;
 
     // UI references.
     private AutoCompleteTextView mUsername;
     private EditText mPassword;
-    private SwitchCompat mSwitchCompatOutNetwork;
-    ProgressDialog mDialog;
+    private ProgressDialog mDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,15 +56,15 @@ public class LoginActivity extends AppCompatActivity {
         // init UI references
         mUsername = (AutoCompleteTextView) findViewById(R.id.user_name);
         mPassword = (EditText) findViewById(R.id.password);
-        mSwitchCompatOutNetwork = (SwitchCompat) findViewById(R.id.switch_compat_out_network);
+        SwitchCompat mSwitchCompatOutNetwork = (SwitchCompat) findViewById(R.id.switch_compat_out_network);
 
         // 读取配置全局配置信息
-        BUApplication.readConfig(this);
+        BUApplication.readConfig(mContext);
 
         // 自动填充，并设置最原始的登录节点
         if (BUApplication.username != null && BUApplication.networkType != null) {
             mUsername.setText(BUApplication.username);
-            mPassword.setText(BUApplication.password);
+            // mPassword.setText(BUApplication.password);
             if (BUApplication.networkType == BUApplication.NETWORK_TYPE.OUT_SCHOOL)
                 mSwitchCompatOutNetwork.setChecked(true);
             else mSwitchCompatOutNetwork.setChecked(false);
@@ -76,7 +78,8 @@ public class LoginActivity extends AppCompatActivity {
         mPassword.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
-                if (id == R.id.login || id == EditorInfo.IME_NULL) {
+                if (id == R.id.login || id == EditorInfo.IME_NULL
+                        || id == EditorInfo.IME_ACTION_SEARCH) {
                     attemptLogin();
                     return true;
                 }
@@ -89,7 +92,7 @@ public class LoginActivity extends AppCompatActivity {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 BUApi.currentEndPoint = isChecked ? BUApi.OUT_SCHOOL_ENDPOINT : BUApi.IN_SCHOOL_ENDPOINT;
                 BUApplication.networkType = isChecked ? BUApplication.NETWORK_TYPE.OUT_SCHOOL : BUApplication.NETWORK_TYPE.IN_SCHOOL;
-                BUApplication.setCacheNetworkType(LoginActivity.this);
+                BUApplication.setCacheNetworkType(mContext);
             }
         });
 
@@ -112,6 +115,12 @@ public class LoginActivity extends AppCompatActivity {
         mUsername.setError(null);
         mPassword.setError(null);
 
+        View view = this.getCurrentFocus();
+        if (view != null) {
+            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        }
+
         // Store values at the time of the login attempt.
         String username = mUsername.getText().toString();
         String password = mPassword.getText().toString();
@@ -131,8 +140,8 @@ public class LoginActivity extends AppCompatActivity {
         }
 
         // showProgress(true);
-        mDialog = ProgressDialog.show(this, "",
-                "正在登录", false);
+        mDialog = ProgressDialog.show(mContext, "",
+                "正在登录…", false);
         mDialog.show();
 
         checkPassword(username, password);
@@ -145,19 +154,19 @@ public class LoginActivity extends AppCompatActivity {
      * @param password 密码
      */
     private void checkPassword(final String userName, final String password) {
-        BUApi.tryLogin(this, userName, password,
+        BUApi.tryLogin(mContext, userName, password,
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
                         if (isFinishing()) return;
                         BUApplication.username = mUsername.getText().toString();
-                        BUApplication.setCacheUserName(LoginActivity.this);
+                        BUApplication.setCacheUserName(mContext);
 
                         if (mDialog != null) mDialog.dismiss();
                         try {
                             if (BUApi.checkStatus(response)) {
                                 BUApplication.userSession = BUApi.MAPPER.readValue(response.toString(), Session.class);
-                                BUApplication.setCacheSession(LoginActivity.this);
+                                BUApplication.setCacheSession(mContext);
 
                                 if (BUApplication.userSession.credit < 0) {
                                     if (mDialog != null) mDialog.dismiss();
@@ -165,9 +174,9 @@ public class LoginActivity extends AppCompatActivity {
                                     mUsername.requestFocus();
                                 } else {
                                     BUApplication.password = mPassword.getText().toString();
-                                    BUApplication.setCachePassword(LoginActivity.this);
+                                    BUApplication.setCachePassword(mContext);
 
-                                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                                    Intent intent = new Intent(mContext, MainActivity.class);
                                     startActivity(intent);
                                     finish();
                                 }
@@ -175,13 +184,11 @@ public class LoginActivity extends AppCompatActivity {
                                 if (mDialog != null) mDialog.dismiss();
                                 mPassword.setError(getString(R.string.error_wrong_password));
                                 mPassword.requestFocus();
-                                return;
                             }
                         } catch (IOException e) {
                             mUsername.setError(getString(R.string.error_parse_json));
                             mUsername.requestFocus();
                             Log.e(TAG, getString(R.string.error_parse_json) + "\n" + response, e);
-                            return;
                         }
                     }
                 }, new Response.ErrorListener() {
@@ -202,7 +209,7 @@ public class LoginActivity extends AppCompatActivity {
 
         // 友盟 SDK
         if (BUApplication.uploadData)
-            MobclickAgent.onResume(this);
+            MobclickAgent.onResume(mContext);
     }
 
     @Override
@@ -211,6 +218,6 @@ public class LoginActivity extends AppCompatActivity {
 
         // 友盟 SDK
         if (BUApplication.uploadData)
-            MobclickAgent.onPause(this);
+            MobclickAgent.onPause(mContext);
     }
 }

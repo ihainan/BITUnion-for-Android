@@ -44,7 +44,7 @@ public class LatestThreadListAdapter extends RecyclerView.Adapter<RecyclerView.V
     private final static String TAG = LatestThreadListAdapter.class.getSimpleName();
     private final LayoutInflater mLayoutInflater;
     private final Context mContext;
-    private List<LatestThread> mLatestThreads;
+    private final List<LatestThread> mLatestThreads;
 
     public LatestThreadListAdapter(Context context, List<LatestThread> latestThreads) {
         mLatestThreads = latestThreads;

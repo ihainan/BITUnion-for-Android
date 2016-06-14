@@ -23,9 +23,9 @@ import me.ihainan.bu.app.utils.BUApplication;
  * Picasso Image Getter
  */
 public class PicassoImageGetter implements Html.ImageGetter {
-    public final static String TAG = PicassoImageGetter.class.getSimpleName();
+    private final static String TAG = PicassoImageGetter.class.getSimpleName();
     private final Resources resources;
-    private Context mContext;
+    private final Context mContext;
     private final TextView textView;
 
     public PicassoImageGetter(Context context, TextView textView) {
@@ -106,7 +106,7 @@ public class PicassoImageGetter implements Html.ImageGetter {
     }
 
     public static class BitmapDrawablePlaceHolder extends BitmapDrawable {
-        protected Drawable mDrawable;
+        Drawable mDrawable;
 
         @Override
         public void draw(Canvas canvas) {

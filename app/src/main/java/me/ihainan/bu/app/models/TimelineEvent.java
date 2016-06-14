@@ -10,7 +10,7 @@ import me.ihainan.bu.app.utils.network.BUApi;
  * 时间轴模型
  */
 public class TimelineEvent {
-    public final static String TAG = TimelineEvent.class.getSimpleName();
+    private final static String TAG = TimelineEvent.class.getSimpleName();
 
     @Override
     public String toString() {

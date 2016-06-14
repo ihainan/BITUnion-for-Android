@@ -9,12 +9,12 @@ import android.widget.TextView;
 import me.ihainan.bu.app.R;
 
 public class SelfieViewHolder extends RecyclerView.ViewHolder {
-    public TextView authorName;
-    public TextView action;
-    public TextView title;
-    public ImageView background;
-    public ImageView avatar;
-    public LinearLayout rootLayout;
+    public final TextView authorName;
+    public final TextView action;
+    public final TextView title;
+    public final ImageView background;
+    public final ImageView avatar;
+    public final LinearLayout rootLayout;
 
     public SelfieViewHolder(View view) {
         super(view);

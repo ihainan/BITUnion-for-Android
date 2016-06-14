@@ -14,16 +14,13 @@ public class FollowingListActivity extends SwipeActivity {
     // Tags
     private final static String TAG = FollowingListActivity.class.getSimpleName();
 
-    // UI references
-    private Toolbar mToolbar;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_with_framelayout);
 
         // Toolbar
-        mToolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar mToolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(mToolbar);
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);

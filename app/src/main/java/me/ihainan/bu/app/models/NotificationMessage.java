@@ -12,7 +12,7 @@ import me.ihainan.bu.app.utils.network.BUApi;
  * 推送消息
  */
 public class NotificationMessage implements Serializable {
-    public final static String TAG = NotificationMessage.class.getSimpleName();
+    private final static String TAG = NotificationMessage.class.getSimpleName();
 
     public int type;
     public NotificationData data;

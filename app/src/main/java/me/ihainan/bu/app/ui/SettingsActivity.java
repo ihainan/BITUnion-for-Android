@@ -41,9 +41,6 @@ import me.ihainan.bu.app.utils.network.BUApi;
 public class SettingsActivity extends PreferenceActivity {
     public final static String TAG = SettingsActivity.class.getSimpleName();
 
-    // UI references
-    private Toolbar mToolbar;
-
     @Override
     protected int getPreferencesXmlId() {
         return R.xml.pref_all;
@@ -57,7 +54,7 @@ public class SettingsActivity extends PreferenceActivity {
         swipeLayout = new SwipeLayout(this);
 
         // Toolbar
-        mToolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar mToolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(mToolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
@@ -72,14 +69,15 @@ public class SettingsActivity extends PreferenceActivity {
         loadDefaultValue();
     }
 
-    private SwitchPreference prefNetworkType, prefSaveDataMode, prefUploadData, prefDebugMode, prefEnableNotify, prefAdvancedEditor, prefEnableSilentMode, prefDisplayDeviceInfo;
-    private Preference prefDeviceName, prefCheckUpdate, prefDisplaySetting, prefFeedback, prefHomePageClick, prefEnableNotifyType, prefDonate;
+    private SwitchPreference prefEnableSilentMode;
+    private Preference prefHomePageClick;
+    private Preference prefEnableNotifyType;
 
     private void loadDefaultValue() {
         BUApplication.readConfig(this);
 
         /* 网络相关 */
-        prefNetworkType = (SwitchPreference) findPreference("pref_out_school");
+        SwitchPreference prefNetworkType = (SwitchPreference) findPreference("pref_out_school");
         prefNetworkType.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
             @Override
             public boolean onPreferenceChange(Preference preference, Object newValue) {
@@ -90,27 +88,25 @@ public class SettingsActivity extends PreferenceActivity {
                 return true;
             }
         });
-        prefNetworkType.setChecked(BUApplication.networkType == BUApplication.NETWORK_TYPE.IN_SCHOOL ? false : true);
+        prefNetworkType.setChecked(BUApplication.networkType != BUApplication.NETWORK_TYPE.IN_SCHOOL);
 
-        prefSaveDataMode = (SwitchPreference) findPreference("pref_save_data");
+        SwitchPreference prefSaveDataMode = (SwitchPreference) findPreference("pref_save_data");
         prefSaveDataMode.setChecked(BUApplication.saveDataMode);
         prefSaveDataMode.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
             @Override
             public boolean onPreferenceChange(Preference preference, Object newValue) {
-                Boolean checked = (Boolean) newValue;
-                BUApplication.saveDataMode = checked;
+                BUApplication.saveDataMode = (Boolean) newValue;
                 BUApplication.setCacheSaveDataMode(SettingsActivity.this);
                 return true;
             }
         });
 
         /* 开发相关 */
-        prefDebugMode = (SwitchPreference) findPreference("pref_enable_dev_mode");
+        SwitchPreference prefDebugMode = (SwitchPreference) findPreference("pref_enable_dev_mode");
         prefDebugMode.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
             @Override
             public boolean onPreferenceChange(Preference preference, Object newValue) {
-                Boolean checked = (Boolean) newValue;
-                BUApplication.debugMode = checked;
+                BUApplication.debugMode = (Boolean) newValue;
                 BUApplication.setCacheDebugMode(SettingsActivity.this);
                 return true;
             }
@@ -118,20 +114,19 @@ public class SettingsActivity extends PreferenceActivity {
 
         prefDebugMode.setChecked(BUApplication.debugMode);
 
-        prefUploadData = (SwitchPreference) findPreference("pref_upload_data");
+        SwitchPreference prefUploadData = (SwitchPreference) findPreference("pref_upload_data");
         prefUploadData.setChecked(BUApplication.uploadData);
         prefUploadData.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
             @Override
             public boolean onPreferenceChange(Preference preference, Object newValue) {
-                Boolean checked = (Boolean) newValue;
-                BUApplication.uploadData = checked;
+                BUApplication.uploadData = (Boolean) newValue;
                 BUApplication.setUploadData(SettingsActivity.this);
                 return true;
             }
         });
 
         /* 关于相关 */
-        prefFeedback = findPreference("pref_feedback");
+        Preference prefFeedback = findPreference("pref_feedback");
         prefFeedback.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
@@ -148,10 +143,10 @@ public class SettingsActivity extends PreferenceActivity {
             }
         });
 
-        prefDeviceName = findPreference("pref_device_name");
+        Preference prefDeviceName = findPreference("pref_device_name");
         prefDeviceName.setSummary(CommonUtils.getDeviceName());
 
-        prefCheckUpdate = findPreference("pref_check_update");
+        Preference prefCheckUpdate = findPreference("pref_check_update");
         prefCheckUpdate.setSummary("当前版本：" + BuildConfig.VERSION_NAME);
         prefCheckUpdate.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
@@ -164,7 +159,7 @@ public class SettingsActivity extends PreferenceActivity {
             }
         });
 
-        prefDonate = findPreference("pref_donate");
+        Preference prefDonate = findPreference("pref_donate");
 
         prefDonate.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
@@ -204,7 +199,7 @@ public class SettingsActivity extends PreferenceActivity {
         });
 
         /* 通知相关 */
-        prefEnableNotify = (SwitchPreference) findPreference("pref_enable_notify");
+        SwitchPreference prefEnableNotify = (SwitchPreference) findPreference("pref_enable_notify");
         prefEnableSilentMode = (SwitchPreference) findPreference("pref_night_silent_mode");
         prefEnableNotifyType = findPreference("pref_enable_notify_type");
 
@@ -226,8 +221,7 @@ public class SettingsActivity extends PreferenceActivity {
         prefEnableSilentMode.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
             @Override
             public boolean onPreferenceChange(Preference preference, Object newValue) {
-                Boolean checked = (Boolean) newValue;
-                BUApplication.enableSilentMode = checked;
+                BUApplication.enableSilentMode = (Boolean) newValue;
                 BUApplication.setEnableSilentMode(SettingsActivity.this);
                 return true;
             }
@@ -268,7 +262,7 @@ public class SettingsActivity extends PreferenceActivity {
         });
 
         /* 界面相关 */
-        prefDisplaySetting = findPreference("pref_post_display");
+        Preference prefDisplaySetting = findPreference("pref_post_display");
         prefDisplaySetting.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
@@ -300,26 +294,24 @@ public class SettingsActivity extends PreferenceActivity {
         });
 
         /* 回帖相关 */
-        prefDisplayDeviceInfo = (SwitchPreference) findPreference("pref_display_device_information");
+        SwitchPreference prefDisplayDeviceInfo = (SwitchPreference) findPreference("pref_display_device_information");
         prefDisplayDeviceInfo.setSummary("发自 " + CommonUtils.getDeviceName() + " @BU for Android");
         prefDisplayDeviceInfo.setChecked(BUApplication.enableDisplayDeviceInfo);
         prefDisplayDeviceInfo.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
             @Override
             public boolean onPreferenceChange(Preference preference, Object newValue) {
-                boolean checked = (Boolean) newValue;
-                BUApplication.enableDisplayDeviceInfo = checked;
+                BUApplication.enableDisplayDeviceInfo = (boolean) (Boolean) newValue;
                 BUApplication.setPrefEnableDisplayDeviceInfo(SettingsActivity.this);
                 return true;
             }
         });
 
-        prefAdvancedEditor = (SwitchPreference) findPreference("pref_advanced_editor");
+        SwitchPreference prefAdvancedEditor = (SwitchPreference) findPreference("pref_advanced_editor");
         prefAdvancedEditor.setChecked(BUApplication.enableAdvancedEditor);
         prefAdvancedEditor.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
             @Override
             public boolean onPreferenceChange(Preference preference, Object newValue) {
-                Boolean checked = (Boolean) newValue;
-                BUApplication.enableAdvancedEditor = checked;
+                BUApplication.enableAdvancedEditor = (Boolean) newValue;
                 BUApplication.setEnableAdvancedEditor(SettingsActivity.this);
                 return true;
             }
@@ -350,12 +342,12 @@ public class SettingsActivity extends PreferenceActivity {
     /**
      * 是否可以滑动关闭页面
      */
-    protected boolean swipeEnabled = true;
+    private boolean swipeEnabled = true;
 
     /**
      * 是否可以在页面任意位置右滑关闭页面，如果是false则从左边滑才可以关闭。
      */
-    protected boolean swipeAnyWhere = false;
+    private boolean swipeAnyWhere = false;
 
     public void setSwipeAnyWhere(boolean swipeAnyWhere) {
         this.swipeAnyWhere = swipeAnyWhere;
@@ -375,17 +367,12 @@ public class SettingsActivity extends PreferenceActivity {
 
 
     @Override
-    protected void onResume() {
-        super.onResume();
-    }
-
-    @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
         swipeLayout.replaceLayer(this);
     }
 
-    public static int getScreenWidth(Context context) {
+    private static int getScreenWidth(Context context) {
         DisplayMetrics metrics = new DisplayMetrics();
         WindowManager manager = (WindowManager) context.getSystemService(WINDOW_SERVICE);
         manager.getDefaultDisplay().getMetrics(metrics);
@@ -456,7 +443,7 @@ public class SettingsActivity extends PreferenceActivity {
         boolean ignoreSwipe = false;
         View content;
         Activity mActivity;
-        int sideWidthInDP = 16;
+        final int sideWidthInDP = 16;
         int sideWidth = 72;
         int screenWidth = 1080;
         VelocityTracker tracker;
@@ -467,7 +454,7 @@ public class SettingsActivity extends PreferenceActivity {
         float currentX;
         float currentY;
 
-        int touchSlopDP = 20;
+        final int touchSlopDP = 20;
         int touchSlop = 60;
 
         @Override

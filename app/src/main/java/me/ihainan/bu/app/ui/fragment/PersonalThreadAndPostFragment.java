@@ -21,7 +21,7 @@ import me.ihainan.bu.app.utils.network.ExtraApi;
  */
 public class PersonalThreadAndPostFragment extends BasicRecyclerViewFragment<Post> {
     // TAGs
-    public final static String TAG = PersonalThreadAndPostFragment.class.getSimpleName();
+    private final static String TAG = PersonalThreadAndPostFragment.class.getSimpleName();
     public final static String USERNAME_TAG = TAG + "USERNAME_TAG";
     public final static String ACTION_TAG = TAG + "ACTION_TAG";
     public final static String ACTION_THREAD = "ACTION_THREAD";

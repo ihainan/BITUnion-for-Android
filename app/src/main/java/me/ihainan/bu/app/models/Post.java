@@ -17,7 +17,7 @@ import me.ihainan.bu.app.utils.ui.HtmlUtil;
  * 回帖模型
  */
 public class Post implements Serializable {
-    public final static String TAG = Post.class.getSimpleName();
+    private final static String TAG = Post.class.getSimpleName();
 
     // Extra Fields only used on ExtraAPI
     public long post_id;

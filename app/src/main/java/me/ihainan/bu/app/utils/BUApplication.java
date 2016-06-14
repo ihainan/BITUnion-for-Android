@@ -43,7 +43,7 @@ public class BUApplication extends Application {
     public final static String CACHE_LATEST_THREAD_FIRST_POST = "CACHE_LATEST_THREAD_FIRST_POST";   // 缓存的主页主题第一个回帖（用户获取背景图）
     public final static String CACHE_MOST_VISITED_FORUMS = "CACHE_MOST_VISITED_FORUMS"; // 缓存的最常访问论文
 
-    public static int cacheDays = 50;   // 用户信息、图片缓存时间
+    public static final int cacheDays = 50;   // 用户信息、图片缓存时间
 
     /**
      * 初始化缓存单例
@@ -80,6 +80,7 @@ public class BUApplication extends Application {
     public final static int LOADING_FAVORITES_COUNT = 10;       // 一次最多 Loading 的收藏数目
     public final static int LOADING_NOTIFICATION_COUNT = 10;       // 一次最多 Loading 的通知数目
 
+    public final static int FETCH_UNREAD_COUNT_PERIOD = 60;       // 获取通知个数的时间间隔
     public final static String IMAGE_URL_PREFIX = "IMAGE_URL_PREFIX"; // 图片 URL 前缀，用于标记某个 URL 是图片
 
     public enum NETWORK_TYPE {
@@ -124,7 +125,7 @@ public class BUApplication extends Application {
     public static Boolean enableReplyNotify = true; // 开启回复提醒
     public static Boolean enableQuoteNotify = true; // 开启引用提醒
     public static Boolean enableAtNotify = true;    // 开启 @ 提醒
-    public static Boolean enableFollowingNotify = true; // 开启关注提醒
+    public static Boolean enableFollowingNotify = false; // 开启关注提醒
     public static Boolean enableSilentMode = false; // 夜间免打扰模式
 
     public static Integer homePageClickEventType = 0;   // 0 表示进尾楼，1 表示进 1 楼
@@ -236,7 +237,7 @@ public class BUApplication extends Application {
 
     public static Boolean getEnableFollowNotify(Context context) {
         enableFollowingNotify = (Boolean) BUApplication.getCache(context).getAsObject(PREF_ENABLE_FOLLOW_NOTIFY);
-        if (enableFollowingNotify == null) enableFollowingNotify = true;
+        if (enableFollowingNotify == null) enableFollowingNotify = false;
         return enableFollowingNotify;
     }
 
@@ -729,7 +730,7 @@ public class BUApplication extends Application {
                 new LinkedList<>(map.entrySet());
         Collections.sort(list, new Comparator<Map.Entry<K, V>>() {
             public int compare(Map.Entry<K, V> o1, Map.Entry<K, V> o2) {
-                return (o2.getValue()).compareTo(o1.getValue());
+                return (o1.getValue()).compareTo(o2.getValue());
             }
         });
 

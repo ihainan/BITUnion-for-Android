@@ -12,11 +12,11 @@ import me.ihainan.bu.app.utils.network.BUApi;
  * 通知
  */
 public class Notification implements Serializable {
-    public final static String TAG = Notification.class.getSimpleName();
+    private final static String TAG = Notification.class.getSimpleName();
 
     // Json mapping fields
     public Integer nt_id;
-    public int type = 0;
+    public final int type = 0;
     public String username;
     public String title;
     public int is_read;

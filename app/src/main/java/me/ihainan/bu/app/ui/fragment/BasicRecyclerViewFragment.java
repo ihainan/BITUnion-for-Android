@@ -32,7 +32,7 @@ import me.ihainan.bu.app.utils.CommonUtils;
  * 列表 Fragment 抽象类.
  */
 public abstract class BasicRecyclerViewFragment<T> extends Fragment {
-    protected String TAG = getFragmentTag();
+    protected final String TAG = getFragmentTag();
     protected Context mContext;
 
     // UI references
@@ -46,7 +46,7 @@ public abstract class BasicRecyclerViewFragment<T> extends Fragment {
     // Data
     protected long from, to;
     protected boolean mIsLoading = false;
-    protected List<T> mList = new ArrayList<>();
+    protected final List<T> mList = new ArrayList<>();
     protected RecyclerView.Adapter<RecyclerView.ViewHolder> mAdapter;
     protected long mCurrentPosition = 0;
     protected final int LOADING_COUNT = getLoadingCount();
@@ -232,10 +232,6 @@ public abstract class BasicRecyclerViewFragment<T> extends Fragment {
 
         // 自动加载
         mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-                super.onScrollStateChanged(recyclerView, newState);
-            }
 
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {

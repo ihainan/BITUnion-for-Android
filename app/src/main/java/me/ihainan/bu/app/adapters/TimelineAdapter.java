@@ -34,7 +34,7 @@ import me.ihainan.bu.app.utils.ui.HtmlUtil;
  */
 public class TimelineAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private final static String TAG = PostListAdapter.class.getSimpleName();
-    private List<TimelineEvent> mList;
+    private final List<TimelineEvent> mList;
     private final LayoutInflater mLayoutInflater;
     private final Context mContext;
 
@@ -46,11 +46,11 @@ public class TimelineAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     private final int VIEW_TYPE_POST_ITEM = 0;
     private final int VIEW_TYPE_USER_ITEM = 1;
-    private final int VIEW_TYPE_LOADING = 2;
 
     @Override
     public int getItemViewType(int position) {
         TimelineEvent event = mList.get(position);
+        int VIEW_TYPE_LOADING = 2;
         if (event == null) return VIEW_TYPE_LOADING;
         else if (event.type == 3) return VIEW_TYPE_USER_ITEM;
         else return VIEW_TYPE_POST_ITEM;

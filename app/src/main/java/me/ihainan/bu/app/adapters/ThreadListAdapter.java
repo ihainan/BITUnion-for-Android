@@ -31,10 +31,9 @@ public class ThreadListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     private final LayoutInflater mLayoutInflater;
     private final Context mContext;
     private final Long mFid;
-    private List<me.ihainan.bu.app.models.Thread> mPosts;
+    private final List<me.ihainan.bu.app.models.Thread> mPosts;
 
     private final int VIEW_TYPE_ITEM = 0;
-    private final int VIEW_TYPE_LOADING = 1;
 
     public ThreadListAdapter(Context context, Long fid, List<Thread> posts) {
         mPosts = posts;
@@ -45,6 +44,7 @@ public class ThreadListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
     @Override
     public int getItemViewType(int position) {
+        int VIEW_TYPE_LOADING = 1;
         return mPosts.get(position) == null ? VIEW_TYPE_LOADING : VIEW_TYPE_ITEM;
     }
 

@@ -9,9 +9,9 @@ import android.widget.TextView;
 import me.ihainan.bu.app.R;
 
 public class UserViewHolder extends RecyclerView.ViewHolder {
-    public ImageView avatar;
-    public TextView username;
-    public LinearLayout rootLayout;
+    public final ImageView avatar;
+    public final TextView username;
+    public final LinearLayout rootLayout;
 
     public UserViewHolder(View itemView) {
         super(itemView);

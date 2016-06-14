@@ -24,8 +24,8 @@ import me.ihainan.bu.app.utils.BUApplication;
 
 public class SuperParentAdapter extends BaseExpandableListAdapter {
     public final static String TAG = SuperParentAdapter.class.getSimpleName();
-    private Context mContext;
-    private List<ForumListGroup> mForumListGroups;
+    private final Context mContext;
+    private final List<ForumListGroup> mForumListGroups;
 
     public SuperParentAdapter(Context context, List<ForumListGroup> forumListGroups) {
         mContext = context;
@@ -42,7 +42,7 @@ public class SuperParentAdapter extends BaseExpandableListAdapter {
         return childPosition;
     }
 
-    private Map<String, SecondLevelExpandableListView> secondLevelExpandableListViewMap = new HashMap<>();
+    private final Map<String, SecondLevelExpandableListView> secondLevelExpandableListViewMap = new HashMap<>();
 
     @Override
     public View getChildView(int groupPosition, int childPosition, boolean isLastChild, View convertView, ViewGroup parent) {
@@ -119,8 +119,8 @@ public class SuperParentAdapter extends BaseExpandableListAdapter {
 
     public static class SecondLevelAdapter extends BaseExpandableListAdapter {
 
-        private Context mContext;
-        private List<ForumListGroup.ForumList> mForumLists;
+        private final Context mContext;
+        private final List<ForumListGroup.ForumList> mForumLists;
 
         public SecondLevelAdapter(Context context, List<ForumListGroup.ForumList> forumLists) {
             mContext = context;

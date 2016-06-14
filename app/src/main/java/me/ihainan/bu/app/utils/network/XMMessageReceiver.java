@@ -31,7 +31,7 @@ import me.ihainan.bu.app.utils.CommonUtils;
  * 小米推送接收器
  */
 public class XMMessageReceiver extends PushMessageReceiver {
-    public final static String TAG = XMMessageReceiver.class.getSimpleName();
+    private final static String TAG = XMMessageReceiver.class.getSimpleName();
     private String mRegId;
     private long mResultCode = -1;
     private String mReason;
@@ -39,8 +39,6 @@ public class XMMessageReceiver extends PushMessageReceiver {
     private String mMessage;
     private String mTopic;
     private String mAlias;
-    private String mStartTime;
-    private String mEndTime;
 
     /**
      * 接收到穿透消息
@@ -96,7 +94,7 @@ public class XMMessageReceiver extends PushMessageReceiver {
                     notify.defaults |= Notification.DEFAULT_LIGHTS;
                     int mNotificationId = message.getNotifyId();
                     NotificationManager mNotifyMgr =
-                            (NotificationManager) context.getSystemService(context.NOTIFICATION_SERVICE);
+                            (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
                     mNotifyMgr.notify(mNotificationId, notify);
                 } else if (type == 3) {
                     NotificationMessage.FollowNotificationMessageData followNotificationMessageData = BUApi.MAPPER.readValue(jsonObject.getJSONObject("data").toString(), NotificationMessage.FollowNotificationMessageData.class);
@@ -120,7 +118,7 @@ public class XMMessageReceiver extends PushMessageReceiver {
                     notify.defaults |= Notification.DEFAULT_LIGHTS;
                     int mNotificationId = message.getNotifyId();
                     NotificationManager mNotifyMgr =
-                            (NotificationManager) context.getSystemService(context.NOTIFICATION_SERVICE);
+                            (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
                     mNotifyMgr.notify(mNotificationId, notify);
                 }
             } catch (Exception e) {
@@ -216,8 +214,8 @@ public class XMMessageReceiver extends PushMessageReceiver {
             }
         } else if (MiPushClient.COMMAND_SET_ACCEPT_TIME.equals(command)) {
             if (message.getResultCode() == ErrorCode.SUCCESS) {
-                mStartTime = cmdArg1;
-                mEndTime = cmdArg2;
+                String mStartTime = cmdArg1;
+                String mEndTime = cmdArg2;
             }
         }
     }

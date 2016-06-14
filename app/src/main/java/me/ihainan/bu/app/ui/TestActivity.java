@@ -31,7 +31,7 @@ import me.ihainan.bu.app.utils.network.ExtraApi;
 
 public class TestActivity extends SwipeActivity {
     private final static String TAG = TestActivity.class.getSimpleName();
-    public final static int CHOOSE_PHOTO_TAG = 0;
+    private final static int CHOOSE_PHOTO_TAG = 0;
 
 
     // UI references

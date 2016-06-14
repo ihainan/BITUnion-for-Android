@@ -13,7 +13,7 @@ import java.util.Map;
 /**
  * Multipart Request
  */
-public class MultipartRequest extends Request<NetworkResponse> {
+class MultipartRequest extends Request<NetworkResponse> {
     private final Response.Listener<NetworkResponse> mListener;
     private final Response.ErrorListener mErrorListener;
     private final Map<String, String> mHeaders;     // 头部

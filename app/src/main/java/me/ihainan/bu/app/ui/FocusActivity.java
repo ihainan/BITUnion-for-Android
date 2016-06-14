@@ -23,13 +23,8 @@ import me.ihainan.bu.app.ui.fragment.TimelineFragment;
 public class FocusActivity extends SwipeActivity {
     private final static String TAG = FocusActivity.class.getSimpleName();
 
-    // UI references
-    private ViewPager mPager;
-    private TabLayout mTabLayout;
-    private Toolbar mToolbar;
-
     // Data
-    private PagerAdapter mAdapter;
+    private final Context mContext = this;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,7 +35,7 @@ public class FocusActivity extends SwipeActivity {
         setSwipeAnyWhere(false);
 
         // Toolbar
-        mToolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar mToolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(mToolbar);
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -54,9 +49,9 @@ public class FocusActivity extends SwipeActivity {
         mToolbar.setTitle(R.string.action_focus);
 
         // TabLayout & VierPager
-        mTabLayout = (TabLayout) findViewById(R.id.tab_layout);
-        mPager = (ViewPager) findViewById(R.id.pager);
-        mAdapter = new PagerAdapter(getFragmentManager(), this);
+        TabLayout mTabLayout = (TabLayout) findViewById(R.id.tab_layout);
+        ViewPager mPager = (ViewPager) findViewById(R.id.pager);
+        PagerAdapter mAdapter = new PagerAdapter(getFragmentManager(), mContext);
         mPager.setAdapter(mAdapter);
         mPager.setOffscreenPageLimit(1);
         mTabLayout.setupWithViewPager(mPager);
@@ -64,8 +59,8 @@ public class FocusActivity extends SwipeActivity {
 
     public class PagerAdapter extends FragmentPagerAdapter {
         final int PAGE_COUNT = 2;
-        private String tabTitles[] = new String[]{"动态", "收藏"};
-        private Context context;
+        private final String[] tabTitles = new String[]{"动态", "收藏"};
+        private final Context context;
 
         public PagerAdapter(FragmentManager fm, Context context) {
             super(fm);
@@ -84,11 +79,11 @@ public class FocusActivity extends SwipeActivity {
                 Bundle args = new Bundle();
                 args.putString(TimelineFragment.TIMELINE_ACTION_TAG, "FOCUS");
                 fragment.setArguments(args);
-                fragment.isSetToolbar = false;
+                TimelineFragment.isSetToolbar = false;
                 return fragment;
             } else {
                 FavoriteListFragment fragment = new FavoriteListFragment();
-                fragment.isSetToolbar = false;
+                FavoriteListFragment.isSetToolbar = false;
                 return fragment;
             }
         }
@@ -112,7 +107,7 @@ public class FocusActivity extends SwipeActivity {
         switch (item.getItemId()) {
             case R.id.focus_list:
                 // Intent intent = new Intent(this, FollowingListActivity.class);
-                Intent intent = new Intent(this, ActivityWithFrameLayout.class);
+                Intent intent = new Intent(mContext, ActivityWithFrameLayout.class);
                 intent.putExtra(ActivityWithFrameLayout.TITLE_TAG, getString(R.string.title_activity_new_following_list));
                 intent.putExtra(ActivityWithFrameLayout.FRAGMENT_TAG, FollowingListFragment.class.getSimpleName());
                 startActivity(intent);

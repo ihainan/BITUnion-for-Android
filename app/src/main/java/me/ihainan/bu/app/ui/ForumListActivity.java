@@ -13,13 +13,6 @@ import me.ihainan.bu.app.utils.BUApplication;
 public class ForumListActivity extends SwipeActivity {
     private final static String TAG = ForumListActivity.class.getSimpleName();
 
-    // UI references
-    private ExpandableListView mExpandableListView;
-    private Toolbar mToolbar;
-
-    // Data
-    private SuperParentAdapter mAdapter;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -32,7 +25,7 @@ public class ForumListActivity extends SwipeActivity {
         BUApplication.makeForumGroupList(this);
 
         // Toolbar
-        mToolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar mToolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(mToolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
@@ -44,8 +37,8 @@ public class ForumListActivity extends SwipeActivity {
         mToolbar.setTitle(R.string.action_forum);
 
         // ListView
-        mExpandableListView = (ExpandableListView) findViewById(R.id.forum_system_admin_lv);
-        mAdapter = new SuperParentAdapter(this, BUApplication.forumListGroupList);
+        ExpandableListView mExpandableListView = (ExpandableListView) findViewById(R.id.forum_system_admin_lv);
+        SuperParentAdapter mAdapter = new SuperParentAdapter(this, BUApplication.forumListGroupList);
         mExpandableListView.setAdapter(mAdapter);
         mExpandableListView.setDivider(null);
         mExpandableListView.expandGroup(0);

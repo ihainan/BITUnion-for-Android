@@ -25,7 +25,7 @@ public class SearchPostResultFragment extends BasicRecyclerViewFragment<Post> {
     // Tags
     private final static String TAG = SearchPostResultFragment.class.getSimpleName();
     public final static String SEARCH_ACTION_TAG = "SEARCH_ACTION_TAG";     // 搜索动作，可选 SEARCH_ACTION_THREAD / SEARCH_ACTION_POST / SEARCH_ACTION_USER
-    public final static String SEARCH_KEYWORD_TAG = "SEARCH_KEYWORD_TAG";   // 搜索关键词
+    private final static String SEARCH_KEYWORD_TAG = "SEARCH_KEYWORD_TAG";   // 搜索关键词
     public final static String SEARCH_FID_TAG = TAG + "_FID_TAG";
 
     public final static String SEARCH_ACTION_THREAD = "SEARCH_ACTION_THREAD";     // 搜索动作 - 搜索主题

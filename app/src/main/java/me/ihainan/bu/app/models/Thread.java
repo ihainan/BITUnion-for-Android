@@ -12,7 +12,7 @@ import me.ihainan.bu.app.utils.network.BUApi;
  * 帖子模型
  */
 public class Thread implements Serializable{
-    public final static String TAG = Thread.class.getSimpleName();
+    private final static String TAG = Thread.class.getSimpleName();
 
     // Json mapping fields
     public long tid;

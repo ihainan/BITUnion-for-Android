@@ -24,10 +24,10 @@ public class PostDisplaySettingActivity extends SwipeActivity {
     private final static String TAG = PostDisplaySettingActivity.class.getSimpleName();
 
     // UI References
-    private TextView mMessageView, mSubject, mPostDateView, mAuthor, mDevice;
+    private TextView mMessageView;
+    private TextView mSubject;
     private ImageView mAvatar;
     private SeekBar mFontSize, mLSExtra, mLSMul, mTitleFontSize;
-    private Button resetBtn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,10 +57,10 @@ public class PostDisplaySettingActivity extends SwipeActivity {
 
     private void fillUI() {
         mMessageView = (TextView) findViewById(R.id.thread_message);
-        mAuthor = (TextView) findViewById(R.id.thread_author_name);
-        mPostDateView = (TextView) findViewById(R.id.post_date);
+        TextView mAuthor = (TextView) findViewById(R.id.thread_author_name);
+        TextView mPostDateView = (TextView) findViewById(R.id.post_date);
         mSubject = (TextView) findViewById(R.id.thread_subject);
-        mDevice = (TextView) findViewById(R.id.device_name);
+        TextView mDevice = (TextView) findViewById(R.id.device_name);
         mAvatar = (ImageView) findViewById(R.id.thread_author_avatar);
 
         CommonUtils.getAndCacheUserInfo(this, BUApplication.username,
@@ -134,11 +134,10 @@ public class PostDisplaySettingActivity extends SwipeActivity {
         mLSExtra.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                int lineSpacingExtra = progress;
                 float lineSpacingMultiplier = (mLSMul.getProgress() + 10) * 1.0f / 10;
-                BUApplication.lineSpacingExtra = lineSpacingExtra;
+                BUApplication.lineSpacingExtra = progress;
                 BUApplication.setCacheLineSpacingExtra(PostDisplaySettingActivity.this);
-                mMessageView.setLineSpacing(lineSpacingExtra, lineSpacingMultiplier);
+                mMessageView.setLineSpacing(progress, lineSpacingMultiplier);
             }
 
             @Override
@@ -174,7 +173,7 @@ public class PostDisplaySettingActivity extends SwipeActivity {
             }
         });
 
-        resetBtn = (Button) findViewById(R.id.reset);
+        Button resetBtn = (Button) findViewById(R.id.reset);
         resetBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

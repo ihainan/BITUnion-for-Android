@@ -115,4 +115,8 @@
 
     <!-- Notification -->
     <string name="message_mark_all_as_read">是否将所有未读消息标记为已读？</string>
+
+    <!-- font -->
+    <string name="bell_icon">&#xe61d;</string>
+    <string name="search_icon">&#xe61b;</string>
 </resources>

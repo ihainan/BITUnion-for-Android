@@ -20,7 +20,6 @@ public class EmoticonFragment extends Fragment implements AdapterView.OnItemClic
         void onEmoticonSelected(String name);
     }
 
-    private GridView mGrid;
     private EmoticonAdapter mAdapter;
 
     // listener
@@ -29,7 +28,7 @@ public class EmoticonFragment extends Fragment implements AdapterView.OnItemClic
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_emoticon, null);
-        mGrid = (GridView) v.findViewById(R.id.emoticon_grid);
+        GridView mGrid = (GridView) v.findViewById(R.id.emoticon_grid);
 
         // Ensure Emoticons are not null
         if (Emoticons.EMOTICON_BITMAPS.size() == 0) {

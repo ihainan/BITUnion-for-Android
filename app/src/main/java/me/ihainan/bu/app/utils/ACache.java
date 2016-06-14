@@ -47,7 +47,6 @@ import android.graphics.Canvas;
 import android.graphics.PixelFormat;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
-import android.nfc.Tag;
 import android.util.Log;
 
 /**
@@ -67,7 +66,7 @@ public class ACache {
     }
 
     public static ACache get(Context ctx, String cacheName) {
-        File f = new File(ctx.getCacheDir(), cacheName);
+        File f = new File(ctx.getCacheDir(), "ACache");
         return get(f, MAX_SIZE, MAX_COUNT);
     }
 

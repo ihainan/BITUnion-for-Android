@@ -26,8 +26,6 @@ public class SearchActivity extends SwipeActivity {
 
     // UI
     private FloatingSearchView mSearchView;
-    private ViewPager mPager;
-    private TabLayout mTabLayout;
     private PagerAdapter mPagerAdapter;
 
     // Data
@@ -46,8 +44,8 @@ public class SearchActivity extends SwipeActivity {
         mSearchView = (FloatingSearchView) findViewById(R.id.floating_search_view);
 
         // ViewPager & TabLayout
-        mTabLayout = (TabLayout) findViewById(R.id.tab_layout);
-        mPager = (ViewPager) findViewById(R.id.pager);
+        TabLayout mTabLayout = (TabLayout) findViewById(R.id.tab_layout);
+        ViewPager mPager = (ViewPager) findViewById(R.id.pager);
         mPagerAdapter = new PagerAdapter(getFragmentManager(), this);
         mPager.setAdapter(mPagerAdapter);
         mPager.setOffscreenPageLimit(3);
@@ -114,9 +112,9 @@ public class SearchActivity extends SwipeActivity {
 
     public class PagerAdapter extends FragmentPagerAdapter {
         private int page_count = 2;
-        private String tabTitles[] = new String[]{"主题", "回帖", "用户"};
-        private Context mContext;
-        private Fragment fragments[];
+        private final String[] tabTitles = new String[]{"主题", "回帖", "用户"};
+        private final Context mContext;
+        private final Fragment[] fragments;
 
         public void reloadAll(String keyword) {
             ((SearchPostResultFragment) fragments[0]).reloadData(keyword);

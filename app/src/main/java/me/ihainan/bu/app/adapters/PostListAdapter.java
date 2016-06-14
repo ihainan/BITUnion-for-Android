@@ -48,8 +48,7 @@ public class PostListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     private final String mAuthorName;
     private final long mReplyCount;
     private final Context mContext;
-    private List<Post> mList;
-    private RecyclerView mRecyclerView;
+    private final List<Post> mList;
 
     public PostListAdapter(Context context, List<Post> mList, String authorName, long replyCount) {
         this.mContext = context;
@@ -57,14 +56,14 @@ public class PostListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         mLayoutInflater = LayoutInflater.from(context);
         mAuthorName = authorName;
         mReplyCount = replyCount;
-        mRecyclerView = (RecyclerView) ((Activity) mContext).getWindow().getDecorView().findViewById(R.id.detail_recycler_view);
+        RecyclerView mRecyclerView = (RecyclerView) ((Activity) mContext).getWindow().getDecorView().findViewById(R.id.detail_recycler_view);
     }
 
     private final int VIEW_TYPE_ITEM = 0;
-    private final int VIEW_TYPE_LOADING = 1;
 
     @Override
     public int getItemViewType(int position) {
+        int VIEW_TYPE_LOADING = 1;
         return mList.get(position) == null ? VIEW_TYPE_LOADING : VIEW_TYPE_ITEM;
     }
 
@@ -180,7 +179,6 @@ public class PostListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
         // 附件名
         String oriFileName = CommonUtils.decode(reply.filename);
-        String fileName = oriFileName; // CommonUtils.truncateString(oriFileName, 20);
 
         attachmentName.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -191,7 +189,7 @@ public class PostListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 mContext.startActivity(i);
             }
         });
-        attachmentName.setText(fileName + "（" + CommonUtils.readableFileSize(reply.filesize) + "）");
+        attachmentName.setText(oriFileName + "（" + CommonUtils.readableFileSize(reply.filesize) + "）");
 
         Log.d(TAG, "REPLY >> " + reply.toString());
 
@@ -279,10 +277,17 @@ public class PostListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     }
 
     public class PostViewHolder extends RecyclerView.ViewHolder {
-        public ImageView avatar, reply, useMobile;
-        public TextView author, subject, date, number;
-        public TextView message, deviceName;
-        public LinearLayout attachmentLayout, rootLayout;
+        public final ImageView avatar;
+        public final ImageView reply;
+        public final ImageView useMobile;
+        public final TextView author;
+        public final TextView subject;
+        public final TextView date;
+        public final TextView number;
+        public final TextView message;
+        public final TextView deviceName;
+        public final LinearLayout attachmentLayout;
+        public LinearLayout rootLayout;
 
         public PostViewHolder(View itemView, final Context context) {
             super(itemView);

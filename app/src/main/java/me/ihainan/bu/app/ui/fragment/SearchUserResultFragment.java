@@ -21,8 +21,8 @@ import me.ihainan.bu.app.utils.network.ExtraApi;
  * 用户相关搜索结果 Fragment
  */
 public class SearchUserResultFragment extends BasicRecyclerViewFragment<User> {
-    public final static String TAG = SearchUserResultFragment.class.getSimpleName();
-    public final static String SEARCH_KEYWORD_TAG = "SEARCH_KEYWORD_TAG";   // 搜索关键词
+    private final static String TAG = SearchUserResultFragment.class.getSimpleName();
+    private final static String SEARCH_KEYWORD_TAG = "SEARCH_KEYWORD_TAG";   // 搜索关键词
 
     // Data
     private String mKeyword;

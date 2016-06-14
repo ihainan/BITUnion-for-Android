@@ -13,7 +13,7 @@ import me.ihainan.bu.app.utils.BUApplication;
  */
 public class HtmlUtil {
     // TAGs
-    public final static String TAG = HtmlUtil.class.getSimpleName();
+    private final static String TAG = HtmlUtil.class.getSimpleName();
 
     // Regex
     public final static String[] REGEX_DEVICE_ARRAY = new String[]{"<a .*?>\\.\\.::发自(.*?)::\\.\\.</a>",
@@ -50,7 +50,7 @@ public class HtmlUtil {
      * @return 处理之后的 HTML 文本
      */
 
-    public static String replaceImage(String str) {
+    private static String replaceImage(String str) {
         // 图片
         Pattern p = Pattern.compile("<img src='([^>']+)'[^>]*(width>)?[^>]*'>");
         Matcher m = p.matcher(str);
@@ -75,7 +75,7 @@ public class HtmlUtil {
      * @param imgUrl 原始表情图片 URL
      * @return 处理之后的 URL
      */
-    public static String parseLocalImage(String imgUrl) {
+    private static String parseLocalImage(String imgUrl) {
         // 检查是否为本地表情文件
         Pattern p = Pattern.compile("\\.\\./images/(smilies|bz)/(.+?)\\.gif$");
         Matcher m = p.matcher(imgUrl);
@@ -93,7 +93,7 @@ public class HtmlUtil {
      * @param str 原始 HTML 文本
      * @return 处理之后的 HTML 文本
      */
-    public static String replaceBase(String str) {
+    private static String replaceBase(String str) {
         // 单引号双引号
         str = str.replaceAll("\"", "'");
         // str = str.replaceAll("&nbsp;", "");
@@ -114,7 +114,7 @@ public class HtmlUtil {
         return str;
     }
 
-    public static String replaceCode(String str) {
+    private static String replaceCode(String str) {
         String regex = "<center><table border=\"0\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\"><tr><td class=\"smalltxt\">&nbsp;&nbsp;代码:</td><td align=\"right\"><a href=\"###\" class=\"smalltxt\" onclick=\"copycode(findobj('code1'));\">[复制到剪贴板]</a>&nbsp;&nbsp;</td></tr><tr><td colspan=\"2\"><table border=\"0\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\"><tr><td width=\"100%\" style=\"word-break:break-all;font-family:宋体\" id=\"code1\"><div class=\"hl-surround\"><ol type=1>(.*?)</div></td></tr></table></td></tr></table></center>";
         Pattern p = Pattern.compile(regex);
         Matcher m = p.matcher(str);
@@ -139,7 +139,7 @@ public class HtmlUtil {
      * @param str 原始 HTML 文本
      * @return 处理之后的 HTML 文本
      */
-    public static String replaceQuote(String str) {
+    private static String replaceQuote(String str) {
         Pattern p = Pattern.compile(QUOTE_REGEX);
         Matcher m = p.matcher(str);
         while (m.find()) {
@@ -169,7 +169,7 @@ public class HtmlUtil {
      * @param str 原始 HTML 文本
      * @return 处理之后的 HTML 文本
      */
-    public static String replaceLastEdit(String str) {
+    private static String replaceLastEdit(String str) {
         // Last Edit
         Pattern p = Pattern.compile("(<br>)*\\[ Last edited by (.*?) on (.*?) at (.*?) \\]");
         Matcher m = p.matcher(str);
@@ -260,7 +260,7 @@ public class HtmlUtil {
      * @param ubbCodeStr 原始 UBB 文本
      * @return 转换之后的文本
      */
-    public static String replaceUBBDel(String ubbCodeStr) {
+    private static String replaceUBBDel(String ubbCodeStr) {
         String regex = "\\[s\\](.*?)\\[/s\\]";
         Pattern pattern = Pattern.compile(regex);
         Matcher m = pattern.matcher(ubbCodeStr);
@@ -278,7 +278,7 @@ public class HtmlUtil {
      * @param ubbCodeStr 原始 UBB 文本
      * @return 转换之后的文本
      */
-    public static String replaceUrl(String ubbCodeStr) {
+    private static String replaceUrl(String ubbCodeStr) {
         String regex = "\\[url=(.+?)\\](.+?)\\[/url\\]";
         Pattern pattern = Pattern.compile(regex);
         Matcher m = pattern.matcher(ubbCodeStr);
@@ -294,7 +294,7 @@ public class HtmlUtil {
      * @param ubbCodeStr 原始 UBB 文本
      * @return 转换之后的文本
      */
-    public static String replaceEmotion(String ubbCodeStr) {
+    private static String replaceEmotion(String ubbCodeStr) {
         String regex = ":(\\S{1,10}?):";
         Pattern pattern = Pattern.compile(regex);
         Matcher m = pattern.matcher(ubbCodeStr);
@@ -319,7 +319,7 @@ public class HtmlUtil {
      * @param ubbCodeStr 原始 UBB 文本
      * @return 转换之后的文本
      */
-    public static String replaceAt(String ubbCodeStr) {
+    private static String replaceAt(String ubbCodeStr) {
         String regex = "\\[@\\](.+?)\\[/@\\]";
         Pattern pattern = Pattern.compile(regex);
         Matcher m = pattern.matcher(ubbCodeStr);
@@ -345,7 +345,7 @@ public class HtmlUtil {
      */
     public static String getSummaryOfMessage(String html) {
         html = removeDeviceInfo(html);
-        html = html.replaceAll("<blockquote>.*?</blockquote>", "[引用]");
+        html = html.replaceAll("<blockquote>.*?</blockquote>", "[引用] ");
         html = html.replaceAll("<img.*?>", "[图片]");
         html = html.replaceAll("(?s)<[^>]*>(\\s*<[^>]*>)*", " ");
 

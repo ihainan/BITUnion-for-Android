@@ -12,7 +12,7 @@ import me.ihainan.bu.app.utils.network.BUApi;
  * 用户模型
  */
 public class Member implements Serializable {
-    public final static String TAG = Member.class.getSimpleName();
+    private final static String TAG = Member.class.getSimpleName();
 
     // Json mapping fields
     public long uid;

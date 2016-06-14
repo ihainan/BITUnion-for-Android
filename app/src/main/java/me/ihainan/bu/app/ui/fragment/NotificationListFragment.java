@@ -5,6 +5,7 @@ import android.content.DialogInterface;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -22,13 +23,22 @@ import me.ihainan.bu.app.utils.BUApplication;
 import me.ihainan.bu.app.utils.CommonUtils;
 import me.ihainan.bu.app.utils.network.BUApi;
 import me.ihainan.bu.app.utils.network.ExtraApi;
+import me.ihainan.bu.app.utils.ui.CustomOnClickListener;
 
 /**
  * 通知 Fragment
  */
 public class NotificationListFragment extends BasicRecyclerViewFragment<Notification> {
+    // Data
+    public static boolean isSetToolbar = false;
+
+    public NotificationListFragment() {
+        super();
+        isSetToolbar = false;
+    }
+
     // TAGs
-    public final static String TAG = NotificationListFragment.class.getSimpleName();
+    private final static String TAG = NotificationListFragment.class.getSimpleName();
 
     @Override
     protected String getNoNewDataMessage() {
@@ -43,6 +53,23 @@ public class NotificationListFragment extends BasicRecyclerViewFragment<Notifica
     @Override
     protected List<Notification> processList(List<Notification> list) {
         return list;
+    }
+
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        if (isVisibleToUser && mContext != null && mRecyclerView != null) {
+            getActivity().findViewById(R.id.toolbar).setOnClickListener(CustomOnClickListener.doubleClickToListTop(mContext, mRecyclerView));
+        }
+    }
+
+    @Override
+    protected void setupRecyclerView() {
+        super.setupRecyclerView();
+        if (!isSetToolbar) {
+            isSetToolbar = !isSetToolbar;
+            getActivity().findViewById(R.id.toolbar).setOnClickListener(CustomOnClickListener.doubleClickToListTop(mContext, mRecyclerView));
+        }
     }
 
     @Override

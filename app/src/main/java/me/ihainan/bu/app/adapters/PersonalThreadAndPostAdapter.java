@@ -30,7 +30,7 @@ import me.ihainan.bu.app.utils.ui.HtmlUtil;
  */
 public class PersonalThreadAndPostAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private final static String TAG = PostListAdapter.class.getSimpleName();
-    private List<Post> mList;
+    private final List<Post> mList;
     private final LayoutInflater mLayoutInflater;
     private final Context mContext;
 
@@ -41,11 +41,11 @@ public class PersonalThreadAndPostAdapter extends RecyclerView.Adapter<RecyclerV
     }
 
     private final int VIEW_TYPE_POST_ITEM = 0;
-    private final int VIEW_TYPE_LOADING = 1;
 
     @Override
     public int getItemViewType(int position) {
         Post post = mList.get(position);
+        int VIEW_TYPE_LOADING = 1;
         if (post == null) return VIEW_TYPE_LOADING;
         else return VIEW_TYPE_POST_ITEM;
     }

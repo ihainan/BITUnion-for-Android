@@ -175,7 +175,7 @@ public class CommonUtils {
         AlertDialog.Builder builder = new AlertDialog.Builder(new ContextThemeWrapper(context, R.style.AlertDialogCustom)).setView(layout);
         builder.setTitle("发现新版本 v" + updateInfo.version);
 
-        builder.setPositiveButton("下次再说", new DialogInterface.OnClickListener() {
+        builder.setNegativeButton("下次再说", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 if (BUApplication.debugMode)
@@ -184,7 +184,7 @@ public class CommonUtils {
             }
         });
 
-        builder.setNegativeButton("现在更新", new DialogInterface.OnClickListener() {
+        builder.setPositiveButton("现在更新", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 if (BUApplication.debugMode)
@@ -214,6 +214,7 @@ public class CommonUtils {
         });
 
         if (showIgnore) {
+            /*
             builder.setNeutralButton("不再提醒", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
@@ -222,7 +223,7 @@ public class CommonUtils {
                     UmengUpdateAgent.ignoreUpdate(context, updateInfo);
                     dialog.dismiss();
                 }
-            });
+            }); */
         }
 
         if (isRunning(context))
@@ -672,7 +673,7 @@ public class CommonUtils {
     /**
      * 厂商代码 -> 具体设备型号哈希表
      */
-    private static Map<String, String> realDeviceName = new HashMap<>();
+    private static final Map<String, String> realDeviceName = new HashMap<>();
 
     static {
         // realDeviceName.put("Sony E6683", "Sony Xperia Z5 Dual");
@@ -949,20 +950,24 @@ public class CommonUtils {
                 MediaStore.Images.Media.DATA + "=? ",
                 new String[]{filePath}, null);
 
-        if (cursor != null && cursor.moveToFirst()) {
-            int id = cursor.getInt(cursor
-                    .getColumnIndex(MediaStore.MediaColumns._ID));
-            Uri baseUri = Uri.parse("content://media/external/images/media");
-            return Uri.withAppendedPath(baseUri, "" + id);
-        } else {
-            if (imageFile.exists()) {
-                ContentValues values = new ContentValues();
-                values.put(MediaStore.Images.Media.DATA, filePath);
-                return context.getContentResolver().insert(
-                        MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+        try {
+            if (cursor != null && cursor.moveToFirst()) {
+                int id = cursor.getInt(cursor
+                        .getColumnIndex(MediaStore.MediaColumns._ID));
+                Uri baseUri = Uri.parse("content://media/external/images/media");
+                return Uri.withAppendedPath(baseUri, "" + id);
             } else {
-                return null;
+                if (imageFile.exists()) {
+                    ContentValues values = new ContentValues();
+                    values.put(MediaStore.Images.Media.DATA, filePath);
+                    return context.getContentResolver().insert(
+                            MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+                } else {
+                    return null;
+                }
             }
+        } finally {
+            if (cursor != null) cursor.close();
         }
     }
 
@@ -1002,8 +1007,7 @@ public class CommonUtils {
     public static float convertDpToPixel(float dp, Context context) {
         Resources resources = context.getResources();
         DisplayMetrics metrics = resources.getDisplayMetrics();
-        float px = dp * ((float) metrics.densityDpi / DisplayMetrics.DENSITY_DEFAULT);
-        return px;
+        return dp * ((float) metrics.densityDpi / DisplayMetrics.DENSITY_DEFAULT);
     }
 
     /**

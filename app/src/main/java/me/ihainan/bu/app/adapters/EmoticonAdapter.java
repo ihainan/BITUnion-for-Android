@@ -18,10 +18,10 @@ import me.ihainan.bu.app.utils.ui.Emoticons;
  * Emoticon Adapter.
  */
 public class EmoticonAdapter extends BaseAdapter {
-    private static ArrayList<String> mNames = new ArrayList<>();
-    private static ArrayList<Bitmap> mBitmaps = new ArrayList<>();
+    private static final ArrayList<String> mNames = new ArrayList<>();
+    private static final ArrayList<Bitmap> mBitmaps = new ArrayList<>();
 
-    private LayoutInflater mInflater;
+    private final LayoutInflater mInflater;
 
     public EmoticonAdapter(Context context) {
         mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);

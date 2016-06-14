@@ -16,9 +16,13 @@ public class TimelineViewHolder {
      * 时间轴事件 - 帖子相关
      */
     public static class TimelinePostViewHolder extends RecyclerView.ViewHolder {
-        public ImageView avatar;
-        public TextView username, title, action, content, date;
-        public LinearLayout rootLayout;
+        public final ImageView avatar;
+        public final TextView username;
+        public final TextView title;
+        public final TextView action;
+        public final TextView content;
+        public final TextView date;
+        public final LinearLayout rootLayout;
 
         public TimelinePostViewHolder(View itemView) {
             super(itemView);
@@ -37,9 +41,12 @@ public class TimelineViewHolder {
      * 时间轴事件 - 用户相关
      */
     public static class TimelineUserViewHolder extends RecyclerView.ViewHolder {
-        public ImageView avatar;
-        public TextView username, following, action, date;
-        public LinearLayout rootLayout;
+        public final ImageView avatar;
+        public final TextView username;
+        public final TextView following;
+        public final TextView action;
+        public final TextView date;
+        public final LinearLayout rootLayout;
 
         public TimelineUserViewHolder(View itemView) {
             super(itemView);

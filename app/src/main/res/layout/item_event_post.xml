@@ -33,10 +33,11 @@
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:layout_gravity="center_vertical"
-            android:layout_marginLeft="4dp"
+            android:layout_marginLeft="6dp"
             android:layout_marginRight="4dp"
             android:layout_toRightOf="@id/avatar"
             android:text="ihainan"
+            android:textStyle="bold"
             android:textColor="@color/primary" />
 
         <TextView
@@ -64,12 +65,12 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
-        android:ellipsize="end"
+        android:ellipsize="middle"
         android:lineSpacingExtra="6dp"
-        android:maxLines="4"
-        android:text="突发兴致画了个联盟的 APP 首页原型图"
+        android:maxLines="2"
+        android:text="突发兴致画了个联盟的 APP 首页原型图图图"
         android:textColor="@android:color/black"
-        android:textSize="16sp"
+        android:textSize="17sp"
         android:textStyle="bold" />
 
     <TextView
@@ -84,5 +85,5 @@
 打算从无到有设计一个应用的话，动手前先理清思路，想好准备做哪些功能，列出来，然后根据场景归类，看结果再决定整体框架
 定好框架后，再细化各场景需求，完善每个细节，考虑把所有功能流程形成闭环"
         android:textColor="@android:color/black"
-        android:textSize="15sp" />
+        android:textSize="16sp" />
 </LinearLayout>

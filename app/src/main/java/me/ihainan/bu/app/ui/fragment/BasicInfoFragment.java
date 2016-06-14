@@ -8,7 +8,6 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.text.Html;
@@ -44,7 +43,7 @@ public class BasicInfoFragment extends Fragment {
 
     // UI references
     private View mRootView;
-    private TextView mUserId, mStatus, mCredit, mBday, mEmail, mWebsite, mThreadCount, mPostCount, mRegDate, mLastVisit;
+    private TextView mUserId, mStatus, mCredit, mBDay, mEmail, mWebsite, mThreadCount, mPostCount, mRegDate, mLastVisit;
     private TextView mSignature;
     private ImageView mAvatar;
     private LinearLayout mContactLayout, mSignatureLayout, mBdayLayout, mThreadCountLayout, mPostCountLayout;
@@ -75,7 +74,7 @@ public class BasicInfoFragment extends Fragment {
             mUserId = (TextView) mRootView.findViewById(R.id.profile_user_id);
             mStatus = (TextView) mRootView.findViewById(R.id.profile_status);
             mCredit = (TextView) mRootView.findViewById(R.id.profile_credit);
-            mBday = (TextView) mRootView.findViewById(R.id.profile_bday);
+            mBDay = (TextView) mRootView.findViewById(R.id.profile_bday);
             mEmail = (TextView) mRootView.findViewById(R.id.profile_email);
             mWebsite = (TextView) mRootView.findViewById(R.id.profile_web);
             mThreadCount = (TextView) mRootView.findViewById(R.id.profile_thread_sum);
@@ -179,7 +178,7 @@ public class BasicInfoFragment extends Fragment {
         if (mMember.bday == null || "".equals(mMember.bday)
                 || CommonUtils.decode(mMember.bday).equals("0000-00-00")) {
             mBdayLayout.setVisibility(View.INVISIBLE);
-        } else mBday.setText(CommonUtils.decode(mMember.bday));
+        } else mBDay.setText(CommonUtils.decode(mMember.bday));
 
         // 联系方式
         if ((mMember.email == null || "".equals(mMember.email)) && (mMember.site == null || "".equals(mMember.site))) {

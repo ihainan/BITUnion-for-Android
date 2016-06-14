@@ -2,7 +2,6 @@ package me.ihainan.bu.app.ui.fragment;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -103,7 +102,7 @@ public class PostListFragment extends BasicRecyclerViewFragment<Post> {
         }
     }
 
-    private CustomOnClickListener mCustomOnClickListener = new CustomOnClickListener() {
+    private final CustomOnClickListener mCustomOnClickListener = new CustomOnClickListener() {
         @Override
         public void singleClick() {
             String message = CommonUtils.decode(mAuthorName) + ": " + CommonUtils.decode(mThreadName);

@@ -26,17 +26,17 @@ public class EditTextUndoRedo {
     /**
      * The edit history.
      */
-    private EditHistory mEditHistory;
+    private final EditHistory mEditHistory;
 
     /**
      * The change listener.
      */
-    private EditTextChangeListener mChangeListener;
+    private final EditTextChangeListener mChangeListener;
 
     /**
      * The edit text.
      */
-    private EditText mEditText;
+    private final EditText mEditText;
 
     // =================================================================== //
 

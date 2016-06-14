@@ -43,16 +43,16 @@ import me.ihainan.bu.app.utils.CommonUtils;
 import me.ihainan.bu.app.utils.ui.EditTextUndoRedo;
 
 public class NewPostActivity extends AppCompatActivity {
-    public final static String TAG = NewPostActivity.class.getSimpleName();
+    private final static String TAG = NewPostActivity.class.getSimpleName();
 
     // 权限 Tags
-    public final static int PERMISSIONS_REQUEST_READ_IMAGE = 1;
-    public final static int PERMISSIONS_REQUEST_READ_FILE = 2;
+    private final static int PERMISSIONS_REQUEST_READ_IMAGE = 1;
+    private final static int PERMISSIONS_REQUEST_READ_FILE = 2;
 
     // 请求 Tags
-    public final static int REQUEST_CHOOSE_PHOTO_TAG = 0;   // 添加图片附件请求
-    public final static int REQUEST_CHOOSE_FILE_TAG = 1;    // 添加文件附件请求
-    public final static int REQUEST_PREVIEW_TAG = 2;    // 查看发帖预览请求
+    private final static int REQUEST_CHOOSE_PHOTO_TAG = 0;   // 添加图片附件请求
+    private final static int REQUEST_CHOOSE_FILE_TAG = 1;    // 添加文件附件请求
+    private final static int REQUEST_PREVIEW_TAG = 2;    // 查看发帖预览请求
 
     // 来源 Intent Tags
     public final static String ACTION_TAG = "ACTION"; // 预期操作（发主题 / 回帖），对应 ACTION_THREAD / ACTION_POST
@@ -75,7 +75,6 @@ public class NewPostActivity extends AppCompatActivity {
     private HorizontalScrollView mButtonPanel;
     private EditText mETMessage, mETSubject;
     private ImageView mIVUndoAction, mIVRedoAction, mIVEmotionAction, mIVAttachment, mIvBold, mIvItalic, mIvQuote;
-    private EmoticonFragment mEmoticonFragment;
     private EditTextUndoRedo mETUndoRedo;
 
     // Data
@@ -129,12 +128,13 @@ public class NewPostActivity extends AppCompatActivity {
 
         // Fragments
         mDrawer = (DrawerLayout) findViewById(R.id.post_drawer);
-        mEmoticonFragment = new EmoticonFragment();
+        EmoticonFragment mEmoticonFragment = new EmoticonFragment();
         getFragmentManager().beginTransaction().replace(R.id.post_emoticons, mEmoticonFragment).commit();
         mEmoticonFragment.setEmoticonListener(new EmoticonFragment.EmoticonListener() {
             @Override
             public void onEmoticonSelected(String name) {
                 mETMessage.getText().insert(mETMessage.getSelectionStart(), name);
+                mETMessage.requestFocus();
                 mDrawer.closeDrawer(Gravity.RIGHT);
             }
         });
@@ -344,7 +344,6 @@ public class NewPostActivity extends AppCompatActivity {
                         Log.e(TAG, message, e);
                         CommonUtils.debugToast(NewPostActivity.this, message);
                         Snackbar.make(mButtonPanel, message, Snackbar.LENGTH_LONG).show();
-                        return;
                     }
                 }
             });
@@ -376,21 +375,22 @@ public class NewPostActivity extends AppCompatActivity {
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
                     photoPickerIntent.setType("image/*");
-                    startActivityForResult(photoPickerIntent, REQUEST_CHOOSE_FILE_TAG);
+                    startActivityForResult(photoPickerIntent, REQUEST_CHOOSE_PHOTO_TAG);
                 } else {
                     Toast.makeText(this, getString(R.string.error_insert_attachment), Toast.LENGTH_LONG).show();
                 }
+                break;
             case PERMISSIONS_REQUEST_READ_FILE:
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-
                     Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
                     intent.addCategory(Intent.CATEGORY_OPENABLE);
                     intent.setType("*/*");
-                    startActivityForResult(intent, REQUEST_CHOOSE_PHOTO_TAG);
+                    startActivityForResult(intent, REQUEST_CHOOSE_FILE_TAG);
                 } else {
                     Toast.makeText(this, getString(R.string.error_insert_attachment), Toast.LENGTH_LONG).show();
                 }
+                break;
         }
     }
 

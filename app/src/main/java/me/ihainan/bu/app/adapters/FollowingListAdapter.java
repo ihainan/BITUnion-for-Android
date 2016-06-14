@@ -34,21 +34,20 @@ import me.ihainan.bu.app.utils.network.ExtraApi;
  */
 public class FollowingListAdapter extends SwipeAdapter {
     private final static String TAG = FollowingListAdapter.class.getSimpleName();
-    private final LayoutInflater mLayoutInflater;
-    private List<Follow> mList;
+    private final List<Follow> mList;
     private final Context mContext;
 
     public FollowingListAdapter(Context context, List<Follow> mList) {
         this.mContext = context;
         this.mList = mList;
-        mLayoutInflater = LayoutInflater.from(context);
+        LayoutInflater mLayoutInflater = LayoutInflater.from(context);
     }
 
     private final int VIEW_TYPE_ITEM = 0;
-    private final int VIEW_TYPE_LOADING = 1;
 
     @Override
     public int getItemViewType(int position) {
+        int VIEW_TYPE_LOADING = 1;
         return mList.get(position) == null ? VIEW_TYPE_LOADING : VIEW_TYPE_ITEM;
     }
 

@@ -43,7 +43,7 @@ public class FullscreenPhotoViewerActivity extends Activity {
     // TAG
     private final static String TAG = FullscreenPhotoViewerActivity.class.getSimpleName();
     public final static String IMAGE_URL_TAG = "_IMAGE_URL_TAG";
-    public final static int PERMISSIONS_REQUEST_READ_FILES = 1;
+    private final static int PERMISSIONS_REQUEST_READ_FILES = 1;
 
     // UI
     private PhotoView mImageView;
@@ -88,7 +88,6 @@ public class FullscreenPhotoViewerActivity extends Activity {
                     | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
         }
     };
-    private View mControlsView;
     private final Runnable mShowPart2Runnable = new Runnable() {
         @Override
         public void run() {
@@ -128,7 +127,7 @@ public class FullscreenPhotoViewerActivity extends Activity {
         setContentView(R.layout.activity_fullscreen_photo_viewer);
 
         mVisible = true;
-        mControlsView = findViewById(R.id.fullscreen_content_controls);
+        View mControlsView = findViewById(R.id.fullscreen_content_controls);
         mContentView = findViewById(R.id.iv_photo);
 
         // Set up the user interaction to manually show or hide the system UI.
@@ -187,7 +186,7 @@ public class FullscreenPhotoViewerActivity extends Activity {
         });
     }
 
-    Target mDownloadTarget = new Target() {
+    private final Target mDownloadTarget = new Target() {
         @Override
         public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
             if (mDownloadDialog != null) mDownloadDialog.dismiss();
@@ -250,7 +249,7 @@ public class FullscreenPhotoViewerActivity extends Activity {
         }
     }
 
-    ProgressDialog mDownloadDialog;
+    private ProgressDialog mDownloadDialog;
 
     @Override
     public boolean onContextItemSelected(MenuItem item) {

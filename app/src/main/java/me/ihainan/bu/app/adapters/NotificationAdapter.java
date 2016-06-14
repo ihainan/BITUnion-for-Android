@@ -30,7 +30,7 @@ public class NotificationAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     private final static String TAG = NotificationAdapter.class.getSimpleName();
     private final LayoutInflater mLayoutInflater;
     private final Context mContext;
-    private List<Notification> mList;
+    private final List<Notification> mList;
 
     public NotificationAdapter(Context context, List<Notification> notificationList) {
         mList = notificationList;
@@ -39,10 +39,10 @@ public class NotificationAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     }
 
     private final int VIEW_TYPE_ITEM = 0;
-    private final int VIEW_TYPE_LOADING = 1;
 
     @Override
     public int getItemViewType(int position) {
+        int VIEW_TYPE_LOADING = 1;
         return mList.get(position) == null ? VIEW_TYPE_LOADING : VIEW_TYPE_ITEM;
     }
 

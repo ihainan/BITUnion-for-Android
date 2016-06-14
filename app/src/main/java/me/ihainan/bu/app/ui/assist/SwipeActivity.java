@@ -27,12 +27,12 @@ public class SwipeActivity extends AppCompatActivity {
     /**
      * 是否可以滑动关闭页面
      */
-    protected boolean swipeEnabled = true;
+    private boolean swipeEnabled = true;
 
     /**
      * 是否可以在页面任意位置右滑关闭页面，如果是false则从左边滑才可以关闭。
      */
-    protected boolean swipeAnyWhere = false;
+    private boolean swipeAnyWhere = false;
 
     public SwipeActivity() {
 
@@ -44,7 +44,7 @@ public class SwipeActivity extends AppCompatActivity {
         swipeLayout = new SwipeLayout(this);
     }
 
-    public void setSwipeAnyWhere(boolean swipeAnyWhere) {
+    protected void setSwipeAnyWhere(boolean swipeAnyWhere) {
         this.swipeAnyWhere = swipeAnyWhere;
     }
 
@@ -72,7 +72,7 @@ public class SwipeActivity extends AppCompatActivity {
         swipeLayout.replaceLayer(this);
     }
 
-    public static int getScreenWidth(Context context) {
+    private static int getScreenWidth(Context context) {
         DisplayMetrics metrics = new DisplayMetrics();
         WindowManager manager = (WindowManager) context.getSystemService(WINDOW_SERVICE);
         manager.getDefaultDisplay().getMetrics(metrics);
@@ -143,7 +143,7 @@ public class SwipeActivity extends AppCompatActivity {
         boolean ignoreSwipe = false;
         View content;
         Activity mActivity;
-        int sideWidthInDP = 16;
+        final int sideWidthInDP = 16;
         int sideWidth = 72;
         int screenWidth = 1080;
         VelocityTracker tracker;
@@ -154,7 +154,7 @@ public class SwipeActivity extends AppCompatActivity {
         float currentX;
         float currentY;
 
-        int touchSlopDP = 20;
+        final int touchSlopDP = 20;
         int touchSlop = 60;
 
         @Override

@@ -12,7 +12,7 @@ import me.ihainan.bu.app.utils.network.BUApi;
  * 最新主题模型
  */
 public class LatestThread implements Serializable {
-    public final static String TAG = LatestThread.class.getSimpleName();
+    private final static String TAG = LatestThread.class.getSimpleName();
 
     public static class LastReply implements Serializable {
         public final static String TAG = LastReply.class.getSimpleName();

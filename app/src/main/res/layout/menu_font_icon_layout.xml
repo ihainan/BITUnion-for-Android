@@ -11,35 +11,42 @@
 
     <RelativeLayout
         android:id="@+id/badge_layout"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="32dp"
+        android:layout_height="30dp"
+        android:layout_centerVertical="true"
         android:clickable="true">
 
         <RelativeLayout
             android:id="@+id/relative_layout_item_count"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_centerVertical="true"
             android:clickable="true">
 
-            <Button
-                android:id="@+id/button"
+            <TextView
+                android:id="@+id/tv_icon"
                 android:layout_width="24dp"
                 android:layout_height="24dp"
-                android:background="@drawable/ic_bell"
-                android:clickable="true" />
+                android:layout_centerInParent="true"
+                android:gravity="center"
+                android:text="@string/bell_icon"
+                android:textColor="@android:color/white"
+                android:textSize="22dp"
+                android:textStyle="bold" />
         </RelativeLayout>
 
         <TextView
             android:id="@+id/badge_notification"
-            android:layout_width="13dp"
-            android:layout_height="13dp"
-            android:layout_alignRight="@id/relative_layout_item_count"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="true"
             android:background="@drawable/rounded_square"
             android:gravity="center"
             android:text="10+"
             android:textColor="#FFF"
             android:textSize="7sp"
             android:textStyle="bold"
-            android:visibility="gone" />
+            android:visibility="visible" />
     </RelativeLayout>
 </RelativeLayout>

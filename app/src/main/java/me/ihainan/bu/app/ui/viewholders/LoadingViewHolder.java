@@ -10,7 +10,7 @@ import me.ihainan.bu.app.R;
  * Loading more view holder
  */
 public class LoadingViewHolder extends RecyclerView.ViewHolder {
-    public ProgressBar progressBar;
+    public final ProgressBar progressBar;
 
     public LoadingViewHolder(View itemView) {
         super(itemView);

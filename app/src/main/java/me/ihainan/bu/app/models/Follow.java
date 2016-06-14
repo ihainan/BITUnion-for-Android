@@ -10,7 +10,7 @@ import me.ihainan.bu.app.utils.network.BUApi;
  * 关注模型
  */
 public class Follow {
-    public final static String TAG = Follow.class.getSimpleName();
+    private final static String TAG = Follow.class.getSimpleName();
 
     @Override
     public String toString() {

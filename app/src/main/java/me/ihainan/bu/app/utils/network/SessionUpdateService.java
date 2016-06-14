@@ -22,7 +22,7 @@ import me.ihainan.bu.app.utils.BUApplication;
  * Session 更新服务，用于定期更新 Session
  */
 public class SessionUpdateService extends IntentService {
-    public final static String TAG = SessionUpdateService.class.getSimpleName();
+    private final static String TAG = SessionUpdateService.class.getSimpleName();
 
     private final static int UPDATE_DELAY = 20; // 更新间隔，单位为分钟
 

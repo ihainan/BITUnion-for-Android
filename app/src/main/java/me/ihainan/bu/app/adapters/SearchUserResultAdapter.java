@@ -24,18 +24,16 @@ import me.ihainan.bu.app.utils.CommonUtils;
  */
 public class SearchUserResultAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private final static String TAG = FollowingListAdapter.class.getSimpleName();
-    private final LayoutInflater mLayoutInflater;
-    private List<User> mList;
+    private final List<User> mList;
     private final Context mContext;
 
     public SearchUserResultAdapter(Context context, List<User> mList) {
         this.mContext = context;
         this.mList = mList;
-        mLayoutInflater = LayoutInflater.from(context);
+        LayoutInflater mLayoutInflater = LayoutInflater.from(context);
     }
 
     private final int VIEW_TYPE_ITEM = 0;
-    private final int VIEW_TYPE_LOADING = 1;
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -91,6 +89,7 @@ public class SearchUserResultAdapter extends RecyclerView.Adapter<RecyclerView.V
 
     @Override
     public int getItemViewType(int position) {
+        int VIEW_TYPE_LOADING = 1;
         return mList.get(position) == null ? VIEW_TYPE_LOADING : VIEW_TYPE_ITEM;
     }
 

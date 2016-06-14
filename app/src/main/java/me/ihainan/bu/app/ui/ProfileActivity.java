@@ -41,14 +41,10 @@ public class ProfileActivity extends SwipeActivity {
     public final static String USER_ID_TAG = "USER_ID_TAG";
     public final static String NOTIFY_ID_TAG = TAG + "_NOTIFY_ID_TAG";
 
-    // UI references
-    private ViewPager mPager;
-    private TabLayout mTabLayout;
-    private Toolbar mToolbar;
-    private ImageView mFollowIcon;
     private CollapsingToolbarLayout mCollapsingToolbar;
 
     // Data
+    private final Context mContext = this;
     private String mUsername;
     private Long mUid;
     private Integer mNotifyId;
@@ -72,7 +68,7 @@ public class ProfileActivity extends SwipeActivity {
         }
 
         if (mNotifyId != null && mNotifyId != -1) {
-            ExtraApi.markAsRead(this, mNotifyId);
+            ExtraApi.markAsRead(mContext, mNotifyId);
         }
 
         // Collasping Toolbar
@@ -81,7 +77,7 @@ public class ProfileActivity extends SwipeActivity {
         mCollapsingToolbar.setExpandedTitleTextAppearance(R.style.TransparentText);
 
         // Toolbar
-        mToolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar mToolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(mToolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         setTitle("");
@@ -93,13 +89,13 @@ public class ProfileActivity extends SwipeActivity {
         });
 
         // Follow icon
-        mFollowIcon = (ImageView) findViewById(R.id.follow_icon);
+        ImageView mFollowIcon = (ImageView) findViewById(R.id.follow_icon);
         mFollowIcon.setVisibility(View.INVISIBLE);
 
         // Tab Layout
-        mTabLayout = (TabLayout) findViewById(R.id.tab_layout);
-        mPager = (ViewPager) findViewById(R.id.pager);
-        mPager.setAdapter(new UserInfoPageAdapter(getFragmentManager(), this));
+        TabLayout mTabLayout = (TabLayout) findViewById(R.id.tab_layout);
+        ViewPager mPager = (ViewPager) findViewById(R.id.pager);
+        mPager.setAdapter(new UserInfoPageAdapter(getFragmentManager(), mContext));
         mTabLayout.setupWithViewPager(mPager);
         ((TextView) findViewById(R.id.title)).setText(CommonUtils.decode(mUsername));
 
@@ -136,7 +132,7 @@ public class ProfileActivity extends SwipeActivity {
     private boolean mFollowClickable = true;
 
     private void getFollowStatus() {
-        ExtraApi.getFollowStatus(this, mUsername, new Response.Listener<JSONObject>() {
+        ExtraApi.getFollowStatus(mContext, mUsername, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
                 if (isFinishing()) return;
@@ -144,12 +140,12 @@ public class ProfileActivity extends SwipeActivity {
                     if (mFollowMenuItem == null) return;
                     if (response.getInt("code") == 0) {
                         hasFollow = response.getBoolean("data");
-                        CommonUtils.debugToast(ProfileActivity.this, "hasFollow = " + hasFollow);
+                        CommonUtils.debugToast(mContext, "hasFollow = " + hasFollow);
                         setFollowIcon(hasFollow);
                     } else {
                         String message = "获取关注状态失败，失败原因 " + response.getString("message");
                         if (BUApplication.debugMode) {
-                            CommonUtils.debugToast(ProfileActivity.this, message);
+                            CommonUtils.debugToast(mContext, message);
                         }
                         Log.w(TAG, message);
                     }
@@ -163,7 +159,7 @@ public class ProfileActivity extends SwipeActivity {
                 if (isFinishing()) return;
                 String message = getString(R.string.error_network);
                 String debugMessage = "getFollowStatus >> " + message;
-                CommonUtils.debugToast(ProfileActivity.this, debugMessage);
+                CommonUtils.debugToast(mContext, debugMessage);
                 Log.e(TAG, debugMessage, error);
             }
         });
@@ -188,7 +184,7 @@ public class ProfileActivity extends SwipeActivity {
         return true;
     }
 
-    private Response.Listener mFollowListener = new Response.Listener<JSONObject>() {
+    private final Response.Listener mFollowListener = new Response.Listener<JSONObject>() {
         @Override
         public void onResponse(JSONObject response) {
             if (isFinishing()) return;
@@ -199,15 +195,15 @@ public class ProfileActivity extends SwipeActivity {
                     String message = hasFollow ? "添加关注成功" : "取消关注成功";
                     BUApplication.hasUpdateFavor = true;
                     Log.d(TAG, "mFollowListener >> " + message);
-                    Toast.makeText(ProfileActivity.this, message, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(mContext, message, Toast.LENGTH_SHORT).show();
                 } else {
                     // Oh no!!!
                     String message = (hasFollow ? "添加" : "取消") + "关注失败";
                     String debugMessage = message + " - " + response.get("message");
                     if (BUApplication.debugMode) {
-                        CommonUtils.debugToast(ProfileActivity.this, debugMessage);
+                        CommonUtils.debugToast(mContext, debugMessage);
                     } else {
-                        Toast.makeText(ProfileActivity.this, message, Toast.LENGTH_SHORT).show();
+                        Toast.makeText(mContext, message, Toast.LENGTH_SHORT).show();
                     }
 
                     Log.w(TAG, debugMessage);
@@ -219,9 +215,9 @@ public class ProfileActivity extends SwipeActivity {
                 String message = (hasFollow ? "添加" : "删除") + "关注失败";
                 String debugMessage = message + " - " + getString(R.string.error_parse_json) + " " + response;
                 if (BUApplication.debugMode) {
-                    CommonUtils.debugToast(ProfileActivity.this, debugMessage);
+                    CommonUtils.debugToast(mContext, debugMessage);
                 } else {
-                    Toast.makeText(ProfileActivity.this, message, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(mContext, message, Toast.LENGTH_SHORT).show();
                 }
                 Log.e(TAG, debugMessage, e);
 
@@ -231,7 +227,7 @@ public class ProfileActivity extends SwipeActivity {
         }
     };
 
-    private Response.ErrorListener mFollowErrorListener = new Response.ErrorListener() {
+    private final Response.ErrorListener mFollowErrorListener = new Response.ErrorListener() {
         @Override
         public void onErrorResponse(VolleyError error) {
             if (isFinishing()) return;
@@ -247,21 +243,21 @@ public class ProfileActivity extends SwipeActivity {
     };
 
     private void addFollow() {
-        ExtraApi.addFollow(this, mUsername, mFollowListener, mFollowErrorListener);
+        ExtraApi.addFollow(mContext, mUsername, mFollowListener, mFollowErrorListener);
     }
 
     private void delFollow() {
-        ExtraApi.delFollow(this, mUsername, mFollowListener, mFollowErrorListener);
+        ExtraApi.delFollow(mContext, mUsername, mFollowListener, mFollowErrorListener);
     }
 
     public class UserInfoPageAdapter extends FragmentPagerAdapter {
         final int PAGE_COUNT = 2;
-        private String tabTitles[] = new String[]{"信息", "动态"};
-        private Context context;
+        private final String[] tabTitles = new String[]{"信息", "动态"};
+        private final Context mContext;
 
         public UserInfoPageAdapter(FragmentManager fm, Context context) {
             super(fm);
-            this.context = context;
+            mContext = context;
         }
 
         @Override
@@ -273,7 +269,7 @@ public class ProfileActivity extends SwipeActivity {
         public Fragment getItem(int position) {
             Fragment fragment = position == 0 ? new BasicInfoFragment() : new TimelineFragment();
             if (fragment instanceof TimelineFragment)
-                ((TimelineFragment) fragment).isSetToolbar = false;
+                TimelineFragment.isSetToolbar = false;
             Bundle args = new Bundle();
             args.putString(ProfileActivity.USER_NAME_TAG, mUsername);
             fragment.setArguments(args);

@@ -6,7 +6,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
-import android.widget.Toast;
 
 import com.android.volley.Response;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -18,7 +17,6 @@ import java.util.List;
 import me.ihainan.bu.app.R;
 import me.ihainan.bu.app.adapters.LatestThreadListAdapter;
 import me.ihainan.bu.app.models.LatestThread;
-import me.ihainan.bu.app.ui.MainActivity;
 import me.ihainan.bu.app.ui.assist.SimpleDividerItemDecoration;
 import me.ihainan.bu.app.utils.BUApplication;
 import me.ihainan.bu.app.utils.CommonUtils;

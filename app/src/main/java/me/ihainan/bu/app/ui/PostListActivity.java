@@ -59,7 +59,6 @@ public class PostListActivity extends SwipeActivity {
     // UI references
     private ViewPager mPager;
     private SmartTabLayout mTabLayout;
-    private Toolbar mToolbar;
     private RelativeLayout mErrorLayout;
     private TextView mTvErrorMessage, mTvAction;
 
@@ -69,7 +68,6 @@ public class PostListActivity extends SwipeActivity {
     private int mTotalPage;  // 总页数
     private Integer mJumpFloor = null;    // 跳转页面
     private Integer mJumpPage = 0, mJumpPageIndex = 0;   // 需要跳转的页数和页面内位置
-    private PostListPageAdapter postListPageAdapter;
     private Long mFid;
     private Integer mNotifyId;
 
@@ -82,7 +80,7 @@ public class PostListActivity extends SwipeActivity {
         getExtra();
 
         // Toolbar
-        mToolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar mToolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(mToolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
@@ -266,7 +264,7 @@ public class PostListActivity extends SwipeActivity {
 
         // TabLayout
         mTotalPage = calculateTotalPage(mReplyCount);
-        postListPageAdapter = new PostListPageAdapter(getFragmentManager(), this);
+        PostListPageAdapter postListPageAdapter = new PostListPageAdapter(getFragmentManager(), this);
         mPager.setAdapter(postListPageAdapter);
         mTabLayout.setViewPager(mPager);
 
@@ -278,7 +276,7 @@ public class PostListActivity extends SwipeActivity {
     }
 
     public class PostListPageAdapter extends FragmentPagerAdapter {
-        private Context context;
+        private final Context context;
 
         public PostListPageAdapter(FragmentManager fm, Context context) {
             super(fm);
@@ -406,7 +404,7 @@ public class PostListActivity extends SwipeActivity {
     private MenuItem mFavorItem;    // 收藏按钮
     private boolean favorClickable = false; // 收藏按钮是否可以被点击
     private boolean hasFavor = false;   // 收藏按钮状态
-    private Response.Listener mFavorListener = new Response.Listener<JSONObject>() {
+    private final Response.Listener mFavorListener = new Response.Listener<JSONObject>() {
         @Override
         public void onResponse(JSONObject response) {
             favorClickable = !favorClickable;
@@ -455,7 +453,7 @@ public class PostListActivity extends SwipeActivity {
         }
     };
 
-    private Response.ErrorListener mFavorErrorListener = new Response.ErrorListener() {
+    private final Response.ErrorListener mFavorErrorListener = new Response.ErrorListener() {
         @Override
         public void onErrorResponse(VolleyError error) {
             if (isFinishing()) return;
