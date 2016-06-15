@@ -16,7 +16,7 @@
             android:id="@+id/thread_item_author"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="author"
+            android:text="AUTHOR"
             android:textSize="12sp" />
 
         <TextView
@@ -32,7 +32,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_toRightOf="@id/thread_item_in"
-            android:text="long long forum name"
+            android:text="FORUM NAME"
             android:textSize="12sp" />
 
         <TextView
@@ -40,7 +40,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_toRightOf="@id/thread_item_forum"
-            android:text=" replied a latestThread"
+            android:text=" ACTION"
             android:textSize="12sp" />
 
         <TextView
@@ -74,7 +74,7 @@
             android:layout_marginTop="10dp"
             android:lineSpacingExtra="6dp"
             android:maxLines="2"
-            android:text="long long long Post Title"
+            android:text="TITLE"
             android:textColor="@android:color/black"
             android:textSize="16sp"
             android:textStyle="bold" />
@@ -85,7 +85,7 @@
             android:layout_height="wrap_content"
             android:layout_below="@id/thread_item_avatar"
             android:paddingTop="5dp"
-            android:text="100 replies"
+            android:text="X replies"
             android:textColor="@android:color/darker_gray"
             android:textSize="12sp" />
 

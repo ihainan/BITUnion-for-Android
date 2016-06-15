@@ -28,7 +28,7 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentBottom="true"
                 android:singleLine="true"
-                android:text="跌成这样子，楼主更疯了...楼主又来爆照了！"
+                android:text="TITLE"
                 android:textColor="@android:color/white"
                 android:textSize="15sp"
                 android:textStyle="bold" />
@@ -39,7 +39,7 @@
                 android:layout_height="wrap_content"
                 android:layout_above="@id/thread_item_title"
                 android:layout_marginBottom="6dp"
-                android:text="傻瓜猪"
+                android:text="USERNAME"
                 android:textColor="@android:color/white"
                 android:textSize="12sp" />
 

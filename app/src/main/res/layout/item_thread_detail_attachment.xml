@@ -25,7 +25,7 @@
             android:ellipsize="middle"
             android:gravity="center_vertical"
             android:singleLine="true"
-            android:text="long long long long long long file name (200M)"
+            android:text="FILENAME and Size"
             android:textColor="@color/primary"
             android:textStyle="bold" />
     </LinearLayout>

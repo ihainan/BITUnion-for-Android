@@ -23,7 +23,7 @@
             android:layout_width="30dp"
             android:layout_height="30dp"
             android:layout_gravity="center_vertical"
-            android:src="@drawable/default_avatar"
+            android:src="@drawable/empty_avatar"
             app:civ_border_color="@android:color/white"
             app:civ_border_width="2dp" />
 
@@ -36,9 +36,9 @@
             android:layout_marginLeft="6dp"
             android:layout_marginRight="4dp"
             android:layout_toRightOf="@id/avatar"
-            android:text="ihainan"
-            android:textStyle="bold"
-            android:textColor="@color/primary" />
+            android:text="USERNAME"
+            android:textColor="@color/primary"
+            android:textStyle="bold" />
 
         <TextView
             android:id="@+id/action"
@@ -68,7 +68,7 @@
         android:ellipsize="middle"
         android:lineSpacingExtra="6dp"
         android:maxLines="2"
-        android:text="突发兴致画了个联盟的 APP 首页原型图图图"
+        android:text="TITLE"
         android:textColor="@android:color/black"
         android:textSize="17sp"
         android:textStyle="bold" />
@@ -81,9 +81,7 @@
         android:ellipsize="end"
         android:lineSpacingExtra="6dp"
         android:maxLines="4"
-        android:text="设计风格其实是个人喜好罢了，多看看主流应用在 adr 和 ios 的交互设计，看多了对于一个需求你自然会想出多种设计方式实现它
-打算从无到有设计一个应用的话，动手前先理清思路，想好准备做哪些功能，列出来，然后根据场景归类，看结果再决定整体框架
-定好框架后，再细化各场景需求，完善每个细节，考虑把所有功能流程形成闭环"
+        android:text="CONTENT"
         android:textColor="@android:color/black"
         android:textSize="16sp" />
 </LinearLayout>

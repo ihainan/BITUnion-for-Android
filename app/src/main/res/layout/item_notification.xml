@@ -17,7 +17,7 @@
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:layout_gravity="center_vertical"
-        android:src="@drawable/default_avatar"
+        android:src="@drawable/empty_avatar"
         app:civ_border_color="@android:color/white"
         app:civ_border_width="2dp" />
 
@@ -60,5 +60,5 @@
         android:layout_marginTop="4dp"
         android:layout_toRightOf="@id/avatar"
         android:lineSpacingExtra="4dp"
-        android:text="在主题 `[台式机 / 笔记本电脑及配件] 便宜出 24 寸显示器` 中引用了你的回复" />
+        android:text="CONTENT" />
 </RelativeLayout>

@@ -102,18 +102,8 @@ public class LatestThreadListAdapter extends RecyclerView.Adapter<RecyclerView.V
         final DefaultViewHolder holder = (DefaultViewHolder) viewHolder;
 
         // 无差别区域
-        Picasso.with(mContext).load(R.drawable.empty_avatar)
-                .into(holder.avatar);
         holder.replyCount.setText("" + latestThread.tid_sum + " 回复");
         holder.title.setText(Html.fromHtml(CommonUtils.decode(latestThread.pname)));
-        holder.title.post(new Runnable() {
-            @Override
-            public void run() {
-                if (holder.title.getLineCount() == 1) {
-                    // holder.title.setText(holder.title.getText() + "\n     ");
-                }
-            }
-        });
 
         final Intent intent = new Intent(mContext, PostListActivity.class);
         intent.putExtra(PostListActivity.THREAD_FID_TAG, latestThread.fid);

@@ -23,7 +23,7 @@
         android:layout_alignBaseline="@id/item_forum_parent_icon_round"
         android:layout_centerVertical="true"
         android:layout_marginLeft="60dp"
-        android:text="联盟公告板"
+        android:text="FORUM NAME"
         android:textSize="13sp"
         android:textStyle="bold" />
 

@@ -12,18 +12,6 @@
         android:src="@drawable/background"
         android:visibility="invisible" />
 
-    <ImageButton
-        android:id="@+id/nav_logout"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentTop="true"
-        android:layout_marginRight="16dp"
-        android:layout_marginTop="45dp"
-        android:background="?attr/selectableItemBackground"
-        android:src="@drawable/ic_exit_to_app_white_24dp"
-        android:visibility="gone" />
-
     <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
         android:id="@+id/nav_profile_image"
         android:layout_width="75dp"
@@ -40,7 +28,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:padding="16dp"
-        android:text="ihainan"
+        android:text="LOADING.."
         android:textAppearance="@style/TextAppearance.AppCompat.Body1"
         android:textSize="20sp"
         android:textStyle="bold" />

@@ -55,7 +55,7 @@
                     android:ellipsize="end"
                     android:gravity="center"
                     android:maxLength="20"
-                    android:text="Sony Xperia Z5"
+                    android:text="Device Info"
                     android:textSize="10sp"
                     android:textStyle="bold" />
 

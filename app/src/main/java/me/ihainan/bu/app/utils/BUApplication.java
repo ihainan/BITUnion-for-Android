@@ -43,7 +43,7 @@ public class BUApplication extends Application {
     public final static String CACHE_LATEST_THREAD_FIRST_POST = "CACHE_LATEST_THREAD_FIRST_POST";   // 缓存的主页主题第一个回帖（用户获取背景图）
     public final static String CACHE_MOST_VISITED_FORUMS = "CACHE_MOST_VISITED_FORUMS"; // 缓存的最常访问论文
 
-    public static final int cacheDays = 50;   // 用户信息、图片缓存时间
+    public static final int cacheDays = 10;   // 用户信息、图片缓存时间
 
     /**
      * 初始化缓存单例
