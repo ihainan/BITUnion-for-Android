@@ -107,7 +107,7 @@ public class NotificationAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
             try {
                 JSONObject jsonObject = new JSONObject(notification.payload);
-                int type = notification.type;
+                int type = jsonObject.getInt("type");
                 Intent intent = null;
                 if (type == 0 || type == 1 || type == 2) {
                     NotificationMessage.PostNotificationMessageData notificationMessageData = BUApi.MAPPER.readValue(jsonObject.getJSONObject("data").toString(), NotificationMessage.PostNotificationMessageData.class);

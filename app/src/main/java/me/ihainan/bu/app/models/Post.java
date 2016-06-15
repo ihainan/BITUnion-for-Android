@@ -35,6 +35,7 @@ public class Post implements Serializable {
     public long authorid;   // 和 uid 的区别在于？
     public String subject;
     public long dateline;
+    public String originalMessage;
     public String message;
     public long usesig;
     public long bbcodeoff;

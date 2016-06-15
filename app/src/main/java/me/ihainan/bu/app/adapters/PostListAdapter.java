@@ -29,6 +29,7 @@ import java.util.List;
 
 import me.ihainan.bu.app.R;
 import me.ihainan.bu.app.models.Post;
+import me.ihainan.bu.app.ui.DebugActivity;
 import me.ihainan.bu.app.ui.NewPostActivity;
 import me.ihainan.bu.app.ui.FullscreenPhotoViewerActivity;
 import me.ihainan.bu.app.ui.PostListActivity;
@@ -146,6 +147,17 @@ public class PostListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
             // 日期
             viewHolder.date.setText(datePostStr);
+            if (BUApplication.debugMode) {
+                viewHolder.date.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent intent = new Intent(mContext, DebugActivity.class);
+                        intent.putExtra(DebugActivity.ORIGIN_HTML, CommonUtils.decode(reply.originalMessage));
+                        intent.putExtra(DebugActivity.NEW_HTML, CommonUtils.decode(reply.message));
+                        mContext.startActivity(intent);
+                    }
+                });
+            }
 
             // 移动端
             if (reply.useMobile) {

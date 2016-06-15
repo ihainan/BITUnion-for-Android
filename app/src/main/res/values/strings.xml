@@ -119,4 +119,5 @@
     <!-- font -->
     <string name="bell_icon">&#xe61d;</string>
     <string name="search_icon">&#xe61b;</string>
+    <string name="title_activity_debug">调试页面</string>
 </resources>

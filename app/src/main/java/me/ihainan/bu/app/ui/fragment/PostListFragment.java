@@ -167,6 +167,9 @@ public class PostListFragment extends BasicRecyclerViewFragment<Post> {
     @Override
     protected List<Post> processList(List<Post> list) {
         for (Post reply : list) {
+            // 留存
+            reply.originalMessage = reply.message;
+
             // 处理正文
             reply.useMobile = CommonUtils.decode(reply.message).contains("From BIT-Union Open API Project");
             reply.message = HtmlUtil.formatHtml(CommonUtils.decode(reply.message));
