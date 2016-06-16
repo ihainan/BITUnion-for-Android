@@ -218,7 +218,7 @@ public class PostListFragment extends BasicRecyclerViewFragment<Post> {
 
     @Override
     protected int getLoadingCount() {
-        return BUApplication.LOADING_POSTS_COUNT;
+        return BUApplication.postListLoadingCount;
     }
 
     @Override

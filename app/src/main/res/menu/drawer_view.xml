@@ -35,6 +35,11 @@
         android:id="@+id/gp_new"
         android:checkableBehavior="single">
         <item
+            android:id="@+id/nav_offline"
+            android:title="@string/action_offline"
+            android:visible="false" />
+
+        <item
             android:id="@+id/nav_setting"
             android:title="@string/action_settings" />
 

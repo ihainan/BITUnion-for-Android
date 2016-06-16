@@ -63,6 +63,7 @@
     <string name="downloading_image">正在下载并保存图片</string>
 
     <!-- Actions -->
+    <string name="action_offline">离线首页数据</string>
     <string name="action_settings">设置</string>
     <string name="action_home">首页</string>
     <string name="action_forum">板块</string>

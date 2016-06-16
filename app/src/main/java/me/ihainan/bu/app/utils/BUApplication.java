@@ -73,12 +73,12 @@ public class BUApplication extends Application {
 
     public final static int LOADING_HOME_PAGE_COUNT = 25;        // 一次最多 Loading 的主页动态数目
     public final static int LOADING_THREADS_COUNT = 10; // 一次最多 Loading 的主题数目
-    public final static int LOADING_POSTS_COUNT = 20;   // 一次最多 Loading 的帖子数目
     public final static int LOADING_TIMELINE_COUNT = 10;        // 一次最多 Loading 的动态数目
     public final static int LOADING_SEARCH_RESULT_COUNT = 10;   // 一次最多 Loading 的搜索结果数目
     public final static int LOADING_FOLLOWING_COUNT = 20;       // 一次最多 Loading 的关注用户数目
     public final static int LOADING_FAVORITES_COUNT = 10;       // 一次最多 Loading 的收藏数目
     public final static int LOADING_NOTIFICATION_COUNT = 10;       // 一次最多 Loading 的通知数目
+    public static Integer postListLoadingCount = 10;   // 一次最多 Loading 的帖子数目
 
     public final static int FETCH_UNREAD_COUNT_PERIOD = 60;       // 获取通知个数的时间间隔
     public final static String IMAGE_URL_PREFIX = "IMAGE_URL_PREFIX"; // 图片 URL 前缀，用于标记某个 URL 是图片
@@ -105,6 +105,7 @@ public class BUApplication extends Application {
     public final static String PREF_ENABLE_ADVANCED_EDITOR = "PREF_ENABLE_ADVANCED_EDITOR";
     public final static String PREF_ENABLE_SILENT_MODE = "PREF_ENABLE_SILENT_MODE";
     public final static String PREF_ENABLE_DISPLAY_DEVICE_INFO = "PREF_ENABLE_DISPLAY_DEVICE_INFO";
+    public final static String PREF_POST_LIST_LOADING_COUNT = "PREF_POST_LIST_LOADING_COUNT";
 
     public final static Integer DEFAULT_FONT_SIZE = 15;
     public final static Integer DEFAULT_TITLE_FONT_SIZE = 16;
@@ -164,10 +165,24 @@ public class BUApplication extends Application {
         getEnableSilentMode(context);
         getCachedFeedbackEmail(context);
         getPrefEnableDisplayDeviceInfo(context);
+        getPostListLoadingCount(context);
     }
 
     public static boolean isInSchool() {
         return networkType == NETWORK_TYPE.IN_SCHOOL;
+    }
+
+    public static Integer getPostListLoadingCount(Context context) {
+        postListLoadingCount = (Integer) BUApplication.getCache(context).getAsObject(PREF_POST_LIST_LOADING_COUNT);
+        if (postListLoadingCount == null) postListLoadingCount = 10;
+        return postListLoadingCount;
+    }
+
+    public static void setPostListLoadingCount(Context context) {
+        Log.d(TAG, "setPostListLoadingCount >> " + postListLoadingCount);
+        if (postListLoadingCount != null) {
+            BUApplication.getCache(context).put(PREF_POST_LIST_LOADING_COUNT, postListLoadingCount);
+        }
     }
 
     public static Boolean getPrefEnableDisplayDeviceInfo(Context context) {

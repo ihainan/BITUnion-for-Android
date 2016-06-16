@@ -32,6 +32,8 @@ import android.widget.Toast;
 
 import com.lb.material_preferences_library.PreferenceActivity;
 
+import java.util.Arrays;
+
 import me.ihainan.bu.app.BuildConfig;
 import me.ihainan.bu.app.R;
 import me.ihainan.bu.app.utils.BUApplication;
@@ -272,6 +274,29 @@ public class SettingsActivity extends PreferenceActivity {
             }
         });
 
+        final String[] POST_COUNT_LIST = new String[]{"5", "10", "15", "20"};
+        final Preference prefPostCount = findPreference("pref_post_count");
+        prefPostCount.setSummary("" + BUApplication.postListLoadingCount);
+        prefPostCount.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(SettingsActivity.this).setTitle("每页显示帖子数")
+                        .setSingleChoiceItems(POST_COUNT_LIST, Arrays.asList(POST_COUNT_LIST).indexOf("" + BUApplication.postListLoadingCount),
+                                new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        BUApplication.postListLoadingCount = Integer.valueOf(POST_COUNT_LIST[which]);
+                                        BUApplication.setPostListLoadingCount(SettingsActivity.this);
+                                        prefPostCount.setSummary(POST_COUNT_LIST[which]);
+                                        dialog.dismiss();
+                                    }
+                                });
+                builder.create().show();
+                return true;
+            }
+        });
+
         final String[] actions = new String[]{"查看回帖楼层", "查看主楼"};
         prefHomePageClick = findPreference("pref_home_page_click");
         prefHomePageClick.setSummary(actions[BUApplication.homePageClickEventType]);
@@ -395,7 +420,7 @@ public class SettingsActivity extends PreferenceActivity {
 
     class SwipeLayout extends FrameLayout {
 
-        //private View backgroundLayer;用来设置滑动时的背景色
+        // private View backgroundLayer;用来设置滑动时的背景色
         private Drawable leftShadow;
 
         public SwipeLayout(Context context) {

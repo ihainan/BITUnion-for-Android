@@ -22,6 +22,10 @@
             android:title="帖子显示" />
 
         <Preference
+            android:key="pref_post_count"
+            android:title="每页显示帖子数" />
+
+        <Preference
             android:key="pref_home_page_click"
             android:summary="点击后进尾楼"
             android:title="首页帖子点击事件" />

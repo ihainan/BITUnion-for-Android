@@ -163,10 +163,10 @@ public class PostListActivity extends SwipeActivity {
     }
 
     private static int calculateTotalPage(long floor) {
-        if (floor % BUApplication.LOADING_POSTS_COUNT == 0) {
-            return (int) (floor / BUApplication.LOADING_POSTS_COUNT);
+        if (floor % BUApplication.postListLoadingCount == 0) {
+            return (int) (floor / BUApplication.postListLoadingCount);
         } else {
-            return (int) (floor / BUApplication.LOADING_POSTS_COUNT) + 1;
+            return (int) (floor / BUApplication.postListLoadingCount) + 1;
         }
     }
 
@@ -259,7 +259,7 @@ public class PostListActivity extends SwipeActivity {
         if (mJumpFloor != null) {
             // 要求跳转到特定楼层
             mJumpPage = calculateTotalPage(mJumpFloor) - 1;
-            mJumpPageIndex = mJumpFloor - (mJumpPage) * BUApplication.LOADING_POSTS_COUNT - 1;
+            mJumpPageIndex = mJumpFloor - (mJumpPage) * BUApplication.postListLoadingCount - 1;
         }
 
         // TabLayout
