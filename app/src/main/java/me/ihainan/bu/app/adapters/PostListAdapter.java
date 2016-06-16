@@ -75,6 +75,17 @@ public class PostListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             final Post reply = mList.get(position);
             final PostViewHolder viewHolder = (PostViewHolder) holder;
 
+            if (CommonUtils.decode(reply.message).trim().endsWith("</blockquote>")
+                    && (reply.attachment == null || reply.attachment.equals(""))) {
+                ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) viewHolder.divider.getLayoutParams();
+                params.topMargin = 0;
+                viewHolder.divider.setLayoutParams(params);
+            } else {
+                ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) viewHolder.divider.getLayoutParams();
+                params.topMargin = (int) CommonUtils.convertDpToPixel(10, mContext);
+                viewHolder.divider.setLayoutParams(params);
+            }
+
             // 防止附件出现重复
             viewHolder.attachmentLayout.removeAllViews();
 
@@ -171,7 +182,10 @@ public class PostListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
             // 附件
             if (!(reply.attachment == null || reply.attachment.equals(""))) {
+                viewHolder.attachmentLayout.setVisibility(View.VISIBLE);
                 showAttachmentView(viewHolder.attachmentLayout, reply);
+            } else {
+                viewHolder.attachmentLayout.setVisibility(View.GONE);
             }
         } else {
             LoadingViewHolder loadingViewHolder = (LoadingViewHolder) holder;
@@ -300,6 +314,7 @@ public class PostListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         public final TextView deviceName;
         public final LinearLayout attachmentLayout;
         public LinearLayout rootLayout;
+        public View divider;
 
         public PostViewHolder(View itemView, final Context context) {
             super(itemView);
@@ -322,6 +337,7 @@ public class PostListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             useMobile = (ImageView) itemView.findViewById(R.id.thread_from_mobile);
             deviceName = (TextView) itemView.findViewById(R.id.device_name);
 
+            divider = itemView.findViewById(R.id.divider);
             attachmentLayout = (LinearLayout) itemView.findViewById(R.id.thread_attachment_layout);
         }
     }

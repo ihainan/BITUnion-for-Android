@@ -160,6 +160,7 @@ public class HtmlUtil {
         // 多余的换行
         str = str.replaceAll("</blockquote>(\\s)*(<br>)+", "</blockquote>");
         str = str.replaceAll("(<br>)(\\s)*<blockquote>+", "<blockquote>");
+        str = str.replaceAll("[(<br>)\\s]*</blockquote>$", "</blockquote>");
         return str;
     }
 

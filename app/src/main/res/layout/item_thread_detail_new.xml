@@ -115,7 +115,8 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@id/thread_message"
                 android:layout_marginTop="10dp"
-                android:orientation="vertical" />
+                android:orientation="vertical"
+                android:visibility="gone" />
 
             <View xmlns:android="http://schemas.android.com/apk/res/android"
                 android:id="@+id/divider"
@@ -123,7 +124,7 @@
                 android:layout_height="1dp"
                 android:layout_below="@id/thread_attachment_layout"
                 android:layout_marginBottom="5dp"
-                android:layout_marginTop="10dp"
+                android:layout_marginTop="18dp"
                 android:background="@color/dark_gray" />
 
             <RelativeLayout

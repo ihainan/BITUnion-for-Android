@@ -9,9 +9,13 @@ import android.view.View;
 
 import com.android.volley.Response;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
 
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.util.List;
 
 import me.ihainan.bu.app.R;
@@ -27,6 +31,9 @@ import me.ihainan.bu.app.utils.ui.CustomOnClickListener;
  * Home Page Fragment
  */
 public class HomeFragment extends BasicRecyclerViewFragment<LatestThread> {
+    private final static String HOME_FRAGMENT_HISTORY_LIST = "HOME_FRAGMENT_HISTORY_LIST";
+    private List<LatestThread> mHistoryList;
+
     @Override
     protected String getNoNewDataMessage() {
         return getString(R.string.error_unknown_msg);
@@ -86,6 +93,22 @@ public class HomeFragment extends BasicRecyclerViewFragment<LatestThread> {
         // Adapter
         mAdapter = getAdapter();
         mRecyclerView.setAdapter(mAdapter);
+
+        // 加载历史数据
+        String jsonStr = BUApplication.getCache(mContext).getAsString(HOME_FRAGMENT_HISTORY_LIST);
+        try {
+            if (jsonStr != null && !"".equals(jsonStr)) {
+                mHistoryList = BUApi.MAPPER.readValue(jsonStr,
+                        new TypeReference<List<LatestThread>>() {
+                        });
+                if (mHistoryList != null) {
+                    mList.addAll(mHistoryList);
+                    mAdapter.notifyDataSetChanged();
+                }
+            }
+        } catch (IOException e) {
+            Log.e(TAG, "解析历史数据失败 " + jsonStr, e);
+        }
     }
 
     @Override
@@ -117,7 +140,11 @@ public class HomeFragment extends BasicRecyclerViewFragment<LatestThread> {
                         } else {
                             mList.clear();
                             mList.addAll(newItems);
-                            mAdapter.notifyDataSetChanged();
+                            if (!checkIsSameList())
+                                mAdapter.notifyDataSetChanged();
+                            Gson gson = new GsonBuilder().create();
+                            JsonArray jsArray = gson.toJsonTree(mList).getAsJsonArray();
+                            BUApplication.getCache(mContext).put(HOME_FRAGMENT_HISTORY_LIST, jsArray.toString());
                         }
                     } else {
                         String message = getString(R.string.error_unknown_msg) + ": " + response.getString("msg");
@@ -133,5 +160,18 @@ public class HomeFragment extends BasicRecyclerViewFragment<LatestThread> {
                 }
             }
         }, errorListener);
+    }
+
+    private boolean checkIsSameList() {
+        if (mList == null && mHistoryList == null) return true;
+        if (mList == null && mHistoryList != null
+                || mList != null && mHistoryList == null
+                || mList.size() != mHistoryList.size())
+            return false;
+        for (int i = 0; i < mList.size(); ++i) {
+            if (!mList.get(i).toString().equals(mHistoryList.get(i).toString())) return false;
+        }
+
+        return true;
     }
 }
