@@ -71,7 +71,7 @@ public class BUApplication extends Application {
     public final static int HOT_TOPIC_THREAD = 30;      // 热门帖子阈值
     public final static int SWIPE_LAYOUT_TRIGGER_DISTANCE = 400;    // 手指在屏幕下拉多少距离会触发下拉刷新
 
-    public final static int LOADING_HOME_PAGE_COUNT = 25;        // 一次最多 Loading 的主页动态数目
+    public final static int LOADING_HOME_PAGE_COUNT = 20;        // 一次最多 Loading 的主页动态数目
     public final static int LOADING_THREADS_COUNT = 10; // 一次最多 Loading 的主题数目
     public final static int LOADING_TIMELINE_COUNT = 10;        // 一次最多 Loading 的动态数目
     public final static int LOADING_SEARCH_RESULT_COUNT = 10;   // 一次最多 Loading 的搜索结果数目

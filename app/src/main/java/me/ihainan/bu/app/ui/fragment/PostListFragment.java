@@ -59,10 +59,8 @@ public class PostListFragment extends BasicRecyclerViewFragment<Post> {
                         newItems = processList(newItems);
 
                         // 重新加载
-                        if (from == 0) {
-                            mList.clear();
-                            mAdapter.notifyDataSetChanged();
-                        }
+                        mList.clear();
+                        mAdapter.notifyDataSetChanged();
 
                         // 更新 RecyclerView
                         mList.addAll(newItems);

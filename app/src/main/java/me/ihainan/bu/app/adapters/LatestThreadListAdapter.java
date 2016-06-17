@@ -75,21 +75,13 @@ public class LatestThreadListAdapter extends RecyclerView.Adapter<RecyclerView.V
 
     @Override
     public int getItemViewType(int position) {
-        final LatestThread latestThread = mLatestThreads.get(position);
-        // if (BUApplication.saveDataMode || !CommonUtils.decode(latestThread.fname).equals("个人展示区"))
         return VIEW_TYPE_DEFAULT;
-        // else return VIEW_TYPE_SELFIE;
     }
 
     @Override
     public void onBindViewHolder(final RecyclerView.ViewHolder viewHolder, int position) {
         final LatestThread latestThread = mLatestThreads.get(position);
-        // 注意节省流量模式
-        if (getItemViewType(position) == VIEW_TYPE_DEFAULT) {
-            fillDefaultView(latestThread, viewHolder);
-        } else {
-            fillSelfieView(latestThread, viewHolder);
-        }
+        fillDefaultView(latestThread, viewHolder);
     }
 
     /**
@@ -102,9 +94,11 @@ public class LatestThreadListAdapter extends RecyclerView.Adapter<RecyclerView.V
         final DefaultViewHolder holder = (DefaultViewHolder) viewHolder;
 
         // 无差别区域
-        holder.replyCount.setText("" + latestThread.tid_sum + " 回复");
+        holder.avatar.setImageDrawable(null);
+        holder.replyCount.setText(latestThread.tid_sum + " 回复");
         holder.title.setText(Html.fromHtml(CommonUtils.decode(latestThread.pname)));
 
+        // Root Layout
         final Intent intent = new Intent(mContext, PostListActivity.class);
         intent.putExtra(PostListActivity.THREAD_FID_TAG, latestThread.fid);
         intent.putExtra(PostListActivity.THREAD_ID_TAG, latestThread.tid);
@@ -128,7 +122,6 @@ public class LatestThreadListAdapter extends RecyclerView.Adapter<RecyclerView.V
 
         // 发帖、回帖日期
         if (latestThread.lastreply != null) {
-            // holder.date.setText(CommonUtils.decode(latestThread.lastreply.when));
             holder.date.setText(CommonUtils.getRelativeTimeSpanString(CommonUtils.parseDateString(CommonUtils.decode(latestThread.lastreply.when))));
         } else {
             holder.date.setText("未知次元未知时间");
@@ -199,173 +192,8 @@ public class LatestThreadListAdapter extends RecyclerView.Adapter<RecyclerView.V
         }
     }
 
-    /**
-     * 填充 『个人展示区』 帖子内容
-     *
-     * @param latestThread 当前需要显示的帖子
-     * @param viewHolder   View holder
-     */
-    private void fillSelfieView(final LatestThread latestThread, RecyclerView.ViewHolder viewHolder) {
-        final SelfieViewHolder holder = (SelfieViewHolder) viewHolder;
-
-        // 标题
-        holder.title.setText(Html.fromHtml(CommonUtils.decode(latestThread.pname)));
-        Picasso.with(mContext).load(R.drawable.empty_avatar)
-                .into(holder.avatar);
-
-        final Intent intent = new Intent(mContext, PostListActivity.class);
-        intent.putExtra(PostListActivity.THREAD_FID_TAG, latestThread.fid);
-        intent.putExtra(PostListActivity.THREAD_ID_TAG, latestThread.tid);
-        intent.putExtra(PostListActivity.THREAD_AUTHOR_NAME_TAG, latestThread.author);
-        intent.putExtra(PostListActivity.THREAD_REPLY_COUNT_TAG, latestThread.tid_sum + 1);
-        intent.putExtra(PostListActivity.THREAD_NAME_TAG, latestThread.pname);
-
-        holder.rootLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (BUApplication.homePageClickEventType == 0) {
-                    // 进入尾楼
-                    intent.removeExtra(PostListActivity.THREAD_JUMP_FLOOR);
-                    mContext.startActivity(intent);
-                } else {
-                    // 进入主楼
-                    intent.putExtra(PostListActivity.THREAD_JUMP_FLOOR, 0);
-                    mContext.startActivity(intent);
-                }
-            }
-        });
-
-        /* 发表新帖 */
-        if (latestThread.lastreply == null || latestThread.tid_sum == 0) {
-            holder.authorName.setText(
-                    CommonUtils.truncateString(
-                            CommonUtils.decode(latestThread.author),
-                            BUApplication.MAX_USER_NAME_LENGTH));
-            CommonUtils.setUserAvatarClickListener(mContext,
-                    holder.avatar, -1,
-                    latestThread.author);
-            holder.action.setText(" 发布了自拍");
-            String avatarURL = CommonUtils.getRealImageURL(latestThread.avatar);
-            CommonUtils.setAvatarImageView(mContext, holder.avatar,
-                    avatarURL, R.drawable.default_avatar);
-        } else {
-            /* 回复旧帖 */
-            holder.authorName.setText(
-                    CommonUtils.truncateString(
-                            CommonUtils.decode(latestThread.lastreply.who),
-                            BUApplication.MAX_USER_NAME_LENGTH));
-            CommonUtils.setUserAvatarClickListener(mContext,
-                    holder.avatar, -1,
-                    latestThread.lastreply.who);
-            holder.action.setText(" 评价了 " +
-                    CommonUtils.truncateString(
-                            CommonUtils.decode(latestThread.author),
-                            BUApplication.MAX_USER_NAME_LENGTH) + " 的自拍");
-
-            // 从缓存中获取用户头像
-            CommonUtils.getAndCacheUserInfo(mContext,
-                    latestThread.lastreply.who,
-                    new CommonUtils.UserInfoAndFillAvatarCallback() {
-                        @Override
-                        public void doSomethingIfHasCached(final Member member) {
-                            String avatarURL = CommonUtils.getRealImageURL(member.avatar);
-                            holder.authorName.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    Intent intent = new Intent(mContext, ProfileActivity.class);
-                                    intent.putExtra(ProfileActivity.USER_ID_TAG, member.uid);
-                                    intent.putExtra(ProfileActivity.USER_NAME_TAG, member.username);
-                                    mContext.startActivity(intent);
-                                }
-                            });
-                            // 缓存模式下不会进入本方法，所以直接显示图片
-                            if (avatarURL.endsWith("/images/standard/noavatar.gif")) {
-                                Picasso.with(mContext).load(R.drawable.default_avatar)
-                                        .error(R.drawable.default_avatar)
-                                        .into(holder.avatar);
-                            } else {
-                                Picasso.with(mContext).load(avatarURL)
-                                        .error(R.drawable.default_avatar)
-                                        .into(holder.avatar);
-                            }
-                        }
-                    });
-        }
-
-        // 获取背景图片
-        Post reply = (Post) BUApplication.getCache(mContext).getAsObject(BUApplication.CACHE_LATEST_THREAD_FIRST_POST + "_" + latestThread.tid);
-        if (reply == null) {
-            Log.i(TAG, "fillDefaultView >> 拉取回复数据");
-            BUApi.getPostReplies(mContext, latestThread.tid, 0, 1, new Response.Listener<JSONObject>() {
-                @Override
-                public void onResponse(JSONObject response) {
-                    try {
-                        if (((Activity) mContext).isFinishing()) return;
-                        if (BUApi.checkStatus(response)) {
-                            JSONArray newListJson = response.getJSONArray("postlist");
-                            List<Post> postReplies = BUApi.MAPPER.readValue(newListJson.toString(),
-                                    new TypeReference<List<Post>>() {
-                                    });
-                            if (postReplies != null && postReplies.size() > 0) {
-                                Post firstReply = postReplies.get(0);
-                                Log.i(TAG, "fillSelfieView >> 拉取得到回复数据，放入缓存：" + firstReply);
-                                BUApplication.getCache(mContext).put(BUApplication.CACHE_LATEST_THREAD_FIRST_POST + "_" + latestThread.tid, firstReply);
-
-                                if (firstReply.attachext.equals("png") || firstReply.attachext.equals("jpg")
-                                        || firstReply.attachext.equals("jpeg")) {
-                                    // 缓存模式下不会进入本方法，所以直接显示图片
-                                    String imageURL = CommonUtils.getRealImageURL(firstReply.attachment);
-
-                                    // 调整图片显示大小
-                                    final Point displaySize = CommonUtils.getDisplaySize(((Activity) mContext).getWindowManager().getDefaultDisplay());
-                                    // final int size = (int) Math.ceil(Math.sqrt(displaySize.x * displaySize.y));
-                                    Picasso.with(mContext).load(imageURL).resize(displaySize.x, 0)
-                                            .transform(new VignetteFilterTransformation(mContext)).into(holder.background);
-                                }
-                            } else {
-                                handleUnknownError(response);
-                            }
-                        }
-                    } catch (Exception e) {
-                        Log.e(TAG, mContext.getString(R.string.error_parse_json) + "\n" + response, e);
-                    }
-
-                }
-            }, new Response.ErrorListener() {
-                @Override
-                public void onErrorResponse(VolleyError error) {
-                    if (((Activity) mContext).isFinishing()) return;
-                    String message = mContext.getString(R.string.error_network);
-                    String debugMessage = "getPostReplies >> " + message;
-                    CommonUtils.debugToast(mContext, debugMessage);
-                    Log.e(TAG, debugMessage, error);
-                }
-            });
-        } else {
-            Log.i(TAG, "fillSelfieView >> 从缓存中拿到回复数据 " + reply);
-            if (reply.attachext != null && (reply.attachext.equals("png") || reply.attachext.equals("jpg")
-                    || reply.attachext.equals("jpeg"))) {
-                String imageURL = CommonUtils.getRealImageURL(reply.attachment);
-
-                final Point displaySize = CommonUtils.getDisplaySize(((Activity) mContext).getWindowManager().getDefaultDisplay());
-                // final int size = (int) Math.ceil(Math.sqrt(displaySize.x * displaySize.y));
-                /* Picasso.with(mContext).load(imageURL).resize(size, size)
-                        .transform(new VignetteFilterTransformation(mContext)).into(holder.background); */
-                Picasso.with(mContext).load(imageURL).resize(displaySize.x, 0)
-                        .transform(new VignetteFilterTransformation(mContext)).into(holder.background);
-            }
-        }
-    }
-
     @Override
     public int getItemCount() {
         return mLatestThreads == null ? 0 : mLatestThreads.size();
-    }
-
-    private void handleUnknownError(JSONObject response) throws JSONException {
-        String message = mContext.getString(R.string.error_unknown_msg) + ": " + response.getString("msg");
-        String debugMessage = message + " - " + response;
-        Log.w(TAG, debugMessage);
-        CommonUtils.debugToast(mContext, debugMessage);
     }
 }
