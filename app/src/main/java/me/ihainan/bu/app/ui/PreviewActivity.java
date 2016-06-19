@@ -71,13 +71,17 @@ public class PreviewActivity extends SwipeActivity {
         // Toolbar
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
+        if (toolbar != null) {
+            toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    finish();
+                }
+            });
+        }
         setTitle("预览");
 
         // 卡片
@@ -91,7 +95,7 @@ public class PreviewActivity extends SwipeActivity {
         mMessageContent = bundle.getString(NewPostActivity.CONTENT_MESSAGE_TAG);
         if (mMessageContent != null) {
             if (BUApplication.enableDisplayDeviceInfo)
-                mMessageContent += "\n\n\n[b]发自 " + CommonUtils.getDeviceName() + " @BU for Android[/b]";
+                mMessageContent += "\n\n\n[url=http://out.bitunion.org/thread-10614850-1-1.html][b]发自 " + CommonUtils.getDeviceName() + " @BU for Android[/b][/url]";
             mMessageHtmlContent = HtmlUtil.formatHtml(HtmlUtil.ubbToHtml(mMessageContent));
         }
         mFloor = bundle.getLong(NewPostActivity.NEW_POST_MAX_FLOOR_TAG);
@@ -114,7 +118,9 @@ public class PreviewActivity extends SwipeActivity {
 
         // Author
         TextView author = (TextView) findViewById(R.id.thread_author_name);
-        author.setText(CommonUtils.decode(BUApplication.username));
+        if (author != null) {
+            author.setText(CommonUtils.decode(BUApplication.username));
+        }
 
         // Author
         final ImageView avatar = (ImageView) findViewById(R.id.thread_author_avatar);
@@ -134,48 +140,60 @@ public class PreviewActivity extends SwipeActivity {
 
         // Message
         TextView mMessageView = (TextView) findViewById(R.id.thread_message);
-        mMessageView.setMovementMethod(new CustomSpan.LinkTouchMovementMethod());
-        mMessageView.setLineSpacing(6, 1.2f);
-        SpannableString spannableString = new SpannableString(
-                Html.fromHtml(
-                        mMessageHtmlContent,
-                        new PicassoImageGetter(this, mMessageView),
-                        null));
-        CustomSpan.setUpAllSpans(this, spannableString);
-        mMessageView.setText(spannableString);
+        if (mMessageView != null) {
+            mMessageView.setMovementMethod(new CustomSpan.LinkTouchMovementMethod());
+            mMessageView.setLineSpacing(BUApplication.lineSpacingExtra, BUApplication.lineSpacingMultiplier);
+            SpannableString spannableString = new SpannableString(
+                    Html.fromHtml(
+                            mMessageHtmlContent,
+                            new PicassoImageGetter(this, mMessageView),
+                            null));
+            CustomSpan.setUpAllSpans(this, spannableString);
+            mMessageView.setText(spannableString);
+        }
 
         // Floor
         TextView mFloorView = (TextView) findViewById(R.id.post_floor);
-        mFloorView.setText("#" + mFloor);
+        if (mFloorView != null) {
+            mFloorView.setText("#" + mFloor);
+        }
 
         // Date
         TextView mPostDateView = (TextView) findViewById(R.id.post_date);
-        mPostDateView.setText("Recently");
+        if (mPostDateView != null) {
+            mPostDateView.setText("Recently");
+        }
 
         // Submit
         Button mSubmitBtn = (Button) findViewById(R.id.submit);
-        mSubmitBtn.setOnClickListener(submitListener);
-        if (NewPostActivity.ACTION_NEW_POST.equals(mAction)) {
-            mSubmitBtn.setText("发表回复");
-        } else {
-            mSubmitBtn.setText("发布主题");
+        if (mSubmitBtn != null) {
+            mSubmitBtn.setOnClickListener(submitListener);
+            if (NewPostActivity.ACTION_NEW_POST.equals(mAction)) {
+                mSubmitBtn.setText("发表回复");
+            } else {
+                mSubmitBtn.setText("发布主题");
+            }
         }
 
         // Subject
         TextView mSubjectView = (TextView) findViewById(R.id.thread_subject);
-        if ("".equals(mSubject)) {
-            mSubjectView.setVisibility(View.GONE);
-        } else {
-            mSubjectView.setVisibility(View.VISIBLE);
-            mSubjectView.setText(mSubject);
+        if (mSubjectView != null) {
+            if ("".equals(mSubject)) {
+                mSubjectView.setVisibility(View.GONE);
+            } else {
+                mSubjectView.setVisibility(View.VISIBLE);
+                mSubjectView.setText(mSubject);
+            }
         }
 
         // Device name
         TextView deviceName = (TextView) findViewById(R.id.device_name);
-        if (BUApplication.enableDisplayDeviceInfo) {
-            deviceName.setText(CommonUtils.getDeviceName());
-        } else {
-            deviceName.setText("");
+        if (deviceName != null) {
+            if (BUApplication.enableDisplayDeviceInfo) {
+                deviceName.setText(CommonUtils.getDeviceName());
+            } else {
+                deviceName.setText("");
+            }
         }
 
         // Attachment
@@ -207,42 +225,48 @@ public class PreviewActivity extends SwipeActivity {
             }
 
             // 文件大小
-            cursor.moveToFirst();
-            long fileSize = cursor.getLong(cursor.getColumnIndex(OpenableColumns.SIZE));
+            if (cursor != null) {
+                cursor.moveToFirst();
+                long fileSize = cursor.getLong(cursor.getColumnIndex(OpenableColumns.SIZE));
 
-            attachmentName.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Intent i = new Intent(Intent.ACTION_VIEW);
-                    i.setData(mUri);
-                    startActivity(i);
+                attachmentName.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent i = new Intent(Intent.ACTION_VIEW);
+                        i.setData(mUri);
+                        startActivity(i);
+                    }
+                });
+
+                attachmentName.setText(CommonUtils.truncateString(mFilename, 20) + "（" + CommonUtils.readableFileSize(fileSize) + "）");
+
+                // 附件类型
+                ContentResolver cR = getContentResolver();
+                String fileType = cR.getType(mUri);
+
+                // 显示图片
+                if (fileType != null) {
+                    if (fileType.startsWith("image")) {
+                        attachmentImageLayout.setVisibility(View.VISIBLE);
+
+                        final Point displaySize = CommonUtils.getDisplaySize(getWindowManager().getDefaultDisplay());
+                        // final int size = (int) Math.ceil(Math.sqrt(displaySize.x * displaySize.y));
+                        Picasso.with(PreviewActivity.this)
+                                .load(mUri)
+                                .resize(0, displaySize.y)
+                                .into(attachmentImage);
+                    } else {
+                        attachmentImageLayout.setVisibility(View.GONE);
+                    }
                 }
-            });
-
-            attachmentName.setText(CommonUtils.truncateString(mFilename, 20) + "（" + CommonUtils.readableFileSize(fileSize) + "）");
-
-            // 附件类型
-            ContentResolver cR = getContentResolver();
-            String fileType = cR.getType(mUri);
-
-            // 显示图片
-            if (fileType.startsWith("image")) {
-                attachmentImageLayout.setVisibility(View.VISIBLE);
-
-                final Point displaySize = CommonUtils.getDisplaySize(getWindowManager().getDefaultDisplay());
-                // final int size = (int) Math.ceil(Math.sqrt(displaySize.x * displaySize.y));
-                Picasso.with(PreviewActivity.this)
-                        .load(mUri)
-                        .resize(0, displaySize.y)
-                        .into(attachmentImage);
-            } else {
-                attachmentImageLayout.setVisibility(View.GONE);
             }
         } finally {
             if (cursor != null) cursor.close();
         }
 
-        linearLayout.addView(itemView);
+        if (linearLayout != null) {
+            linearLayout.addView(itemView);
+        }
     }
 
     private final View.OnClickListener submitListener = new View.OnClickListener() {
@@ -286,7 +310,7 @@ public class PreviewActivity extends SwipeActivity {
         @Override
         public void onResponse(NetworkResponse response) {
             if (isFinishing()) return;
-            if (dialog != null && !isFinishing()) {
+            if (dialog != null) {
                 dialog.dismiss();
             }
             if (response.statusCode == 200) {
@@ -332,7 +356,7 @@ public class PreviewActivity extends SwipeActivity {
         @Override
         public void onErrorResponse(VolleyError error) {
             if (isFinishing()) return;
-            if (dialog != null && !isFinishing()) {
+            if (dialog != null) {
                 dialog.dismiss();
             }
             String message = getString(R.string.error_network);
@@ -357,6 +381,7 @@ public class PreviewActivity extends SwipeActivity {
 
             int bufferSize = 1024, len;
             byte[] buffer = new byte[bufferSize];
+            assert iStream != null;
             while ((len = iStream.read(buffer)) != -1) {
                 byteBuffer.write(buffer, 0, len);
             }
@@ -367,13 +392,14 @@ public class PreviewActivity extends SwipeActivity {
             return null;
         } finally {
             try {
+                assert iStream != null;
                 iStream.close();
+                assert byteBuffer != null;
                 byteBuffer.close();
             } catch (IOException e) {
                 String message = "提取附件数据失败";
                 Log.e(TAG, message, e);
                 Snackbar.make(mCardView, message, Snackbar.LENGTH_LONG).show();
-                return null;
             }
         }
 

@@ -40,6 +40,7 @@ public class PicassoImageGetter implements Html.ImageGetter {
             @Override
             protected Bitmap doInBackground(Void... params) {
                 // 获取图片
+
                 try {
                     Bitmap bitmap;
                     Picasso picasso = Picasso.with(mContext);

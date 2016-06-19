@@ -10,6 +10,7 @@ import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v13.app.FragmentPagerAdapter;
+import android.support.v4.content.res.ResourcesCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -73,31 +74,44 @@ public class ProfileActivity extends SwipeActivity {
 
         // Collasping Toolbar
         mCollapsingToolbar = (CollapsingToolbarLayout) findViewById(R.id.collapse_toolbar);
-        mCollapsingToolbar.setTitle("");
-        mCollapsingToolbar.setExpandedTitleTextAppearance(R.style.TransparentText);
+        if (mCollapsingToolbar != null) {
+            mCollapsingToolbar.setTitle("");
+            mCollapsingToolbar.setExpandedTitleTextAppearance(R.style.TransparentText);
+        }
 
         // Toolbar
         Toolbar mToolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(mToolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         setTitle("");
-        mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
+        setSupportActionBar(mToolbar);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
+        if (mToolbar != null) {
+            mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    finish();
+                }
+            });
+        }
 
         // Follow icon
         ImageView mFollowIcon = (ImageView) findViewById(R.id.follow_icon);
-        mFollowIcon.setVisibility(View.INVISIBLE);
+        if (mFollowIcon != null) {
+            mFollowIcon.setVisibility(View.INVISIBLE);
+        }
 
         // Tab Layout
         TabLayout mTabLayout = (TabLayout) findViewById(R.id.tab_layout);
         ViewPager mPager = (ViewPager) findViewById(R.id.pager);
-        mPager.setAdapter(new UserInfoPageAdapter(getFragmentManager(), mContext));
-        mTabLayout.setupWithViewPager(mPager);
-        ((TextView) findViewById(R.id.title)).setText(CommonUtils.decode(mUsername));
+        if (mPager != null && mTabLayout != null) {
+            mPager.setAdapter(new UserInfoPageAdapter(getFragmentManager(), mContext));
+            mTabLayout.setupWithViewPager(mPager);
+            TextView tvTitle = ((TextView) findViewById(R.id.title));
+            if (tvTitle != null) {
+                tvTitle.setText(CommonUtils.decode(mUsername));
+            }
+        }
 
         // Get follow status
         getFollowStatus();
@@ -108,7 +122,7 @@ public class ProfileActivity extends SwipeActivity {
 
     private void setFollowIcon(boolean isFollow) {
         if (isFollow) {
-            Drawable newIcon = getResources().getDrawable(R.drawable.ic_favorite_white_24dp);
+            Drawable newIcon = ResourcesCompat.getDrawable(getResources(), R.drawable.ic_favorite_white_24dp, null);
             // newIcon.mutate().setColorFilter(Color.argb(255, 255, 76, 82), PorterDuff.Mode.SRC_IN);
             mFollowMenuItem.setIcon(newIcon);
             mFollowMenuItem.setTitle("取消关注");
@@ -170,7 +184,7 @@ public class ProfileActivity extends SwipeActivity {
         switch (item.getItemId()) {
             case R.id.follow:
                 if (mFollowClickable) {
-                    mFollowClickable = !mFollowClickable;   // 不允许重复点击
+                    mFollowClickable = false;   // 不允许重复点击
                     hasFollow = !hasFollow;
                     setFollowIcon(hasFollow);
                     if (hasFollow) {

@@ -23,7 +23,8 @@ public class HtmlUtil {
             "<br><br><i>发自联盟(.*?)客户端</i>",
             "<a href='.*?>..::发自联盟(.*?)客户端::..</a>",
             "<br><br>Sent from my (.+?)$",
-            "<br><br><b>发自 (.+?) @BU for Android</b>$"};
+            "<br><br><b>发自 (.+?) @BU for Android</b>$",
+            "<a href='http://out.bitunion.org/thread-10614850-1-1.html' target='_blank'><b>发自 (.*?) @BU for Android</b></a>"};
     private static final String QUOTE_HEAD = "<br><center><table[^>]+><tr><td>&nbsp;&nbsp;引用(?:\\[<a href='[\\w\\.&\\?=]+?'>查看原帖</a>])*?.</td></tr><tr><td><table.{101,102}bgcolor='ALTBG2'>";
     private static final String QUOTE_TAIL = "</td></tr></table></td></tr></table></center><br>";
     private static final String QUOTE_REGEX = QUOTE_HEAD
@@ -188,6 +189,7 @@ public class HtmlUtil {
      * @return 处理之后的 HTML 文本
      */
     public static String replaceOther(String str) {
+        str = str.replaceAll("^(<br>)+", "");
         str = str.replaceAll("(<br>)*$", "");
         str = str.replaceAll("&nbsp;", "");
         return str;

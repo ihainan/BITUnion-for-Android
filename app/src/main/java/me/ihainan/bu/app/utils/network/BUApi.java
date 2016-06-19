@@ -155,10 +155,11 @@ public class BUApi {
                                    Response.Listener<JSONObject> listener,
                                    Response.ErrorListener errorListener) {
         Map<String, String> parameters;
-        parameters = new HashMap<String, String>();
-        parameters.put("username", BUApplication.userSession.username);
-        parameters.put("session", BUApplication.userSession.session);
-
+        parameters = new HashMap<>();
+        if (BUApplication.userSession != null) {
+            parameters.put("username", BUApplication.userSession.username);
+            parameters.put("session", BUApplication.userSession.session);
+        }
         makeRequest(context, getHomePageURL(), "HOME_PAGE", parameters, BUApplication.RETRY_LIMIT, listener, errorListener);
     }
 
