@@ -30,6 +30,7 @@ public class HtmlUtil {
     private static final String QUOTE_REGEX = QUOTE_HEAD
             + "(((?!<br><br><center><table border=)[\\w\\W])*?)" + QUOTE_TAIL;
 
+    private static final String CODE_REGEX = "<br><center><table .*?><tr><td .*?>&nbsp;&nbsp;代码:</td><td .*?><a href=\'###\' class=\'smalltxt\' onclick=.*?>.*?</a>&nbsp;&nbsp;</td></tr><tr><td colspan=\\'2\\'><table .*?><tr><td .*?><div class=\\'hl-surround\\'><ol type=1>(.*?)</div></td></tr></table></td></tr></table></center><br>";
 
     /* START - HTML Format */
     public static String formatHtml(String html) {
@@ -116,21 +117,19 @@ public class HtmlUtil {
     }
 
     private static String replaceCode(String str) {
-        String regex = "<center><table border=\"0\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\"><tr><td class=\"smalltxt\">&nbsp;&nbsp;代码:</td><td align=\"right\"><a href=\"###\" class=\"smalltxt\" onclick=\"copycode(findobj('code1'));\">[复制到剪贴板]</a>&nbsp;&nbsp;</td></tr><tr><td colspan=\"2\"><table border=\"0\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\"><tr><td width=\"100%\" style=\"word-break:break-all;font-family:宋体\" id=\"code1\"><div class=\"hl-surround\"><ol type=1>(.*?)</div></td></tr></table></td></tr></table></center>";
-        Pattern p = Pattern.compile(regex);
-        Matcher m = p.matcher(str);
-        while (m.find()) {
-            String content = m.group(1).trim();
-            Pattern pattern = Pattern.compile("<li>(.*?)</li>");
-            Matcher matcher = pattern.matcher(content);
-            while (matcher.find()) {
-                content = content.replaceAll(matcher.group(0), "\t•" + matcher.group(1) + "\n");
+        Pattern pattern = Pattern.compile(CODE_REGEX);
+        Matcher matcher = pattern.matcher(str);
+        while (matcher.find()) {
+            String codeContent = matcher.group(1);
+            int i = 1;
+            while (codeContent.contains("<li>")) {
+                codeContent = codeContent.replaceFirst("<li>", "<br><b><font color='#426aa3'>" + (i) + "</font></b>.     ");
+                i = i + 1;
             }
 
-            content = content.replaceAll("[(<br>)\\s]*$", "");
-            str = str.replace(m.group(0), "<blockquote>" + content + "</blockquote>");
-            m = p.matcher(str);
+            str = str.replace(matcher.group(0), "<blockquote>" + codeContent.replaceFirst("<br>", "") + "</blockquote>");
         }
+
         return str;
     }
 
