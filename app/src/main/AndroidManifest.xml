@@ -185,6 +185,12 @@
             android:name=".ui.DebugActivity"
             android:label="@string/title_activity_debug"
             android:theme="@style/AppTheme.SwipeTheme" />
+        <activity
+            android:name=".ui.CodeViewActivity"
+            android:label="@string/title_activity_code_view"
+            android:theme="@style/AppTheme.SwipeTheme">
+
+        </activity>
     </application>
 
 </manifest>

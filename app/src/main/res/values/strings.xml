@@ -75,6 +75,7 @@
     <string name="action_inbox">消息盒</string>
     <string name="action_check_all">全部标为已读</string>
     <string name="action_manage_focus">关注列表</string>
+    <string name="action_copy_code">复制代码</string>
     <string name="action_follow">关注</string>
     <string name="action_reply">回帖</string>
     <string name="action_jump">跳转</string>
@@ -124,4 +125,5 @@
     <string name="bell_icon">&#xe61d;</string>
     <string name="search_icon">&#xe61b;</string>
     <string name="title_activity_debug">调试页面</string>
+    <string name="title_activity_code_view">CodeViewActivity</string>
 </resources>

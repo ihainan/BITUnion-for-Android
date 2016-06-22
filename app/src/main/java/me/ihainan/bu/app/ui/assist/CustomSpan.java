@@ -24,6 +24,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import me.ihainan.bu.app.R;
+import me.ihainan.bu.app.ui.CodeViewActivity;
 import me.ihainan.bu.app.ui.FullscreenPhotoViewerActivity;
 import me.ihainan.bu.app.ui.PostListActivity;
 import me.ihainan.bu.app.ui.ProfileActivity;
@@ -116,7 +117,13 @@ public class CustomSpan {
         @Override
         public void onClick(View widget) {
             if (mUrl == null) return;
-            else if (mUrl.startsWith(BUApplication.IMAGE_URL_PREFIX)) {
+            else if (mUrl.startsWith("http://www.ihainan.me?content=")) {
+                String codeContent = mUrl.substring(mUrl.indexOf("=") + 1);
+                Intent intent = new Intent(mContext, CodeViewActivity.class);
+                intent.putExtra(CodeViewActivity.CODE_CONTENT_TAG, CommonUtils.decode(codeContent));
+                mContext.startActivity(intent);
+                return;
+            } else if (mUrl.startsWith(BUApplication.IMAGE_URL_PREFIX)) {
                 // 图片
                 String newUrl = mUrl.substring(BUApplication.IMAGE_URL_PREFIX.length());
                 Intent intent = new Intent(mContext, FullscreenPhotoViewerActivity.class);

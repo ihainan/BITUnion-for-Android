@@ -127,6 +127,12 @@ public class HtmlUtil {
         Matcher matcher = pattern.matcher(str);
         while (matcher.find()) {
             String codeContent = matcher.group(1);
+            codeContent = codeContent.replaceAll("<li>", "\n").replaceFirst("\n", "").replaceAll("&nbsp;", " ");
+            String htmlUrl = "http://www.ihainan.me?content=" + CommonUtils.encode(codeContent);
+            codeContent = "<br><a href='" + htmlUrl + "'>[点击查看代码片段]</a><br>";
+            str = str.replace(matcher.group(0), codeContent);
+
+            /*
             int i = 1;
             int numOfLi = (int) (Math.log10(codeContent.split("<li>").length - 1) + 1);
             while (codeContent.contains("<li>")) {
@@ -137,9 +143,9 @@ public class HtmlUtil {
                 }
                 codeContent = codeContent.replaceFirst("<li>", lineContent);
                 i = i + 1;
-            }
+            } */
 
-            str = str.replace(matcher.group(0), "<blockquote>" + codeContent.replaceFirst("<br>", "") + "</blockquote>");
+            // str = str.replace(matcher.group(0), "<blockquote>" + codeContent.replaceFirst("<br>", "") + "</blockquote>");
         }
 
         return str;
