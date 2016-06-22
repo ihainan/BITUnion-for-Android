@@ -61,18 +61,37 @@ public class ThreadListActivity extends SwipeActivity {
     private ForumListGroup.ForumList mMainForum;
     private Long mFid;
     private int mCurrentPosition = 0;
+    private boolean firstFavoriteStatus = false;
 
     private void getExtra() {
         // Get mAction and forum id
         Intent intent = getIntent();
         Bundle bundle = intent.getExtras();
-        String mAction = bundle.getString(ACTION_TAG);
         mMainForum = (ForumListGroup.ForumList) bundle.getSerializable(MAIN_FORUM_TAG);
         mSubForum = (ForumListGroup.SubForum) bundle.getSerializable(SUB_FORUM_TAG);
         String mForumName = bundle.getString(FORUM_NAME_TAG);
-        mFid = bundle.getLong(FORUM_FID_TAG);
+        mFid = bundle.getLong(FORUM_FID_TAG, -1);
 
-        if (mFid != null && mMainForum == null && mSubForum == null) {
+        if (mMainForum == null && mSubForum == null) {
+            for (ForumListGroup forumListGroup : BUApplication.forumListGroupList) {
+                for (ForumListGroup.ForumList forumList : forumListGroup.getChildItemList()) {
+                    if (forumList.getForumId().equals(mFid)) {
+                        mMainForum = forumList;
+                        break;
+                    } else {
+                        for (ForumListGroup.SubForum subForum : forumList.getChildItemList()) {
+                            if (subForum.getSubForumId().equals(mFid)) {
+                                mMainForum = forumList;
+                                mSubForum = subForum;
+                                break;
+                            }
+                        }
+                    }
+                    if (mMainForum != null) break;
+                }
+                if (mMainForum != null) break;
+            }
+        } else if (mMainForum == null && mFid != -1) {
             for (ForumListGroup forumListGroup : BUApplication.forumListGroupList) {
                 for (ForumListGroup.ForumList forumList : forumListGroup.getChildItemList()) {
                     if (forumList.getForumId().equals(mFid)) {
@@ -112,16 +131,29 @@ public class ThreadListActivity extends SwipeActivity {
             }
         }
 
-        if (mSubForum != null) {
-            setTitle(mMainForum.getForumName() + " - " + mSubForum.getSubForumName());
-            mFid = mSubForum.getSubForumId();
-        } else {
-            setTitle(mMainForum.getForumName() + " - 主板块");
-            mFid = mMainForum.getForumId();
+        if (mMainForum != null) {
+            if (mSubForum != null) {
+                setTitle(mMainForum.getForumName() + " - " + mSubForum.getSubForumName());
+                mFid = mSubForum.getSubForumId();
+            } else {
+                setTitle(mMainForum.getForumName() + " - 主板块");
+                mFid = mMainForum.getForumId();
+            }
         }
 
-        // Update most visited forums list
-        BUApplication.updateForumsMap(this, mMainForum.getForumId());
+    }
+
+    @Override
+    public void finish() {
+        if (mMainForum == null) {
+            setResult(Activity.RESULT_CANCELED, null);
+        } else {
+            boolean status = BUApplication.getForumFavorStatus(ThreadListActivity.this,
+                    mMainForum.getForumId()) == firstFavoriteStatus;
+            setResult(status ? Activity.RESULT_CANCELED : Activity.RESULT_OK, null);
+        }
+
+        super.finish();
     }
 
     @Override
@@ -132,21 +164,26 @@ public class ThreadListActivity extends SwipeActivity {
         // Setup toolbar
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                setResult(Activity.RESULT_OK, null);
-                finish();
-            }
-        });
+        if (getSupportActionBar() != null && toolbar != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    finish();
+                }
+            });
+        }
 
         // Error Layout
         mErrorLayout = (RelativeLayout) findViewById(R.id.error_layout);
-        mErrorLayout.setVisibility(View.GONE);
+        if (mErrorLayout != null) {
+            mErrorLayout.setVisibility(View.GONE);
+        }
         mTvErrorMessage = (TextView) findViewById(R.id.error_message);
         mTvAction = (TextView) findViewById(R.id.action_text);
-        mTvAction.setVisibility(View.GONE);
+        if (mTvAction != null) {
+            mTvAction.setVisibility(View.GONE);
+        }
 
         // Get Extra information from intent
         getExtra();
@@ -154,26 +191,29 @@ public class ThreadListActivity extends SwipeActivity {
         // UI references
         mRecyclerView = (RecyclerView) findViewById(R.id.detail_recycler_view);
         mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.home_swipe_refresh_layout);
-        toolbar.setOnClickListener(CustomOnClickListener.doubleClickToListTop(this, mRecyclerView));
+        if (toolbar != null) {
+            toolbar.setOnClickListener(CustomOnClickListener.doubleClickToListTop(this, mRecyclerView));
+        }
         setupRecyclerView();
         setupSwipeRefreshLayout();
 
         // FAB
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(ThreadListActivity.this, NewPostActivity.class);
-                intent.putExtra(NewPostActivity.ACTION_TAG, NewPostActivity.ACTION_NEW_THREAD);
-                intent.putExtra(NewPostActivity.NEW_THREAD_FID_TAG, mFid);
-                startActivityForResult(intent, PostListActivity.REQUEST_NEW_REPLY);
-            }
-        });
+        if (fab != null) {
+            fab.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent intent = new Intent(ThreadListActivity.this, NewPostActivity.class);
+                    intent.putExtra(NewPostActivity.ACTION_TAG, NewPostActivity.ACTION_NEW_THREAD);
+                    intent.putExtra(NewPostActivity.NEW_THREAD_FID_TAG, mFid);
+                    startActivityForResult(intent, PostListActivity.REQUEST_NEW_REPLY);
+                }
+            });
+        }
     }
 
     @Override
     public void onBackPressed() {
-        setResult(Activity.RESULT_OK, null);
         finish();
     }
 
@@ -184,7 +224,7 @@ public class ThreadListActivity extends SwipeActivity {
         if (requestCode == REQUEST_NEW_THREAD && resultCode == RESULT_OK) {
             CommonUtils.debugToast(this, "发布主题成功");
             Intent intent = getIntent();
-            finish();
+            super.finish();
             startActivity(intent);
         }
     }
@@ -377,6 +417,8 @@ public class ThreadListActivity extends SwipeActivity {
         });
     }
 
+    private MenuItem mFavorItem;    // 收藏按钮
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
@@ -393,6 +435,11 @@ public class ThreadListActivity extends SwipeActivity {
             }
         });
 
+        mFavorItem = menu.findItem(R.id.action_forum_favor);
+        firstFavoriteStatus = BUApplication.getForumFavorStatus(this,
+                mMainForum.getForumId());
+        mFavorItem.setIcon(firstFavoriteStatus ? R.drawable.ic_star_white_24dp : R.drawable.ic_star_border_white_24dp);
+
         return true;
     }
 
@@ -404,6 +451,13 @@ public class ThreadListActivity extends SwipeActivity {
                 intent.putExtra(SearchActivity.FID_TAG, mFid);
                 startActivity(intent);
                 return true;
+            case R.id.action_forum_favor:
+                if (mMainForum != null && mFavorItem != null) {
+                    BUApplication.addOrRemoveForumFavor(this, mMainForum.getForumId(),
+                            !BUApplication.getForumFavorStatus(this, mMainForum.getForumId()));
+                    mFavorItem.setIcon(BUApplication.getForumFavorStatus(this,
+                            mMainForum.getForumId()) ? R.drawable.ic_star_white_24dp : R.drawable.ic_star_border_white_24dp);
+                }
         }
         return super.onOptionsItemSelected(item);
     }

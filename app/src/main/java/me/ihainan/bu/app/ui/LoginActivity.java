@@ -51,7 +51,9 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
 
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
-        getSupportActionBar().hide();
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().hide();
+        }
 
         // init UI references
         mUsername = (AutoCompleteTextView) findViewById(R.id.user_name);
@@ -65,14 +67,18 @@ public class LoginActivity extends AppCompatActivity {
         if (BUApplication.username != null && BUApplication.networkType != null) {
             mUsername.setText(BUApplication.username);
             // mPassword.setText(BUApplication.password);
-            if (BUApplication.networkType == BUApplication.NETWORK_TYPE.OUT_SCHOOL)
-                mSwitchCompatOutNetwork.setChecked(true);
-            else mSwitchCompatOutNetwork.setChecked(false);
+            if (mSwitchCompatOutNetwork != null) {
+                if (BUApplication.networkType == BUApplication.NETWORK_TYPE.OUT_SCHOOL)
+                    mSwitchCompatOutNetwork.setChecked(true);
+                else mSwitchCompatOutNetwork.setChecked(false);
+            }
         } else {
-            BUApi.currentEndPoint =
-                    mSwitchCompatOutNetwork.isChecked() ?
-                            BUApi.OUT_SCHOOL_ENDPOINT :
-                            BUApi.IN_SCHOOL_ENDPOINT;
+            if (mSwitchCompatOutNetwork != null) {
+                BUApi.currentEndPoint =
+                        mSwitchCompatOutNetwork.isChecked() ?
+                                BUApi.OUT_SCHOOL_ENDPOINT :
+                                BUApi.IN_SCHOOL_ENDPOINT;
+            }
         }
 
         mPassword.setOnEditorActionListener(new TextView.OnEditorActionListener() {
@@ -87,22 +93,26 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
-        mSwitchCompatOutNetwork.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                BUApi.currentEndPoint = isChecked ? BUApi.OUT_SCHOOL_ENDPOINT : BUApi.IN_SCHOOL_ENDPOINT;
-                BUApplication.networkType = isChecked ? BUApplication.NETWORK_TYPE.OUT_SCHOOL : BUApplication.NETWORK_TYPE.IN_SCHOOL;
-                BUApplication.setCacheNetworkType(mContext);
-            }
-        });
+        if (mSwitchCompatOutNetwork != null) {
+            mSwitchCompatOutNetwork.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                    BUApi.currentEndPoint = isChecked ? BUApi.OUT_SCHOOL_ENDPOINT : BUApi.IN_SCHOOL_ENDPOINT;
+                    BUApplication.networkType = isChecked ? BUApplication.NETWORK_TYPE.OUT_SCHOOL : BUApplication.NETWORK_TYPE.IN_SCHOOL;
+                    BUApplication.setCacheNetworkType(mContext);
+                }
+            });
+        }
 
         Button mUserSignInButton = (Button) findViewById(R.id.user_sign_in_button);
-        mUserSignInButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                attemptLogin();
-            }
-        });
+        if (mUserSignInButton != null) {
+            mUserSignInButton.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    attemptLogin();
+                }
+            });
+        }
     }
 
     /**

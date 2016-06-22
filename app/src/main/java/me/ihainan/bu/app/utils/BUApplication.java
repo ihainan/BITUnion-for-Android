@@ -41,7 +41,7 @@ public class BUApplication extends Application {
     public final static String CACHE_USER_INFO = "CACHE_USER_INFO"; // 缓存的用户信息
     public final static String CACHE_POST_INNER_IMAGE = "CACHE_POST_INNER_IMAGE";   // 缓存的帖子内图片
     public final static String CACHE_LATEST_THREAD_FIRST_POST = "CACHE_LATEST_THREAD_FIRST_POST";   // 缓存的主页主题第一个回帖（用户获取背景图）
-    public final static String CACHE_MOST_VISITED_FORUMS = "CACHE_MOST_VISITED_FORUMS"; // 缓存的最常访问论文
+    public final static String CACHE_FAVORITE_FORUMS = "CACHE_FAVORITE_FORUMS"; // 缓存的收藏论文
 
     public static final int cacheDays = 10;   // 用户信息、图片缓存时间
 
@@ -625,29 +625,26 @@ public class BUApplication extends Application {
             }
         }
 
-        // 最常访问
+        // 收藏板块
         forumLists = new ArrayList<>();
-        Map<Long, Long> visitedForumsMap = (Map<Long, Long>) getCache(context).getAsObject(CACHE_MOST_VISITED_FORUMS);
-        if (visitedForumsMap == null || visitedForumsMap.size() == 0) {
-            visitedForumsMap = new HashMap<>();
-            visitedForumsMap.put(3L, 10L);
-            visitedForumsMap.put(59L, 20L);
-            visitedForumsMap.put(14L, 30L);
+        Map<Long, Boolean> favoriteForumsMap = (Map<Long, Boolean>) getCache(context).getAsObject(CACHE_FAVORITE_FORUMS);
+        if (favoriteForumsMap == null || favoriteForumsMap.size() == 0) {
+            favoriteForumsMap = new HashMap<>();
+            favoriteForumsMap.put(3L, true);
+            favoriteForumsMap.put(59L, true);
+            favoriteForumsMap.put(14L, true);
         }
 
-        visitedForumsMap = sortByValue(visitedForumsMap);
-        Set<Long> mostVisitedForumIndex = visitedForumsMap.keySet();
+        Set<Long> favoriteForumIndex = favoriteForumsMap.keySet();
 
-        int i = 0;
-        for (Long index : mostVisitedForumIndex) {
+        for (Long index : favoriteForumIndex) {
             if (forumListHashMap.get(index.intValue()) != null) {
                 forumList = forumListHashMap.get(index.intValue());
                 forumLists.add(forumList);
-                if (++i >= MAX_MOST_VISITED) break;
             }
         }
 
-        forumListGroup = new ForumListGroup(forumLists, "最常访问");
+        forumListGroup = new ForumListGroup(forumLists, "收藏板块");
         forumListGroupList.add(0, forumListGroup);
     }
 
@@ -660,7 +657,7 @@ public class BUApplication extends Application {
     public static Long findMainForumID(Long subForumID) {
         for (ForumListGroup forumListGroup : BUApplication.forumListGroupList) {
             for (ForumListGroup.ForumList forumList : forumListGroup.getChildItemList()) {
-                if (forumList.getForumId() == subForumID)
+                if (forumList.getForumId().equals(subForumID))
                     return subForumID;
                 for (ForumListGroup.SubForum subForum : forumList.getChildItemList()) {
                     if (subForum.getSubForumId().equals(subForumID)) {
@@ -696,64 +693,43 @@ public class BUApplication extends Application {
 
         return "未知板块";
     }
-
+    
     /**
-     * 更新板块访问频率 Map
+     * 添加或者删除板块收藏
      *
      * @param context     上下文
-     * @param mainForumId 访问的板块对应的主板块 ID
+     * @param mainForumId 主版块 ID
+     * @param isAdd       是否是添加收藏
      */
-    public static void updateForumsMap(Context context, Long mainForumId) {
-        updateForumsMap(context, mainForumId, 1);
-    }
-
-    /**
-     * 更新板块访问频率 Map
-     *
-     * @param context       上下文
-     * @param mainForumId   访问的板块对应的主板块 ID
-     * @param increaseValue 添加数量
-     */
-    public static void updateForumsMap(Context context, Long mainForumId, long increaseValue) {
-        HashMap<Long, Long> visitedForumsMap = (HashMap<Long, Long>) getCache(context).getAsObject(BUApplication.CACHE_MOST_VISITED_FORUMS);
-        if (visitedForumsMap == null || visitedForumsMap.size() == 0) {
-            visitedForumsMap = new HashMap<>();
+    public static void addOrRemoveForumFavor(Context context, Long mainForumId, boolean isAdd) {
+        HashMap<Long, Boolean> favoriteForumsMap = (HashMap<Long, Boolean>) getCache(context).getAsObject(BUApplication.CACHE_FAVORITE_FORUMS);
+        if (favoriteForumsMap == null || favoriteForumsMap.size() == 0) {
+            favoriteForumsMap = new HashMap<>();
         }
 
-        Long value = visitedForumsMap.get(mainForumId);
-        if (value == null) visitedForumsMap.put(mainForumId, increaseValue);
-        else {
-            visitedForumsMap.put(mainForumId, value >= Long.MAX_VALUE ? Long.MAX_VALUE : increaseValue + value);
-        }
-
-        if (visitedForumsMap.containsKey(-1L))
-            visitedForumsMap.remove(-1L);
-        getCache(context).put(BUApplication.CACHE_MOST_VISITED_FORUMS, visitedForumsMap);
-    }
-
-    /**
-     * 根据 value 对 map 进行排序
-     *
-     * @param map 需要排序的 map
-     * @param <K> key 类型
-     * @param <V> value 类型
-     * @return 排序后的新 map
-     */
-    public static <K, V extends Comparable<? super V>> Map<K, V>
-    sortByValue(Map<K, V> map) {
-        List<Map.Entry<K, V>> list =
-                new LinkedList<>(map.entrySet());
-        Collections.sort(list, new Comparator<Map.Entry<K, V>>() {
-            public int compare(Map.Entry<K, V> o1, Map.Entry<K, V> o2) {
-                return (o1.getValue()).compareTo(o2.getValue());
+        if (isAdd) {
+            favoriteForumsMap.put(mainForumId, true);
+        } else {
+            if (favoriteForumsMap.containsKey(mainForumId)) {
+                favoriteForumsMap.remove(mainForumId);
             }
-        });
-
-        Map<K, V> result = new LinkedHashMap<>();
-        for (Map.Entry<K, V> entry : list) {
-            result.put(entry.getKey(), entry.getValue());
         }
-        return result;
+
+        getCache(context).put(BUApplication.CACHE_FAVORITE_FORUMS, favoriteForumsMap);
+    }
+
+    /**
+     * 获取板块收藏状态
+     *
+     * @param context     上下文
+     * @param mainForumId 主版块 ID
+     * @return 板块是否已经被收藏
+     */
+    public static boolean getForumFavorStatus(Context context, Long mainForumId) {
+        HashMap<Long, Boolean> favoriteForumsMap = (HashMap<Long, Boolean>) getCache(context).getAsObject(BUApplication.CACHE_FAVORITE_FORUMS);
+        return (favoriteForumsMap != null
+                && favoriteForumsMap.size() != 0)
+                && favoriteForumsMap.containsKey(mainForumId);
     }
 
     public final static Map<String, Boolean> badImages = new HashMap<>();

@@ -26,11 +26,25 @@
         android:id="@+id/action_jump_to_head"
         android:orderInCategory="82"
         android:title="@string/action_jump_to_head"
+        android:visible="false"
         app:showAsAction="never" />
 
     <item
         android:id="@+id/action_jump_to_tail"
         android:orderInCategory="83"
         android:title="@string/action_jump_to_end"
+        android:visible="false"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_jump_to_forum"
+        android:orderInCategory="84"
+        android:title="@string/action_jump_to_thread_list"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/copy_thread_link"
+        android:orderInCategory="85"
+        android:title="@string/action_copy_thread_link"
         app:showAsAction="never" />
 </menu>

@@ -2,6 +2,12 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
+        android:id="@+id/action_forum_favor"
+        android:icon="@drawable/ic_star_border_white_24dp"
+        android:orderInCategory="89"
+        android:title="@string/action_forum_add_favor"
+        app:showAsAction="always" />
+    <item
         android:id="@+id/action_search"
         android:icon="@drawable/ic_action_action_search"
         android:orderInCategory="100"

@@ -80,35 +80,33 @@ public class PostListActivity extends SwipeActivity {
         getExtra();
 
         // Toolbar
-        Toolbar mToolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(mToolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        if (getSupportActionBar() != null && toolbar != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    finish();
+                }
+            });
+        }
 
         // Error Layout
         mErrorLayout = (RelativeLayout) findViewById(R.id.error_layout);
-        mErrorLayout.setVisibility(View.GONE);
+        if (mErrorLayout != null)
+            mErrorLayout.setVisibility(View.GONE);
         mTvErrorMessage = (TextView) findViewById(R.id.error_message);
         mTvAction = (TextView) findViewById(R.id.action_text);
-        mTvAction.setVisibility(View.GONE);
+        if (mTvAction != null)
+            mTvAction.setVisibility(View.GONE);
 
         // Tab Layout
         PostListFragment.isSetToolbar = false;  // So ugly....
         mTabLayout = (SmartTabLayout) findViewById(R.id.tab_layout);
         mPager = (ViewPager) findViewById(R.id.pager);
-        mPager.setOffscreenPageLimit(0);
-
-        // statistics
-        if (mFid != null) {
-            if (BUApplication.forumListGroupList == null) BUApplication.makeForumGroupList(this);
-            Long mainForumID = BUApplication.findMainForumID(mFid);
-            if (mainForumID != -1) BUApplication.updateForumsMap(this, mainForumID, 5L);
-        }
+        if (mPager != null)
+            mPager.setOffscreenPageLimit(0);
 
         // Start fetch data and fill views
         startWork();
@@ -256,11 +254,9 @@ public class PostListActivity extends SwipeActivity {
             mJumpFloor = mReplyCount.intValue();
         }
 
-        if (mJumpFloor != null) {
-            // 要求跳转到特定楼层
-            mJumpPage = calculateTotalPage(mJumpFloor) - 1;
-            mJumpPageIndex = mJumpFloor - (mJumpPage) * BUApplication.postListLoadingCount - 1;
-        }
+        // 要求跳转到特定楼层
+        mJumpPage = calculateTotalPage(mJumpFloor) - 1;
+        mJumpPageIndex = mJumpFloor - (mJumpPage) * BUApplication.postListLoadingCount - 1;
 
         // TabLayout
         mTotalPage = calculateTotalPage(mReplyCount);
@@ -320,6 +316,17 @@ public class PostListActivity extends SwipeActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.thread_detail_tab_menu, menu);
         mFavorItem = menu.findItem(R.id.action_favor);
+
+        MenuItem forumItem = menu.findItem(R.id.action_jump_to_forum);
+        if (mFid != null && mFid > 0) {
+            BUApplication.makeForumGroupList(this);
+            forumItem.setVisible(true);
+            String forumName = BUApplication.findForumName(mFid);
+            forumItem.setTitle("转到" + forumName);
+        } else {
+            forumItem.setVisible(false);
+        }
+
         return true;
     }
 
@@ -349,7 +356,7 @@ public class PostListActivity extends SwipeActivity {
                 break;
             case R.id.action_favor:
                 if (favorClickable) {
-                    favorClickable = !favorClickable;   // 不允许重复点击
+                    favorClickable = false;   // 不允许重复点击
                     hasFavor = !hasFavor;
                     if (hasFavor) {
                         // 之前是删除，想要添加
@@ -360,6 +367,11 @@ public class PostListActivity extends SwipeActivity {
                         delFavorite();
                     }
                 }
+                break;
+            case R.id.copy_thread_link:
+                String url = (BUApplication.isInSchool() ? BUApi.IN_SCHOOL_BASE_URL : BUApi.OUT_SCHOOL_BASE_URL) + "thread-" + mTid + "-1-1.html";
+                CommonUtils.copyToClipboard(this, "Website", url);
+                Toast.makeText(this, "复制成功", Toast.LENGTH_SHORT).show();
                 break;
             case R.id.jump_to_page:
                 final MaterialNumberPicker numberPicker = new MaterialNumberPicker.Builder(this)
@@ -394,6 +406,14 @@ public class PostListActivity extends SwipeActivity {
                 if (mTotalPage - mPager.getCurrentItem() <= 5)
                     mPager.setCurrentItem(mTotalPage - 1, true);
                 else mPager.setCurrentItem(mTotalPage - 1);
+                break;
+            case R.id.action_jump_to_forum:
+                if (mFid != null && mFid >= 0) {
+                    intent = new Intent(PostListActivity.this, ThreadListActivity.class);
+                    intent.putExtra(ThreadListActivity.ACTION_TAG, "THREAD_LIST");
+                    intent.putExtra(ThreadListActivity.FORUM_FID_TAG, mFid);
+                    startActivity(intent);
+                }
                 break;
         }
 

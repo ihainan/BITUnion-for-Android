@@ -116,14 +116,26 @@ public class HtmlUtil {
         return str;
     }
 
+    /**
+     * 替换 HTML 文本中的代码文本为 blockquote
+     *
+     * @param str 原始 HTML 文本
+     * @return 处理之后的 HTML 文本
+     */
     private static String replaceCode(String str) {
         Pattern pattern = Pattern.compile(CODE_REGEX);
         Matcher matcher = pattern.matcher(str);
         while (matcher.find()) {
             String codeContent = matcher.group(1);
             int i = 1;
+            int numOfLi = (int) (Math.log10(codeContent.split("<li>").length - 1) + 1);
             while (codeContent.contains("<li>")) {
-                codeContent = codeContent.replaceFirst("<li>", "<br><b><font color='#426aa3'>" + (i) + "</font></b>.     ");
+                String lineContent = "<br><b><font color='#426aa3'>" + (i) + "</font></b>&nbsp;&nbsp;";
+                int currentDigit = (int) (Math.log10(i) + 1);
+                for (int j = numOfLi - currentDigit - 1; j >= 0; --j) {
+                    lineContent = lineContent + "&nbsp;";
+                }
+                codeContent = codeContent.replaceFirst("<li>", lineContent);
                 i = i + 1;
             }
 
@@ -190,7 +202,7 @@ public class HtmlUtil {
     public static String replaceOther(String str) {
         str = str.replaceAll("^(<br>)+", "");
         str = str.replaceAll("(<br>)*$", "");
-        str = str.replaceAll("&nbsp;", "");
+        // str = str.replaceAll("&nbsp;", " ");
         return str;
     }
 
@@ -306,7 +318,7 @@ public class HtmlUtil {
                         "\"at positions " +
                         m.start() + " - " + (m.end() - 1));
                 if (Emoticons.EMOTICONS.get(m.group(0)).startsWith("smilies_"))
-                    ubbCodeStr = ubbCodeStr.replace(m.group(0), "<img src=\"../images/smilies/" + Emoticons.EMOTICONS.get(m.group(0)).substring(8) + "\" align=\"absmiddle\" border=\"0\">");
+                    ubbCodeStr = ubbCodeStr.replace(m.group(0), "<img src=\"../images/smilies/" + Emoticons.EMOTICONS.get(m.group(0)).substring(8) + "\" style='vertical-align: middle;' border=\"0\">");
                 else if (Emoticons.EMOTICONS.get(m.group(0)).startsWith("bz_"))
                     ubbCodeStr = ubbCodeStr.replace(m.group(0), "<img src=\"../images/bz/" + Emoticons.EMOTICONS.get(m.group(0)).substring(3) + "\" align=\"absmiddle\" border=\"0\">");
             }

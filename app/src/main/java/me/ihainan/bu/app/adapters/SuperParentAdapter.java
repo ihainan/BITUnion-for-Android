@@ -19,6 +19,7 @@ import java.util.Map;
 import de.hdodenhof.circleimageview.CircleImageView;
 import me.ihainan.bu.app.R;
 import me.ihainan.bu.app.models.ForumListGroup;
+import me.ihainan.bu.app.ui.ForumListActivity;
 import me.ihainan.bu.app.ui.ThreadListActivity;
 import me.ihainan.bu.app.utils.BUApplication;
 
@@ -166,7 +167,7 @@ public class SuperParentAdapter extends BaseExpandableListAdapter {
                         Intent intent = new Intent(mContext, ThreadListActivity.class);
                         intent.putExtra(ThreadListActivity.ACTION_TAG, "THREAD_LIST");
                         intent.putExtra(ThreadListActivity.MAIN_FORUM_TAG, mForumLists.get(groupPosition));
-                        mContext.startActivity(intent);
+                        ((ForumListActivity) mContext).startActivityForResult(intent, ForumListActivity.REQUEST_THREAD_LIST);
                     }
 
                     if (isExpanded) {
@@ -224,7 +225,7 @@ public class SuperParentAdapter extends BaseExpandableListAdapter {
                     intent.putExtra(ThreadListActivity.ACTION_TAG, "THREAD_LIST");
                     intent.putExtra(ThreadListActivity.MAIN_FORUM_TAG, mForumLists.get(groupPosition));
                     intent.putExtra(ThreadListActivity.SUB_FORUM_TAG, subForum);
-                    mContext.startActivity(intent);
+                    ((ForumListActivity) mContext).startActivityForResult(intent, ForumListActivity.REQUEST_THREAD_LIST);
                 }
             };
 

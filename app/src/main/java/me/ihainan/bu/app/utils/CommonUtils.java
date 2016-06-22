@@ -3,6 +3,8 @@ package me.ihainan.bu.app.utils;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.Dialog;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -435,7 +437,7 @@ public class CommonUtils {
         // URL 解码
         originalURL = CommonUtils.decode(originalURL);
         if (originalURL.endsWith("noavatar.gif"))
-            return "file:///android_asset/avatar/default_avatar.png";
+            return "file:///android_asset/avatar/default_avatar.jpg";
 
         String ori = originalURL;
 
@@ -454,7 +456,7 @@ public class CommonUtils {
 
         // 空地址
         if (originalURL == null || originalURL.equals("")) {
-            return "file:///android_asset/avatar/default_avatar.png";
+            return "file:///android_asset/avatar/default_avatar.jpg";
         }
 
         // 完整地址和不完整地址¡¡
@@ -472,7 +474,7 @@ public class CommonUtils {
         if (originalURL.endsWith(",120,120")) originalURL = originalURL.replace(",120,120", "");
 
         if (originalURL.contains("aid="))
-            originalURL = "file:///android_asset/avatar/default_avatar.png";
+            originalURL = "file:///android_asset/avatar/default_avatar.jpg";
         Log.d(TAG, "getRealImageURL >> " + ori + " - " + originalURL);
         return originalURL;
     }
@@ -1032,5 +1034,11 @@ public class CommonUtils {
         java.util.regex.Pattern p = java.util.regex.Pattern.compile(ePattern);
         java.util.regex.Matcher m = p.matcher(email);
         return m.matches();
+    }
+
+    public static void copyToClipboard(Context context, String label, String text) {
+        ClipboardManager clipboardManager = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
+        ClipData clipData = ClipData.newPlainText(label, text);
+        clipboardManager.setPrimaryClip(clipData);
     }
 }

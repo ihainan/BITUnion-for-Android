@@ -78,6 +78,8 @@
     <string name="action_follow">关注</string>
     <string name="action_reply">回帖</string>
     <string name="action_jump">跳转</string>
+    <string name="action_copy_thread_link">复制链接</string>
+    <string name="action_jump_to_thread_list">跳到板块</string>
     <string name="action_jump_to_head">跳到首页</string>
     <string name="action_jump_to_end">跳到末页面</string>
     <string name="action_deleted">Deleted</string>
@@ -90,6 +92,7 @@
     <string name="action_view_file_attachment">查看附件</string>
     <string name="action_remove_file_attachment">移除附件</string>
 
+    <string name="action_forum_add_favor">添加收藏</string>
     <!-- Default Title -->
     <string name="title_activity_login">登录</string>
     <string name="title_activity_post_list">主题列表</string>

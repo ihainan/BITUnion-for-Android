@@ -260,7 +260,6 @@ public class BasicInfoFragment extends Fragment {
     @Override
     public boolean onContextItemSelected(MenuItem item) {
         Intent i;
-        ClipboardManager clipboardManager = (ClipboardManager) mContext.getSystemService(Context.CLIPBOARD_SERVICE);
         if (item.getGroupId() == 0) {
             // Email
             switch (item.getItemId()) {
@@ -271,8 +270,7 @@ public class BasicInfoFragment extends Fragment {
                     startActivity(Intent.createChooser(i, "Send mail..."));
                     break;
                 case 2:
-                    ClipData clipData = ClipData.newPlainText("Email", CommonUtils.decode(mMember.email));
-                    clipboardManager.setPrimaryClip(clipData);
+                    CommonUtils.copyToClipboard(mContext, "Email", CommonUtils.decode(mMember.email));
                     Toast.makeText(mContext, "复制成功", Toast.LENGTH_SHORT).show();
                     break;
             }
@@ -284,8 +282,7 @@ public class BasicInfoFragment extends Fragment {
                     startActivity(i);
                     break;
                 case 2:
-                    ClipData clipData = ClipData.newPlainText("Website", CommonUtils.decode(mMember.site));
-                    clipboardManager.setPrimaryClip(clipData);
+                    CommonUtils.copyToClipboard(mContext, "Website", CommonUtils.decode(mMember.site));
                     Toast.makeText(mContext, "复制成功", Toast.LENGTH_SHORT).show();
                     break;
             }
