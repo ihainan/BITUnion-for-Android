@@ -9,6 +9,7 @@ import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.text.Html;
 import android.util.Log;
+import android.view.Gravity;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
@@ -48,11 +49,11 @@ public class PicassoImageGetter implements Html.ImageGetter {
                     // 表情，直接从本地获取
                     Log.d(TAG, "loadImage >> 本地图片，直接获取 " + source);
                     if (source.startsWith("file:///android_asset/faces/s")) {
-                        return picasso.load(source).resize(CommonUtils.getFontHeight(mContext, 17),
-                                CommonUtils.getFontHeight(mContext, 18)).get();
+                        return picasso.load(source).resize(CommonUtils.getFontHeight(mContext, BUApplication.fontSize),
+                                CommonUtils.getFontHeight(mContext, BUApplication.fontSize)).get();
                     } else if (source.startsWith("file:///android_asset/faces/bz")) {
-                        return picasso.load(source).resize(CommonUtils.getFontHeight(mContext, 35),
-                                CommonUtils.getFontHeight(mContext, 35)).get();
+                        return picasso.load(source).resize(CommonUtils.getFontHeight(mContext, 40),
+                                CommonUtils.getFontHeight(mContext, 40)).get();
                     }
 
                     // 从缓存中获取图片
@@ -86,9 +87,16 @@ public class PicassoImageGetter implements Html.ImageGetter {
             protected void onPostExecute(Bitmap bitmap) {
                 final BitmapDrawable drawable = new BitmapDrawable(resources, bitmap);
                 int left = source.startsWith("file:///android_asset/faces/") ? 5 : 0;
-                drawable.setBounds(left, 0, drawable.getIntrinsicWidth() + left, drawable.getIntrinsicHeight());
+                // drawable.setBounds(0, 0, textView.getLineHeight(), textView.getLineHeight());
+                drawable.setBounds(left, -(int) CommonUtils.convertPixelsToDp(textView.getLineHeight(), mContext),
+                        drawable.getIntrinsicWidth() + left, drawable.getIntrinsicHeight());
+                drawable.setGravity(Gravity.TOP);
                 result.setDrawable(drawable);
-                result.setBounds(left, 0, drawable.getIntrinsicWidth() + left, drawable.getIntrinsicHeight());
+                // result.setBounds(0, 0, textView.getLineHeight(), textView.getLineHeight());
+                result.setBounds(left, -(int) CommonUtils.convertPixelsToDp(textView.getLineHeight(), mContext),
+                        drawable.getIntrinsicWidth() + left, drawable.getIntrinsicHeight());
+                result.setGravity(Gravity.TOP);
+                result.setGravity(Gravity.TOP);
 
                 textView.setText(textView.getText());
             }

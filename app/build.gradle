@@ -85,4 +85,5 @@ dependencies {
     compile group: 'com.google.code.gson', name: 'gson', version: '2.6.2'
     compile(group: 'thereisnospon.codeview', name: 'codeview', version: '0.2.1', ext: 'aar', classifier: '')
     compile 'org.jsoup:jsoup:1.9.2'
+    compile 'pl.droidsonroids.gif:android-gif-drawable:1.1.16'
 }
