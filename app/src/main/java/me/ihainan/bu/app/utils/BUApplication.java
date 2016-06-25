@@ -43,7 +43,8 @@ public class BUApplication extends Application {
     public final static String CACHE_LATEST_THREAD_FIRST_POST = "CACHE_LATEST_THREAD_FIRST_POST";   // 缓存的主页主题第一个回帖（用户获取背景图）
     public final static String CACHE_FAVORITE_FORUMS = "CACHE_FAVORITE_FORUMS"; // 缓存的收藏论文
 
-    public static final int cacheDays = 10;   // 用户信息、图片缓存时间
+    public static final int USER_INFO_CACHE_DAYS = 5;   // 用户信息缓存时间
+    public final static int INNER_IMAGE_CACHE_DAYS = 3; // 图片缓存时间
 
     /**
      * 初始化缓存单例
@@ -693,7 +694,7 @@ public class BUApplication extends Application {
 
         return "未知板块";
     }
-    
+
     /**
      * 添加或者删除板块收藏
      *

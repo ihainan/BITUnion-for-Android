@@ -82,7 +82,9 @@ public class MainActivity extends AppCompatActivity {
 
         // Navigation view
         mNavigationView = (NavigationView) findViewById(R.id.nav_view);
-        mNavigationView.getMenu().getItem(0).setChecked(true);
+        if (mNavigationView != null) {
+            mNavigationView.getMenu().getItem(0).setChecked(true);
+        }
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         View mNavHead = mNavigationView.getHeaderView(0);
         mNavProfileView = (ImageView) mNavHead.findViewById(R.id.nav_profile_image);
@@ -125,7 +127,7 @@ public class MainActivity extends AppCompatActivity {
 
         // 定期更新用户 Session
         Intent intent = new Intent(mContext, SessionUpdateService.class);
-        startService(intent);
+        // startService(intent);
 
         // Activity content
         if (mFragment == null) {
@@ -243,7 +245,6 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        Intent intent;
         switch (item.getItemId()) {
             case android.R.id.home:
                 mDrawerLayout.openDrawer(GravityCompat.START);  // OPEN DRAWER

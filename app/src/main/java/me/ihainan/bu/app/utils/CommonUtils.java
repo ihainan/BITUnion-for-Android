@@ -396,7 +396,7 @@ public class CommonUtils {
                                     BUApplication.getCache(context).put(
                                             BUApplication.CACHE_USER_INFO + finalUserName,
                                             newMember,
-                                            BUApplication.cacheDays * ACache.TIME_DAY);
+                                            BUApplication.USER_INFO_CACHE_DAYS * ACache.TIME_DAY);
                                 } else if ("member_nonexistence".equals(response.getString("msg"))) {
                                     String message = context.getString(R.string.error_user_not_exists) + ": " + CommonUtils.decode(finalUserName);
                                     String debugMessage = message + " - " + response;

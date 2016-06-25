@@ -68,9 +68,9 @@ public class PicassoImageGetter implements Html.ImageGetter {
                         Log.d(TAG, "loadImage >> 非节省流量模式或者 Wi-Fi 环境，正常下载图片 " + source);
                         bitmap = picasso.load(source).get();
 
-                        // 缓存位图d
+                        // 缓存位图
                         Log.d(TAG, "loadImage >> 缓存图片成功 " + source);
-                        BUApplication.getCache(mContext).put(BUApplication.CACHE_POST_INNER_IMAGE + "_" + source, bitmap, BUApplication.cacheDays * ACache.TIME_DAY);
+                        BUApplication.getCache(mContext).put(BUApplication.CACHE_POST_INNER_IMAGE + "_" + source, bitmap, BUApplication.INNER_IMAGE_CACHE_DAYS * ACache.TIME_DAY);
 
                         return bitmap;
                     } else {
@@ -88,12 +88,12 @@ public class PicassoImageGetter implements Html.ImageGetter {
                 final BitmapDrawable drawable = new BitmapDrawable(resources, bitmap);
                 int left = source.startsWith("file:///android_asset/faces/") ? 5 : 0;
                 // drawable.setBounds(0, 0, textView.getLineHeight(), textView.getLineHeight());
-                drawable.setBounds(left, -(int) CommonUtils.convertPixelsToDp(textView.getLineHeight(), mContext),
+                drawable.setBounds(left, -(int) CommonUtils.convertPixelsToDp(textView.getLineHeight(), mContext) * 2 / 3,
                         drawable.getIntrinsicWidth() + left, drawable.getIntrinsicHeight());
                 drawable.setGravity(Gravity.TOP);
                 result.setDrawable(drawable);
                 // result.setBounds(0, 0, textView.getLineHeight(), textView.getLineHeight());
-                result.setBounds(left, -(int) CommonUtils.convertPixelsToDp(textView.getLineHeight(), mContext),
+                result.setBounds(left, -(int) CommonUtils.convertPixelsToDp(textView.getLineHeight(), mContext) * 2 / 3,
                         drawable.getIntrinsicWidth() + left, drawable.getIntrinsicHeight());
                 result.setGravity(Gravity.TOP);
                 result.setGravity(Gravity.TOP);
