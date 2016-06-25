@@ -34,6 +34,7 @@ import me.ihainan.bu.app.ui.NewPostActivity;
 import me.ihainan.bu.app.ui.FullscreenPhotoViewerActivity;
 import me.ihainan.bu.app.ui.PostListActivity;
 import me.ihainan.bu.app.ui.assist.CustomSpan;
+import me.ihainan.bu.app.ui.assist.HtmlTagHandler;
 import me.ihainan.bu.app.ui.viewholders.LoadingViewHolder;
 import me.ihainan.bu.app.utils.BUApplication;
 import me.ihainan.bu.app.utils.CommonUtils;
@@ -128,7 +129,7 @@ public class PostListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                     Html.fromHtml(
                             reply.message,
                             new PicassoImageGetter(mContext, viewHolder.message),
-                            null));
+                            new HtmlTagHandler()));
             CustomSpan.setUpAllSpans(mContext, spannableString);
             viewHolder.message.setText(spannableString);
 

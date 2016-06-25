@@ -31,6 +31,7 @@ public class HtmlUtil {
             + "(((?!<br><br><center><table border=)[\\w\\W])*?)" + QUOTE_TAIL;
 
     private static final String CODE_REGEX = "<br><center><table .*?><tr><td .*?>&nbsp;&nbsp;代码:</td><td .*?><a href=\'###\' class=\'smalltxt\' onclick=.*?>.*?</a>&nbsp;&nbsp;</td></tr><tr><td colspan=\\'2\\'><table .*?><tr><td .*?><div class=\\'hl-surround\\'><ol type=1>(.*?)</div></td></tr></table></td></tr></table></center><br>";
+    private static final String VIDEO_REGEX = "\\[video](.*?)\\[/video]";
 
     /* START - HTML Format */
     public static String formatHtml(String html) {
@@ -39,6 +40,7 @@ public class HtmlUtil {
         html = replaceImage(html);    // 替换图片地址
         html = replaceCode(html);   // 替换代码
         html = replaceQuote(html);    // 替换引用
+        html = replaceVideo(html);  // 替换视频
         html = replaceLastEdit(html); // 删除 Last Edit
         html = replaceOther(html);    // 剩余内容
 
@@ -97,21 +99,21 @@ public class HtmlUtil {
      */
     private static String replaceBase(String str) {
         // 单引号双引号
-        str = str.replaceAll("\"", "'");
+        str = str.replace("\"", "'");
         // str = str.replaceAll("&nbsp;", "");
 
         // Open API 标志
         if (str.contains("From BIT-Union Open API Project"))
-            str = str.replaceAll("<br/><span id='id_open_api_label'>..:: <a href=http://www.bitunion.org>From BIT-Union Open API Project</a> ::..<br/>", "");
+            str = str.replace("<br/><span id='id_open_api_label'>..:: <a href=http://www.bitunion.org>From BIT-Union Open API Project</a> ::..<br/>", "");
 
         // 换行
-        str = str.replaceAll("\r\n", "");
-        str = str.replaceAll("\n", "");
+        str = str.replace("\r\n", "");
+        str = str.replace("\n", "");
         Log.d(TAG, "Body Before = " + str);
-        str = str.replaceAll("<br />", "<br>");
-        str = str.replaceAll("<br/>", "<br>");
+        str = str.replace("<br />", "<br>");
+        str = str.replace("<br/>", "<br>");
         str = str.replaceAll("(<br>\\s*){2,}", "<br>");
-        str = str.replaceAll("<br>", "<br><br>");
+        str = str.replace("<br>", "<br><br>");
 
         return str;
     }
@@ -127,27 +129,27 @@ public class HtmlUtil {
         Matcher matcher = pattern.matcher(str);
         while (matcher.find()) {
             String codeContent = matcher.group(1);
-            codeContent = codeContent.replaceAll("<li>", "\n").replaceFirst("\n", "").replaceAll("&nbsp;", " ");
+            codeContent = codeContent.replace("<li>", "\n").replaceFirst("\n", "").replace("&nbsp;", " ");
             String htmlUrl = "http://www.ihainan.me?content=" + CommonUtils.encode(codeContent);
             codeContent = "<br><a href='" + htmlUrl + "'>[点击查看代码片段]</a><br>";
             str = str.replace(matcher.group(0), codeContent);
-
-            /*
-            int i = 1;
-            int numOfLi = (int) (Math.log10(codeContent.split("<li>").length - 1) + 1);
-            while (codeContent.contains("<li>")) {
-                String lineContent = "<br><b><font color='#426aa3'>" + (i) + "</font></b>&nbsp;&nbsp;";
-                int currentDigit = (int) (Math.log10(i) + 1);
-                for (int j = numOfLi - currentDigit - 1; j >= 0; --j) {
-                    lineContent = lineContent + "&nbsp;";
-                }
-                codeContent = codeContent.replaceFirst("<li>", lineContent);
-                i = i + 1;
-            } */
-
-            // str = str.replace(matcher.group(0), "<blockquote>" + codeContent.replaceFirst("<br>", "") + "</blockquote>");
         }
 
+        return str;
+    }
+
+    /**
+     * 替换 HTML 文本中的视频为外部链接
+     *
+     * @param str 原始 HTML 文本
+     * @return 处理之后的 HTML 文本
+     */
+    private static String replaceVideo(String str) {
+        Pattern pattern = Pattern.compile(VIDEO_REGEX);
+        Matcher matcher = pattern.matcher(str);
+        while (matcher.find()) {
+            str = str.replace(matcher.group(0), "<br><a href = '" + matcher.group(1) + "'>[点击查看视频]</a></br>");
+        }
         return str;
     }
 
@@ -166,7 +168,7 @@ public class HtmlUtil {
                 Pattern pattern = Pattern.compile(regex);
                 Matcher matcher = pattern.matcher(content);
                 while (matcher.find()) {
-                    content = content.replaceAll(matcher.group(0), "");
+                    content = content.replace(matcher.group(0), "");
                 }
             }
 
@@ -208,7 +210,6 @@ public class HtmlUtil {
     public static String replaceOther(String str) {
         str = str.replaceAll("^(<br>)+", "");
         str = str.replaceAll("(<br>)*$", "");
-        // str = str.replaceAll("&nbsp;", " ");
         return str;
     }
 
@@ -286,7 +287,7 @@ public class HtmlUtil {
         Matcher m = pattern.matcher(ubbCodeStr);
         while (m.find()) {
             System.out.println(m.group());
-            ubbCodeStr = ubbCodeStr.replace(m.group(0), "<u>" + m.group(1) + "</u>");
+            ubbCodeStr = ubbCodeStr.replace(m.group(0), "<s>" + m.group(1) + "</s>");
         }
 
         return ubbCodeStr;

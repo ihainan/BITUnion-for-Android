@@ -7,6 +7,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.webkit.WebSettings;
 import android.widget.Toast;
 
 import me.ihainan.bu.app.R;
@@ -53,6 +54,7 @@ public class CodeViewActivity extends SwipeActivity {
 
         // Code
         mCodeView = (CodeView) findViewById(R.id.code_view);
+
         if (mCodeView != null) {
             mCodeView.setTheme(CodeViewTheme.ATELIER_ESTUARY_LIGHT).fillColor();
             mCodeView.showCode(mCodeContent);
