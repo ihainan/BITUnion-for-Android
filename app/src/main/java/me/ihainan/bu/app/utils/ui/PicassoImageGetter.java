@@ -68,7 +68,7 @@ public class PicassoImageGetter implements Html.ImageGetter {
                         Log.d(TAG, "loadImage >> 非节省流量模式或者 Wi-Fi 环境，正常下载图片 " + source);
                         bitmap = picasso.load(source).get();
 
-                        // 缓存位图
+                        // 缓存位图d
                         Log.d(TAG, "loadImage >> 缓存图片成功 " + source);
                         BUApplication.getCache(mContext).put(BUApplication.CACHE_POST_INNER_IMAGE + "_" + source, bitmap, BUApplication.cacheDays * ACache.TIME_DAY);
 

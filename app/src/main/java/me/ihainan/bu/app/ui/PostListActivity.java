@@ -190,6 +190,7 @@ public class PostListActivity extends SwipeActivity {
                             Post firstReply = threads.get(0);
                             mThreadName = firstReply.subject;
                             mAuthorName = firstReply.author;
+                            mFid = firstReply.fid;
                             fillViews();
                         }
                     } else if (response.getString("msg").equals(BUApi.FORUM_NO_PERMISSION_MSG)) {
@@ -247,6 +248,9 @@ public class PostListActivity extends SwipeActivity {
 
     private void fillViews() {
         setTitle(Html.fromHtml(CommonUtils.decode(mThreadName)));    // 标题
+
+        // Jump to forum page
+        setupForumGroupListMenuItem();
 
         // Jump Page & Index
         // 没有指定跳转楼层，那就跳转到最后一层
@@ -312,22 +316,30 @@ public class PostListActivity extends SwipeActivity {
         }
     }
 
+    private MenuItem mForumItem;
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.thread_detail_tab_menu, menu);
         mFavorItem = menu.findItem(R.id.action_favor);
+        mForumItem = menu.findItem(R.id.action_jump_to_forum);
 
-        MenuItem forumItem = menu.findItem(R.id.action_jump_to_forum);
-        if (mFid != null && mFid > 0) {
-            BUApplication.makeForumGroupList(this);
-            forumItem.setVisible(true);
-            String forumName = BUApplication.findForumName(mFid);
-            forumItem.setTitle("转到" + forumName);
-        } else {
-            forumItem.setVisible(false);
-        }
+        setupForumGroupListMenuItem();
 
         return true;
+    }
+
+    private void setupForumGroupListMenuItem() {
+        if (mForumItem != null) {
+            if (mFid != null && mFid > 0) {
+                BUApplication.makeForumGroupList(this);
+                mForumItem.setVisible(true);
+                String forumName = BUApplication.findForumName(mFid);
+                mForumItem.setTitle("转到" + forumName);
+            } else {
+                mForumItem.setVisible(false);
+            }
+        }
     }
 
     private void setFavIcon(boolean isFav) {
