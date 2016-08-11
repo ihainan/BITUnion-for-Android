@@ -1,5 +1,6 @@
 package me.ihainan.bu.app.ui;
 
+import android.app.Application;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.content.Context;
@@ -107,7 +108,12 @@ public class MainActivity extends AppCompatActivity {
 
     private void initWork() {
         // 检查新版本更新并安装
-        CommonUtils.updateVersion(mContext, true, null);
+        if (!BUApplication.IS_GOOGLE_PLAY_EDITION) {
+            Log.i(TAG, "Is not Google Play Edition, will check for update");
+            CommonUtils.updateVersion(mContext, true, null);
+        } else {
+            Log.i(TAG, "Google Play Edition, will not check for update");
+        }
 
         // 登记用户
         if (BUApplication.username != null && !BUApplication.username.equals("")) {

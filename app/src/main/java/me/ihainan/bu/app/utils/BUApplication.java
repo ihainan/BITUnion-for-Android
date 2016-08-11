@@ -67,6 +67,7 @@ public class BUApplication extends Application {
     }
 
     /* 系统配置相关*/
+    public final static Boolean IS_GOOGLE_PLAY_EDITION = false; // 是否是 Google Play Store 版本
     public final static int RETRY_LIMIT = 2;    // 重新登录尝试次数
     public final static int MAX_USER_NAME_LENGTH = 15;  // 列表用户名最长显示的长度
     public final static int HOT_TOPIC_THREAD = 30;      // 热门帖子阈值

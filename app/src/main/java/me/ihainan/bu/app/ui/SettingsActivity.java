@@ -14,11 +14,13 @@ import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.preference.Preference;
+import android.preference.PreferenceCategory;
 import android.preference.SwitchPreference;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.Toolbar;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.VelocityTracker;
 import android.view.View;
@@ -145,21 +147,28 @@ public class SettingsActivity extends PreferenceActivity {
             }
         });
 
+        PreferenceCategory preferenceCategory = (PreferenceCategory) findPreference("pref_key_about_settings");
         Preference prefDeviceName = findPreference("pref_device_name");
         prefDeviceName.setSummary(CommonUtils.getDeviceName());
 
         Preference prefCheckUpdate = findPreference("pref_check_update");
-        prefCheckUpdate.setSummary("当前版本：" + BuildConfig.VERSION_NAME);
-        prefCheckUpdate.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-            @Override
-            public boolean onPreferenceClick(Preference preference) {
-                ProgressDialog dialog = ProgressDialog.show(SettingsActivity.this, "",
-                        "正在检查更新", true);
-                dialog.show();
-                CommonUtils.updateVersion(SettingsActivity.this, false, dialog);
-                return false;
-            }
-        });
+        if (!BUApplication.IS_GOOGLE_PLAY_EDITION) {
+            Log.i(TAG, "Is not Google Play Edition, will display update preference");
+            prefCheckUpdate.setSummary("当前版本：" + BuildConfig.VERSION_NAME);
+            prefCheckUpdate.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                @Override
+                public boolean onPreferenceClick(Preference preference) {
+                    ProgressDialog dialog = ProgressDialog.show(SettingsActivity.this, "",
+                            "正在检查更新", true);
+                    dialog.show();
+                    CommonUtils.updateVersion(SettingsActivity.this, false, dialog);
+                    return false;
+                }
+            });
+        } else {
+            Log.i(TAG, "Google Play Edition, will not display update preference");
+            preferenceCategory.removePreference(prefCheckUpdate);
+        }
 
         Preference prefDonate = findPreference("pref_donate");
 
