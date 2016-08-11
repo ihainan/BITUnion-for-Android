@@ -77,7 +77,7 @@ dependencies {
     compile 'com.ogaclejapan.smarttablayout:library:1.6.0@aar'
     compile 'de.hdodenhof:circleimageview:2.0.0'
     compile 'com.miguelcatalan:materialsearchview:1.4.0'
-    compile 'com.lapism:searchview:2.2'
+    compile 'com.lapism:searchview:3.4.1'
     compile 'com.commit451:PhotoView:1.2.5'
     compile 'com.github.TR4Android:Swipeable-RecyclerView:0.2.0'
     compile 'com.github.arimorty:floatingsearchview:2.0.1'
