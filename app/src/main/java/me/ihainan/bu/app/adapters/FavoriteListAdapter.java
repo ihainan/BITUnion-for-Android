@@ -74,6 +74,9 @@ public class FavoriteListAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                     intent.putExtra(PostListActivity.THREAD_AUTHOR_NAME_TAG, favorite.author);
                     intent.putExtra(PostListActivity.THREAD_NAME_TAG, favorite.subject);
                     intent.putExtra(PostListActivity.THREAD_JUMP_FLOOR, 0);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_LAUNCH_ADJACENT |
+                            Intent.FLAG_ACTIVITY_NEW_TASK |
+                            Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
                     mContext.startActivity(intent);
                 }
             };
