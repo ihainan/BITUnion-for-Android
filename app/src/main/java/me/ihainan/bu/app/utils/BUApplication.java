@@ -560,6 +560,14 @@ public class BUApplication extends Application {
 
         // 苦中作乐区
         forumLists = new ArrayList<>();
+
+        forumList = new ForumListGroup.ForumList("五环世界", 179, "file:///android_asset/forumicon/olympic.png");
+        forumListHashMap.put(14, forumList);
+        forumList.addSubForum(new ForumListGroup.SubForum("激情伦敦 (历史版面)", 152));
+        forumList.addSubForum(new ForumListGroup.SubForum("聚焦北京 (历史版面)", 138));
+        forumList.addSubForum(new ForumListGroup.SubForum("烽火雅典 (历史版面)", 103));
+        forumLists.add(forumList);
+
         forumList = new ForumListGroup.ForumList("游戏人生", 22, "file:///android_asset/forumicon/game.gif");
         forumListHashMap.put(22, forumList);
         forumLists.add(forumList);
