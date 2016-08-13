@@ -206,6 +206,8 @@ public class PreviewActivity extends SwipeActivity {
         LinearLayout linearLayout = (LinearLayout) findViewById(R.id.thread_attachment_layout);
         LayoutInflater inflater = LayoutInflater.from(this);
         View itemView = inflater.inflate(R.layout.item_thread_detail_attachment, null, false);
+        itemView.setVisibility(View.VISIBLE);
+        linearLayout.setVisibility(View.VISIBLE);
 
         // UI references
         TextView attachmentName = (TextView) itemView.findViewById(R.id.thread_attachment_name);
