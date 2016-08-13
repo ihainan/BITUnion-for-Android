@@ -85,7 +85,7 @@ public class FavoriteListAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
             // 从缓存中获取用户头像
             // viewHolder.avatar.setVisibility(View.GONE);
-            username = username == null ? BUApplication.userSession.username : username;
+            username = username == null ? (BUApplication.userSession == null ? "UNKNOWN" : BUApplication.userSession.username) : username;
             CommonUtils.getAndCacheUserInfo(mContext,
                     username,
                     new CommonUtils.UserInfoAndFillAvatarCallback() {

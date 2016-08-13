@@ -201,8 +201,14 @@ public class BUApi {
 
         Map<String, String> parameters = new HashMap<>();
         parameters.put("action", "post");
-        parameters.put("username", BUApplication.userSession.username);
-        parameters.put("session", BUApplication.userSession.session);
+        if (BUApplication.userSession == null) BUApplication.getCacheSession(context);
+        if (BUApplication.userSession != null) {
+            parameters.put("username", BUApplication.userSession.username);
+            parameters.put("session", BUApplication.userSession.session);
+        } else {
+            parameters.put("username", "");
+            parameters.put("session", "");
+        }
         parameters.put("tid", String.valueOf(tid));
         parameters.put("from", String.valueOf(from));
         parameters.put("to", String.valueOf(to));
@@ -339,7 +345,9 @@ public class BUApi {
                         public void onResponse(JSONObject response) {
                             if (checkIfSessionOutOfData(response)) {
                                 // Success + IP+logged，尝试重新登录
-                                Log.i(TAG, "makeRequest " + tag + ">> Session " + BUApplication.userSession.session + " 过期，尝试重新登录 " + retryLimit + " " + url);
+                                Log.i(TAG, "makeRequest " + tag + ">> Session " +
+                                        (BUApplication.userSession == null ? "NULL" : BUApplication.userSession.session) +
+                                        " 过期，尝试重新登录 " + retryLimit + " " + url);
                                 BUApi.tryLogin(context, BUApplication.username, BUApplication.password, retryLimit - 1,
                                         new Response.Listener<JSONObject>() {
                                             @Override
