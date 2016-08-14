@@ -153,6 +153,9 @@ public class PostListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                     String quoteContent = reply.toQuote();
                     intent.putExtra(NewPostActivity.NEW_POST_QUOTE_CONTENT_TAG, quoteContent);
                     intent.putExtra(NewPostActivity.NEW_POST_MAX_FLOOR_TAG, mReplyCount + 1);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_LAUNCH_ADJACENT |
+                            Intent.FLAG_ACTIVITY_NEW_TASK |
+                            Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
                     ((Activity) mContext).startActivityForResult(intent, PostListActivity.REQUEST_NEW_REPLY);
                 }
             });

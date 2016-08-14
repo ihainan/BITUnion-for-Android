@@ -1,8 +1,8 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 23
-    buildToolsVersion '22.0.1'
+    compileSdkVersion 24
+    buildToolsVersion '24.0.1'
 
     repositories {
         mavenCentral()
@@ -31,8 +31,8 @@ android {
         applicationId "me.ihainan.bu.app"
         minSdkVersion 14
         targetSdkVersion 23
-        versionCode 22
-        versionName "0.2.1.1"
+        versionCode 24
+        versionName "0.2.2"
     }
 
     buildTypes {

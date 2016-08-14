@@ -112,6 +112,9 @@ public class NotificationAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 if (type == 0 || type == 1 || type == 2) {
                     NotificationMessage.PostNotificationMessageData notificationMessageData = BUApi.MAPPER.readValue(jsonObject.getJSONObject("data").toString(), NotificationMessage.PostNotificationMessageData.class);
                     intent = new Intent(mContext, PostListActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_LAUNCH_ADJACENT |
+                            Intent.FLAG_ACTIVITY_NEW_TASK |
+                            Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
                     intent.setAction(Long.toString(System.currentTimeMillis()));
                     intent.putExtra(PostListActivity.THREAD_ID_TAG, notificationMessageData.tid);
                     intent.putExtra(PostListActivity.THREAD_JUMP_FLOOR, notificationMessageData.floor);

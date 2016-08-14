@@ -5,6 +5,7 @@ import android.graphics.Typeface;
 import android.support.v4.view.MenuItemCompat;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.AnimationUtils;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -17,7 +18,7 @@ public class IconFontHelper {
     private static final int LAYOUT = R.layout.menu_font_icon_layout;
     private static final String DEFAULT_FONT_TTF = "iconfont/iconfont.ttf";
 
-    public static RelativeLayout setupMenuIcon(Context context, MenuItem menuItem, String iconText, View.OnClickListener onClickListener) {
+    public static RelativeLayout setupMenuIcon(final Context context, MenuItem menuItem, String iconText, final View.OnClickListener onClickListener) {
         MenuItemCompat.setActionView(menuItem, LAYOUT);
         RelativeLayout itemLayout = (RelativeLayout) MenuItemCompat.getActionView(menuItem);
 
@@ -28,9 +29,19 @@ public class IconFontHelper {
         tvIcon.setTypeface(iconFont);
 
         // Click
-        itemLayout.setOnClickListener(onClickListener);
-        itemLayout.findViewById(R.id.tv_icon).setOnClickListener(onClickListener);
-        itemLayout.findViewById(R.id.badge_layout).setOnClickListener(onClickListener);
+        View.OnClickListener newOnclickListener = new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                view.startAnimation(AnimationUtils.loadAnimation(context, R.anim.button_click));
+                onClickListener.onClick(view);
+            }
+        };
+        itemLayout.setOnClickListener(newOnclickListener);
+        itemLayout.findViewById(R.id.tv_icon).setOnClickListener(newOnclickListener);
+        itemLayout.findViewById(R.id.badge_layout).setOnClickListener(newOnclickListener);
+        // itemLayout.setOnClickListener(onClickListener);
+        // itemLayout.findViewById(R.id.tv_icon).setOnClickListener(onClickListener);
+        // itemLayout.findViewById(R.id.badge_layout).setOnClickListener(onClickListener);
 
         // Badge
         itemLayout.findViewById(R.id.badge_notification).setVisibility(View.GONE);

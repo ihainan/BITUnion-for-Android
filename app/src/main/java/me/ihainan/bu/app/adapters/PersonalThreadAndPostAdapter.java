@@ -108,6 +108,9 @@ public class PersonalThreadAndPostAdapter extends RecyclerView.Adapter<RecyclerV
                 intent.putExtra(PostListActivity.THREAD_FID_TAG, post.fid);
                 intent.putExtra(PostListActivity.THREAD_ID_TAG, post.tid);
                 intent.putExtra(PostListActivity.THREAD_NAME_TAG, post.t_subject);
+                intent.setFlags(Intent.FLAG_ACTIVITY_LAUNCH_ADJACENT |
+                        Intent.FLAG_ACTIVITY_NEW_TASK |
+                        Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
 
                 View.OnClickListener onRootClickListener = new View.OnClickListener() {
                     @Override

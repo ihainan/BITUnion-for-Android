@@ -111,6 +111,9 @@ class NewLatestThreadListAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         intent.putExtra(PostListActivity.THREAD_AUTHOR_NAME_TAG, latestThread.author);
         intent.putExtra(PostListActivity.THREAD_REPLY_COUNT_TAG, latestThread.tid_sum + 1);
         intent.putExtra(PostListActivity.THREAD_NAME_TAG, latestThread.pname);
+        intent.setFlags(Intent.FLAG_ACTIVITY_LAUNCH_ADJACENT |
+                Intent.FLAG_ACTIVITY_NEW_TASK |
+                Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
         holder.rootLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -224,6 +227,9 @@ class NewLatestThreadListAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         intent.putExtra(PostListActivity.THREAD_AUTHOR_NAME_TAG, latestThread.author);
         intent.putExtra(PostListActivity.THREAD_REPLY_COUNT_TAG, latestThread.tid_sum + 1);
         intent.putExtra(PostListActivity.THREAD_NAME_TAG, latestThread.pname);
+        intent.setFlags(Intent.FLAG_ACTIVITY_LAUNCH_ADJACENT |
+                Intent.FLAG_ACTIVITY_NEW_TASK |
+                Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
         holder.rootLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

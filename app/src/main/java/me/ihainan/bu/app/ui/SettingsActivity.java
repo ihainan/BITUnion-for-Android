@@ -134,13 +134,6 @@ public class SettingsActivity extends PreferenceActivity {
         prefFeedback.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
-                /*
-                Intent feedbackIntent = new Intent(Intent.ACTION_SEND);
-                feedbackIntent.setType("message/rfc822");
-                feedbackIntent.putExtra(Intent.EXTRA_EMAIL, new String[]{"ihainan72@gmail.com"});
-                feedbackIntent.putExtra(Intent.EXTRA_SUBJECT, "联盟安卓客户端意见反馈");
-                feedbackIntent.putExtra(Intent.EXTRA_TEXT, "\n---\n当前版本：" + BuildConfig.VERSION_NAME);
-                startActivity(Intent.createChooser(feedbackIntent, "发送邮件...")); */
                 Intent intent = new Intent(SettingsActivity.this, FeedbackActivity.class);
                 startActivity(intent);
                 return false;
@@ -214,7 +207,7 @@ public class SettingsActivity extends PreferenceActivity {
         prefEnableSilentMode = (SwitchPreference) findPreference("pref_night_silent_mode");
         prefEnableNotifyType = findPreference("pref_enable_notify_type");
 
-        prefEnableNotify.setChecked(BUApplication.enableNotify);
+        prefEnableNotify.setChecked(BUApplication.getEnableNotify(SettingsActivity.this));
 
         setupNotifySettings(BUApplication.enableNotify);
         prefEnableNotify.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {

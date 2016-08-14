@@ -157,6 +157,9 @@ public class CustomSpan {
                         Intent intent = new Intent(mContext, PostListActivity.class);
                         intent.putExtra(PostListActivity.THREAD_ID_TAG, tid);
                         intent.putExtra(PostListActivity.THREAD_JUMP_FLOOR, 0);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_LAUNCH_ADJACENT |
+                                Intent.FLAG_ACTIVITY_NEW_TASK |
+                                Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
                         mContext.startActivity(intent);
                         return;
                     }

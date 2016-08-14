@@ -74,6 +74,9 @@ public class FavoriteListAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                     intent.putExtra(PostListActivity.THREAD_AUTHOR_NAME_TAG, favorite.author);
                     intent.putExtra(PostListActivity.THREAD_NAME_TAG, favorite.subject);
                     intent.putExtra(PostListActivity.THREAD_JUMP_FLOOR, 0);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_LAUNCH_ADJACENT |
+                            Intent.FLAG_ACTIVITY_NEW_TASK |
+                            Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
                     mContext.startActivity(intent);
                 }
             };
@@ -82,7 +85,7 @@ public class FavoriteListAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
             // 从缓存中获取用户头像
             // viewHolder.avatar.setVisibility(View.GONE);
-            username = username == null ? BUApplication.userSession.username : username;
+            username = username == null ? (BUApplication.userSession == null ? "UNKNOWN" : BUApplication.userSession.username) : username;
             CommonUtils.getAndCacheUserInfo(mContext,
                     username,
                     new CommonUtils.UserInfoAndFillAvatarCallback() {

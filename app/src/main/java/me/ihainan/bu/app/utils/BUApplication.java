@@ -3,9 +3,12 @@ package me.ihainan.bu.app.utils;
 import android.app.ActivityManager;
 import android.app.Application;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.net.Uri;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
+import com.squareup.okhttp.OkHttpClient;
 import com.squareup.picasso.OkHttpDownloader;
 import com.squareup.picasso.Picasso;
 import com.umeng.update.UmengUpdateAgent;
@@ -14,6 +17,7 @@ import com.xiaomi.channel.commonutils.logger.LoggerInterface;
 import com.xiaomi.mipush.sdk.Logger;
 import com.xiaomi.mipush.sdk.MiPushClient;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -25,6 +29,7 @@ import java.util.Map;
 import java.util.Set;
 
 import me.ihainan.bu.app.models.ForumListGroup;
+import me.ihainan.bu.app.models.NotificationMessage;
 import me.ihainan.bu.app.models.Session;
 import me.ihainan.bu.app.utils.network.BUApi;
 
@@ -155,6 +160,7 @@ public class BUApplication extends Application {
         getCacheUploadData(context);
         getCacheSaveDataMode(context);
         getCacheFontSize(context);
+        getCacheTitleFontSize(context);
         getCacheLineSpacingExtra(context);
         getCacheLineSpacingMultiplier(context);
         getEnableAtNotify(context);
@@ -170,269 +176,555 @@ public class BUApplication extends Application {
         getPostListLoadingCount(context);
     }
 
+    /**
+     * migrate cache data from ACache to SharedPreference
+     *
+     * @param context Application context
+     */
+    private static void migrateCache(Context context) {
+        ACache cache = BUApplication.getCache(context);
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        SharedPreferences.Editor editor = prefs.edit();
+
+        // 每页加载的帖子数量
+        postListLoadingCount = (Integer) BUApplication.getCache(context).getAsObject(PREF_POST_LIST_LOADING_COUNT);
+        if (postListLoadingCount != null) {
+            editor.putInt(PREF_POST_LIST_LOADING_COUNT, postListLoadingCount);
+            editor.commit();
+            cache.remove(PREF_POST_LIST_LOADING_COUNT);
+        }
+
+        // 发帖是否显示用户设备信息尾巴
+        enableDisplayDeviceInfo = (Boolean) BUApplication.getCache(context).getAsObject(PREF_ENABLE_DISPLAY_DEVICE_INFO);
+        if (enableDisplayDeviceInfo != null) {
+            editor.putBoolean(PREF_ENABLE_DISPLAY_DEVICE_INFO, enableDisplayDeviceInfo);
+            editor.commit();
+            cache.remove(PREF_ENABLE_DISPLAY_DEVICE_INFO);
+        }
+
+        // 缓存的用户邮箱
+        cachedFeedbackEmail = BUApplication.getCache(context).getAsString(CACHED_FEEDBACK_EMAIL);
+        if (cachedFeedbackEmail != null) {
+            editor.putString(CACHED_FEEDBACK_EMAIL, cachedFeedbackEmail);
+            editor.commit();
+            cache.remove(CACHED_FEEDBACK_EMAIL);
+        }
+
+        // 是否开启夜间勿扰模式
+        enableSilentMode = (Boolean) BUApplication.getCache(context).getAsObject(PREF_ENABLE_SILENT_MODE);
+        if (enableSilentMode != null) {
+            editor.putBoolean(PREF_ENABLE_SILENT_MODE, enableSilentMode);
+            editor.commit();
+            cache.remove(PREF_ENABLE_SILENT_MODE);
+        }
+
+        // 是否开启高级编辑器
+        enableAdvancedEditor = (Boolean) BUApplication.getCache(context).getAsObject(PREF_ENABLE_ADVANCED_EDITOR);
+        if (enableAdvancedEditor != null) {
+            editor.putBoolean(PREF_ENABLE_ADVANCED_EDITOR, enableAdvancedEditor);
+            editor.commit();
+            cache.remove(PREF_ENABLE_ADVANCED_EDITOR);
+        }
+
+        // 主页主题点击事件类型
+        homePageClickEventType = (Integer) BUApplication.getCache(context).getAsObject(PREF_HOME_PAGE_CLICK_EVENT);
+        if (homePageClickEventType != null) {
+            editor.putInt(PREF_HOME_PAGE_CLICK_EVENT, homePageClickEventType);
+            editor.commit();
+            cache.remove(PREF_HOME_PAGE_CLICK_EVENT);
+        }
+
+        // 是否开启关注通知
+        enableFollowingNotify = (Boolean) BUApplication.getCache(context).getAsObject(PREF_ENABLE_FOLLOW_NOTIFY);
+        if (enableFollowingNotify != null) {
+            editor.putBoolean(PREF_ENABLE_FOLLOW_NOTIFY, enableFollowingNotify);
+            editor.commit();
+            cache.remove(PREF_ENABLE_FOLLOW_NOTIFY);
+        }
+
+        // 是否开启 @ 通知
+        enableAtNotify = (Boolean) BUApplication.getCache(context).getAsObject(PREF_ENABLE_AT_NOTIFY);
+        if (enableAtNotify != null) {
+            editor.putBoolean(PREF_ENABLE_AT_NOTIFY, enableAtNotify);
+            editor.commit();
+            cache.remove(PREF_ENABLE_AT_NOTIFY);
+        }
+
+        // 是否开启引用通知
+        enableQuoteNotify = (Boolean) BUApplication.getCache(context).getAsObject(PREF_ENABLE_QUOTE_NOTIFY);
+        if (enableQuoteNotify != null) {
+            editor.putBoolean(PREF_ENABLE_QUOTE_NOTIFY, enableQuoteNotify);
+            editor.commit();
+            cache.remove(PREF_ENABLE_QUOTE_NOTIFY);
+        }
+
+        // 是否开启回复通知
+        enableReplyNotify = (Boolean) BUApplication.getCache(context).getAsObject(PREF_ENABLE_REPLY_NOTIFY);
+        if (enableReplyNotify != null) {
+            editor.putBoolean(PREF_ENABLE_REPLY_NOTIFY, enableReplyNotify);
+            editor.commit();
+            cache.remove(PREF_ENABLE_REPLY_NOTIFY);
+        }
+
+        // 是否开启通知
+        enableNotify = (Boolean) BUApplication.getCache(context).getAsObject(PREF_ENABLE_NOTIFY);
+        if (enableNotify != null) {
+            editor.putBoolean(PREF_ENABLE_NOTIFY, enableNotify);
+            editor.commit();
+            cache.remove(PREF_ENABLE_NOTIFY);
+        }
+
+        // 帖子标题字体大小
+        titleFontSize = (Integer) BUApplication.getCache(context).getAsObject(PREF_FONT_TITLE_SIZE);
+        if (titleFontSize != null) {
+            editor.putInt(PREF_FONT_TITLE_SIZE, titleFontSize);
+            editor.commit();
+            cache.remove(PREF_FONT_TITLE_SIZE);
+        }
+
+        // 帖子正文字体大小]
+        fontSize = (Integer) BUApplication.getCache(context).getAsObject(PREF_FONT_SIZE);
+        if (fontSize != null) {
+            editor.putInt(PREF_FONT_SIZE, fontSize);
+            editor.commit();
+            cache.remove(PREF_FONT_SIZE);
+        }
+
+        // 额外行间距
+        lineSpacingExtra = (Integer) BUApplication.getCache(context).getAsObject(PREF_LINE_SPACING_EXTRA);
+        if (lineSpacingExtra != null) {
+            editor.putInt(PREF_LINE_SPACING_EXTRA, lineSpacingExtra);
+            editor.commit();
+            cache.remove(PREF_LINE_SPACING_EXTRA);
+        }
+
+        // 行间距倍数
+        lineSpacingMultiplier = (Float) BUApplication.getCache(context).getAsObject(PREF_LINE_SPACING_MULTIPLIER);
+        if (lineSpacingMultiplier != null) {
+            editor.putFloat(PREF_LINE_SPACING_MULTIPLIER, lineSpacingMultiplier);
+            editor.commit();
+            cache.remove(PREF_LINE_SPACING_MULTIPLIER);
+        }
+
+        // 用户名
+        username = BUApplication.getCache(context).getAsString(PREF_USER_NAME);
+        if (username != null) {
+            editor.putString(PREF_USER_NAME, username);
+            editor.commit();
+            cache.remove(PREF_USER_NAME);
+        }
+
+        // 密码
+        password = BUApplication.getCache(context).getAsString(PREF_PASSWORD);
+        if (password != null) {
+            editor.putString(PREF_PASSWORD, password);
+            editor.commit();
+            cache.remove(PREF_PASSWORD);
+        }
+
+        // Session
+        userSession = (Session) BUApplication.getCache(context).getAsObject(CONF_SESSION_STR);
+        if (userSession != null) {
+            editor.putString(CONF_SESSION_STR, userSession.toString());
+            editor.commit();
+            cache.remove(CONF_SESSION_STR);
+        }
+
+        // 网络模式
+        String networkTypeStr = prefs.getString(PREF_NETWORK_TYPE, "");
+        networkType = networkTypeStr.equals("") ? NETWORK_TYPE.OUT_SCHOOL : NETWORK_TYPE.valueOf(networkTypeStr);
+        if (networkTypeStr != null) {
+            editor.putString(PREF_NETWORK_TYPE, networkType.toString());
+            editor.commit();
+            cache.remove(PREF_NETWORK_TYPE);
+        }
+
+        // 省流量模式
+        saveDataMode = (Boolean) BUApplication.getCache(context).getAsObject(PREF_SAVE_DATA);
+        if (saveDataMode != null) {
+            editor.putBoolean(PREF_SAVE_DATA, saveDataMode);
+            editor.commit();
+            cache.remove(PREF_SAVE_DATA);
+        }
+
+        // Debug 模式
+        debugMode = (Boolean) BUApplication.getCache(context).getAsObject(PREF_DEBUG_MODE);
+        if (debugMode != null) {
+            editor.putBoolean(PREF_DEBUG_MODE, debugMode);
+            editor.commit();
+            cache.remove(PREF_DEBUG_MODE);
+        }
+
+        // 数据上传
+        uploadData = (Boolean) BUApplication.getCache(context).getAsObject(PREF_UPLOAD_DATA);
+        if (uploadData != null) {
+            editor.putBoolean(PREF_UPLOAD_DATA, uploadData);
+            editor.commit();
+            cache.remove(PREF_UPLOAD_DATA);
+        }
+    }
+
     public static boolean isInSchool() {
         return networkType == NETWORK_TYPE.IN_SCHOOL;
     }
 
     public static Integer getPostListLoadingCount(Context context) {
-        postListLoadingCount = (Integer) BUApplication.getCache(context).getAsObject(PREF_POST_LIST_LOADING_COUNT);
-        if (postListLoadingCount == null) postListLoadingCount = 10;
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        postListLoadingCount = prefs.getInt(PREF_POST_LIST_LOADING_COUNT, 10);
         return postListLoadingCount;
     }
 
     public static void setPostListLoadingCount(Context context) {
         Log.d(TAG, "setPostListLoadingCount >> " + postListLoadingCount);
         if (postListLoadingCount != null) {
-            BUApplication.getCache(context).put(PREF_POST_LIST_LOADING_COUNT, postListLoadingCount);
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+            SharedPreferences.Editor editor = prefs.edit();
+            editor.putInt(PREF_POST_LIST_LOADING_COUNT, postListLoadingCount);
+            editor.commit();
         }
     }
 
     public static Boolean getPrefEnableDisplayDeviceInfo(Context context) {
-        enableDisplayDeviceInfo = (Boolean) BUApplication.getCache(context).getAsObject(PREF_ENABLE_DISPLAY_DEVICE_INFO);
-        if (enableDisplayDeviceInfo == null) enableDisplayDeviceInfo = true;
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        enableDisplayDeviceInfo = prefs.getBoolean(PREF_ENABLE_DISPLAY_DEVICE_INFO, true);
         return enableDisplayDeviceInfo;
     }
 
     public static void setPrefEnableDisplayDeviceInfo(Context context) {
         Log.d(TAG, "setPrefEnableDisplayDeviceInfo >> " + enableDisplayDeviceInfo);
         if (enableDisplayDeviceInfo != null) {
-            BUApplication.getCache(context).put(PREF_ENABLE_DISPLAY_DEVICE_INFO, enableDisplayDeviceInfo);
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+            SharedPreferences.Editor editor = prefs.edit();
+            editor.putBoolean(PREF_ENABLE_DISPLAY_DEVICE_INFO, enableDisplayDeviceInfo);
+            editor.commit();
         }
     }
 
     public static String getCachedFeedbackEmail(Context context) {
-        cachedFeedbackEmail = BUApplication.getCache(context).getAsString(CACHED_FEEDBACK_EMAIL);
-        if (cachedFeedbackEmail == null) cachedFeedbackEmail = "";
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        cachedFeedbackEmail = prefs.getString(CACHED_FEEDBACK_EMAIL, "");
         return cachedFeedbackEmail;
     }
 
     public static void setCachedFeedbackEmail(Context context) {
         Log.d(TAG, "setCachedFeedbackEmail >> " + cachedFeedbackEmail);
         if (cachedFeedbackEmail != null) {
-            BUApplication.getCache(context).put(CACHED_FEEDBACK_EMAIL, cachedFeedbackEmail);
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+            SharedPreferences.Editor editor = prefs.edit();
+            editor.putString(CACHED_FEEDBACK_EMAIL, cachedFeedbackEmail);
+            editor.commit();
         }
     }
 
     public static Boolean getEnableSilentMode(Context context) {
-        enableSilentMode = (Boolean) BUApplication.getCache(context).getAsObject(PREF_ENABLE_SILENT_MODE);
-        if (enableSilentMode == null) enableSilentMode = false;
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        enableSilentMode = prefs.getBoolean(PREF_ENABLE_SILENT_MODE, false);
         return enableSilentMode;
     }
 
     public static void setEnableSilentMode(Context context) {
         Log.d(TAG, "setEnableSilentMode >> " + enableSilentMode);
         if (enableSilentMode != null) {
-            BUApplication.getCache(context).put(PREF_ENABLE_SILENT_MODE, enableSilentMode);
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+            SharedPreferences.Editor editor = prefs.edit();
+            editor.putBoolean(PREF_ENABLE_SILENT_MODE, enableSilentMode);
+            editor.commit();
         }
     }
 
     public static Boolean getEnableAdvancedEditor(Context context) {
-        enableAdvancedEditor = (Boolean) BUApplication.getCache(context).getAsObject(PREF_ENABLE_ADVANCED_EDITOR);
-        if (enableAdvancedEditor == null) enableAdvancedEditor = false;
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        enableAdvancedEditor = prefs.getBoolean(PREF_ENABLE_ADVANCED_EDITOR, false);
         return enableAdvancedEditor;
     }
 
     public static void setEnableAdvancedEditor(Context context) {
         Log.d(TAG, "setEnableAdvancedEditor >> " + enableAdvancedEditor);
         if (enableAdvancedEditor != null) {
-            BUApplication.getCache(context).put(PREF_ENABLE_ADVANCED_EDITOR, enableAdvancedEditor);
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+            SharedPreferences.Editor editor = prefs.edit();
+            editor.putBoolean(PREF_ENABLE_ADVANCED_EDITOR, enableAdvancedEditor);
+            editor.commit();
         }
     }
 
     public static Integer getHomePageClickEventType(Context context) {
-        homePageClickEventType = (Integer) BUApplication.getCache(context).getAsObject(PREF_HOME_PAGE_CLICK_EVENT);
-        if (homePageClickEventType == null) homePageClickEventType = 0;
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        homePageClickEventType = prefs.getInt(PREF_HOME_PAGE_CLICK_EVENT, 0);
         return homePageClickEventType;
     }
 
     public static void setHomePageClickEventType(Context context) {
         Log.d(TAG, "setHomePageClickEventType >> " + homePageClickEventType);
         if (homePageClickEventType != null) {
-            BUApplication.getCache(context).put(PREF_HOME_PAGE_CLICK_EVENT, homePageClickEventType);
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+            SharedPreferences.Editor editor = prefs.edit();
+            editor.putInt(PREF_HOME_PAGE_CLICK_EVENT, homePageClickEventType);
+            editor.commit();
         }
     }
 
     public static Boolean getEnableFollowNotify(Context context) {
-        enableFollowingNotify = (Boolean) BUApplication.getCache(context).getAsObject(PREF_ENABLE_FOLLOW_NOTIFY);
-        if (enableFollowingNotify == null) enableFollowingNotify = false;
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        enableFollowingNotify = prefs.getBoolean(PREF_ENABLE_FOLLOW_NOTIFY, false);
         return enableFollowingNotify;
     }
 
     public static void setEnableFollowNotify(Context context) {
         Log.d(TAG, "setEnableFollowNotify >> " + enableFollowingNotify);
-        if (enableFollowingNotify != null)
-            BUApplication.getCache(context).put(PREF_ENABLE_FOLLOW_NOTIFY, enableFollowingNotify);
+        if (enableFollowingNotify != null) {
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+            SharedPreferences.Editor editor = prefs.edit();
+            editor.putBoolean(PREF_ENABLE_FOLLOW_NOTIFY, enableFollowingNotify);
+            editor.commit();
+        }
     }
 
     public static Boolean getEnableAtNotify(Context context) {
-        enableAtNotify = (Boolean) BUApplication.getCache(context).getAsObject(PREF_ENABLE_AT_NOTIFY);
-        if (enableAtNotify == null) enableAtNotify = true;
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        enableAtNotify = prefs.getBoolean(PREF_ENABLE_AT_NOTIFY, true);
         return enableAtNotify;
     }
 
     public static void setEnableAtNotify(Context context) {
         Log.d(TAG, "setEnableAtNotify >> " + enableAtNotify);
-        if (enableAtNotify != null)
-            BUApplication.getCache(context).put(PREF_ENABLE_AT_NOTIFY, enableAtNotify);
+        if (enableAtNotify != null) {
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+            SharedPreferences.Editor editor = prefs.edit();
+            editor.putBoolean(PREF_ENABLE_AT_NOTIFY, enableAtNotify);
+            editor.commit();
+        }
     }
 
     public static Boolean getEnableQuoteNotify(Context context) {
-        enableQuoteNotify = (Boolean) BUApplication.getCache(context).getAsObject(PREF_ENABLE_QUOTE_NOTIFY);
-        if (enableQuoteNotify == null) enableQuoteNotify = true;
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        enableQuoteNotify = prefs.getBoolean(PREF_ENABLE_QUOTE_NOTIFY, true);
         return enableQuoteNotify;
     }
 
     public static void setEnableQuoteNotify(Context context) {
         Log.d(TAG, "setEnableReplyNotify >> " + enableQuoteNotify);
-        if (enableQuoteNotify != null)
-            BUApplication.getCache(context).put(PREF_ENABLE_QUOTE_NOTIFY, enableQuoteNotify);
+        if (enableQuoteNotify != null) {
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+            SharedPreferences.Editor editor = prefs.edit();
+            editor.putBoolean(PREF_ENABLE_QUOTE_NOTIFY, enableQuoteNotify);
+            editor.commit();
+        }
     }
 
     public static Boolean getEnableReplyNotify(Context context) {
-        enableReplyNotify = (Boolean) BUApplication.getCache(context).getAsObject(PREF_ENABLE_REPLY_NOTIFY);
-        if (enableReplyNotify == null) enableReplyNotify = true;
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        enableReplyNotify = prefs.getBoolean(PREF_ENABLE_REPLY_NOTIFY, true);
         return enableReplyNotify;
     }
 
     public static void setEnableReplyNotify(Context context) {
         Log.d(TAG, "setEnableReplyNotify >> " + enableReplyNotify);
-        if (enableReplyNotify != null)
-            BUApplication.getCache(context).put(PREF_ENABLE_REPLY_NOTIFY, enableReplyNotify);
+        if (enableReplyNotify != null) {
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+            SharedPreferences.Editor editor = prefs.edit();
+            editor.putBoolean(PREF_ENABLE_REPLY_NOTIFY, enableReplyNotify);
+            editor.commit();
+        }
     }
 
     public static Boolean getEnableNotify(Context context) {
-        enableNotify = (Boolean) BUApplication.getCache(context).getAsObject(PREF_ENABLE_NOTIFY);
-        if (enableNotify == null) enableNotify = true;
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        enableNotify = prefs.getBoolean(PREF_ENABLE_NOTIFY, true);
         return enableNotify;
     }
 
     public static void setEnableNotify(Context context) {
         Log.d(TAG, "setEnableNotify >> " + enableNotify);
-        if (enableNotify != null)
-            BUApplication.getCache(context).put(PREF_ENABLE_NOTIFY, enableNotify);
+        if (enableNotify != null) {
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+            SharedPreferences.Editor editor = prefs.edit();
+            editor.putBoolean(PREF_ENABLE_NOTIFY, enableNotify);
+            editor.commit();
+        }
     }
 
     public static Integer getCacheTitleFontSize(Context context) {
-        titleFontSize = (Integer) BUApplication.getCache(context).getAsObject(PREF_FONT_TITLE_SIZE);
-        if (titleFontSize == null) titleFontSize = DEFAULT_TITLE_FONT_SIZE;
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        titleFontSize = prefs.getInt(PREF_FONT_TITLE_SIZE, DEFAULT_TITLE_FONT_SIZE);
         return titleFontSize;
     }
 
     public static void setCacheTitleFontSize(Context context) {
         Log.d(TAG, "setCacheTitleFontSize >> " + titleFontSize);
-        if (titleFontSize != null)
-            BUApplication.getCache(context).put(PREF_FONT_TITLE_SIZE, titleFontSize);
+        if (titleFontSize != null) {
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+            SharedPreferences.Editor editor = prefs.edit();
+            editor.putInt(PREF_FONT_TITLE_SIZE, titleFontSize);
+            editor.commit();
+        }
     }
 
     public static Integer getCacheFontSize(Context context) {
-        fontSize = (Integer) BUApplication.getCache(context).getAsObject(PREF_FONT_SIZE);
-        if (fontSize == null) fontSize = DEFAULT_FONT_SIZE;
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        fontSize = prefs.getInt(PREF_FONT_SIZE, DEFAULT_FONT_SIZE);
         return fontSize;
     }
 
     public static void setCacheFontSize(Context context) {
         Log.d(TAG, "setCacheFontSize >> " + fontSize);
-        if (fontSize != null) BUApplication.getCache(context).put(PREF_FONT_SIZE, fontSize);
+        if (fontSize != null) {
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+            SharedPreferences.Editor editor = prefs.edit();
+            editor.putInt(PREF_FONT_SIZE, fontSize);
+            editor.commit();
+        }
     }
 
     public static Integer getCacheLineSpacingExtra(Context context) {
-        lineSpacingExtra = (Integer) BUApplication.getCache(context).getAsObject(PREF_LINE_SPACING_EXTRA);
-        if (lineSpacingExtra == null) lineSpacingExtra = DEFAULT_LINE_SPACING_EXTRA;
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        lineSpacingExtra = prefs.getInt(PREF_LINE_SPACING_EXTRA, DEFAULT_LINE_SPACING_EXTRA);
         return lineSpacingExtra;
     }
 
     public static void setCacheLineSpacingExtra(Context context) {
         Log.d(TAG, "setCacheLineSpacingExtra >> " + lineSpacingExtra);
-        if (lineSpacingExtra != null)
-            BUApplication.getCache(context).put(PREF_LINE_SPACING_EXTRA, lineSpacingExtra);
+        if (lineSpacingExtra != null) {
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+            SharedPreferences.Editor editor = prefs.edit();
+            editor.putInt(PREF_LINE_SPACING_EXTRA, lineSpacingExtra);
+            editor.commit();
+        }
     }
 
     public static Float getCacheLineSpacingMultiplier(Context context) {
-        lineSpacingMultiplier = (Float) BUApplication.getCache(context).getAsObject(PREF_LINE_SPACING_MULTIPLIER);
-        if (lineSpacingMultiplier == null) lineSpacingMultiplier = DEFAULT_LINE_SPACING_MULTIPLIER;
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        lineSpacingMultiplier = prefs.getFloat(PREF_LINE_SPACING_MULTIPLIER, DEFAULT_LINE_SPACING_MULTIPLIER);
         return lineSpacingMultiplier;
     }
 
     public static void setCacheLineSpacingMultiplier(Context context) {
         Log.d(TAG, "setCacheLineSpacingMultiplier >> " + lineSpacingMultiplier);
-        if (lineSpacingMultiplier != null)
-            BUApplication.getCache(context).put(PREF_LINE_SPACING_MULTIPLIER, lineSpacingMultiplier);
+        if (lineSpacingMultiplier != null) {
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+            SharedPreferences.Editor editor = prefs.edit();
+            editor.putFloat(PREF_LINE_SPACING_MULTIPLIER, lineSpacingMultiplier);
+            editor.commit();
+        }
     }
 
     public static String getCacheUsername(Context context) {
-        username = BUApplication.getCache(context).getAsString(PREF_USER_NAME);
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        username = prefs.getString(PREF_USER_NAME, null);
         return username;
     }
 
     public static void setCacheUserName(Context context) {
         Log.d(TAG, "setCacheUserName >> " + BUApplication.username);
-        BUApplication.getCache(context).put(PREF_USER_NAME, BUApplication.username == null ? "" : BUApplication.username);
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putString(PREF_USER_NAME, BUApplication.username == null ? "" : BUApplication.username);
+        editor.commit();
     }
 
     public static Session getCacheSession(Context context) {
-        userSession = (Session) BUApplication.getCache(context).getAsObject(CONF_SESSION_STR);
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        String sessionStr = prefs.getString(CONF_SESSION_STR, null);
+        if (sessionStr != null) {
+            try {
+                userSession = BUApi.MAPPER.readValue(sessionStr, Session.class);
+            } catch (IOException e) {
+                Log.e(TAG, "获取 Session 失败 " + sessionStr, e);
+                userSession = null;
+            }
+        }
+
         return userSession;
     }
 
     public static void setCacheSession(Context context) {
         Log.d(TAG, "setCacheSession >> " + userSession);
-        if (userSession != null) BUApplication.getCache(context).put(CONF_SESSION_STR, userSession);
+        if (userSession != null) {
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+            SharedPreferences.Editor editor = prefs.edit();
+            editor.putString(CONF_SESSION_STR, userSession.toString());
+            editor.commit();
+        }
     }
 
     public static String getCachePassword(Context context) {
-        password = BUApplication.getCache(context).getAsString(PREF_PASSWORD);
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        password = prefs.getString(PREF_PASSWORD, null);
         return password;
     }
 
     public static void setCachePassword(Context context) {
         Log.d(TAG, "setCachePassword >> " + BUApplication.password);
-        BUApplication.getCache(context).put(PREF_PASSWORD, BUApplication.password == null ? "" : BUApplication.password);
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putString(PREF_PASSWORD, BUApplication.password == null ? "" : BUApplication.password);
+        editor.commit();
     }
 
     public static NETWORK_TYPE getCacheNetworkType(Context context) {
-        String networkTypeStr = BUApplication.getCache(context).getAsString(PREF_NETWORK_TYPE);
-        networkType = networkTypeStr == null ? NETWORK_TYPE.OUT_SCHOOL : NETWORK_TYPE.valueOf(networkTypeStr);
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        String networkTypeStr = prefs.getString(PREF_NETWORK_TYPE, "");
+        networkType = networkTypeStr.equals("") ? NETWORK_TYPE.OUT_SCHOOL : NETWORK_TYPE.valueOf(networkTypeStr);
         BUApi.currentEndPoint = networkType == NETWORK_TYPE.OUT_SCHOOL ? BUApi.OUT_SCHOOL_ENDPOINT : BUApi.IN_SCHOOL_ENDPOINT;
         return networkType;
     }
 
     public static void setCacheNetworkType(Context context) {
         Log.d(TAG, "setCacheNetworkType >> " + networkType);
-        if (networkType != null)
-            BUApplication.getCache(context).put(PREF_NETWORK_TYPE, networkType.toString());
+        if (networkType != null) {
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+            SharedPreferences.Editor editor = prefs.edit();
+            editor.putString(PREF_NETWORK_TYPE, networkType.toString());
+            editor.commit();
+        }
     }
 
     public static Boolean getCacheSaveDataMode(Context context) {
-        saveDataMode = (Boolean) BUApplication.getCache(context).getAsObject(PREF_SAVE_DATA);
-        if (saveDataMode == null) saveDataMode = false;
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        saveDataMode = prefs.getBoolean(PREF_SAVE_DATA, false);
         return saveDataMode;
     }
 
     public static void setCacheSaveDataMode(Context context) {
         Log.d(TAG, "setCacheSaveDataMode >> " + saveDataMode);
-        if (saveDataMode != null) BUApplication.getCache(context).put(PREF_SAVE_DATA, saveDataMode);
+        if (saveDataMode != null) {
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+            SharedPreferences.Editor editor = prefs.edit();
+            editor.putBoolean(PREF_SAVE_DATA, saveDataMode);
+            editor.commit();
+        }
     }
 
     public static Boolean getCacheDebugMode(Context context) {
-        debugMode = (Boolean) BUApplication.getCache(context).getAsObject(PREF_DEBUG_MODE);
-        if (debugMode == null) debugMode = false;
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        debugMode = prefs.getBoolean(PREF_DEBUG_MODE, false);
         return debugMode;
     }
 
     public static void setCacheDebugMode(Context context) {
         Log.d(TAG, "setCacheDebugMode >> " + debugMode);
-        if (debugMode != null) BUApplication.getCache(context).put(PREF_DEBUG_MODE, debugMode);
+        if (debugMode != null) {
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+            SharedPreferences.Editor editor = prefs.edit();
+            editor.putBoolean(PREF_DEBUG_MODE, debugMode);
+            editor.commit();
+        }
     }
 
     public static Boolean getCacheUploadData(Context context) {
-        uploadData = (Boolean) BUApplication.getCache(context).getAsObject(PREF_UPLOAD_DATA);
-        if (uploadData == null) uploadData = true;
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        uploadData = prefs.getBoolean(PREF_UPLOAD_DATA, true);
         return uploadData;
     }
 
     public static void setUploadData(Context context) {
         Log.d(TAG, "setUploadData >> " + uploadData);
-        if (uploadData != null) BUApplication.getCache(context).put(PREF_UPLOAD_DATA, uploadData);
+        if (uploadData != null) {
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+            SharedPreferences.Editor editor = prefs.edit();
+            editor.putBoolean(PREF_UPLOAD_DATA, uploadData);
+            editor.commit();
+        }
     }
 
     /* 论坛列表相关 */
@@ -560,6 +852,14 @@ public class BUApplication extends Application {
 
         // 苦中作乐区
         forumLists = new ArrayList<>();
+
+        forumList = new ForumListGroup.ForumList("五环世界", 179, "file:///android_asset/forumicon/olympic.png");
+        forumListHashMap.put(14, forumList);
+        forumList.addSubForum(new ForumListGroup.SubForum("激情伦敦 (历史版面)", 152));
+        forumList.addSubForum(new ForumListGroup.SubForum("聚焦北京 (历史版面)", 138));
+        forumList.addSubForum(new ForumListGroup.SubForum("烽火雅典 (历史版面)", 103));
+        forumLists.add(forumList);
+
         forumList = new ForumListGroup.ForumList("游戏人生", 22, "file:///android_asset/forumicon/game.gif");
         forumListHashMap.put(22, forumList);
         forumLists.add(forumList);
@@ -793,10 +1093,12 @@ public class BUApplication extends Application {
         UmengUpdateAgent.setUpdateOnlyWifi(false);
 
         // 从缓存中读取数据
+        migrateCache(this);
         readConfig(this);
 
         // 配置 Picasso 的磁盘缓存（配合  OKHttp）
         Picasso.Builder builder = new Picasso.Builder(this);
+        OkHttpClient client = new OkHttpClient();
         builder.downloader(new OkHttpDownloader(this, Integer.MAX_VALUE));
         builder.listener(new Picasso.Listener() {
             @Override

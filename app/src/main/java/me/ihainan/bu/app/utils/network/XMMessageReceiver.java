@@ -5,10 +5,16 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.v4.app.NotificationCompat;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
 import com.xiaomi.mipush.sdk.ErrorCode;
 import com.xiaomi.mipush.sdk.MiPushClient;
 import com.xiaomi.mipush.sdk.MiPushCommandMessage;
@@ -21,6 +27,7 @@ import java.util.Calendar;
 import java.util.List;
 
 import me.ihainan.bu.app.R;
+import me.ihainan.bu.app.models.Member;
 import me.ihainan.bu.app.models.NotificationMessage;
 import me.ihainan.bu.app.ui.PostListActivity;
 import me.ihainan.bu.app.ui.ProfileActivity;
@@ -81,21 +88,14 @@ public class XMMessageReceiver extends PushMessageReceiver {
                     intent.putExtra(PostListActivity.NOTIFY_ID_TAG, message.getNotifyId());
                     PendingIntent pendingIntent = PendingIntent.getActivity(context, message.getNotifyId(), intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
-                    NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context);
-                    mBuilder.setContentTitle(message.getTitle());
-                    mBuilder.setContentText(message.getDescription());
-                    mBuilder.setAutoCancel(true);
-                    mBuilder.setSmallIcon(R.drawable.ic_stat_bu);
-                    mBuilder.setColor(context.getResources().getColor(R.color.primary));
-                    mBuilder.setContentIntent(pendingIntent);
-                    Notification notify = mBuilder.build();
-                    notify.defaults |= Notification.DEFAULT_VIBRATE;
-                    notify.defaults |= Notification.DEFAULT_SOUND;
-                    notify.defaults |= Notification.DEFAULT_LIGHTS;
-                    int mNotificationId = message.getNotifyId();
-                    NotificationManager mNotifyMgr =
-                            (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-                    mNotifyMgr.notify(mNotificationId, notify);
+                    NotificationCompat.Builder builder = new NotificationCompat.Builder(context);
+                    builder.setContentTitle(message.getTitle());
+                    builder.setContentText(message.getDescription());
+                    builder.setAutoCancel(true);
+                    builder.setSmallIcon(R.drawable.ic_stat_bu);
+                    builder.setColor(context.getResources().getColor(R.color.primary));
+                    builder.setContentIntent(pendingIntent);
+                    downloadAvatarAndShowNotification(context, builder, message);
                 } else if (type == 3) {
                     NotificationMessage.FollowNotificationMessageData followNotificationMessageData = BUApi.MAPPER.readValue(jsonObject.getJSONObject("data").toString(), NotificationMessage.FollowNotificationMessageData.class);
                     Intent intent = new Intent(context, ProfileActivity.class);
@@ -105,26 +105,72 @@ public class XMMessageReceiver extends PushMessageReceiver {
 
                     PendingIntent pendingIntent = PendingIntent.getActivity(context, message.getNotifyId(), intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
-                    NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context);
-                    mBuilder.setContentTitle(message.getTitle());
-                    mBuilder.setContentText(message.getDescription());
-                    mBuilder.setAutoCancel(true);
-                    mBuilder.setSmallIcon(R.drawable.ic_stat_bu);
-                    mBuilder.setColor(context.getResources().getColor(R.color.primary));
-                    mBuilder.setContentIntent(pendingIntent);
-                    Notification notify = mBuilder.build();
-                    notify.defaults |= Notification.DEFAULT_VIBRATE;
-                    notify.defaults |= Notification.DEFAULT_SOUND;
-                    notify.defaults |= Notification.DEFAULT_LIGHTS;
-                    int mNotificationId = message.getNotifyId();
-                    NotificationManager mNotifyMgr =
-                            (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-                    mNotifyMgr.notify(mNotificationId, notify);
+                    NotificationCompat.Builder builder = new NotificationCompat.Builder(context);
+                    builder.setContentTitle(message.getTitle());
+                    builder.setContentText(message.getDescription());
+                    builder.setAutoCancel(true);
+                    builder.setSmallIcon(R.drawable.ic_stat_bu);
+                    builder.setColor(context.getResources().getColor(R.color.primary));
+                    builder.setContentIntent(pendingIntent);
+                    downloadAvatarAndShowNotification(context, builder, message);
                 }
             } catch (Exception e) {
                 Log.e(TAG, "解析推送数据失败 " + message.getContent(), e);
             }
         }
+    }
+
+    private static void downloadAvatarAndShowNotification(final Context context, final NotificationCompat.Builder builder, final MiPushMessage message) {
+        CommonUtils.getAndCacheUserInfo(context, message.getTitle(), new CommonUtils.UserInfoAndFillAvatarCallback() {
+            @Override
+            public void doSomethingIfHasCached(final Member member) {
+                if (member != null) {
+                    final Target target = new Target() {
+                        @Override
+                        public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+                            bitmap = CommonUtils.getCroppedBitmap(bitmap);
+                            Log.i(TAG, "Downloaded avatar successfully");
+                            builder.setLargeIcon(bitmap);
+                            Notification notify = builder.build();
+                            notify.defaults |= Notification.DEFAULT_VIBRATE;
+                            notify.defaults |= Notification.DEFAULT_SOUND;
+                            notify.defaults |= Notification.DEFAULT_LIGHTS;
+                            int mNotificationId = message.getNotifyId();
+                            NotificationManager mNotifyMgr =
+                                    (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+                            mNotifyMgr.notify(mNotificationId, notify);
+                        }
+
+                        @Override
+                        public void onBitmapFailed(Drawable errorDrawable) {
+                            Log.i(TAG, "Failed to download avatar");
+                            Notification notify = builder.build();
+                            notify.defaults |= Notification.DEFAULT_VIBRATE;
+                            notify.defaults |= Notification.DEFAULT_SOUND;
+                            notify.defaults |= Notification.DEFAULT_LIGHTS;
+                            int mNotificationId = message.getNotifyId();
+                            NotificationManager mNotifyMgr =
+                                    (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+                            mNotifyMgr.notify(mNotificationId, notify);
+                        }
+
+                        @Override
+                        public void onPrepareLoad(Drawable placeHolderDrawable) {
+                            // Do nothing
+                        }
+                    };
+
+                    Handler uiHandler = new Handler(Looper.getMainLooper());
+                    uiHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            Picasso.with(context).load(CommonUtils.getRealImageURL(member.avatar)).into(target);
+                        }
+                    });
+
+                }
+            }
+        });
     }
 
     /**
