@@ -1,7 +1,9 @@
 package me.ihainan.bu.app.adapters;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -112,9 +114,13 @@ public class NotificationAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 if (type == 0 || type == 1 || type == 2) {
                     NotificationMessage.PostNotificationMessageData notificationMessageData = BUApi.MAPPER.readValue(jsonObject.getJSONObject("data").toString(), NotificationMessage.PostNotificationMessageData.class);
                     intent = new Intent(mContext, PostListActivity.class);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_LAUNCH_ADJACENT |
-                            Intent.FLAG_ACTIVITY_NEW_TASK |
-                            Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                        if (((Activity) mContext).isInMultiWindowMode()) {
+                            intent.setFlags(Intent.FLAG_ACTIVITY_LAUNCH_ADJACENT |
+                                    Intent.FLAG_ACTIVITY_NEW_TASK |
+                                    Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
+                        }
+                    }
                     intent.setAction(Long.toString(System.currentTimeMillis()));
                     intent.putExtra(PostListActivity.THREAD_ID_TAG, notificationMessageData.tid);
                     intent.putExtra(PostListActivity.THREAD_JUMP_FLOOR, notificationMessageData.floor);

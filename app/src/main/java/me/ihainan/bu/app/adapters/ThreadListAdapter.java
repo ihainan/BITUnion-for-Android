@@ -1,7 +1,9 @@
 package me.ihainan.bu.app.adapters;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
@@ -92,9 +94,13 @@ public class ThreadListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         intent.putExtra(PostListActivity.THREAD_REPLY_COUNT_TAG, thread.replies + 1);
         intent.putExtra(PostListActivity.THREAD_AUTHOR_NAME_TAG, thread.author);
         intent.putExtra(PostListActivity.THREAD_FID_TAG, mFid);
-        intent.setFlags(Intent.FLAG_ACTIVITY_LAUNCH_ADJACENT |
-                Intent.FLAG_ACTIVITY_NEW_TASK |
-                Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            if (((Activity) mContext).isInMultiWindowMode()) {
+                intent.setFlags(Intent.FLAG_ACTIVITY_LAUNCH_ADJACENT |
+                        Intent.FLAG_ACTIVITY_NEW_TASK |
+                        Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
+            }
+        }
         holder.rootLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

@@ -1,7 +1,9 @@
 package me.ihainan.bu.app.adapters;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.util.Log;
@@ -116,9 +118,13 @@ public class TimelineAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                     intent.putExtra(PostListActivity.THREAD_FID_TAG, post.fid);
                     intent.putExtra(PostListActivity.THREAD_ID_TAG, post.tid);
                     intent.putExtra(PostListActivity.THREAD_NAME_TAG, post.t_subject);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_LAUNCH_ADJACENT |
-                            Intent.FLAG_ACTIVITY_NEW_TASK |
-                            Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                        if (((Activity) mContext).isInMultiWindowMode()) {
+                            intent.setFlags(Intent.FLAG_ACTIVITY_LAUNCH_ADJACENT |
+                                    Intent.FLAG_ACTIVITY_NEW_TASK |
+                                    Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
+                        }
+                    }
 
                     View.OnClickListener onRootClickListener = new View.OnClickListener() {
                         @Override
@@ -157,9 +163,13 @@ public class TimelineAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                             intent.putExtra(PostListActivity.THREAD_AUTHOR_NAME_TAG, favorite.author);
                             intent.putExtra(PostListActivity.THREAD_NAME_TAG, favorite.subject);
                             intent.putExtra(PostListActivity.THREAD_JUMP_FLOOR, 0);
-                            intent.setFlags(Intent.FLAG_ACTIVITY_LAUNCH_ADJACENT |
-                                    Intent.FLAG_ACTIVITY_NEW_TASK |
-                                    Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                                if (((Activity) mContext).isInMultiWindowMode()) {
+                                    intent.setFlags(Intent.FLAG_ACTIVITY_LAUNCH_ADJACENT |
+                                            Intent.FLAG_ACTIVITY_NEW_TASK |
+                                            Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
+                                }
+                            }
                             mContext.startActivity(intent);
                         }
                     };

@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Point;
+import android.os.Build;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.util.Log;
@@ -111,9 +112,13 @@ class NewLatestThreadListAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         intent.putExtra(PostListActivity.THREAD_AUTHOR_NAME_TAG, latestThread.author);
         intent.putExtra(PostListActivity.THREAD_REPLY_COUNT_TAG, latestThread.tid_sum + 1);
         intent.putExtra(PostListActivity.THREAD_NAME_TAG, latestThread.pname);
-        intent.setFlags(Intent.FLAG_ACTIVITY_LAUNCH_ADJACENT |
-                Intent.FLAG_ACTIVITY_NEW_TASK |
-                Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            if (((Activity) mContext).isInMultiWindowMode()) {
+                intent.setFlags(Intent.FLAG_ACTIVITY_LAUNCH_ADJACENT |
+                        Intent.FLAG_ACTIVITY_NEW_TASK |
+                        Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
+            }
+        }
         holder.rootLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -227,9 +232,13 @@ class NewLatestThreadListAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         intent.putExtra(PostListActivity.THREAD_AUTHOR_NAME_TAG, latestThread.author);
         intent.putExtra(PostListActivity.THREAD_REPLY_COUNT_TAG, latestThread.tid_sum + 1);
         intent.putExtra(PostListActivity.THREAD_NAME_TAG, latestThread.pname);
-        intent.setFlags(Intent.FLAG_ACTIVITY_LAUNCH_ADJACENT |
-                Intent.FLAG_ACTIVITY_NEW_TASK |
-                Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            if (((Activity) mContext).isInMultiWindowMode()) {
+                intent.setFlags(Intent.FLAG_ACTIVITY_LAUNCH_ADJACENT |
+                        Intent.FLAG_ACTIVITY_NEW_TASK |
+                        Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
+            }
+        }
         holder.rootLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

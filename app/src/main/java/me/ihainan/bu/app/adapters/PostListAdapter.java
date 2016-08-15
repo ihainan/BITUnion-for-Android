@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
+import android.os.Build;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.text.SpannableString;
@@ -153,9 +154,13 @@ public class PostListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                     String quoteContent = reply.toQuote();
                     intent.putExtra(NewPostActivity.NEW_POST_QUOTE_CONTENT_TAG, quoteContent);
                     intent.putExtra(NewPostActivity.NEW_POST_MAX_FLOOR_TAG, mReplyCount + 1);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_LAUNCH_ADJACENT |
-                            Intent.FLAG_ACTIVITY_NEW_TASK |
-                            Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                        if (((Activity) mContext).isInMultiWindowMode()) {
+                            intent.setFlags(Intent.FLAG_ACTIVITY_LAUNCH_ADJACENT |
+                                    Intent.FLAG_ACTIVITY_NEW_TASK |
+                                    Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
+                        }
+                    }
                     ((Activity) mContext).startActivityForResult(intent, PostListActivity.REQUEST_NEW_REPLY);
                 }
             });

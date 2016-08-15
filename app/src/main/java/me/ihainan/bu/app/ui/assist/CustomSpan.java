@@ -1,10 +1,12 @@
 package me.ihainan.bu.app.ui.assist;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Typeface;
+import android.os.Build;
 import android.support.v4.content.ContextCompat;
 import android.text.Layout;
 import android.text.Spannable;
@@ -157,9 +159,13 @@ public class CustomSpan {
                         Intent intent = new Intent(mContext, PostListActivity.class);
                         intent.putExtra(PostListActivity.THREAD_ID_TAG, tid);
                         intent.putExtra(PostListActivity.THREAD_JUMP_FLOOR, 0);
-                        intent.setFlags(Intent.FLAG_ACTIVITY_LAUNCH_ADJACENT |
-                                Intent.FLAG_ACTIVITY_NEW_TASK |
-                                Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                            if (((Activity) mContext).isInMultiWindowMode()) {
+                                intent.setFlags(Intent.FLAG_ACTIVITY_LAUNCH_ADJACENT |
+                                        Intent.FLAG_ACTIVITY_NEW_TASK |
+                                        Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
+                            }
+                        }
                         mContext.startActivity(intent);
                         return;
                     }
