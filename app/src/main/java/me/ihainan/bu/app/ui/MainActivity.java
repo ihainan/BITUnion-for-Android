@@ -1,25 +1,28 @@
 package me.ihainan.bu.app.ui;
 
-import android.app.Application;
+import android.Manifest;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -44,6 +47,7 @@ import me.ihainan.bu.app.utils.ui.IconFontHelper;
 public class MainActivity extends AppCompatActivity {
     // Tags
     private final static String TAG = MainActivity.class.getSimpleName();
+    private final static int REQUEST_READ_PHONE_STATE = 1;
 
     // UI elements
     private DrawerLayout mDrawerLayout;
@@ -111,7 +115,8 @@ public class MainActivity extends AppCompatActivity {
         // 检查新版本更新并安装
         if (!BUApplication.IS_GOOGLE_PLAY_EDITION) {
             Log.i(TAG, "Is not Google Play Edition, will check for update");
-            CommonUtils.updateVersion(mContext, true, null);
+            // CommonUtils.updateVersion(mContext, true, null);
+            checkAndGetPermission();
         } else {
             Log.i(TAG, "Google Play Edition, will not check for update");
         }
@@ -298,7 +303,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                 } catch (Exception e) {
                     String message = mContext.getString(R.string.error_parse_json);
-                    String debugMessage = TAG + " >> " + message;
+                    String debugMessage = TAG + " tEST >> " + message;
                     CommonUtils.debugToast(mContext, debugMessage);
                     Log.e(TAG, debugMessage, e);
                 }
@@ -361,5 +366,31 @@ public class MainActivity extends AppCompatActivity {
         });
 
         return super.onCreateOptionsMenu(menu);
+    }
+
+    /* Xiao Mi Update*/
+    private void checkAndGetPermission() {
+        int permissionCheck = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE);
+        if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_PHONE_STATE}, REQUEST_READ_PHONE_STATE);
+        } else {
+            // CommonUtils.updateVersion(mContext, true, null);
+            TelephonyManager telephonyManager = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
+            Log.d(TAG, "IMEI = " + telephonyManager.getDeviceId());
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case REQUEST_READ_PHONE_STATE:
+                if ((grantResults.length > 0) && (grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
+                    // CommonUtils.updateVersion(mContext, true, null);
+                }
+                break;
+
+            default:
+                break;
+        }
     }
 }

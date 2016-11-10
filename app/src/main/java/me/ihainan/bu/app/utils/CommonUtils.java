@@ -46,6 +46,8 @@ import com.umeng.update.UmengUpdateAgent;
 import com.umeng.update.UmengUpdateListener;
 import com.umeng.update.UpdateResponse;
 import com.umeng.update.UpdateStatus;
+import com.xiaomi.market.sdk.XiaomiUpdateAgent;
+import com.xiaomi.market.sdk.XiaomiUpdateListener;
 
 import org.json.JSONObject;
 
@@ -106,6 +108,54 @@ public class CommonUtils {
      * @param dialog        检查升级前显示的加载对话框，可为 null
      */
     public static void updateVersion(final Context context, final boolean ifCheckIgnore, final Dialog dialog) {
+        XiaomiUpdateAgent.setUpdateAutoPopup(false);
+        XiaomiUpdateAgent.setUpdateListener(new XiaomiUpdateListener() {
+            @Override
+            public void onUpdateReturned(int updateStatus, com.xiaomi.market.sdk.UpdateResponse updateResponse) {
+                if (dialog != null) dialog.dismiss();
+                switch (updateStatus) {
+                    case UpdateStatus.Update:
+                    case UpdateStatus.NoneWifi:
+                        debugToast(context, "发现更新，当前状态 ifCheckIgnore = "
+                                + ifCheckIgnore + "; isIgnore = "
+                                + ifCheckIgnore
+                                + "' isWiFi = " + isWifi(context));
+                        // 如果
+                        Log.d(TAG, "发现更新，当前状态 ifCheckIgnore = "
+                                + ifCheckIgnore + "; isIgnore = "
+                                + ifCheckIgnore
+                                + "' isWiFi = " + isWifi(context));
+                        if (!ifCheckIgnore) {
+                            CommonUtils.showUpdateDialogViaXM(context, updateResponse, dialog == null);
+                        }
+                        break;
+                    case UpdateStatus.No:
+                        debugToast(context, "没有检查到更新，当前 dialog = " + dialog);
+                        if (dialog != null) {
+                            showDialog(context, "提醒", "没有检查到更新");
+                        }
+                        break;
+                    case UpdateStatus.Timeout:
+                        debugToast(context, "连接服务器超时; dialog = " + dialog);
+                        if (dialog != null) {
+                            showDialog(context, "提醒", "检查更新超时");
+                        }
+                        break;
+                }
+            }
+        });
+
+        XiaomiUpdateAgent.update(context);
+    }
+
+    /**
+     * 调用友盟自动更新接口更新应用（deprecated）
+     *
+     * @param context       上下文
+     * @param ifCheckIgnore 是否检查 ignore 标志，false 表示无视 ignore 标识继续升级
+     * @param dialog        检查升级前显示的加载对话框，可为 null
+     */
+    public void updateViaUmeng(final Context context, final boolean ifCheckIgnore, final Dialog dialog) {
         // 调用友盟接口实现自动更新
         UmengUpdateAgent.setUpdateAutoPopup(false);
         UmengUpdateAgent.setUpdateListener(new UmengUpdateListener() {
@@ -125,7 +175,7 @@ public class CommonUtils {
                                 + ifCheckIgnore
                                 + "' isWiFi = " + isWifi(context));
                         if (!ifCheckIgnore || !UmengUpdateAgent.isIgnore(context, updateInfo)) {
-                            CommonUtils.showUpdateDialog(context, updateInfo, dialog == null);
+                            CommonUtils.showUpdateDialogViaUmeng(context, updateInfo, dialog == null);
                         }
                         break;
                     case UpdateStatus.No: // has no update
@@ -164,7 +214,85 @@ public class CommonUtils {
      * @param context    上下文
      * @param updateInfo 升级信息
      */
-    public static void showUpdateDialog(final Context context, final UpdateResponse updateInfo, boolean showIgnore) {
+    public static void showUpdateDialogViaXM(final Context context, final com.xiaomi.market.sdk.UpdateResponse updateInfo, boolean showIgnore) {
+        LinearLayout layout = new LinearLayout(context);
+        int dpLeftAndRightValue = (int) CommonUtils.convertDpToPixel(24, context);
+        int dpTopAndBottomValue = (int) CommonUtils.convertDpToPixel(17, context);
+        layout.setPadding(dpLeftAndRightValue, dpTopAndBottomValue, dpLeftAndRightValue, dpTopAndBottomValue);
+        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        layout.setOrientation(LinearLayout.VERTICAL);
+        layout.setLayoutParams(layoutParams);
+        TextView tvDonateMessage = new TextView(context);
+        tvDonateMessage.setLineSpacing(7, 1.3f);
+        tvDonateMessage.setTextSize(16);
+        layout.addView(tvDonateMessage);
+        tvDonateMessage.setText(updateInfo.updateLog);
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(new ContextThemeWrapper(context, R.style.AlertDialogCustom)).setView(layout);
+        builder.setTitle("发现新版本 v" + updateInfo.versionName);
+
+        builder.setNegativeButton("下次再说", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                if (BUApplication.debugMode)
+                    Toast.makeText(context, "下次再说", Toast.LENGTH_SHORT).show();
+                dialog.dismiss();
+            }
+        });
+
+        builder.setPositiveButton("现在更新", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                if (BUApplication.debugMode)
+                    Toast.makeText(context, "现在更新", Toast.LENGTH_SHORT).show();
+
+                // 非 Wi-Fi 条件下给出提醒
+                if (!isWifi(context)) {
+                    final AlertDialog.Builder builder = new AlertDialog.Builder(new ContextThemeWrapper(context, R.style.AlertDialogCustom));
+                    builder.setTitle("提醒").setMessage("正在使用移动数据流量，是否仍然更新？").setPositiveButton("YES", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            XiaomiUpdateAgent.arrange();
+                        }
+                    }).setNegativeButton("NO", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface innerDialog, int which) {
+                            innerDialog.dismiss();
+                        }
+                    }).show();
+                } else {
+                    // Wi-Fi 条件，直接下载
+                    XiaomiUpdateAgent.arrange();
+                }
+
+                dialog.dismiss();
+            }
+        });
+
+        if (showIgnore) {
+            /*
+            builder.setNeutralButton("不再提醒", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    if (BUApplication.debugMode)
+                        Toast.makeText(context, "不再提醒", Toast.LENGTH_SHORT).show();
+                    UmengUpdateAgent.ignoreUpdate(context, updateInfo);
+                    dialog.dismiss();
+                }
+            }); */
+        }
+
+        if (isRunning(context))
+            builder.create().show();
+    }
+
+    /**
+     * 显示升级对话框
+     *
+     * @param context    上下文
+     * @param updateInfo 升级信息
+     */
+    public static void showUpdateDialogViaUmeng(final Context context, final UpdateResponse updateInfo, boolean showIgnore) {
         LinearLayout layout = new LinearLayout(context);
         int dpLeftAndRightValue = (int) CommonUtils.convertDpToPixel(24, context);
         int dpTopAndBottomValue = (int) CommonUtils.convertDpToPixel(17, context);

@@ -21,6 +21,9 @@
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.VIBRATE" />
 
+    <!-- 小米自动更新 SDK 额外要求权限 -->
+    <uses-permission android:name="com.xiaomi.market.sdk.UPDATE" />
+
     <permission
         android:name="me.ihainan.bu.app.permission.MIPUSH_RECEIVE"
         android:protectionLevel="signature" />
@@ -78,6 +81,12 @@
             </intent-filter>
             <intent-filter>
                 <action android:name="com.xiaomi.mipush.ERROR" />
+            </intent-filter>
+        </receiver>
+
+        <receiver android:name="com.xiaomi.market.sdk.DownloadCompleteReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.DOWNLOAD_COMPLETE" />
             </intent-filter>
         </receiver>
 

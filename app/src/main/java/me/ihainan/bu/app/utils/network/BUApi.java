@@ -96,7 +96,7 @@ public class BUApi {
      */
     private static boolean checkIfSessionOutOfData(JSONObject response) {
         try {
-            return LOGGED_MSG.equals(response.getString("msg"));
+            return !response.getString("result").equals("success") && LOGGED_MSG.equals(response.getString("msg"));
         } catch (JSONException e) {
             Log.d(TAG, "Session is out of data", e);
             return false;
@@ -265,8 +265,8 @@ public class BUApi {
         parameters.put("attachment", attachment == null ? "0" : "1");
 
         // String url = "http://192.168.56.1:8080/api/v2/multipart/att";
-        // String url = "http://ali.ihainan.me:8080/api/v2/multipart/att";
-        String url = getNewPostURL();
+        String url = "http://ali.ihainan.me:8080/api/v2/multipart/att";
+        // String url = getNewPostURL();
 
         if (attachment == null) {
             CommonUtils.debugToast(context, "POST_NEW_POST_NO_ATT >> " + url);
