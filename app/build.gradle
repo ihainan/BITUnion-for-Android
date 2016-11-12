@@ -1,7 +1,7 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 24
+    compileSdkVersion 25
     buildToolsVersion '24.0.1'
 
     repositories {
@@ -30,9 +30,9 @@ android {
     defaultConfig {
         applicationId "me.ihainan.bu.app"
         minSdkVersion 14
-        targetSdkVersion 23
-        versionCode 25
-        versionName "0.2.2.1"
+        targetSdkVersion 25
+        versionCode 24
+        versionName "0.2.2.0"
     }
 
     buildTypes {
@@ -46,6 +46,10 @@ android {
         // Warning:Renderscript support mode is not currently supported with renderscript target 21+
         renderscriptTargetApi 20
         renderscriptSupportModeEnabled true
+        ndk {
+            //设置支持的SO库架构
+            abiFilters 'armeabi' //, 'x86', 'armeabi-v7a', 'x86_64', 'arm64-v8a'
+        }
     }
 }
 
@@ -60,12 +64,14 @@ dependencies {
     compile 'com.android.support:support-v4:24.1.1'
 
     // Network & Image & Data Library
+    compile 'com.tencent.bugly:crashreport_upgrade:latest.release'
+    compile 'com.tencent.bugly:nativecrashreport:latest.release'
     testCompile 'junit:junit:4.12'
     compile 'com.mcxiaoke.volley:library:1.0.19'
     compile 'com.squareup.okhttp:okhttp:2.4.0'
     compile 'com.fasterxml.jackson.core:jackson-databind:2.7.0'
-    compile files('libs/umeng-analytics-v6.0.0.jar')
-    compile files('libs/umeng-update-v2.6.0.1.jar')
+    compile files('libs/mta-sdk-2.2.0.jar')
+    compile files('libs/mid-sdk-3.5.jar')
     compile files('libs/MiPush_SDK_Client_2_2_21.jar')
 
     compile 'com.squareup.picasso:picasso:2.5.2'
@@ -78,7 +84,7 @@ dependencies {
     compile 'com.ogaclejapan.smarttablayout:library:1.6.0@aar'
     compile 'de.hdodenhof:circleimageview:2.0.0'
     compile 'com.miguelcatalan:materialsearchview:1.4.0'
-    compile 'com.lapism:searchview:3.4.1'
+    compile 'com.lapism:searchview:4.0'
     compile 'com.commit451:PhotoView:1.2.5'
     compile 'com.github.TR4Android:Swipeable-RecyclerView:0.2.0'
     compile 'com.github.arimorty:floatingsearchview:2.0.1'

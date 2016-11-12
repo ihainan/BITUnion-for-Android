@@ -20,7 +20,6 @@ import android.widget.TextView;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.umeng.analytics.MobclickAgent;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -34,9 +33,9 @@ import me.ihainan.bu.app.models.ForumListGroup;
 import me.ihainan.bu.app.models.Thread;
 import me.ihainan.bu.app.ui.assist.SimpleDividerItemDecoration;
 import me.ihainan.bu.app.ui.assist.SwipeActivity;
+import me.ihainan.bu.app.utils.BUApplication;
 import me.ihainan.bu.app.utils.CommonUtils;
 import me.ihainan.bu.app.utils.network.BUApi;
-import me.ihainan.bu.app.utils.BUApplication;
 import me.ihainan.bu.app.utils.ui.CustomOnClickListener;
 import me.ihainan.bu.app.utils.ui.IconFontHelper;
 
@@ -384,24 +383,6 @@ public class ThreadListActivity extends SwipeActivity {
                         Log.e(TAG, debugMessage, error);
                     }
                 });
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-
-        // 友盟 SDK
-        if (BUApplication.uploadData)
-            MobclickAgent.onResume(this);
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-
-        // 友盟 SDK
-        if (BUApplication.uploadData)
-            MobclickAgent.onPause(this);
     }
 
     private void showErrorLayout(String message) {

@@ -1,6 +1,5 @@
 package me.ihainan.bu.app.ui;
 
-import android.app.Application;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.content.Context;
@@ -13,24 +12,28 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.umeng.analytics.MobclickAgent;
+import com.tencent.bugly.beta.Beta;
+import com.tencent.stat.StatService;
 import com.xiaomi.mipush.sdk.MiPushClient;
 
 import org.json.JSONObject;
 
+import java.util.Properties;
+
+import me.ihainan.bu.app.BuildConfig;
 import me.ihainan.bu.app.R;
 import me.ihainan.bu.app.models.Member;
 import me.ihainan.bu.app.ui.fragment.HomeFragment;
@@ -111,14 +114,20 @@ public class MainActivity extends AppCompatActivity {
         // 检查新版本更新并安装
         if (!BUApplication.IS_GOOGLE_PLAY_EDITION) {
             Log.i(TAG, "Is not Google Play Edition, will check for update");
-            CommonUtils.updateVersion(mContext, true, null);
+            // CommonUtils.updateVersion(mContext, true, null);
+            Beta.checkUpgrade();
         } else {
             Log.i(TAG, "Google Play Edition, will not check for update");
         }
 
         // 登记用户
         if (BUApplication.username != null && !BUApplication.username.equals("")) {
-            MobclickAgent.onProfileSignIn(CommonUtils.decode(BUApplication.username));
+            // MobclickAgent.onProfileSignIn(CommonUtils.decode(BUApplication.username));
+            Properties properties = new Properties();
+            properties.setProperty(getString(R.string.application_version), BuildConfig.VERSION_NAME);
+            properties.setProperty(getString(R.string.application_username), CommonUtils.decode(BUApplication.username));
+            properties.setProperty(getString(R.string.application_device), CommonUtils.getDeviceName());
+            StatService.trackCustomKVEvent(mContext, getString(R.string.application_init_id), properties);
         }
 
         // 配置 Navigation Layout
@@ -128,6 +137,9 @@ public class MainActivity extends AppCompatActivity {
 
         // 获取用户信息用于设置头像
         getUserInfo();
+
+        // 腾讯统计
+        StatService.trackCustomEvent(this, "onCreate", "");
 
         // 小米推送
         MiPushClient.setUserAccount(mContext, CommonUtils.decode(BUApplication.username), null);
@@ -266,19 +278,6 @@ public class MainActivity extends AppCompatActivity {
         getFragmentManager().putFragment(outState, "mFragment", mFragment);
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-
-        // 友盟 SDK
-        if (BUApplication.uploadData)
-            MobclickAgent.onResume(mContext);
-
-        if (mBadgeCount != null) {
-            getUnreadCount();
-        }
-    }
-
     private void getUnreadCount() {
         if (mBadgeCount == null) return;
         ExtraApi.getUnreadCount(mContext, BUApplication.username, new Response.Listener<JSONObject>() {
@@ -312,15 +311,6 @@ public class MainActivity extends AppCompatActivity {
                 Log.e(TAG, debugMessage, error);
             }
         });
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-
-        // 友盟 SDK
-        if (BUApplication.uploadData)
-            MobclickAgent.onPause(mContext);
     }
 
     @Override

@@ -33,6 +33,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.lb.material_preferences_library.PreferenceActivity;
+import com.tencent.bugly.beta.Beta;
 
 import java.util.Arrays;
 
@@ -151,11 +152,8 @@ public class SettingsActivity extends PreferenceActivity {
             prefCheckUpdate.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
                 @Override
                 public boolean onPreferenceClick(Preference preference) {
-                    ProgressDialog dialog = ProgressDialog.show(SettingsActivity.this, "",
-                            "正在检查更新", true);
-                    dialog.show();
-                    CommonUtils.updateVersion(SettingsActivity.this, false, dialog);
-                    return false;
+                    Beta.checkUpgrade();
+                    return true;
                 }
             });
         } else {
