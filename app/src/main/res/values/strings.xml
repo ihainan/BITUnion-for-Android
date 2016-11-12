@@ -126,4 +126,11 @@
     <string name="search_icon">&#xe61b;</string>
     <string name="title_activity_debug">调试页面</string>
     <string name="title_activity_code_view">CodeViewActivity</string>
+
+    <!-- Analytics -->
+    <string name="application_init_id">APPLICATION_INIT</string>
+    <string name="application_version">APPLICATION_VERSION</string>
+    <string name="application_device">APPLICATION_DEVICE</string>
+    <string name="application_username">APPLICATION_USERNAME</string>
+
 </resources>

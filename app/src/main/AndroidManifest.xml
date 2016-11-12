@@ -21,6 +21,9 @@
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.VIBRATE" />
 
+    <!-- Bugly 自动更新 -->
+    <uses-permission android:name="android.permission.READ_LOGS" />
+
     <permission
         android:name="me.ihainan.bu.app.permission.MIPUSH_RECEIVE"
         android:protectionLevel="signature" />
@@ -35,6 +38,32 @@
         android:resizeableActivity="true"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+
+        <!-- Tecent -->
+        <provider
+            android:name="com.tencent.mid.api.MidProvider"
+            android:authorities="me.ihainan.bu.app.TENCENT.MID.V3"
+            android:exported="true"></provider>
+
+        <meta-data
+            android:name="TA_APPKEY"
+            android:value="AHDM8A32M5JE" />
+
+        <meta-data
+            android:name="InstallChannel"
+            android:value="BUDGETVM" />
+
+        <!-- Bugly Auto Update -->
+        <provider
+            android:name="android.support.v4.content.FileProvider"
+            android:authorities="me.ihainan.bu.app.fileProvider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/provider_paths" />
+        </provider>
+
         <service
             android:name="com.xiaomi.push.service.XMPushService"
             android:enabled="true"
@@ -82,6 +111,10 @@
         </receiver>
 
         <activity
+            android:name="com.tencent.bugly.beta.ui.BetaActivity"
+            android:theme="@android:style/Theme.Translucent" />
+
+        <activity
             android:name=".ui.MainActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:screenOrientation="portrait"
@@ -105,23 +138,6 @@
         <activity
             android:name=".ui.TestActivity"
             android:configChanges="keyboardHidden|orientation|screenSize" />
-
-        <meta-data
-            android:name="UMENG_APPKEY"
-            android:value="56c6af3767e58e1acb0011b3" />
-        <meta-data
-            android:name="UMENG_CHANNEL"
-            android:value="bitunion" />
-
-        <service
-            android:name="com.umeng.update.net.DownloadingService"
-            android:process=":DownloadingService" />
-        <service android:name=".utils.network.SessionUpdateService" />
-
-        <activity
-            android:name="com.umeng.update.UpdateDialogActivity"
-            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
-        <activity android:name=".ui.assist.SwipeActivity" />
         <activity
             android:name=".ui.PreviewActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"

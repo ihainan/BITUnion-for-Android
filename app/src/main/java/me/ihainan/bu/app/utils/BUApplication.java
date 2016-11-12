@@ -11,25 +11,22 @@ import android.util.Log;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.picasso.OkHttpDownloader;
 import com.squareup.picasso.Picasso;
-import com.umeng.update.UmengUpdateAgent;
-import com.umeng.update.UpdateConfig;
+import com.tencent.bugly.Bugly;
+import com.tencent.bugly.beta.Beta;
+import com.tencent.bugly.crashreport.CrashReport;
 import com.xiaomi.channel.commonutils.logger.LoggerInterface;
 import com.xiaomi.mipush.sdk.Logger;
 import com.xiaomi.mipush.sdk.MiPushClient;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import me.ihainan.bu.app.R;
 import me.ihainan.bu.app.models.ForumListGroup;
-import me.ihainan.bu.app.models.NotificationMessage;
 import me.ihainan.bu.app.models.Session;
 import me.ihainan.bu.app.utils.network.BUApi;
 
@@ -72,7 +69,7 @@ public class BUApplication extends Application {
     }
 
     /* 系统配置相关*/
-    public final static Boolean IS_GOOGLE_PLAY_EDITION = true; // 是否是 Google Play Store 版本
+    public final static Boolean IS_GOOGLE_PLAY_EDITION = false; // 是否是 Google Play Store 版本
     public final static int RETRY_LIMIT = 2;    // 重新登录尝试次数
     public final static int MAX_USER_NAME_LENGTH = 15;  // 列表用户名最长显示的长度
     public final static int HOT_TOPIC_THREAD = 30;      // 热门帖子阈值
@@ -86,6 +83,7 @@ public class BUApplication extends Application {
     public final static int LOADING_FAVORITES_COUNT = 10;       // 一次最多 Loading 的收藏数目
     public final static int LOADING_NOTIFICATION_COUNT = 10;       // 一次最多 Loading 的通知数目
     public static Integer postListLoadingCount = 10;   // 一次最多 Loading 的帖子数目
+    public final static String BUGLY_APP_ID = "900058475";  // BUGLY Application ID
 
     public final static int FETCH_UNREAD_COUNT_PERIOD = 60;       // 获取通知个数的时间间隔
     public final static String IMAGE_URL_PREFIX = "IMAGE_URL_PREFIX"; // 图片 URL 前缀，用于标记某个 URL 是图片
@@ -1087,10 +1085,11 @@ public class BUApplication extends Application {
         Logger.setLogger(this, newLogger);
 
         // 自动更新配置
-        UmengUpdateAgent.setDeltaUpdate(true);  // 增量更新
-        if (debugMode) UpdateConfig.setDebug(true);
-        UmengUpdateAgent.setRichNotification(true);
-        UmengUpdateAgent.setUpdateOnlyWifi(false);
+        Beta.autoCheckUpgrade = false;   // 禁用自动初始化更新
+        Beta.smallIconId = R.drawable.ic_stat_bu;  // 状态栏图标
+
+        Bugly.init(getApplicationContext(), BUApplication.BUGLY_APP_ID, BUApplication.debugMode);   // 初始化 SDK
+        CrashReport.initCrashReport(getApplicationContext(), BUGLY_APP_ID, debugMode);  // 启动崩溃日志上传
 
         // 从缓存中读取数据
         migrateCache(this);
@@ -1098,8 +1097,8 @@ public class BUApplication extends Application {
 
         // 配置 Picasso 的磁盘缓存（配合  OKHttp）
         Picasso.Builder builder = new Picasso.Builder(this);
-        OkHttpClient client = new OkHttpClient();
-        builder.downloader(new OkHttpDownloader(this, Integer.MAX_VALUE));
+        long httpCacheSize = 50 * 1024 * 1024; // 50 MiB
+        builder.downloader(new OkHttpDownloader(this, httpCacheSize));
         builder.listener(new Picasso.Listener() {
             @Override
             public void onImageLoadFailed(Picasso picasso, Uri uri, Exception exception) {

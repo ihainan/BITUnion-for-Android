@@ -22,7 +22,6 @@ import android.widget.TextView;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.umeng.analytics.MobclickAgent;
 
 import org.json.JSONObject;
 
@@ -30,8 +29,8 @@ import java.io.IOException;
 
 import me.ihainan.bu.app.R;
 import me.ihainan.bu.app.models.Session;
-import me.ihainan.bu.app.utils.network.BUApi;
 import me.ihainan.bu.app.utils.BUApplication;
+import me.ihainan.bu.app.utils.network.BUApi;
 
 /**
  * A login screen that offers login via username / password.
@@ -211,23 +210,5 @@ public class LoginActivity extends AppCompatActivity {
                         Log.e(TAG, getString(R.string.error_network), error);
                     }
                 });
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-
-        // 友盟 SDK
-        if (BUApplication.uploadData)
-            MobclickAgent.onResume(mContext);
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-
-        // 友盟 SDK
-        if (BUApplication.uploadData)
-            MobclickAgent.onPause(mContext);
     }
 }

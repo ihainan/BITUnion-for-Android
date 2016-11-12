@@ -8,7 +8,6 @@ import com.android.volley.NetworkResponse;
 import com.android.volley.Response;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.umeng.analytics.MobclickAgent;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -89,7 +88,7 @@ public class BUApi {
     }
 
     /**
-     * 检查 Session 是否已经过去
+     * 检查 Session 是否已经过期
      *
      * @param response BU 服务器回复数据
      * @return <code>true</code> 表示已经过期，否则未过期
@@ -120,7 +119,7 @@ public class BUApi {
         parameters.put("action", "login");
         parameters.put("username", userName);
         parameters.put("password", password);
-        MobclickAgent.onProfileSignIn(CommonUtils.decode(userName));
+        // MobclickAgent.onProfileSignIn(CommonUtils.decode(userName));
         makeRequest(context, getLoginURL(), "LOGIN", parameters, 0, listener, errorListener);
     }
 
