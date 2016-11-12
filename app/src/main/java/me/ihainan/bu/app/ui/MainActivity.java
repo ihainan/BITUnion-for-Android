@@ -115,7 +115,7 @@ public class MainActivity extends AppCompatActivity {
         if (!BUApplication.IS_GOOGLE_PLAY_EDITION) {
             Log.i(TAG, "Is not Google Play Edition, will check for update");
             // CommonUtils.updateVersion(mContext, true, null);
-            Beta.checkUpgrade();
+            Beta.checkUpgrade(false, false);
         } else {
             Log.i(TAG, "Google Play Edition, will not check for update");
         }

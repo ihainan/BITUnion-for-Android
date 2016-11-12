@@ -152,7 +152,7 @@ public class SettingsActivity extends PreferenceActivity {
             prefCheckUpdate.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
                 @Override
                 public boolean onPreferenceClick(Preference preference) {
-                    Beta.checkUpgrade();
+                    Beta.checkUpgrade(true, false);
                     return true;
                 }
             });
