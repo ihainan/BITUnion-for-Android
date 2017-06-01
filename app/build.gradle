@@ -47,8 +47,8 @@ android {
         renderscriptTargetApi 20
         renderscriptSupportModeEnabled true
         ndk {
-            //设置支持的SO库架构
-            abiFilters 'armeabi' //, 'x86', 'armeabi-v7a', 'x86_64', 'arm64-v8a'
+            // 设置支持的SO库架构
+            abiFilters 'armeabi', 'x86', 'armeabi-v7a', 'x86_64', 'arm64-v8a'
         }
     }
 }
@@ -70,8 +70,8 @@ dependencies {
     compile 'com.mcxiaoke.volley:library:1.0.19'
     compile 'com.squareup.okhttp:okhttp:2.4.0'
     compile 'com.fasterxml.jackson.core:jackson-databind:2.7.0'
-    compile files('libs/mta-sdk-2.2.0.jar')
-    compile files('libs/mid-sdk-3.5.jar')
+    // compile files('libs/mta-android-stat-sdk-3.0.0_20170502-jdk1.6.jar')
+    // compile files('libs/mid-sdk-3.71.jar')
     compile files('libs/MiPush_SDK_Client_2_2_21.jar')
 
     compile 'com.squareup.picasso:picasso:2.5.2'

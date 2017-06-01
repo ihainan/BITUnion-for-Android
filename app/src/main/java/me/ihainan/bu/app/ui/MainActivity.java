@@ -12,7 +12,6 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
@@ -26,7 +25,7 @@ import android.widget.Toast;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.tencent.bugly.beta.Beta;
-import com.tencent.stat.StatService;
+// import com.tencent.stat.StatService;
 import com.xiaomi.mipush.sdk.MiPushClient;
 
 import org.json.JSONObject;
@@ -127,7 +126,7 @@ public class MainActivity extends AppCompatActivity {
             properties.setProperty(getString(R.string.application_version), BuildConfig.VERSION_NAME);
             properties.setProperty(getString(R.string.application_username), CommonUtils.decode(BUApplication.username));
             properties.setProperty(getString(R.string.application_device), CommonUtils.getDeviceName());
-            StatService.trackCustomKVEvent(mContext, getString(R.string.application_init_id), properties);
+            // StatService.trackCustomKVEvent(mContext, getString(R.string.application_init_id), properties);
         }
 
         // 配置 Navigation Layout
@@ -139,7 +138,7 @@ public class MainActivity extends AppCompatActivity {
         getUserInfo();
 
         // 腾讯统计
-        StatService.trackCustomEvent(this, "onCreate", "");
+        // StatService.trackCustomEvent(this, "onCreate", "");
 
         // 小米推送
         MiPushClient.setUserAccount(mContext, CommonUtils.decode(BUApplication.username), null);
