@@ -98,7 +98,7 @@ public class CustomSpan {
         private final int mNormalTextColor;
         private final int mPressedTextColor;
         private final int mBackgroundColor;
-        private final String mUrl;
+        private String mUrl;
         private final Context mContext;
 
         public CustomLinkSpan(Context context, int normalTextColor, int pressedTextColor, int backgroundColor, String url) {
@@ -134,9 +134,7 @@ public class CustomSpan {
                 return;
             } else if (mUrl.startsWith(BUApi.IN_SCHOOL_BASE_URL)
                     || mUrl.startsWith(BUApi.OUT_SCHOOL_BASE_URL)
-                    || mUrl.startsWith("/forum-")
-                    || mUrl.startsWith("/thread-")
-                    || mUrl.startsWith("/profile-username-")
+                    || mUrl.startsWith("/")
                     ) {
                 String newUrl = mUrl.replace(BUApi.IN_SCHOOL_BASE_URL, "/").replace(BUApi.OUT_SCHOOL_BASE_URL, "/");
                 if (newUrl.startsWith("/profile-username-")) {
@@ -144,6 +142,12 @@ public class CustomSpan {
                     String userName = CommonUtils.decode(newUrl.substring("/profile-username-".length(), mUrl.length() - 5), "GBK");
                     Intent intent = new Intent(mContext, ProfileActivity.class);
                     intent.putExtra(ProfileActivity.USER_NAME_TAG, userName);
+                    mContext.startActivity(intent);
+                    return;
+                } else if (newUrl.startsWith("/profile-uid")) {
+                    String userID =  CommonUtils.decode(newUrl.substring("/profile-uid-".length(), newUrl.length() - 5), "GBK");
+                    Intent intent = new Intent(mContext, ProfileActivity.class);
+                    intent.putExtra(ProfileActivity.USER_ID_TAG, userID);
                     mContext.startActivity(intent);
                     return;
                 } else if (newUrl.startsWith("/thread-")) {
@@ -185,7 +189,13 @@ public class CustomSpan {
                         mContext.startActivity(intent);
                         return;
                     }
+                } else {
+                    mUrl = BUApi.getBaseURL().substring(0, BUApi.getBaseURL().length() - 1) + newUrl;
                 }
+            } else if (android.util.Patterns.WEB_URL.matcher(mUrl).matches()) {
+                // standard URL, do nothing
+            } else {
+                mUrl = BUApi.getBaseURL();
             }
 
             CommonUtils.openBrowser(mContext, mUrl);
