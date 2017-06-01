@@ -144,6 +144,12 @@ public class CustomSpan {
                     intent.putExtra(ProfileActivity.USER_NAME_TAG, userName);
                     mContext.startActivity(intent);
                     return;
+                } else if (newUrl.startsWith("/profile-uid")) {
+                    String userID =  CommonUtils.decode(newUrl.substring("/profile-uid-".length(), newUrl.length() - 5), "GBK");
+                    Intent intent = new Intent(mContext, ProfileActivity.class);
+                    intent.putExtra(ProfileActivity.USER_ID_TAG, userID);
+                    mContext.startActivity(intent);
+                    return;
                 } else if (newUrl.startsWith("/thread-")) {
                     // 论坛帖子
                     Pattern pattern = Pattern.compile("thread-(.*?)-");
@@ -184,7 +190,7 @@ public class CustomSpan {
                         return;
                     }
                 } else {
-                    mUrl = BUApi.getBaseURL().substring(0, BUApi.getBaseURL().length() - 1) + mUrl;
+                    mUrl = BUApi.getBaseURL().substring(0, BUApi.getBaseURL().length() - 1) + newUrl;
                 }
             } else if (android.util.Patterns.WEB_URL.matcher(mUrl).matches()) {
                 // standard URL, do nothing

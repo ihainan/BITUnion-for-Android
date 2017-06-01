@@ -62,12 +62,7 @@ public class ACache {
     private ACacheManager mCache;
 
     public static ACache get(Context ctx) {
-        return get(ctx, "ACache");
-    }
-
-    public static ACache get(Context ctx, String cacheName) {
-        File f = new File(ctx.getCacheDir(), "ACache");
-        return get(f, MAX_SIZE, MAX_COUNT);
+        return get(ctx, MAX_SIZE, MAX_COUNT);
     }
 
     public static ACache get(File cacheDir) {
@@ -86,7 +81,7 @@ public class ACache {
         // 如果目录不存在，则一个一个测试是否能够创建
         for (int i = 0; i < files.length; ++i) {
             File cacheDir = files[i];
-            if (!cacheDir.exists() && !cacheDir.mkdirs()) {
+            if (cacheDir.exists() || cacheDir.mkdirs()) {
                 return get(cacheDir, max_zise, max_count);
             }
         }
