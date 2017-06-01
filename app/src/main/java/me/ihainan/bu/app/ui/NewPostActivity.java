@@ -410,6 +410,13 @@ public class NewPostActivity extends AppCompatActivity {
             if (cursor != null && cursor.moveToFirst()) {
                 if (mRealImageName == null)
                     mRealImageName = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
+            } else {
+                String message = getString(R.string.error_insert_attachment) + ": 未能正确读取文件";
+                Log.w(TAG, message);
+                CommonUtils.debugToast(this, message);
+                Snackbar.make(mButtonPanel, message, Snackbar.LENGTH_LONG).show();
+
+                return;
             }
 
             // 文件大小
