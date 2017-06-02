@@ -365,6 +365,7 @@ public class HtmlUtil {
      * @return 处理之后的 HTML 文本
      */
     public static String getSummaryOfMessage(String html) {
+        if (html == null) html = "";
         html = removeDeviceInfo(html);
         html = html.replaceAll("<blockquote>.*?</blockquote>", "[引用] ");
         html = html.replaceAll("<img.*?>", "[图片]");

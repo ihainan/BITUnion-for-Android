@@ -117,9 +117,9 @@ public class SearchActivity extends SwipeActivity {
         private final Fragment[] fragments;
 
         public void reloadAll(String keyword) {
-            ((SearchPostResultFragment) fragments[0]).reloadData(keyword);
-            ((SearchPostResultFragment) fragments[1]).reloadData(keyword);
-            if (page_count >= 3) ((SearchUserResultFragment) fragments[2]).reloadData(keyword);
+            if (fragments[0] != null) ((SearchPostResultFragment) fragments[0]).reloadData(keyword);
+            if (fragments[1] != null)  ((SearchPostResultFragment) fragments[1]).reloadData(keyword);
+            if (page_count >= 3 && fragments[2] != null) ((SearchUserResultFragment) fragments[2]).reloadData(keyword);
         }
 
         public PagerAdapter(FragmentManager fm, Context context) {

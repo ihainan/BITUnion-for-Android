@@ -62,12 +62,7 @@ public class ACache {
     private ACacheManager mCache;
 
     public static ACache get(Context ctx) {
-        return get(ctx, "ACache");
-    }
-
-    public static ACache get(Context ctx, String cacheName) {
-        File f = new File(ctx.getCacheDir(), "ACache");
-        return get(f, MAX_SIZE, MAX_COUNT);
+        return get(ctx, MAX_SIZE, MAX_COUNT);
     }
 
     public static ACache get(File cacheDir) {
@@ -75,9 +70,25 @@ public class ACache {
     }
 
     public static ACache get(Context ctx, long max_zise, int max_count) {
-        File f = new File(ctx.getCacheDir(), "ACache");
-        return get(f, max_zise, max_count);
+        File[] files = {new File(ctx.getCacheDir(), "ACache"), new File(ctx.getFilesDir(), "ACache"), new File(ctx.getExternalCacheDir(), "ACache"), new File(ctx.getExternalFilesDir(null), "ACache")};
+        // 先检查 Cache 目录是否已经存在
+        for (int i = 0; i < files.length; ++i) {
+            File cacheDir = files[i];
+            ACache manager = mInstanceMap.get(cacheDir.getAbsoluteFile() + myPid());
+            if (manager != null) return manager;
+        }
+
+        // 如果目录不存在，则一个一个测试是否能够创建
+        for (int i = 0; i < files.length; ++i) {
+            File cacheDir = files[i];
+            if (cacheDir.exists() || cacheDir.mkdirs()) {
+                return get(cacheDir, max_zise, max_count);
+            }
+        }
+
+        throw new RuntimeException("can't make dirs in all the application directories");
     }
+
 
     public static ACache get(File cacheDir, long max_zise, int max_count) {
         ACache manager = mInstanceMap.get(cacheDir.getAbsoluteFile() + myPid());
@@ -101,14 +112,14 @@ public class ACache {
     }
 
     // =======================================
-    // ============ String数据 读写 ==============
+    // ============ String 数据读写 ==============
     // =======================================
 
     /**
-     * 保存 String数据 到 缓存中
+     * 保存 String 数据到缓存中
      *
-     * @param key   保存的key
-     * @param value 保存的String数据
+     * @param key   保存的 key
+     * @param value 保存的 String 数据
      */
     public void put(String key, String value) {
         File file = mCache.newFile(key);
