@@ -8,7 +8,7 @@ import android.net.Uri;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
-import com.squareup.okhttp.OkHttpClient;
+import com.jakewharton.picasso.OkHttp3Downloader;
 import com.squareup.picasso.OkHttpDownloader;
 import com.squareup.picasso.Picasso;
 import com.tencent.bugly.Bugly;
@@ -18,6 +18,7 @@ import com.xiaomi.channel.commonutils.logger.LoggerInterface;
 import com.xiaomi.mipush.sdk.Logger;
 import com.xiaomi.mipush.sdk.MiPushClient;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -29,6 +30,11 @@ import me.ihainan.bu.app.R;
 import me.ihainan.bu.app.models.ForumListGroup;
 import me.ihainan.bu.app.models.Session;
 import me.ihainan.bu.app.utils.network.BUApi;
+import okhttp3.Cache;
+import okhttp3.Interceptor;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 /**
  * 系统设置与全局变量
@@ -1052,6 +1058,48 @@ public class BUApplication extends Application {
         return false;
     }
 
+    public static void setupPicasso(Context context) {
+        if (context == null) {
+            Log.w(TAG, "context is null");
+            return;
+        }
+
+        File cacheDir = new File(context.getCacheDir(), "picasso-cache");
+        if (!cacheDir.exists()) {
+            cacheDir.mkdirs();
+        }
+
+        long httpCacheSize = 50 * 1024 * 1024; // 50 MiB
+        Cache cache = new Cache(cacheDir, httpCacheSize);
+        OkHttpClient client = new OkHttpClient.Builder()
+                .addInterceptor(new Interceptor() {
+                    @Override
+                    public Response intercept(Chain chain) throws IOException {
+                        Request newRequest = chain.request().newBuilder()
+                                .addHeader("referer", BUApi.getBaseURL())
+                                .build();
+                        return chain.proceed(newRequest);
+                    }
+                }).cache(cache).build();
+
+        Picasso.Builder builder = new Picasso.Builder(context);
+        builder.downloader(new OkHttp3Downloader(client));
+        builder.listener(new Picasso.Listener() {
+
+            @Override
+            public void onImageLoadFailed(Picasso picasso, Uri uri, Exception exception) {
+                Log.e(TAG, "failed to load image from " + uri, exception);
+            }
+        });
+
+        Picasso built = builder.build();
+        if (debugMode) {
+            built.setIndicatorsEnabled(true);
+            built.setLoggingEnabled(true);
+        }
+        Picasso.setSingletonInstance(built);
+    }
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -1096,20 +1144,6 @@ public class BUApplication extends Application {
         readConfig(this);
 
         // 配置 Picasso 的磁盘缓存（配合  OKHttp）
-        Picasso.Builder builder = new Picasso.Builder(this);
-        long httpCacheSize = 50 * 1024 * 1024; // 50 MiB
-        builder.downloader(new OkHttpDownloader(this, httpCacheSize));
-        builder.listener(new Picasso.Listener() {
-            @Override
-            public void onImageLoadFailed(Picasso picasso, Uri uri, Exception exception) {
-                Log.e(TAG, "failed to load image from " + uri, exception);
-            }
-        });
-        Picasso built = builder.build();
-        if (debugMode) {
-            built.setIndicatorsEnabled(true);
-            built.setLoggingEnabled(true);
-        }
-        Picasso.setSingletonInstance(built);
+        setupPicasso(getApplicationContext());
     }
 }

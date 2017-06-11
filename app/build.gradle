@@ -2,7 +2,7 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 25
-    buildToolsVersion '25.0.0'
+    buildToolsVersion '25.0.2'
 
     repositories {
         mavenCentral()
@@ -56,20 +56,21 @@ android {
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     // Support Library
-    compile 'com.android.support:appcompat-v7:25.0.0'
-    compile 'com.android.support:design:25.0.0'
-    compile 'com.android.support:palette-v7:25.0.0'
-    compile 'com.android.support:cardview-v7:25.0.0'
-    compile 'com.android.support:support-v13:25.0.0'
-    compile 'com.android.support:support-v4:25.0.0'
+    compile 'com.android.support:appcompat-v7:25.3.1'
+    compile 'com.android.support:design:25.3.1'
+    compile 'com.android.support:palette-v7:25.3.1'
+    compile 'com.android.support:cardview-v7:25.3.1'
+    compile 'com.android.support:support-v13:25.3.1'
+    compile 'com.android.support:support-v4:25.3.1'
 
     // Network & Image & Data Library
     compile 'com.tencent.bugly:crashreport_upgrade:latest.release'
     compile 'com.tencent.bugly:nativecrashreport:latest.release'
     testCompile 'junit:junit:4.12'
     compile 'com.mcxiaoke.volley:library:1.0.19'
-    compile 'com.squareup.okhttp:okhttp:2.4.0'
+    compile group: 'com.squareup.okhttp3', name: 'okhttp', version: '3.8.0'
     compile 'com.fasterxml.jackson.core:jackson-databind:2.7.0'
+    compile 'com.jakewharton.picasso:picasso2-okhttp3-downloader:1.1.0'
     // compile files('libs/mta-android-stat-sdk-3.0.0_20170502-jdk1.6.jar')
     // compile files('libs/mid-sdk-3.71.jar')
     compile files('libs/MiPush_SDK_Client_2_2_21.jar')
