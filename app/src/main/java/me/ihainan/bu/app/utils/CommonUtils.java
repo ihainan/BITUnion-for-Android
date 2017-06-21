@@ -287,7 +287,7 @@ public class CommonUtils {
                     }, new Response.ErrorListener() {
                         @Override
                         public void onErrorResponse(VolleyError error) {
-                            if (((Activity) context).isFinishing()) return;
+                            if (context instanceof Activity && ((Activity) context).isFinishing()) return;
                             String message = context.getString(R.string.error_network);
                             String debugMessage = "getAndCacheUserInfo >> " + message;
                             CommonUtils.debugToast(context, debugMessage);
