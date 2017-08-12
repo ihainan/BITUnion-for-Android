@@ -25,7 +25,6 @@ import android.widget.Toast;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.tencent.bugly.beta.Beta;
-// import com.tencent.stat.StatService;
 import com.xiaomi.mipush.sdk.MiPushClient;
 
 import org.json.JSONObject;
@@ -71,8 +70,6 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
-        // setTheme(R.style.AppThemeDark_NoActionBar);
-
         setContentView(R.layout.activity_main);
 
         // Toolbar
@@ -110,32 +107,31 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initWork() {
+        // TODO: deprecated
         // 检查新版本更新并安装
-        if (!BUApplication.IS_GOOGLE_PLAY_EDITION) {
-            Log.i(TAG, "Is not Google Play Edition, will check for update");
-            // CommonUtils.updateVersion(mContext, true, null);
-            Beta.checkUpgrade(false, false);
-        } else {
-            Log.i(TAG, "Google Play Edition, will not check for update");
-        }
+//        if (!BUApplication.IS_GOOGLE_PLAY_EDITION) {
+//            Log.i(TAG, "Is not Google Play Edition, will check for update");
+//            // CommonUtils.updateVersion(mContext, true, null);
+//            Beta.checkUpgrade(false, false);
+//        } else {
+//            Log.i(TAG, "Google Play Edition, will not check for update");
+//        }
 
+        // TODO: deprecated
         // 登记用户
-        if (BUApplication.username != null && !BUApplication.username.equals("")) {
-            // MobclickAgent.onProfileSignIn(CommonUtils.decode(BUApplication.username));
-            Properties properties = new Properties();
-            properties.setProperty(getString(R.string.application_version), BuildConfig.VERSION_NAME);
-            properties.setProperty(getString(R.string.application_username), CommonUtils.decode(BUApplication.username));
-            properties.setProperty(getString(R.string.application_device), CommonUtils.getDeviceName());
-            // StatService.trackCustomKVEvent(mContext, getString(R.string.application_init_id), properties);
-        }
+//        if (BUApplication.username != null && !BUApplication.username.equals("")) {
+//            // MobclickAgent.onProfileSignIn(CommonUtils.decode(BUApplication.username));
+//            Properties properties = new Properties();
+//            properties.setProperty(getString(R.string.application_version), BuildConfig.VERSION_NAME);
+//            properties.setProperty(getString(R.string.application_username), CommonUtils.decode(BUApplication.username));
+//            properties.setProperty(getString(R.string.application_device), CommonUtils.getDeviceName());
+//            // StatService.trackCustomKVEvent(mContext, getString(R.string.application_init_id), properties);
+//        }
 
         // 配置 Navigation Layout
         if (mNavigationView != null) {
             setupDrawerContent(mNavigationView);
         }
-
-        // 获取用户信息用于设置头像
-        getUserInfo();
 
         // 腾讯统计
         // StatService.trackCustomEvent(this, "onCreate", "");
@@ -144,7 +140,7 @@ public class MainActivity extends AppCompatActivity {
         MiPushClient.setUserAccount(mContext, CommonUtils.decode(BUApplication.username), null);
 
         // 定期更新用户 Session
-        Intent intent = new Intent(mContext, SessionUpdateService.class);
+        // Intent intent = new Intent(mContext, SessionUpdateService.class);
         // startService(intent);
 
         // Activity content
@@ -154,6 +150,9 @@ public class MainActivity extends AppCompatActivity {
             fragmentTransaction.replace(R.id.flContent, mFragment);
             fragmentTransaction.commit();
         }
+
+        // 获取用户信息用于设置头像
+        getUserInfo();
     }
 
     private void getUserInfo() {
@@ -296,7 +295,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                 } catch (Exception e) {
                     String message = mContext.getString(R.string.error_parse_json);
-                    String debugMessage = TAG + " >> " + message;
+                    String debugMessage = TAG + " >> getUnreadCount: " + message;
                     CommonUtils.debugToast(mContext, debugMessage);
                     Log.e(TAG, debugMessage, e);
                 }
@@ -305,11 +304,18 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onErrorResponse(VolleyError error) {
                 String message = mContext.getString(R.string.error_network);
-                String debugMessage = TAG + " >> " + message;
+                String debugMessage = TAG + " >> getUnreadCount: " + message;
                 CommonUtils.debugToast(mContext, debugMessage);
                 Log.e(TAG, debugMessage, error);
             }
         });
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        getUnreadCount();
     }
 
     @Override

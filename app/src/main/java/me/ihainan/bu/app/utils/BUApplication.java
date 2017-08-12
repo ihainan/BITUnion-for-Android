@@ -91,7 +91,7 @@ public class BUApplication extends Application {
     public static Integer postListLoadingCount = 10;   // 一次最多 Loading 的帖子数目
     public final static String BUGLY_APP_ID = "900058475";  // BUGLY Application ID
 
-    public final static int FETCH_UNREAD_COUNT_PERIOD = 60;       // 获取通知个数的时间间隔
+    public final static int FETCH_UNREAD_COUNT_PERIOD = 300;       // 获取通知个数的时间间隔
     public final static String IMAGE_URL_PREFIX = "IMAGE_URL_PREFIX"; // 图片 URL 前缀，用于标记某个 URL 是图片
 
     public enum NETWORK_TYPE {
