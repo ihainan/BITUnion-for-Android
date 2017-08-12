@@ -2,9 +2,12 @@ package me.ihainan.bu.app.ui;
 
 import android.app.Fragment;
 import android.app.FragmentTransaction;
+import android.app.NotificationManager;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.NavigationView;
@@ -24,14 +27,10 @@ import android.widget.Toast;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.tencent.bugly.beta.Beta;
 import com.xiaomi.mipush.sdk.MiPushClient;
 
 import org.json.JSONObject;
 
-import java.util.Properties;
-
-import me.ihainan.bu.app.BuildConfig;
 import me.ihainan.bu.app.R;
 import me.ihainan.bu.app.models.Member;
 import me.ihainan.bu.app.ui.fragment.HomeFragment;
@@ -39,7 +38,6 @@ import me.ihainan.bu.app.ui.fragment.NotificationListFragment;
 import me.ihainan.bu.app.utils.BUApplication;
 import me.ihainan.bu.app.utils.CommonUtils;
 import me.ihainan.bu.app.utils.network.ExtraApi;
-import me.ihainan.bu.app.utils.network.SessionUpdateService;
 import me.ihainan.bu.app.utils.ui.IconFontHelper;
 
 public class MainActivity extends AppCompatActivity {
@@ -91,6 +89,27 @@ public class MainActivity extends AppCompatActivity {
         mNavProfileView = (ImageView) mNavHead.findViewById(R.id.nav_profile_image);
         mNavUsername = (TextView) mNavHead.findViewById(R.id.nav_user_name);
 
+        // register broadcast receiver
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(getString(R.string.action_broadcast_mark_as_read));
+        BroadcastReceiver markAsReadReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                if (intent.getAction().equals(getString(R.string.action_broadcast_mark_as_read))) {
+                    Log.v(TAG, "markAsReadReceiver >> receive mark as read action, notification ID is ");
+                    Integer notifyID = intent.getIntExtra("notifyId", -1);
+                    NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+                    manager.cancel(notifyID);
+                    if (notifyID != -1) {
+                        markAsRead(context, notifyID);
+                    }
+                } else {
+                    Log.w(TAG, "markAsReadReceiver >> unknown action: " + intent.getAction());
+                }
+            }
+        };
+        registerReceiver(markAsReadReceiver, filter);
+
         // Get user info
         BUApplication.readConfig(mContext);
         if (BUApplication.userSession == null ||
@@ -103,6 +122,18 @@ public class MainActivity extends AppCompatActivity {
             finish();
         } else {
             initWork();
+        }
+    }
+
+    /**
+     * Mark notification as read
+     *
+     * @param context  context
+     * @param notifyId notification ID
+     */
+    public void markAsRead(Context context, Integer notifyId) {
+        if (notifyId != null && notifyId != -1) {
+            ExtraApi.markAsRead(context, notifyId);
         }
     }
 

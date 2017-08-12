@@ -63,6 +63,8 @@
     <string name="downloading_image">正在下载并保存图片</string>
 
     <!-- Actions -->
+    <string name="action_broadcast_mark_as_read">BU_MARK_AS_READ_KEY</string>
+
     <string name="action_offline">离线首页数据</string>
     <string name="action_settings">设置</string>
     <string name="action_home">首页</string>

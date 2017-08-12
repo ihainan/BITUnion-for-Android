@@ -24,6 +24,7 @@ import me.ihainan.bu.app.ui.viewholders.LoadingViewHolder;
 import me.ihainan.bu.app.ui.viewholders.NotificationViewHolder;
 import me.ihainan.bu.app.utils.CommonUtils;
 import me.ihainan.bu.app.utils.network.BUApi;
+import me.ihainan.bu.app.utils.network.ExtraApi;
 
 /**
  * 通知适配器

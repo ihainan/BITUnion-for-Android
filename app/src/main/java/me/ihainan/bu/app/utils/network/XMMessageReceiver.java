@@ -79,6 +79,13 @@ public class XMMessageReceiver extends PushMessageReceiver {
                 if (type == 1 && !BUApplication.getEnableQuoteNotify(context)) return;
                 if (type == 2 && !BUApplication.getEnableAtNotify(context)) return;
                 if (type == 3 && !BUApplication.getEnableFollowNotify(context)) return;
+
+                // mark as read action intent
+                // PendingIntent markAsReadIntent = PendingIntent.get
+                Intent markAsReadIntent = new Intent(context.getString(R.string.action_broadcast_mark_as_read));
+                markAsReadIntent.putExtra("notifyId", message.getNotifyId());
+                PendingIntent markAsReadPendingIntent = PendingIntent.getBroadcast(context, 0, markAsReadIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
                 if (type == 0 || type == 1 || type == 2) {
                     NotificationMessage.PostNotificationMessageData notificationMessageData = BUApi.MAPPER.readValue(jsonObject.getJSONObject("data").toString(), NotificationMessage.PostNotificationMessageData.class);
                     Intent intent = new Intent(context, PostListActivity.class);
@@ -95,6 +102,8 @@ public class XMMessageReceiver extends PushMessageReceiver {
                     builder.setSmallIcon(R.drawable.ic_stat_bu);
                     builder.setColor(context.getResources().getColor(R.color.primary));
                     builder.setContentIntent(pendingIntent);
+                    // builder.addAction(new NotificationCompat.Action(R.drawable.ic_done_black_24dp, "标为已读", markAsReadPendingIntent));
+                    builder.setWhen(0);
                     downloadAvatarAndShowNotification(context, builder, message);
                 } else if (type == 3) {
                     NotificationMessage.FollowNotificationMessageData followNotificationMessageData = BUApi.MAPPER.readValue(jsonObject.getJSONObject("data").toString(), NotificationMessage.FollowNotificationMessageData.class);
@@ -112,6 +121,7 @@ public class XMMessageReceiver extends PushMessageReceiver {
                     builder.setSmallIcon(R.drawable.ic_stat_bu);
                     builder.setColor(context.getResources().getColor(R.color.primary));
                     builder.setContentIntent(pendingIntent);
+                    // builder.addAction(new NotificationCompat.Action(R.drawable.ic_done_black_24dp, "标为已读", markAsReadPendingIntent));
                     downloadAvatarAndShowNotification(context, builder, message);
                 }
             } catch (Exception e) {
