@@ -12,7 +12,7 @@
         android:layout_height="wrap_content"
         android:theme="@style/AppTheme.AppBarOverlay">
 
-        <include layout="@layout/toolbar" />
+        <include layout="@layout/toolbar_with_scroll_flags" />
 
     </android.support.design.widget.AppBarLayout>
 
