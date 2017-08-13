@@ -2,6 +2,8 @@ package me.ihainan.bu.app.ui.fragment;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Parcelable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -36,6 +38,7 @@ public class PostListFragment extends BasicRecyclerViewFragment<Post> {
     // Tags
     public final static String PAGE_POSITION_TAG = "PAGE_POSITION_TAG";
     public final static String PAGE_INDEX_TAG = "PAGE_INDEX_TAG";
+    public final static String PAGE_SHOULD_JUMP = "PAGE_SHOULD_JUMP";
 
     // Data
     private Long mTid, mReplyCount, mFid;
@@ -67,10 +70,15 @@ public class PostListFragment extends BasicRecyclerViewFragment<Post> {
                         mAdapter.notifyDataSetChanged();
 
                         // 跳转到指定的位置，仅跳转一次
-                        if (shouldJump && mPageIndex != null) {
-                            shouldJump = false;
-                            mLayoutManager.scrollToPositionWithOffset(mPageIndex, 0);
-                        }
+                        new Handler().postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                if (shouldJump && mPageIndex != null && mPageIndex != -1) {
+                                    shouldJump = false;
+                                    mLayoutManager.scrollToPositionWithOffset(mPageIndex, 0);
+                                }
+                            }
+                        }, 50);
                     } else if (response.getString("msg").equals(BUApi.FORUM_NO_PERMISSION_MSG)) {
                         String message = getString(R.string.error_forum_no_permission) + ": " + response.getString("msg");
                         String debugMessage = message + " - " + response;
@@ -203,7 +211,7 @@ public class PostListFragment extends BasicRecyclerViewFragment<Post> {
             mAuthorName = getArguments().getString(PostListActivity.THREAD_AUTHOR_NAME_TAG);
             mReplyCount = getArguments().getLong(PostListActivity.THREAD_REPLY_COUNT_TAG);
             mPagePosition = getArguments().getInt(PAGE_POSITION_TAG);
-            mPageIndex = getArguments().getInt(PAGE_INDEX_TAG);
+            mPageIndex = getArguments().getInt(PAGE_INDEX_TAG, -1);
             mThreadName = getArguments().getString(PostListActivity.THREAD_NAME_TAG);
             mFid = getArguments().getLong(PostListActivity.THREAD_FID_TAG, -1);
         }
