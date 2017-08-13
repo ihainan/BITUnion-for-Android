@@ -26,7 +26,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="10dp"
-        android:layout_marginTop="4dp"
         android:layout_toRightOf="@id/avatar">
 
         <TextView
@@ -46,9 +45,9 @@
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
-            android:singleLine="true"
+            android:maxLines="1"
             android:text="12 hours ago"
-            android:textSize="10sp" />
+            android:textSize="12sp" />
     </RelativeLayout>
 
     <TextView
