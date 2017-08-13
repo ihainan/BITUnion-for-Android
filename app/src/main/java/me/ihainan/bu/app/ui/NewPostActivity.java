@@ -223,6 +223,9 @@ public class NewPostActivity extends AppCompatActivity {
                 if (mDrawer.isDrawerOpen(Gravity.RIGHT)) {
                     mDrawer.closeDrawer(Gravity.RIGHT);
                 } else {
+                    View view = getCurrentFocus();
+                    ((InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE))
+                            .hideSoftInputFromWindow(view.getWindowToken(), 0);
                     mDrawer.openDrawer(Gravity.RIGHT);
                 }
             }
