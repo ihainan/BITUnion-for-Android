@@ -11,8 +11,8 @@
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
 
     <!-- 友盟自动更新 SDK 额外要求权限 -->
-    <!--<uses-permission android:name="android.permission.READ_INTERNAL_STORAGE " />-->
-    <!--<uses-permission android:name="android.permission.WRITE_INTERNAL_STORAGE" />-->
+    <!-- <uses-permission android:name="android.permission.READ_INTERNAL_STORAGE " /> -->
+    <!-- <uses-permission android:name="android.permission.WRITE_INTERNAL_STORAGE" /> -->
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
@@ -45,12 +45,11 @@
         <provider
             android:name="com.tencent.mid.api.MidProvider"
             android:authorities="me.ihainan.bu.app.TENCENT.MID.V3"
-            android:exported="true"></provider>
+            android:exported="true" />
 
         <meta-data
             android:name="TA_APPKEY"
             android:value="AHDM8A32M5JE" />
-
         <meta-data
             android:name="InstallChannel"
             android:value="BUDGETVM" />
@@ -115,7 +114,6 @@
         <activity
             android:name="com.tencent.bugly.beta.ui.BetaActivity"
             android:theme="@android:style/Theme.Translucent" />
-
         <activity
             android:name=".ui.MainActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
@@ -207,9 +205,7 @@
         <activity
             android:name=".ui.CodeViewActivity"
             android:label="@string/title_activity_code_view"
-            android:theme="@style/AppTheme.SwipeTheme">
-
-        </activity>
+            android:theme="@style/AppTheme.SwipeTheme"></activity>
     </application>
 
 </manifest>

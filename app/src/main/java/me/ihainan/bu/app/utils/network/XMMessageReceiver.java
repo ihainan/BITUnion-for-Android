@@ -81,10 +81,9 @@ public class XMMessageReceiver extends PushMessageReceiver {
                 if (type == 3 && !BUApplication.getEnableFollowNotify(context)) return;
 
                 // mark as read action intent
-                // PendingIntent markAsReadIntent = PendingIntent.get
                 Intent markAsReadIntent = new Intent(context.getString(R.string.action_broadcast_mark_as_read));
                 markAsReadIntent.putExtra("notifyId", message.getNotifyId());
-                PendingIntent markAsReadPendingIntent = PendingIntent.getBroadcast(context, 0, markAsReadIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+                PendingIntent markAsReadPendingIntent = PendingIntent.getBroadcast(context, message.getNotifyId(), markAsReadIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
                 if (type == 0 || type == 1 || type == 2) {
                     NotificationMessage.PostNotificationMessageData notificationMessageData = BUApi.MAPPER.readValue(jsonObject.getJSONObject("data").toString(), NotificationMessage.PostNotificationMessageData.class);
