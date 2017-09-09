@@ -4,9 +4,14 @@
     <!-- Common -->
     <string name="title_warning">警告</string>
     <string name="button_confirm">确定</string>
+    <string name="button_remind">提醒</string>
     <string name="button_cancel">取消</string>
     <string name="button_yes">是</string>
     <string name="button_no">否</string>
+    <string name="button_draft">保存</string>
+    <string name="button_exit">丢弃</string>
+    <string name="activity_success">success</string>
+    <string name="activity_failure">failure</string>
     <string name="press_back_to_exit">再次按下返回键退出应用</string>
 
     <!-- Strings related to login -->
@@ -23,6 +28,18 @@
     <string name="message_success_add_feedback">你的建议已经发给开发者，非常感谢！</string>
     <string name="message_error_add_feedback">发送反馈失败，请稍后重试</string>
     <string name="message_donate">做这个应用纯属业余爱好，除了时间精力的付出之外，自己还承担了 Google 开发者账号、服务器和域名的费用，不多，问题不大。\n\n当然，感谢你的支持，感谢你的咖啡，我今天心情应该会很好 :D</string>
+
+
+    <!-- New Post & Drafts -->
+    <string name="message_new_post_success">发表回复成功</string>
+    <string name="message_save_draft_success">已成功存至草稿箱</string>
+    <string name="message_clear_drafts">是否清空草稿箱？</string>
+    <string name="error_fetch_draft_list">获取草稿列表数据失败</string>
+    <string name="error_fetch_draft_data">获取草稿数据失败</string>
+    <string name="error_save_draft">保存草稿失败</string>
+    <string name="error_clear_drafts">清空草稿箱失败</string>
+    <string name="error_new_post_save_draft_success">发布帖子失败，已存为草稿</string>
+    <string name="error_new_post_save_draft_failure">发布帖子失败，无法存为草稿</string>
 
     <!-- Error message -->
     <string name="error_title">错误</string>
@@ -49,14 +66,15 @@
     <string name="error_no_new_events">哎呀并没有动态</string>
     <string name="error_no_new_threads">哎呀并没有发帖记录</string>
     <string name="error_no_notifications">哎呀并没有通知消息</string>
+    <string name="error_no_drafts">哎呀草稿箱是空的</string>
     <string name="error_no_new_posts">哎呀并没有回复记录</string>
     <string name="error_no_search_result">哎呀并没有搜索结果</string>
     <string name="error_no_following">哎呀并没有关注任何用户</string>
     <string name="error_no_favorites">哎呀并没有收藏</string>
     <string name="error_unknown">未知错误</string>
 
-    <!-- Warnning -->
-    <string name="warnning_reset_display_setting">自定义配置将会丢失，是否还原到默认设置？</string>
+    <!-- Warning -->
+    <string name="warning_reset_display_setting">自定义配置将会丢失，是否还原到默认设置？</string>
 
     <!-- File Download -->
     <string name="success_download_image">保存图片成功</string>
@@ -74,8 +92,10 @@
     <string name="action_retry">重试</string>
     <string name="action_refresh">刷新</string>
     <string name="action_send">提交</string>
+    <string name="action_drafts">草稿箱</string>
     <string name="action_inbox">消息盒</string>
     <string name="action_check_all">全部标为已读</string>
+    <string name="action_remove_drafts">删除所有草稿</string>
     <string name="action_manage_focus">关注列表</string>
     <string name="action_copy_code">复制代码</string>
     <string name="action_follow">关注</string>
@@ -109,6 +129,9 @@
     <string name="title_new_thread">发布主题</string>
     <string name="title_activity_with_framelayout">无标题</string>
     <string name="title_activity_search">搜索</string>
+    <string name="title_activity_draft_list">草稿箱</string>
+    <string name="title_activity_draft_list_new_post">草稿箱（回帖）</string>
+    <string name="title_activity_draft_list_new_thread">草稿箱（新帖）</string>
     <string name="title_activity_new_following_list">关注页面</string>
     <string name="title_activity_forum_list">板块</string>
     <string name="title_activity_preference">设置</string>
@@ -116,7 +139,7 @@
     <string name="title_activity_feedback">意见反馈</string>
 
     <!-- Editor -->
-    <string name="message_exit_editor">帖子内容不为空，是否仍然退出编辑器？</string>
+    <string name="message_exit_editor">帖子内容不为空，是否保存为草稿？</string>
     <string name="processing_attachment">正在处理附件</string>
 
 

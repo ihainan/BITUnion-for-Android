@@ -178,7 +178,7 @@ public class PostDisplaySettingActivity extends SwipeActivity {
             @Override
             public void onClick(View v) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(new ContextThemeWrapper(PostDisplaySettingActivity.this, R.style.AlertDialogCustom));
-                builder.setTitle(getString(R.string.title_warning)).setMessage(getString(R.string.warnning_reset_display_setting))
+                builder.setTitle(getString(R.string.title_warning)).setMessage(getString(R.string.warning_reset_display_setting))
                         .setPositiveButton(getString(R.string.button_cancel), new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {

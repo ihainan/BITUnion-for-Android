@@ -2,7 +2,6 @@ package me.ihainan.bu.app.utils;
 
 import android.app.Activity;
 import android.app.ActivityManager;
-import android.app.Dialog;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.ContentValues;
@@ -26,15 +25,12 @@ import android.os.Build;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.view.ContextThemeWrapper;
 import android.text.format.DateUtils;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Display;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.Response;
@@ -42,6 +38,7 @@ import com.android.volley.VolleyError;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
+
 import org.json.JSONObject;
 
 import java.io.File;
@@ -102,6 +99,10 @@ public class CommonUtils {
     public static void debugToast(Context context, String message) {
         if (BUApplication.debugMode)
             Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
+    }
+
+    public static void toast(Context context, String message) {
+        Toast.makeText(context, message, Toast.LENGTH_LONG).show();
     }
 
     /**
@@ -287,7 +288,8 @@ public class CommonUtils {
                     }, new Response.ErrorListener() {
                         @Override
                         public void onErrorResponse(VolleyError error) {
-                            if (context instanceof Activity && ((Activity) context).isFinishing()) return;
+                            if (context instanceof Activity && ((Activity) context).isFinishing())
+                                return;
                             String message = context.getString(R.string.error_network);
                             String debugMessage = "getAndCacheUserInfo >> " + message;
                             CommonUtils.debugToast(context, debugMessage);

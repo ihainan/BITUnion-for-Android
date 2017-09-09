@@ -47,6 +47,8 @@ import me.ihainan.bu.app.utils.network.BUApi;
 import me.ihainan.bu.app.utils.ui.HtmlUtil;
 import me.ihainan.bu.app.utils.ui.PicassoImageGetter;
 
+import static me.ihainan.bu.app.ui.NewPostActivity.POST_RESULT_TAG;
+
 public class PreviewActivity extends SwipeActivity {
     // TAG
     private final static String TAG = PreviewActivity.class.getSimpleName();
@@ -327,6 +329,7 @@ public class PreviewActivity extends SwipeActivity {
 
                         // Finish
                         Intent resultData = new Intent();
+                        resultData.putExtra(POST_RESULT_TAG, R.string.activity_success);
                         setResult(Activity.RESULT_OK, resultData);
                         finish();
                     } else {
@@ -334,21 +337,30 @@ public class PreviewActivity extends SwipeActivity {
                         String debugMessage = message + " - " + response;
                         Log.w(TAG, debugMessage);
                         CommonUtils.debugToast(PreviewActivity.this, debugMessage);
-                        showSnackbar(message);
+                        Intent resultData = new Intent();
+                        // resultData.putExtra(POST_RESULT_TAG, R.string.activity_failure);
+                        setResult(Activity.RESULT_OK, resultData);
+                        finish();
                     }
                 } catch (JSONException e) {
                     String message = getString(R.string.error_parse_json);
                     String debugMessage = message + " - " + jsonStr;
                     Log.e(TAG, debugMessage, e);
                     CommonUtils.debugToast(PreviewActivity.this, debugMessage);
-                    showSnackbar(message);
+                    Intent resultData = new Intent();
+                    // resultData.putExtra(POST_RESULT_TAG, R.string.activity_failure);
+                    setResult(Activity.RESULT_OK, resultData);
+                    finish();
                 }
             } else {
                 String message = mActionStr + "失败，请重试";
                 String debugMessage = message + " - " + response.statusCode;
                 Log.w(TAG, debugMessage);
                 CommonUtils.debugToast(PreviewActivity.this, debugMessage);
-                showSnackbar(message);
+                Intent resultData = new Intent();
+                // resultData.putExtra(POST_RESULT_TAG, R.string.activity_failure);
+                setResult(Activity.RESULT_OK, resultData);
+                finish();
             }
         }
     };
@@ -364,8 +376,11 @@ public class PreviewActivity extends SwipeActivity {
             String message = getString(R.string.error_network);
             String debugMessage = "PreviewActivity >> " + message;
             CommonUtils.debugToast(PreviewActivity.this, debugMessage);
-            showSnackbar(message);
             Log.e(TAG, debugMessage, error);
+            Intent resultData = new Intent();
+            // resultData.putExtra(POST_RESULT_TAG, R.string.activity_failure);
+            setResult(Activity.RESULT_OK, resultData);
+            finish();
         }
     };
 

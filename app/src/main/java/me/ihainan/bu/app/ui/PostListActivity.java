@@ -128,8 +128,9 @@ public class PostListActivity extends SwipeActivity {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == REQUEST_NEW_REPLY && resultCode == RESULT_OK) {
-            CommonUtils.debugToast(this, "发表回复成功");
             Intent intent = getIntent();
+            // String postResult = intent.getStringExtra(NewPostActivity.POST_RESULT_TAG);
+            // if (postResult != null) CommonUtils.debugToast(this, "发表回复成功");
             intent.removeExtra(THREAD_REPLY_COUNT_TAG); // 重新获取回复个数
             intent.removeExtra(THREAD_JUMP_FLOOR);  // 直接跳到最后
             finish();

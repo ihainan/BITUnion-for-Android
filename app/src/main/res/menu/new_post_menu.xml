@@ -8,4 +8,11 @@
         android:orderInCategory="80"
         android:title="@string/action_send"
         app:showAsAction="always" />
+
+    <item
+        android:id="@+id/drafts"
+        android:icon="@drawable/ic_receipt_white_24dp"
+        android:orderInCategory="79"
+        android:title="@string/action_send"
+        app:showAsAction="always" />
 </menu>

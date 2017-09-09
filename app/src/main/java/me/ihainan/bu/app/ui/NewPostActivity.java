@@ -36,15 +36,23 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.IOException;
+
 import me.ihainan.bu.app.R;
+import me.ihainan.bu.app.models.Draft;
+import me.ihainan.bu.app.ui.fragment.DraftsFragment;
 import me.ihainan.bu.app.ui.fragment.EmoticonFragment;
 import me.ihainan.bu.app.utils.BUApplication;
 import me.ihainan.bu.app.utils.CommonUtils;
+import me.ihainan.bu.app.utils.DraftUtil;
+import me.ihainan.bu.app.utils.network.BUApi;
 import me.ihainan.bu.app.utils.ui.EditTextUndoRedo;
 
 public class NewPostActivity extends AppCompatActivity {
     private final static String TAG = NewPostActivity.class.getSimpleName();
-
+    public final static String DRAFT_TAG = "BU_DRAFT_TAG";
+    public final static String POST_RESULT_TAG = "BU_POST_RESULT_TAG";
+    public final static String DRAFT_ACTION_TAG = "BU_DRAFT_ACTION_TAG";
     // 权限 Tags
     private final static int PERMISSIONS_REQUEST_READ_IMAGE = 1;
     private final static int PERMISSIONS_REQUEST_READ_FILE = 2;
@@ -53,6 +61,7 @@ public class NewPostActivity extends AppCompatActivity {
     private final static int REQUEST_CHOOSE_PHOTO_TAG = 0;   // 添加图片附件请求
     private final static int REQUEST_CHOOSE_FILE_TAG = 1;    // 添加文件附件请求
     private final static int REQUEST_PREVIEW_TAG = 2;    // 查看发帖预览请求
+    private final static int REQUEST_DRAFT_TAG = 3;    // 查看发帖预览请求
 
     // 来源 Intent Tags
     public final static String ACTION_TAG = "ACTION"; // 预期操作（发主题 / 回帖），对应 ACTION_THREAD / ACTION_POST
@@ -263,6 +272,7 @@ public class NewPostActivity extends AppCompatActivity {
             }
         });
     }
+
 
     private final static int ACTION_ADD_ATTACHMENT = 1;
     private final static int ACTION_MOD_ATTACHMENT = 2;
@@ -513,9 +523,46 @@ public class NewPostActivity extends AppCompatActivity {
             } else doAfterAddingAttachmentNew();
         } else if (requestCode == REQUEST_PREVIEW_TAG) {
             if (resultCode == RESULT_OK) {
-                Intent resultData = new Intent();
-                setResult(Activity.RESULT_OK, resultData);
+                String result = data.getStringExtra(POST_RESULT_TAG);
+                if (result == null) {
+                    try {
+                        Draft draft = new Draft();
+                        draft.subject = mETSubject.getText().toString();
+                        draft.content = mETMessage.getText().toString();
+                        draft.timestamp = System.currentTimeMillis() / 1000;
+                        draft.action = mAction;
+                        DraftUtil.saveDraft(NewPostActivity.this, draft);
+                        CommonUtils.toast(NewPostActivity.this, getString(R.string.error_new_post_save_draft_success));
+                    } catch (IOException e) {
+                        String message = getString(R.string.error_new_post_save_draft_failure);
+                        Log.e(TAG, message, e);
+                        CommonUtils.toast(NewPostActivity.this, getString(R.string.error_new_post_save_draft_failure));
+                    }
+                } else {
+                    CommonUtils.toast(this, getString(R.string.message_new_post_success));
+                }
+
+                setResult(Activity.RESULT_OK, new Intent());
                 finish();
+            }
+        } else if (requestCode == REQUEST_DRAFT_TAG) {
+            if (resultCode == RESULT_OK) {
+                String draftStr = data.getStringExtra(DRAFT_TAG);
+                if (draftStr == null) {
+                    CommonUtils.toast(this, getString(R.string.error_fetch_draft_data));
+                } else {
+                    try {
+                        Draft draft = BUApi.MAPPER.readValue(draftStr, Draft.class);
+                        if (ACTION_NEW_THREAD.equals(mAction)) {
+                            mETSubject.setText(draft.subject);
+                        }
+                        mETMessage.setText(draft.content);
+                    } catch (IOException e) {
+                        String message = getString(R.string.error_fetch_draft_data);
+                        Log.e(TAG, message, e);
+                        CommonUtils.toast(this, message);
+                    }
+                }
             }
         }
     }
@@ -532,21 +579,36 @@ public class NewPostActivity extends AppCompatActivity {
         if (mAttachmentUri != null || !"".equals(mETSubject.getText().toString())
                 || !"".equals(mETMessage.getText().toString())) {
             AlertDialog.Builder builder = new AlertDialog.Builder(NewPostActivity.this);
-            builder.setTitle(getString(R.string.title_warning))
+            builder.setTitle(getString(R.string.button_remind))
 
                     .setMessage(getString(R.string.message_exit_editor))
-                    .setPositiveButton(getString(R.string.button_yes), new DialogInterface.OnClickListener() {
+                    .setNegativeButton(getString(R.string.button_draft), new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            try {
+                                Draft draft = new Draft();
+                                draft.subject = mETSubject.getText().toString();
+                                draft.content = mETMessage.getText().toString();
+                                draft.timestamp = System.currentTimeMillis() / 1000;
+                                draft.action = mAction;
+                                DraftUtil.saveDraft(NewPostActivity.this, draft);
+                                Toast.makeText(NewPostActivity.this, getString(R.string.message_save_draft_success), Toast.LENGTH_LONG).show();
+                            } catch (IOException e) {
+                                String message = getString(R.string.error_save_draft);
+                                Log.e(TAG, message, e);
+                                CommonUtils.toast(NewPostActivity.this, message);
+                            }
+                            CommonUtils.deleteTmpDir(NewPostActivity.this);
+                            finish();
+                        }
+                    })
+                    .setPositiveButton(getString(R.string.button_exit), new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             CommonUtils.deleteTmpDir(NewPostActivity.this);
                             finish();
                         }
-                    }).setNegativeButton(getString(R.string.button_no), new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    dialog.dismiss();
-                }
-            });
+                    });
             builder.show();
         } else {
             CommonUtils.deleteTmpDir(NewPostActivity.this);
@@ -587,6 +649,15 @@ public class NewPostActivity extends AppCompatActivity {
 
                     startActivityForResult(intent, REQUEST_PREVIEW_TAG);
                 }
+                break;
+            case R.id.drafts:
+                // Intent intent = new Intent(this, FollowingListActivity.class);
+                Intent intent = new Intent(this, ActivityWithFrameLayout.class);
+                intent.putExtra(ActivityWithFrameLayout.TITLE_TAG, getString(R.string.title_activity_draft_list));
+                intent.putExtra(ActivityWithFrameLayout.FRAGMENT_TAG, DraftsFragment.class.getSimpleName());
+                intent.putExtra(DRAFT_ACTION_TAG, mAction);
+                startActivityForResult(intent, REQUEST_DRAFT_TAG);
+                break;
         }
 
         return true;
