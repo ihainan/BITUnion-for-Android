@@ -10,8 +10,8 @@ import android.widget.Toast;
  * 点击事件
  */
 public abstract class CustomOnClickListener implements View.OnClickListener {
-    int clickTimes = 0;
-    boolean hasClickTwoTimes = false;
+    private int clickTimes = 0;
+    private boolean hasClickTwoTimes = false;
 
     @Override
     public void onClick(View v) {

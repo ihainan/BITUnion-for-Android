@@ -147,7 +147,7 @@ public class PreviewActivity extends SwipeActivity {
             mMessageView.setLineSpacing(BUApplication.lineSpacingExtra, BUApplication.lineSpacingMultiplier);
             SpannableString spannableString = new SpannableString(
                     Html.fromHtml(
-                            mMessageHtmlContent,
+                            CommonUtils.addSpaces(mMessageHtmlContent),
                             new PicassoImageGetter(this, mMessageView),
                             null));
             CustomSpan.setUpAllSpans(this, spannableString);
@@ -268,9 +268,7 @@ public class PreviewActivity extends SwipeActivity {
             if (cursor != null) cursor.close();
         }
 
-        if (linearLayout != null) {
-            linearLayout.addView(itemView);
-        }
+        linearLayout.addView(itemView);
     }
 
     private final View.OnClickListener submitListener = new View.OnClickListener() {

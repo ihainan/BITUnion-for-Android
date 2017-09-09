@@ -9,7 +9,6 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.jakewharton.picasso.OkHttp3Downloader;
-import com.squareup.picasso.OkHttpDownloader;
 import com.squareup.picasso.Picasso;
 import com.tencent.bugly.Bugly;
 import com.tencent.bugly.beta.Beta;
@@ -106,6 +105,7 @@ public class BUApplication extends Application {
     public final static String PREF_NETWORK_TYPE = "PREF_NETWORK_TYPE";
     public final static String PREF_SAVE_DATA = "PREF_SAVE_DATA";
     public final static String PREF_DEBUG_MODE = "PREF_DEBUG_MODE";
+    public final static String PREF_ENABLE_SPACE_MODE = "PREF_ENABLE_SPACE_MODE";
     public final static String PREF_UPLOAD_DATA = "PREF_UPLOAD_DATA";
     public final static String PREF_ENABLE_NOTIFY = "PREF_ENABLE_NOTIFY";
     public final static String PREF_ENABLE_REPLY_NOTIFY = "PREF_ENABLE_REPLY_NOTIFY";
@@ -143,6 +143,7 @@ public class BUApplication extends Application {
     public static Integer homePageClickEventType = 0;   // 0 表示进尾楼，1 表示进 1 楼
     public static Boolean enableAdvancedEditor = false; // 是否使用高级编辑器
     public static Boolean enableDisplayDeviceInfo = true;   // 是否显示回帖尾巴
+    public static Boolean enableSpaceBetweenCNAndEN = false;    // 是否添加额外空格
 
     public static Boolean debugMode = true;  // 是否启动 debug 模式
 
@@ -167,6 +168,7 @@ public class BUApplication extends Application {
         getCacheTitleFontSize(context);
         getCacheLineSpacingExtra(context);
         getCacheLineSpacingMultiplier(context);
+        getCacheEnableSpaceBetweenCNAndEN(context);
         getEnableAtNotify(context);
         getEnableReplyNotify(context);
         getEnableQuoteNotify(context);
@@ -178,194 +180,6 @@ public class BUApplication extends Application {
         getCachedFeedbackEmail(context);
         getPrefEnableDisplayDeviceInfo(context);
         getPostListLoadingCount(context);
-    }
-
-    /**
-     * migrate cache data from ACache to SharedPreference
-     *
-     * @param context Application context
-     */
-    private static void migrateCache(Context context) {
-        ACache cache = BUApplication.getCache(context);
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        SharedPreferences.Editor editor = prefs.edit();
-
-        // 每页加载的帖子数量
-        postListLoadingCount = (Integer) BUApplication.getCache(context).getAsObject(PREF_POST_LIST_LOADING_COUNT);
-        if (postListLoadingCount != null) {
-            editor.putInt(PREF_POST_LIST_LOADING_COUNT, postListLoadingCount);
-            editor.commit();
-            cache.remove(PREF_POST_LIST_LOADING_COUNT);
-        }
-
-        // 发帖是否显示用户设备信息尾巴
-        enableDisplayDeviceInfo = (Boolean) BUApplication.getCache(context).getAsObject(PREF_ENABLE_DISPLAY_DEVICE_INFO);
-        if (enableDisplayDeviceInfo != null) {
-            editor.putBoolean(PREF_ENABLE_DISPLAY_DEVICE_INFO, enableDisplayDeviceInfo);
-            editor.commit();
-            cache.remove(PREF_ENABLE_DISPLAY_DEVICE_INFO);
-        }
-
-        // 缓存的用户邮箱
-        cachedFeedbackEmail = BUApplication.getCache(context).getAsString(CACHED_FEEDBACK_EMAIL);
-        if (cachedFeedbackEmail != null) {
-            editor.putString(CACHED_FEEDBACK_EMAIL, cachedFeedbackEmail);
-            editor.commit();
-            cache.remove(CACHED_FEEDBACK_EMAIL);
-        }
-
-        // 是否开启夜间勿扰模式
-        enableSilentMode = (Boolean) BUApplication.getCache(context).getAsObject(PREF_ENABLE_SILENT_MODE);
-        if (enableSilentMode != null) {
-            editor.putBoolean(PREF_ENABLE_SILENT_MODE, enableSilentMode);
-            editor.commit();
-            cache.remove(PREF_ENABLE_SILENT_MODE);
-        }
-
-        // 是否开启高级编辑器
-        enableAdvancedEditor = (Boolean) BUApplication.getCache(context).getAsObject(PREF_ENABLE_ADVANCED_EDITOR);
-        if (enableAdvancedEditor != null) {
-            editor.putBoolean(PREF_ENABLE_ADVANCED_EDITOR, enableAdvancedEditor);
-            editor.commit();
-            cache.remove(PREF_ENABLE_ADVANCED_EDITOR);
-        }
-
-        // 主页主题点击事件类型
-        homePageClickEventType = (Integer) BUApplication.getCache(context).getAsObject(PREF_HOME_PAGE_CLICK_EVENT);
-        if (homePageClickEventType != null) {
-            editor.putInt(PREF_HOME_PAGE_CLICK_EVENT, homePageClickEventType);
-            editor.commit();
-            cache.remove(PREF_HOME_PAGE_CLICK_EVENT);
-        }
-
-        // 是否开启关注通知
-        enableFollowingNotify = (Boolean) BUApplication.getCache(context).getAsObject(PREF_ENABLE_FOLLOW_NOTIFY);
-        if (enableFollowingNotify != null) {
-            editor.putBoolean(PREF_ENABLE_FOLLOW_NOTIFY, enableFollowingNotify);
-            editor.commit();
-            cache.remove(PREF_ENABLE_FOLLOW_NOTIFY);
-        }
-
-        // 是否开启 @ 通知
-        enableAtNotify = (Boolean) BUApplication.getCache(context).getAsObject(PREF_ENABLE_AT_NOTIFY);
-        if (enableAtNotify != null) {
-            editor.putBoolean(PREF_ENABLE_AT_NOTIFY, enableAtNotify);
-            editor.commit();
-            cache.remove(PREF_ENABLE_AT_NOTIFY);
-        }
-
-        // 是否开启引用通知
-        enableQuoteNotify = (Boolean) BUApplication.getCache(context).getAsObject(PREF_ENABLE_QUOTE_NOTIFY);
-        if (enableQuoteNotify != null) {
-            editor.putBoolean(PREF_ENABLE_QUOTE_NOTIFY, enableQuoteNotify);
-            editor.commit();
-            cache.remove(PREF_ENABLE_QUOTE_NOTIFY);
-        }
-
-        // 是否开启回复通知
-        enableReplyNotify = (Boolean) BUApplication.getCache(context).getAsObject(PREF_ENABLE_REPLY_NOTIFY);
-        if (enableReplyNotify != null) {
-            editor.putBoolean(PREF_ENABLE_REPLY_NOTIFY, enableReplyNotify);
-            editor.commit();
-            cache.remove(PREF_ENABLE_REPLY_NOTIFY);
-        }
-
-        // 是否开启通知
-        enableNotify = (Boolean) BUApplication.getCache(context).getAsObject(PREF_ENABLE_NOTIFY);
-        if (enableNotify != null) {
-            editor.putBoolean(PREF_ENABLE_NOTIFY, enableNotify);
-            editor.commit();
-            cache.remove(PREF_ENABLE_NOTIFY);
-        }
-
-        // 帖子标题字体大小
-        titleFontSize = (Integer) BUApplication.getCache(context).getAsObject(PREF_FONT_TITLE_SIZE);
-        if (titleFontSize != null) {
-            editor.putInt(PREF_FONT_TITLE_SIZE, titleFontSize);
-            editor.commit();
-            cache.remove(PREF_FONT_TITLE_SIZE);
-        }
-
-        // 帖子正文字体大小]
-        fontSize = (Integer) BUApplication.getCache(context).getAsObject(PREF_FONT_SIZE);
-        if (fontSize != null) {
-            editor.putInt(PREF_FONT_SIZE, fontSize);
-            editor.commit();
-            cache.remove(PREF_FONT_SIZE);
-        }
-
-        // 额外行间距
-        lineSpacingExtra = (Integer) BUApplication.getCache(context).getAsObject(PREF_LINE_SPACING_EXTRA);
-        if (lineSpacingExtra != null) {
-            editor.putInt(PREF_LINE_SPACING_EXTRA, lineSpacingExtra);
-            editor.commit();
-            cache.remove(PREF_LINE_SPACING_EXTRA);
-        }
-
-        // 行间距倍数
-        lineSpacingMultiplier = (Float) BUApplication.getCache(context).getAsObject(PREF_LINE_SPACING_MULTIPLIER);
-        if (lineSpacingMultiplier != null) {
-            editor.putFloat(PREF_LINE_SPACING_MULTIPLIER, lineSpacingMultiplier);
-            editor.commit();
-            cache.remove(PREF_LINE_SPACING_MULTIPLIER);
-        }
-
-        // 用户名
-        username = BUApplication.getCache(context).getAsString(PREF_USER_NAME);
-        if (username != null) {
-            editor.putString(PREF_USER_NAME, username);
-            editor.commit();
-            cache.remove(PREF_USER_NAME);
-        }
-
-        // 密码
-        password = BUApplication.getCache(context).getAsString(PREF_PASSWORD);
-        if (password != null) {
-            editor.putString(PREF_PASSWORD, password);
-            editor.commit();
-            cache.remove(PREF_PASSWORD);
-        }
-
-        // Session
-        userSession = (Session) BUApplication.getCache(context).getAsObject(CONF_SESSION_STR);
-        if (userSession != null) {
-            editor.putString(CONF_SESSION_STR, userSession.toString());
-            editor.commit();
-            cache.remove(CONF_SESSION_STR);
-        }
-
-        // 网络模式
-        String networkTypeStr = prefs.getString(PREF_NETWORK_TYPE, "");
-        networkType = networkTypeStr.equals("") ? NETWORK_TYPE.OUT_SCHOOL : NETWORK_TYPE.valueOf(networkTypeStr);
-        if (networkTypeStr != null) {
-            editor.putString(PREF_NETWORK_TYPE, networkType.toString());
-            editor.commit();
-            cache.remove(PREF_NETWORK_TYPE);
-        }
-
-        // 省流量模式
-        saveDataMode = (Boolean) BUApplication.getCache(context).getAsObject(PREF_SAVE_DATA);
-        if (saveDataMode != null) {
-            editor.putBoolean(PREF_SAVE_DATA, saveDataMode);
-            editor.commit();
-            cache.remove(PREF_SAVE_DATA);
-        }
-
-        // Debug 模式
-        debugMode = (Boolean) BUApplication.getCache(context).getAsObject(PREF_DEBUG_MODE);
-        if (debugMode != null) {
-            editor.putBoolean(PREF_DEBUG_MODE, debugMode);
-            editor.commit();
-            cache.remove(PREF_DEBUG_MODE);
-        }
-
-        // 数据上传
-        uploadData = (Boolean) BUApplication.getCache(context).getAsObject(PREF_UPLOAD_DATA);
-        if (uploadData != null) {
-            editor.putBoolean(PREF_UPLOAD_DATA, uploadData);
-            editor.commit();
-            cache.remove(PREF_UPLOAD_DATA);
-        }
     }
 
     public static boolean isInSchool() {
@@ -384,7 +198,7 @@ public class BUApplication extends Application {
             SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
             SharedPreferences.Editor editor = prefs.edit();
             editor.putInt(PREF_POST_LIST_LOADING_COUNT, postListLoadingCount);
-            editor.commit();
+            editor.apply();
         }
     }
 
@@ -400,7 +214,7 @@ public class BUApplication extends Application {
             SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
             SharedPreferences.Editor editor = prefs.edit();
             editor.putBoolean(PREF_ENABLE_DISPLAY_DEVICE_INFO, enableDisplayDeviceInfo);
-            editor.commit();
+            editor.apply();
         }
     }
 
@@ -416,7 +230,7 @@ public class BUApplication extends Application {
             SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
             SharedPreferences.Editor editor = prefs.edit();
             editor.putString(CACHED_FEEDBACK_EMAIL, cachedFeedbackEmail);
-            editor.commit();
+            editor.apply();
         }
     }
 
@@ -432,7 +246,7 @@ public class BUApplication extends Application {
             SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
             SharedPreferences.Editor editor = prefs.edit();
             editor.putBoolean(PREF_ENABLE_SILENT_MODE, enableSilentMode);
-            editor.commit();
+            editor.apply();
         }
     }
 
@@ -448,7 +262,7 @@ public class BUApplication extends Application {
             SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
             SharedPreferences.Editor editor = prefs.edit();
             editor.putBoolean(PREF_ENABLE_ADVANCED_EDITOR, enableAdvancedEditor);
-            editor.commit();
+            editor.apply();
         }
     }
 
@@ -464,7 +278,7 @@ public class BUApplication extends Application {
             SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
             SharedPreferences.Editor editor = prefs.edit();
             editor.putInt(PREF_HOME_PAGE_CLICK_EVENT, homePageClickEventType);
-            editor.commit();
+            editor.apply();
         }
     }
 
@@ -480,7 +294,7 @@ public class BUApplication extends Application {
             SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
             SharedPreferences.Editor editor = prefs.edit();
             editor.putBoolean(PREF_ENABLE_FOLLOW_NOTIFY, enableFollowingNotify);
-            editor.commit();
+            editor.apply();
         }
     }
 
@@ -496,7 +310,7 @@ public class BUApplication extends Application {
             SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
             SharedPreferences.Editor editor = prefs.edit();
             editor.putBoolean(PREF_ENABLE_AT_NOTIFY, enableAtNotify);
-            editor.commit();
+            editor.apply();
         }
     }
 
@@ -512,7 +326,7 @@ public class BUApplication extends Application {
             SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
             SharedPreferences.Editor editor = prefs.edit();
             editor.putBoolean(PREF_ENABLE_QUOTE_NOTIFY, enableQuoteNotify);
-            editor.commit();
+            editor.apply();
         }
     }
 
@@ -528,7 +342,7 @@ public class BUApplication extends Application {
             SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
             SharedPreferences.Editor editor = prefs.edit();
             editor.putBoolean(PREF_ENABLE_REPLY_NOTIFY, enableReplyNotify);
-            editor.commit();
+            editor.apply();
         }
     }
 
@@ -544,7 +358,7 @@ public class BUApplication extends Application {
             SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
             SharedPreferences.Editor editor = prefs.edit();
             editor.putBoolean(PREF_ENABLE_NOTIFY, enableNotify);
-            editor.commit();
+            editor.apply();
         }
     }
 
@@ -560,7 +374,7 @@ public class BUApplication extends Application {
             SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
             SharedPreferences.Editor editor = prefs.edit();
             editor.putInt(PREF_FONT_TITLE_SIZE, titleFontSize);
-            editor.commit();
+            editor.apply();
         }
     }
 
@@ -576,7 +390,7 @@ public class BUApplication extends Application {
             SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
             SharedPreferences.Editor editor = prefs.edit();
             editor.putInt(PREF_FONT_SIZE, fontSize);
-            editor.commit();
+            editor.apply();
         }
     }
 
@@ -592,7 +406,7 @@ public class BUApplication extends Application {
             SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
             SharedPreferences.Editor editor = prefs.edit();
             editor.putInt(PREF_LINE_SPACING_EXTRA, lineSpacingExtra);
-            editor.commit();
+            editor.apply();
         }
     }
 
@@ -608,7 +422,7 @@ public class BUApplication extends Application {
             SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
             SharedPreferences.Editor editor = prefs.edit();
             editor.putFloat(PREF_LINE_SPACING_MULTIPLIER, lineSpacingMultiplier);
-            editor.commit();
+            editor.apply();
         }
     }
 
@@ -623,7 +437,7 @@ public class BUApplication extends Application {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         SharedPreferences.Editor editor = prefs.edit();
         editor.putString(PREF_USER_NAME, BUApplication.username == null ? "" : BUApplication.username);
-        editor.commit();
+        editor.apply();
     }
 
     public static Session getCacheSession(Context context) {
@@ -647,7 +461,7 @@ public class BUApplication extends Application {
             SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
             SharedPreferences.Editor editor = prefs.edit();
             editor.putString(CONF_SESSION_STR, userSession.toString());
-            editor.commit();
+            editor.apply();
         }
     }
 
@@ -662,7 +476,7 @@ public class BUApplication extends Application {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         SharedPreferences.Editor editor = prefs.edit();
         editor.putString(PREF_PASSWORD, BUApplication.password == null ? "" : BUApplication.password);
-        editor.commit();
+        editor.apply();
     }
 
     public static NETWORK_TYPE getCacheNetworkType(Context context) {
@@ -679,7 +493,7 @@ public class BUApplication extends Application {
             SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
             SharedPreferences.Editor editor = prefs.edit();
             editor.putString(PREF_NETWORK_TYPE, networkType.toString());
-            editor.commit();
+            editor.apply();
         }
     }
 
@@ -695,7 +509,23 @@ public class BUApplication extends Application {
             SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
             SharedPreferences.Editor editor = prefs.edit();
             editor.putBoolean(PREF_SAVE_DATA, saveDataMode);
-            editor.commit();
+            editor.apply();
+        }
+    }
+
+    public static Boolean getCacheEnableSpaceBetweenCNAndEN(Context context) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        enableSpaceBetweenCNAndEN = prefs.getBoolean(PREF_ENABLE_SPACE_MODE, false);
+        return enableSpaceBetweenCNAndEN;
+    }
+
+    public static void setCacheEnableSpaceBetweenCNAndEN(Context context) {
+        Log.d(TAG, "setCacheEnableSpaceBetweenCNAndEN >> " + enableSpaceBetweenCNAndEN);
+        if (enableSpaceBetweenCNAndEN != null) {
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+            SharedPreferences.Editor editor = prefs.edit();
+            editor.putBoolean(PREF_ENABLE_SPACE_MODE, enableSpaceBetweenCNAndEN);
+            editor.apply();
         }
     }
 
@@ -711,7 +541,7 @@ public class BUApplication extends Application {
             SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
             SharedPreferences.Editor editor = prefs.edit();
             editor.putBoolean(PREF_DEBUG_MODE, debugMode);
-            editor.commit();
+            editor.apply();
         }
     }
 
@@ -727,7 +557,7 @@ public class BUApplication extends Application {
             SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
             SharedPreferences.Editor editor = prefs.edit();
             editor.putBoolean(PREF_UPLOAD_DATA, uploadData);
-            editor.commit();
+            editor.apply();
         }
     }
 
@@ -1140,7 +970,7 @@ public class BUApplication extends Application {
         CrashReport.initCrashReport(getApplicationContext(), BUGLY_APP_ID, debugMode);  // 启动崩溃日志上传
 
         // 从缓存中读取数据
-        migrateCache(this);
+        // migrateCache(this);
         readConfig(this);
 
         // 配置 Picasso 的磁盘缓存（配合  OKHttp）

@@ -61,6 +61,7 @@ import me.ihainan.bu.app.R;
 import me.ihainan.bu.app.models.Member;
 import me.ihainan.bu.app.ui.ProfileActivity;
 import me.ihainan.bu.app.utils.network.BUApi;
+import ws.vinta.pangu.Pangu;
 
 /**
  * 通用工具类
@@ -942,5 +943,12 @@ public class CommonUtils {
         //Bitmap _bmp = Bitmap.createScaledBitmap(output, 60, 60, false);
         //return _bmp;
         return output;
+    }
+
+    private final static Pangu pangu = new Pangu();
+
+    public static String addSpaces(String text) {
+        if (BUApplication.enableSpaceBetweenCNAndEN) return pangu.spacingText(text);
+        else return text;
     }
 }

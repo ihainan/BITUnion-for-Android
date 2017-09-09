@@ -139,13 +139,13 @@ public class CustomSpan {
                 String newUrl = mUrl.replace(BUApi.IN_SCHOOL_BASE_URL, "/").replace(BUApi.OUT_SCHOOL_BASE_URL, "/");
                 if (newUrl.startsWith("/profile-username-")) {
                     // 个人信息
-                    String userName = CommonUtils.decode(newUrl.substring("/profile-username-".length(), mUrl.length() - 5), "GBK");
+                    String userName = CommonUtils.decode(newUrl.substring("/profile-username-".length(), newUrl.length() - 5), "GBK");
                     Intent intent = new Intent(mContext, ProfileActivity.class);
                     intent.putExtra(ProfileActivity.USER_NAME_TAG, userName);
                     mContext.startActivity(intent);
                     return;
                 } else if (newUrl.startsWith("/profile-uid")) {
-                    String userID =  CommonUtils.decode(newUrl.substring("/profile-uid-".length(), newUrl.length() - 5), "GBK");
+                    String userID = CommonUtils.decode(newUrl.substring("/profile-uid-".length(), newUrl.length() - 5), "GBK");
                     Intent intent = new Intent(mContext, ProfileActivity.class);
                     intent.putExtra(ProfileActivity.USER_ID_TAG, userID);
                     mContext.startActivity(intent);
