@@ -1,8 +1,6 @@
 package me.ihainan.bu.app.ui.fragment;
 
 import android.app.Fragment;
-import android.content.ClipData;
-import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -12,6 +10,7 @@ import android.support.v4.widget.NestedScrollView;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.text.Html;
 import android.text.SpannableString;
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -23,6 +22,8 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import java.io.IOException;
 
 import me.ihainan.bu.app.R;
 import me.ihainan.bu.app.models.Member;
@@ -107,7 +108,7 @@ public class BasicInfoFragment extends Fragment {
                 // 重新加载数据
                 BUApplication.getCache(mContext)
                         .remove(BUApplication.CACHE_USER_INFO + mUsername);
-                getUserInfo();
+                getUserInfo(true);
             }
         });
 
@@ -116,14 +117,14 @@ public class BasicInfoFragment extends Fragment {
             public void run() {
                 // 第一次加载数据
                 mProfileLayout.setVisibility(View.INVISIBLE);
-                getUserInfo();
+                getUserInfo(false);
             }
         });
     }
 
     private Member mMember;
 
-    private void getUserInfo() {
+    private void getUserInfo(final Boolean refreshAvatar) {
         mSwipeRefreshLayout.setRefreshing(true);
 
         mMember = (Member) BUApplication.getCache(mContext)
@@ -135,14 +136,21 @@ public class BasicInfoFragment extends Fragment {
                     @Override
                     public void doSomethingIfHasCached(Member member) {
                         mMember = member;
-                        fillViews();
+                        fillViews(refreshAvatar);
                     }
                 });
     }
 
-    private void fillViews() {
+    private void fillViews(Boolean refreshAvatar) {
         // 头像
         final String avatarURL = CommonUtils.getRealImageURL(mMember.avatar);
+        if (refreshAvatar) try {
+            CommonUtils.removeImageFromCache(mContext, avatarURL);
+        } catch (IOException e) {
+            String message = getString(R.string.error_remove_avatar_cache);
+            Log.e(TAG, message, e);
+            CommonUtils.debugToast(mContext, message);
+        }
         CommonUtils.setImageView(mContext, mAvatar,
                 avatarURL, R.drawable.default_avatar);
         mAvatar.setOnClickListener(new View.OnClickListener() {

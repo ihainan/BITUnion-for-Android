@@ -71,6 +71,7 @@
     <string name="error_no_search_result">哎呀并没有搜索结果</string>
     <string name="error_no_following">哎呀并没有关注任何用户</string>
     <string name="error_no_favorites">哎呀并没有收藏</string>
+    <string name="error_remove_avatar_cache">删除本地图片缓存失败</string>
     <string name="error_unknown">未知错误</string>
 
     <!-- Warning -->

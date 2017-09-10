@@ -45,6 +45,8 @@ public class BUApplication extends Application {
 
     /* 缓存相关 */
     private static ACache cache;
+    private static OkHttpClient okHTTPClient;
+
     public final static String CACHE_USER_INFO = "CACHE_USER_INFO"; // 缓存的用户信息
     public final static String CACHE_POST_INNER_IMAGE = "CACHE_POST_INNER_IMAGE";   // 缓存的帖子内图片
     public final static String CACHE_LATEST_THREAD_FIRST_POST = "CACHE_LATEST_THREAD_FIRST_POST";   // 缓存的主页主题第一个回帖（用户获取背景图）
@@ -888,7 +890,12 @@ public class BUApplication extends Application {
         return false;
     }
 
-    public static void setupPicasso(Context context) {
+    /**
+     * 配置 Picasso 缓存
+     *
+     * @param context 上细纹
+     */
+    public static void setupPicasso(final Context context) {
         if (context == null) {
             Log.w(TAG, "context is null");
             return;
@@ -901,7 +908,7 @@ public class BUApplication extends Application {
 
         long httpCacheSize = 50 * 1024 * 1024; // 50 MiB
         Cache cache = new Cache(cacheDir, httpCacheSize);
-        OkHttpClient client = new OkHttpClient.Builder()
+        okHTTPClient = new OkHttpClient.Builder()
                 .addInterceptor(new Interceptor() {
                     @Override
                     public Response intercept(Chain chain) throws IOException {
@@ -911,9 +918,8 @@ public class BUApplication extends Application {
                         return chain.proceed(newRequest);
                     }
                 }).cache(cache).build();
-
         Picasso.Builder builder = new Picasso.Builder(context);
-        builder.downloader(new OkHttp3Downloader(client));
+        builder.downloader(new OkHttp3Downloader(okHTTPClient));
         builder.listener(new Picasso.Listener() {
 
             @Override
@@ -928,6 +934,16 @@ public class BUApplication extends Application {
             built.setLoggingEnabled(true);
         }
         Picasso.setSingletonInstance(built);
+    }
+
+    /**
+     * 获取 Picasso 磁盘缓存
+     *
+     * @return 如果 OKHttpClient 尚未初始化，返回 null，否则返回磁盘缓存
+     */
+    public static Cache getPicassoCache() {
+        if (okHTTPClient != null) return okHTTPClient.cache();
+        else return null;
     }
 
     @Override

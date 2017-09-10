@@ -54,6 +54,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -61,6 +62,7 @@ import me.ihainan.bu.app.R;
 import me.ihainan.bu.app.models.Member;
 import me.ihainan.bu.app.ui.ProfileActivity;
 import me.ihainan.bu.app.utils.network.BUApi;
+import okhttp3.Cache;
 import ws.vinta.pangu.Pangu;
 
 /**
@@ -174,7 +176,7 @@ public class CommonUtils {
                     @Override
                     public void onSuccess() {
                         // 成功，那么啥也不用做
-                        Log.d(TAG, "setImageView >> 图片 " + imageSrc + " 已经被缓存");
+                        Log.d(TAG, "setImageView >> 图片 " + imageSrc + " 已在缓存之中");
                     }
 
                     @Override
@@ -221,6 +223,30 @@ public class CommonUtils {
         // 有需要的话进行 Overwrite
         public void doSomethingIfHasNotCached(Member member) {
             doSomethingIfHasCached(member);
+        }
+    }
+
+    /**
+     * 从磁盘中删除图片对应的内存和磁盘缓存
+     *
+     * @param context 上下文
+     * @param imgUrl  图片的 URL
+     * @throws IOException 获取磁盘缓存中的 URL 失败
+     */
+    public static void removeImageFromCache(Context context, String imgUrl) throws IOException {
+        Picasso.with(context).invalidate(imgUrl);
+        Cache picassoDiskCache = BUApplication.getPicassoCache();
+        if (picassoDiskCache != null) {
+            Iterator<String> iterator = picassoDiskCache.urls();
+            while (iterator.hasNext()) {
+                String url = iterator.next();
+                if (imgUrl.equals(url)) {
+                    Log.d(TAG, "找到图片缓存，准备删除: " + imgUrl);
+                    iterator.remove();
+                    Log.d(TAG, "删除图片缓存成功: " + imgUrl);
+                    break;
+                }
+            }
         }
     }
 

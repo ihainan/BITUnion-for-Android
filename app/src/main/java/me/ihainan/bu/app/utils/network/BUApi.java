@@ -97,7 +97,7 @@ public class BUApi {
         try {
             return LOGGED_MSG.equals(response.getString("msg"));
         } catch (JSONException e) {
-            Log.d(TAG, "Session is out of data", e);
+            Log.d(TAG, "Session is expired", e);
             return false;
         }
     }
