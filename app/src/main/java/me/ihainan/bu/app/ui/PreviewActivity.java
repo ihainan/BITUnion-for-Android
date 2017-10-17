@@ -327,7 +327,7 @@ public class PreviewActivity extends SwipeActivity {
 
                         // Finish
                         Intent resultData = new Intent();
-                        resultData.putExtra(POST_RESULT_TAG, R.string.activity_success);
+                        resultData.putExtra(POST_RESULT_TAG, getString(R.string.activity_success));
                         setResult(Activity.RESULT_OK, resultData);
                         finish();
                     } else {
@@ -336,7 +336,6 @@ public class PreviewActivity extends SwipeActivity {
                         Log.w(TAG, debugMessage);
                         CommonUtils.debugToast(PreviewActivity.this, debugMessage);
                         Intent resultData = new Intent();
-                        // resultData.putExtra(POST_RESULT_TAG, R.string.activity_failure);
                         setResult(Activity.RESULT_OK, resultData);
                         finish();
                     }
@@ -346,7 +345,6 @@ public class PreviewActivity extends SwipeActivity {
                     Log.e(TAG, debugMessage, e);
                     CommonUtils.debugToast(PreviewActivity.this, debugMessage);
                     Intent resultData = new Intent();
-                    // resultData.putExtra(POST_RESULT_TAG, R.string.activity_failure);
                     setResult(Activity.RESULT_OK, resultData);
                     finish();
                 }
@@ -356,7 +354,6 @@ public class PreviewActivity extends SwipeActivity {
                 Log.w(TAG, debugMessage);
                 CommonUtils.debugToast(PreviewActivity.this, debugMessage);
                 Intent resultData = new Intent();
-                // resultData.putExtra(POST_RESULT_TAG, R.string.activity_failure);
                 setResult(Activity.RESULT_OK, resultData);
                 finish();
             }
@@ -376,7 +373,6 @@ public class PreviewActivity extends SwipeActivity {
             CommonUtils.debugToast(PreviewActivity.this, debugMessage);
             Log.e(TAG, debugMessage, error);
             Intent resultData = new Intent();
-            // resultData.putExtra(POST_RESULT_TAG, R.string.activity_failure);
             setResult(Activity.RESULT_OK, resultData);
             finish();
         }
