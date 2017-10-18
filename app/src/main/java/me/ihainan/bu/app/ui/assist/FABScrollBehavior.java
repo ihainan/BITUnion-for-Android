@@ -12,7 +12,7 @@ import android.view.View;
  */
 
 public class FABScrollBehavior extends FloatingActionButton.Behavior {
-    public FABScrollBehavior(Context context, AttributeSet attributeSet){
+    public FABScrollBehavior(Context context, AttributeSet attributeSet) {
         super();
     }
 
@@ -22,8 +22,14 @@ public class FABScrollBehavior extends FloatingActionButton.Behavior {
 
         super.onNestedScroll(coordinatorLayout, child, target, dxConsumed, dyConsumed, dxUnconsumed, dyUnconsumed);
         if (dyConsumed > 0 && child.getVisibility() == View.VISIBLE) {
-            child.hide();
-        } else if (dyConsumed < 0 && child.getVisibility() == View.GONE) {
+            child.hide(new FloatingActionButton.OnVisibilityChangedListener() {
+                @Override
+                public void onHidden(FloatingActionButton fab) {
+                    super.onShown(fab);
+                    fab.setVisibility(View.INVISIBLE);
+                }
+            });
+        } else if (dyConsumed < 0 && child.getVisibility() == View.INVISIBLE) {
             child.show();
         }
     }

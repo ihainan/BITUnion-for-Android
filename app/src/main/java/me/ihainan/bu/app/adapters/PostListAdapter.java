@@ -125,10 +125,10 @@ public class PostListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 viewHolder.message.setVisibility(View.VISIBLE);
             }
 
-            viewHolder.subject.setText(Html.fromHtml(CommonUtils.decode(reply.subject)));
+            viewHolder.subject.setText(Html.fromHtml(CommonUtils.addSpaces(CommonUtils.decode(reply.subject))));
             SpannableString spannableString = new SpannableString(
                     Html.fromHtml(
-                            reply.message,
+                            CommonUtils.addSpaces(reply.message),
                             new PicassoImageGetter(mContext, viewHolder.message),
                             new HtmlTagHandler()));
             CustomSpan.setUpAllSpans(mContext, spannableString);

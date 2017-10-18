@@ -147,7 +147,7 @@ public class FullscreenPhotoViewerActivity extends Activity {
         mImageURL = getIntent().getExtras().getString(IMAGE_URL_TAG, null);
 
         // ImageView
-        mImageView = (PhotoView) findViewById(R.id.iv_photo);
+        mImageView = findViewById(R.id.iv_photo);
         Picasso.with(FullscreenPhotoViewerActivity.this).load(mImageURL).into(mImageView, new Callback() {
             @Override
             public void onSuccess() {

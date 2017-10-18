@@ -97,7 +97,7 @@ public class BUApi {
         try {
             return LOGGED_MSG.equals(response.getString("msg"));
         } catch (JSONException e) {
-            Log.d(TAG, "Session is out of data", e);
+            Log.d(TAG, "Session is expired", e);
             return false;
         }
     }
@@ -260,7 +260,7 @@ public class BUApi {
         parameters.put("session", BUApplication.userSession.session);
         parameters.put("action", "newreply");
         parameters.put("tid", String.valueOf(tid));
-        parameters.put("message", CommonUtils.encode(message));
+        parameters.put("message", CommonUtils.encode(message.replace('\u00A0', ' ')));
         parameters.put("attachment", attachment == null ? "0" : "1");
 
         // String url = "http://192.168.56.1:8080/api/v2/multipart/att";

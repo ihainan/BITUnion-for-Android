@@ -1,11 +1,12 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 25
-    buildToolsVersion '25.0.0'
+    compileSdkVersion 26
+    buildToolsVersion '26.0.0'
 
     repositories {
         mavenCentral()
+        maven { url 'https://maven.google.com' }
         maven {
             url "https://jitpack.io"
         }
@@ -30,9 +31,9 @@ android {
     defaultConfig {
         applicationId "me.ihainan.bu.app"
         minSdkVersion 14
-        targetSdkVersion 25
-        versionCode 27
-        versionName "0.2.4"
+        targetSdkVersion 26
+        versionCode 28
+        versionName "0.2.5"
     }
 
     buildTypes {
@@ -56,29 +57,33 @@ android {
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     // Support Library
-    compile 'com.android.support:appcompat-v7:25.0.0'
-    compile 'com.android.support:design:25.0.0'
-    compile 'com.android.support:palette-v7:25.0.0'
-    compile 'com.android.support:cardview-v7:25.0.0'
-    compile 'com.android.support:support-v13:25.0.0'
-    compile 'com.android.support:support-v4:25.0.0'
+    compile 'com.android.support:appcompat-v7:25.3.1'
+    compile 'com.android.support:design:25.3.1'
+    compile 'com.android.support:palette-v7:25.3.1'
+    compile 'com.android.support:cardview-v7:25.3.1'
+    compile 'com.android.support:support-v13:25.3.1'
+    compile 'com.android.support:support-v4:25.3.1'
 
     // Network & Image & Data Library
     compile 'com.tencent.bugly:crashreport_upgrade:latest.release'
     compile 'com.tencent.bugly:nativecrashreport:latest.release'
     testCompile 'junit:junit:4.12'
     compile 'com.mcxiaoke.volley:library:1.0.19'
-    compile 'com.squareup.okhttp:okhttp:2.4.0'
+    compile group: 'com.squareup.okhttp3', name: 'okhttp', version: '3.8.0'
     compile 'com.fasterxml.jackson.core:jackson-databind:2.7.0'
+    compile 'com.jakewharton.picasso:picasso2-okhttp3-downloader:1.1.0'
     // compile files('libs/mta-android-stat-sdk-3.0.0_20170502-jdk1.6.jar')
     // compile files('libs/mid-sdk-3.71.jar')
     compile files('libs/MiPush_SDK_Client_2_2_21.jar')
+    compile 'com.github.bumptech.glide:glide:4.1.1'
+    annotationProcessor 'com.github.bumptech.glide:compiler:4.1.1'
 
     compile 'com.squareup.picasso:picasso:2.5.2'
     compile 'jp.co.cyberagent.android.gpuimage:gpuimage-library:1.4.1'
     compile 'jp.wasabeef:picasso-transformations:1.3.1'
 
     // UI View Library
+    compile 'ws.vinta:pangu:1.1.0'
     compile 'com.miguelcatalan:materialsearchview:1.4.0'
     compile 'biz.kasual:materialnumberpicker:1.2.0'
     compile 'com.ogaclejapan.smarttablayout:library:1.6.0@aar'

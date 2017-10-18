@@ -114,7 +114,7 @@ public class PicassoImageGetter implements Html.ImageGetter {
         return result;
     }
 
-    public static class BitmapDrawablePlaceHolder extends BitmapDrawable {
+    private static class BitmapDrawablePlaceHolder extends BitmapDrawable {
         Drawable mDrawable;
 
         @Override

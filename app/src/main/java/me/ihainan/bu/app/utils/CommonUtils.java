@@ -2,7 +2,6 @@ package me.ihainan.bu.app.utils;
 
 import android.app.Activity;
 import android.app.ActivityManager;
-import android.app.Dialog;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.ContentValues;
@@ -26,15 +25,12 @@ import android.os.Build;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.view.ContextThemeWrapper;
 import android.text.format.DateUtils;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Display;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.Response;
@@ -42,6 +38,7 @@ import com.android.volley.VolleyError;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
+
 import org.json.JSONObject;
 
 import java.io.File;
@@ -57,6 +54,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -64,6 +62,8 @@ import me.ihainan.bu.app.R;
 import me.ihainan.bu.app.models.Member;
 import me.ihainan.bu.app.ui.ProfileActivity;
 import me.ihainan.bu.app.utils.network.BUApi;
+import okhttp3.Cache;
+import ws.vinta.pangu.Pangu;
 
 /**
  * 通用工具类
@@ -102,6 +102,10 @@ public class CommonUtils {
     public static void debugToast(Context context, String message) {
         if (BUApplication.debugMode)
             Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
+    }
+
+    public static void toast(Context context, String message) {
+        Toast.makeText(context, message, Toast.LENGTH_LONG).show();
     }
 
     /**
@@ -172,7 +176,7 @@ public class CommonUtils {
                     @Override
                     public void onSuccess() {
                         // 成功，那么啥也不用做
-                        Log.d(TAG, "setImageView >> 图片 " + imageSrc + " 已经被缓存");
+                        Log.d(TAG, "setImageView >> 图片 " + imageSrc + " 已在缓存之中");
                     }
 
                     @Override
@@ -219,6 +223,30 @@ public class CommonUtils {
         // 有需要的话进行 Overwrite
         public void doSomethingIfHasNotCached(Member member) {
             doSomethingIfHasCached(member);
+        }
+    }
+
+    /**
+     * 从磁盘中删除图片对应的内存和磁盘缓存
+     *
+     * @param context 上下文
+     * @param imgUrl  图片的 URL
+     * @throws IOException 获取磁盘缓存中的 URL 失败
+     */
+    public static void removeImageFromCache(Context context, String imgUrl) throws IOException {
+        Picasso.with(context).invalidate(imgUrl);
+        Cache picassoDiskCache = BUApplication.getPicassoCache();
+        if (picassoDiskCache != null) {
+            Iterator<String> iterator = picassoDiskCache.urls();
+            while (iterator.hasNext()) {
+                String url = iterator.next();
+                if (imgUrl.equals(url)) {
+                    Log.d(TAG, "找到图片缓存，准备删除: " + imgUrl);
+                    iterator.remove();
+                    Log.d(TAG, "删除图片缓存成功: " + imgUrl);
+                    break;
+                }
+            }
         }
     }
 
@@ -287,7 +315,8 @@ public class CommonUtils {
                     }, new Response.ErrorListener() {
                         @Override
                         public void onErrorResponse(VolleyError error) {
-                            if (((Activity) context).isFinishing()) return;
+                            if (context instanceof Activity && ((Activity) context).isFinishing())
+                                return;
                             String message = context.getString(R.string.error_network);
                             String debugMessage = "getAndCacheUserInfo >> " + message;
                             CommonUtils.debugToast(context, debugMessage);
@@ -940,5 +969,12 @@ public class CommonUtils {
         //Bitmap _bmp = Bitmap.createScaledBitmap(output, 60, 60, false);
         //return _bmp;
         return output;
+    }
+
+    private final static Pangu pangu = new Pangu();
+
+    public static String addSpaces(String text) {
+        if (BUApplication.enableSpaceBetweenCNAndEN) return pangu.spacingText(text);
+        else return text;
     }
 }

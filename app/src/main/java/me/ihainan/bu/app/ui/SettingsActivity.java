@@ -230,8 +230,8 @@ public class SettingsActivity extends PreferenceActivity {
         });
 
         final String[] notifyTypes = new String[]{"回复通知", "引用通知", "@ 通知", "关注通知"};
-        final boolean[] notifiesIsEnable = new boolean[]{BUApplication.enableReplyNotify.booleanValue(), BUApplication.enableQuoteNotify.booleanValue(),
-                BUApplication.enableAtNotify.booleanValue(), BUApplication.enableFollowingNotify.booleanValue()};
+        final boolean[] notifiesIsEnable = new boolean[]{BUApplication.enableReplyNotify, BUApplication.enableQuoteNotify,
+                BUApplication.enableAtNotify, BUApplication.enableFollowingNotify};
         setupPrefEnableNotifyTypeSummary(notifyTypes, notifiesIsEnable);
 
         prefEnableNotifyType.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
@@ -317,6 +317,17 @@ public class SettingsActivity extends PreferenceActivity {
                 return true;
             }
         });
+
+        SwitchPreference prefEnableSpace = (SwitchPreference) findPreference("pref_enable_space");
+        prefEnableSpace.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+            @Override
+            public boolean onPreferenceChange(Preference preference, Object newValue) {
+                BUApplication.enableSpaceBetweenCNAndEN = (Boolean) newValue;
+                BUApplication.setCacheEnableSpaceBetweenCNAndEN(SettingsActivity.this);
+                return true;
+            }
+        });
+        prefEnableSpace.setChecked(BUApplication.enableSpaceBetweenCNAndEN);
 
         /* 回帖相关 */
         SwitchPreference prefDisplayDeviceInfo = (SwitchPreference) findPreference("pref_display_device_information");

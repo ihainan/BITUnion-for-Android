@@ -97,7 +97,7 @@ public class LatestThreadListAdapter extends RecyclerView.Adapter<RecyclerView.V
         // 无差别区域
         holder.avatar.setImageDrawable(null);
         holder.replyCount.setText(latestThread.tid_sum + " 回复");
-        holder.title.setText(Html.fromHtml(CommonUtils.decode(latestThread.pname)));
+        holder.title.setText(Html.fromHtml(CommonUtils.addSpaces(CommonUtils.decode(latestThread.pname))));
 
         // Root Layout
         final Intent intent = new Intent(mContext, PostListActivity.class);

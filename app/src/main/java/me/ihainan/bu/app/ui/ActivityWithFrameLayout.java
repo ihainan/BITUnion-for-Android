@@ -12,6 +12,7 @@ import android.view.View;
 
 import me.ihainan.bu.app.R;
 import me.ihainan.bu.app.ui.assist.SwipeActivity;
+import me.ihainan.bu.app.ui.fragment.DraftsFragment;
 import me.ihainan.bu.app.ui.fragment.FollowingListFragment;
 import me.ihainan.bu.app.ui.fragment.NotificationListFragment;
 import me.ihainan.bu.app.ui.fragment.PersonalThreadAndPostFragment;
@@ -69,6 +70,9 @@ public class ActivityWithFrameLayout extends SwipeActivity {
                 mFragment = new PersonalThreadAndPostFragment();
             } else if ((NotificationListFragment.class.getSimpleName()).equals(fragmentClassName)) {
                 mFragment = new NotificationListFragment();
+            } else if ((DraftsFragment.class.getSimpleName()).equals(fragmentClassName)) {
+                mFragment = new DraftsFragment();
+                mFragment.setArguments(bundle);
             }
 
             if (mFragment != null) mFragment.setArguments(bundle);
@@ -81,6 +85,10 @@ public class ActivityWithFrameLayout extends SwipeActivity {
             MenuInflater inflater = getMenuInflater();
             inflater.inflate(R.menu.notification_list_menu, menu);
             return true;
+        } else if (mFragment instanceof DraftsFragment) {
+            MenuInflater inflater = getMenuInflater();
+            inflater.inflate(R.menu.draft_list_menu, menu);
+            return true;
         }
 
         return false;
@@ -92,7 +100,9 @@ public class ActivityWithFrameLayout extends SwipeActivity {
             case R.id.action_check_all:
                 ((NotificationListFragment) mFragment).checkAll();
                 return true;
-
+            case R.id.action_delete_drafts:
+                ((DraftsFragment) mFragment).clearDrafts();
+                return true;
         }
         return super.onOptionsItemSelected(item);
     }

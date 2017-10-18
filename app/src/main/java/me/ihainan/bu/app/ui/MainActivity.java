@@ -2,9 +2,12 @@ package me.ihainan.bu.app.ui;
 
 import android.app.Fragment;
 import android.app.FragmentTransaction;
+import android.app.NotificationManager;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.NavigationView;
@@ -24,15 +27,10 @@ import android.widget.Toast;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.tencent.bugly.beta.Beta;
-// import com.tencent.stat.StatService;
 import com.xiaomi.mipush.sdk.MiPushClient;
 
 import org.json.JSONObject;
 
-import java.util.Properties;
-
-import me.ihainan.bu.app.BuildConfig;
 import me.ihainan.bu.app.R;
 import me.ihainan.bu.app.models.Member;
 import me.ihainan.bu.app.ui.fragment.HomeFragment;
@@ -40,7 +38,6 @@ import me.ihainan.bu.app.ui.fragment.NotificationListFragment;
 import me.ihainan.bu.app.utils.BUApplication;
 import me.ihainan.bu.app.utils.CommonUtils;
 import me.ihainan.bu.app.utils.network.ExtraApi;
-import me.ihainan.bu.app.utils.network.SessionUpdateService;
 import me.ihainan.bu.app.utils.ui.IconFontHelper;
 
 public class MainActivity extends AppCompatActivity {
@@ -71,8 +68,6 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
-        // setTheme(R.style.AppThemeDark_NoActionBar);
-
         setContentView(R.layout.activity_main);
 
         // Toolbar
@@ -94,6 +89,27 @@ public class MainActivity extends AppCompatActivity {
         mNavProfileView = (ImageView) mNavHead.findViewById(R.id.nav_profile_image);
         mNavUsername = (TextView) mNavHead.findViewById(R.id.nav_user_name);
 
+        // register broadcast receiver
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(getString(R.string.action_broadcast_mark_as_read));
+        BroadcastReceiver markAsReadReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                if (intent.getAction().equals(getString(R.string.action_broadcast_mark_as_read))) {
+                    Log.v(TAG, "markAsReadReceiver >> receive mark as read action, notification ID is ");
+                    Integer notifyID = intent.getIntExtra("notifyId", -1);
+                    NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+                    manager.cancel(notifyID);
+                    if (notifyID != -1) {
+                        markAsRead(context, notifyID);
+                    }
+                } else {
+                    Log.w(TAG, "markAsReadReceiver >> unknown action: " + intent.getAction());
+                }
+            }
+        };
+        registerReceiver(markAsReadReceiver, filter);
+
         // Get user info
         BUApplication.readConfig(mContext);
         if (BUApplication.userSession == null ||
@@ -109,33 +125,44 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void initWork() {
-        // 检查新版本更新并安装
-        if (!BUApplication.IS_GOOGLE_PLAY_EDITION) {
-            Log.i(TAG, "Is not Google Play Edition, will check for update");
-            // CommonUtils.updateVersion(mContext, true, null);
-            Beta.checkUpgrade(false, false);
-        } else {
-            Log.i(TAG, "Google Play Edition, will not check for update");
+    /**
+     * Mark notification as read
+     *
+     * @param context  context
+     * @param notifyId notification ID
+     */
+    public void markAsRead(Context context, Integer notifyId) {
+        if (notifyId != null && notifyId != -1) {
+            ExtraApi.markAsRead(context, notifyId);
         }
+    }
 
+    private void initWork() {
+        // TODO: deprecated
+        // 检查新版本更新并安装
+//        if (!BUApplication.IS_GOOGLE_PLAY_EDITION) {
+//            Log.i(TAG, "Is not Google Play Edition, will check for update");
+//            // CommonUtils.updateVersion(mContext, true, null);
+//            Beta.checkUpgrade(false, false);
+//        } else {
+//            Log.i(TAG, "Google Play Edition, will not check for update");
+//        }
+
+        // TODO: deprecated
         // 登记用户
-        if (BUApplication.username != null && !BUApplication.username.equals("")) {
-            // MobclickAgent.onProfileSignIn(CommonUtils.decode(BUApplication.username));
-            Properties properties = new Properties();
-            properties.setProperty(getString(R.string.application_version), BuildConfig.VERSION_NAME);
-            properties.setProperty(getString(R.string.application_username), CommonUtils.decode(BUApplication.username));
-            properties.setProperty(getString(R.string.application_device), CommonUtils.getDeviceName());
-            // StatService.trackCustomKVEvent(mContext, getString(R.string.application_init_id), properties);
-        }
+//        if (BUApplication.username != null && !BUApplication.username.equals("")) {
+//            // MobclickAgent.onProfileSignIn(CommonUtils.decode(BUApplication.username));
+//            Properties properties = new Properties();
+//            properties.setProperty(getString(R.string.application_version), BuildConfig.VERSION_NAME);
+//            properties.setProperty(getString(R.string.application_username), CommonUtils.decode(BUApplication.username));
+//            properties.setProperty(getString(R.string.application_device), CommonUtils.getDeviceName());
+//            // StatService.trackCustomKVEvent(mContext, getString(R.string.application_init_id), properties);
+//        }
 
         // 配置 Navigation Layout
         if (mNavigationView != null) {
             setupDrawerContent(mNavigationView);
         }
-
-        // 获取用户信息用于设置头像
-        getUserInfo();
 
         // 腾讯统计
         // StatService.trackCustomEvent(this, "onCreate", "");
@@ -144,7 +171,7 @@ public class MainActivity extends AppCompatActivity {
         MiPushClient.setUserAccount(mContext, CommonUtils.decode(BUApplication.username), null);
 
         // 定期更新用户 Session
-        Intent intent = new Intent(mContext, SessionUpdateService.class);
+        // Intent intent = new Intent(mContext, SessionUpdateService.class);
         // startService(intent);
 
         // Activity content
@@ -154,6 +181,9 @@ public class MainActivity extends AppCompatActivity {
             fragmentTransaction.replace(R.id.flContent, mFragment);
             fragmentTransaction.commit();
         }
+
+        // 获取用户信息用于设置头像
+        getUserInfo();
     }
 
     private void getUserInfo() {
@@ -296,7 +326,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                 } catch (Exception e) {
                     String message = mContext.getString(R.string.error_parse_json);
-                    String debugMessage = TAG + " >> " + message;
+                    String debugMessage = TAG + " >> getUnreadCount: " + message;
                     CommonUtils.debugToast(mContext, debugMessage);
                     Log.e(TAG, debugMessage, e);
                 }
@@ -305,11 +335,18 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onErrorResponse(VolleyError error) {
                 String message = mContext.getString(R.string.error_network);
-                String debugMessage = TAG + " >> " + message;
+                String debugMessage = TAG + " >> getUnreadCount: " + message;
                 CommonUtils.debugToast(mContext, debugMessage);
                 Log.e(TAG, debugMessage, error);
             }
         });
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        getUnreadCount();
     }
 
     @Override

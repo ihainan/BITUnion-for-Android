@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -24,6 +25,7 @@ import me.ihainan.bu.app.ui.viewholders.LoadingViewHolder;
 import me.ihainan.bu.app.ui.viewholders.NotificationViewHolder;
 import me.ihainan.bu.app.utils.CommonUtils;
 import me.ihainan.bu.app.utils.network.BUApi;
+import me.ihainan.bu.app.utils.network.ExtraApi;
 
 /**
  * 通知适配器
@@ -69,12 +71,28 @@ public class NotificationAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
             if (notification.is_read == 0) {
                 viewHolder.rootLayout.setBackgroundColor(mContext.getResources().getColor(R.color.background_white));
-                viewHolder.content.setTextAppearance(mContext, R.style.boldText);
-                viewHolder.username.setTextAppearance(mContext, R.style.boldText);
+                viewHolder.date.setTextColor(ContextCompat.getColor(mContext, R.color.primary_text));
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    viewHolder.content.setTextAppearance(R.style.boldText);
+                    viewHolder.username.setTextAppearance(R.style.boldText);
+                    viewHolder.date.setTextAppearance(R.style.boldText);
+                } else {
+                    viewHolder.username.setTextAppearance(mContext, R.style.boldText);
+                    viewHolder.content.setTextAppearance(mContext, R.style.boldText);
+                    viewHolder.date.setTextAppearance(mContext, R.style.boldText);
+                }
             } else {
                 viewHolder.rootLayout.setBackgroundColor(mContext.getResources().getColor(R.color.background_read));
-                viewHolder.content.setTextAppearance(mContext, R.style.normalText);
-                viewHolder.username.setTextAppearance(mContext, R.style.normalText);
+                viewHolder.date.setTextColor(ContextCompat.getColor(mContext, R.color.primary_light));
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    viewHolder.content.setTextAppearance(R.style.normalText);
+                    viewHolder.username.setTextAppearance(R.style.normalText);
+                    viewHolder.date.setTextAppearance(R.style.normalText);
+                } else {
+                    viewHolder.content.setTextAppearance(mContext, R.style.normalText);
+                    viewHolder.username.setTextAppearance(mContext, R.style.normalText);
+                    viewHolder.date.setTextAppearance(mContext, R.style.normalText);
+                }
             }
 
             // 收藏

@@ -25,6 +25,11 @@
             android:key="pref_post_count"
             android:title="每页显示帖子数" />
 
+        <SwitchPreference
+            android:key="pref_enable_space"
+            android:summary="自动在中文字、数字、符号之间插入空格"
+            android:title="添加空格（实验性）" />
+
         <Preference
             android:key="pref_home_page_click"
             android:summary="点击后进尾楼"
