@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -37,6 +38,7 @@ import me.ihainan.bu.app.ui.fragment.HomeFragment;
 import me.ihainan.bu.app.ui.fragment.NotificationListFragment;
 import me.ihainan.bu.app.utils.BUApplication;
 import me.ihainan.bu.app.utils.CommonUtils;
+import me.ihainan.bu.app.utils.network.BUApi;
 import me.ihainan.bu.app.utils.network.ExtraApi;
 import me.ihainan.bu.app.utils.ui.IconFontHelper;
 
@@ -68,6 +70,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
+
         setContentView(R.layout.activity_main);
 
         // Toolbar
@@ -97,7 +100,7 @@ public class MainActivity extends AppCompatActivity {
             public void onReceive(Context context, Intent intent) {
                 if (intent.getAction().equals(getString(R.string.action_broadcast_mark_as_read))) {
                     Log.v(TAG, "markAsReadReceiver >> receive mark as read action, notification ID is ");
-                    Integer notifyID = intent.getIntExtra("notifyId", -1);
+                    int notifyID = intent.getIntExtra("notifyId", -1);
                     NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
                     manager.cancel(notifyID);
                     if (notifyID != -1) {
@@ -216,7 +219,7 @@ public class MainActivity extends AppCompatActivity {
         navigationView.setNavigationItemSelectedListener(
                 new NavigationView.OnNavigationItemSelectedListener() {
                     @Override
-                    public boolean onNavigationItemSelected(MenuItem menuItem) {
+                    public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
                         mDrawerLayout.closeDrawers();
 
                         // Switch between fragments
@@ -234,6 +237,8 @@ public class MainActivity extends AppCompatActivity {
                                                 MiPushClient.unsetUserAccount(mContext, CommonUtils.decode(BUApplication.username), null);
                                                 BUApplication.password = null;
                                                 BUApplication.setCachePassword(mContext);
+                                                BUApplication.outHost = null;
+                                                BUApplication.setConfOutHost(mContext);
                                                 Intent intent = new Intent(mContext, LoginActivity.class);
                                                 startActivity(intent);
                                                 finish();

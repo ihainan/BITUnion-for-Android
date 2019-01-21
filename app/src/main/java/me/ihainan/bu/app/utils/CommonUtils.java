@@ -333,7 +333,7 @@ public class CommonUtils {
      * @return 图片的真实 URL
      */
     public static String getRealImageURL(String originalURL) {
-        String baseUrl = BUApi.OUT_SCHOOL_BASE_URL;
+        String baseUrl = BUApi.currentEndPoint;
 
         // URL 解码
         originalURL = CommonUtils.decode(originalURL);

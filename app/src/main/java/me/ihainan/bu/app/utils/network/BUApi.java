@@ -4,9 +4,13 @@ import android.content.Context;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
+import com.android.volley.AuthFailureError;
 import com.android.volley.NetworkResponse;
+import com.android.volley.Request;
 import com.android.volley.Response;
+import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.StringRequest;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.json.JSONException;
@@ -18,6 +22,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.locks.ReentrantLock;
 
 import me.ihainan.bu.app.R;
 import me.ihainan.bu.app.models.Session;
@@ -28,24 +33,36 @@ import me.ihainan.bu.app.utils.CommonUtils;
  * BIT Union Open APIs
  */
 public class BUApi {
+    public interface HostListener {
+        void onSuccess();
+
+        void onError(Throwable exception);
+    }
+
     public final static String TAG = BUApi.class.getSimpleName();
     public final static ObjectMapper MAPPER = new ObjectMapper();
 
     // Constants
-    public final static String LOGGED_MSG = "IP+logged";
+    private final static String LOGGED_MSG = "IP+logged";
     public final static String THREAD_NO_PERMISSION_MSG = "thread_nopermission";
     public final static String FORUM_NO_PERMISSION_MSG = "forum_nopermission";
 
     // END POINT
     public final static String IN_SCHOOL_BASE_URL = "http://www.bitunion.org/";
-    public final static String OUT_SCHOOL_BASE_URL = "http://out.bitunion.org/";
     public final static String IN_SCHOOL_ENDPOINT = IN_SCHOOL_BASE_URL + "open_api/";
-    public final static String OUT_SCHOOL_ENDPOINT = OUT_SCHOOL_BASE_URL + "open_api/";
-    public static String currentEndPoint = OUT_SCHOOL_ENDPOINT;
+    public static String OUT_SCHOOL_BASE_URL = "http://" + BUApplication.outHost + "/";
+    public static String OUT_SCHOOL_ENDPOINT = OUT_SCHOOL_BASE_URL + "open_api/";
+    public static String currentEndPoint = BUApplication.networkType == BUApplication.NETWORK_TYPE.IN_SCHOOL ? IN_SCHOOL_ENDPOINT : OUT_SCHOOL_ENDPOINT;
+
+    // Lock
+    private final static ReentrantLock lock = new ReentrantLock();
 
     public static String getBaseURL() {
-        if (currentEndPoint.startsWith(IN_SCHOOL_ENDPOINT)) return IN_SCHOOL_BASE_URL;
-        else return OUT_SCHOOL_BASE_URL;
+        if (BUApplication.networkType == BUApplication.NETWORK_TYPE.IN_SCHOOL) {
+            return IN_SCHOOL_BASE_URL;
+        } else {
+            return OUT_SCHOOL_ENDPOINT;
+        }
     }
 
     private static String getLoginURL() {
@@ -70,6 +87,46 @@ public class BUApi {
 
     private static String getNewPostURL() {
         return currentEndPoint + "bu_newpost.php";
+    }
+
+    public static void getHost(final Context context, final HostListener listener) {
+        if (BUApplication.networkType == BUApplication.NETWORK_TYPE.IN_SCHOOL
+                || (BUApplication.outHost != null && !BUApplication.outHost.equals(""))) {
+            BUApi.currentEndPoint = IN_SCHOOL_ENDPOINT;
+            listener.onSuccess();
+        } else {
+            lock.lock();
+            try {
+                // Check again
+                if (BUApplication.outHost == null) {
+                    // Get request
+                    makeGetRequest(context, "http://45.76.103.102/host.php", "getHost", new Response.Listener<String>() {
+                        @Override
+                        public void onResponse(String response) {
+                            BUApplication.outHost = response;
+                            BUApplication.setConfOutHost(context);
+                            BUApi.OUT_SCHOOL_BASE_URL = "http://" + BUApplication.outHost + "/";
+                            BUApi.OUT_SCHOOL_ENDPOINT = OUT_SCHOOL_BASE_URL + "open_api/";
+                            BUApi.currentEndPoint = OUT_SCHOOL_ENDPOINT;
+                            listener.onSuccess();
+                        }
+                    }, new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            Log.e(TAG, "Failed to get the host", error);
+                            listener.onError(error);
+                        }
+                    });
+                } else {
+                    // Already updated by other process
+                    listener.onSuccess();
+                }
+            } catch (Exception e) {
+                listener.onError(e);
+            } finally {
+                lock.unlock();
+            }
+        }
     }
 
     /**
@@ -119,8 +176,7 @@ public class BUApi {
         parameters.put("action", "login");
         parameters.put("username", userName);
         parameters.put("password", password);
-        // MobclickAgent.onProfileSignIn(CommonUtils.decode(userName));
-        makeRequest(context, getLoginURL(), "LOGIN", parameters, 0, listener, errorListener);
+        makePostRequest(context, getLoginURL(), "LOGIN", parameters, 0, listener, errorListener);
     }
 
     /**
@@ -140,7 +196,7 @@ public class BUApi {
         parameters.put("action", "login");
         parameters.put("username", userName);
         parameters.put("password", password);
-        makeRequest(context, getLoginURL(), "LOGIN", parameters, retryLimit, listener, errorListener);
+        makePostRequest(context, getLoginURL(), "LOGIN", parameters, retryLimit, listener, errorListener);
     }
 
     /**
@@ -159,7 +215,7 @@ public class BUApi {
             parameters.put("username", BUApplication.userSession.username);
             parameters.put("session", BUApplication.userSession.session);
         }
-        makeRequest(context, getHomePageURL(), "HOME_PAGE", parameters, BUApplication.RETRY_LIMIT, listener, errorListener);
+        makePostRequest(context, getHomePageURL(), "HOME_PAGE", parameters, BUApplication.RETRY_LIMIT, listener, errorListener);
     }
 
     /**
@@ -182,7 +238,7 @@ public class BUApi {
         if (username != null) parameters.put("queryusername", username);
         else parameters.put("uid", "" + uid);
 
-        makeRequest(context, getUserInfoURL(), "USER_INFO", parameters, BUApplication.RETRY_LIMIT, listener, errorListener);
+        makePostRequest(context, getUserInfoURL(), "USER_INFO", parameters, BUApplication.RETRY_LIMIT, listener, errorListener);
     }
 
     /**
@@ -212,7 +268,7 @@ public class BUApi {
         parameters.put("from", String.valueOf(from));
         parameters.put("to", String.valueOf(to));
 
-        makeRequest(context, getThreadDetailURL(), "POST_DETAIL", parameters, BUApplication.RETRY_LIMIT, listener, errorListener);
+        makePostRequest(context, getThreadDetailURL(), "POST_DETAIL", parameters, BUApplication.RETRY_LIMIT, listener, errorListener);
     }
 
     /**
@@ -236,7 +292,7 @@ public class BUApi {
         parameters.put("from", String.valueOf(from));
         parameters.put("to", String.valueOf(to));
 
-        makeRequest(context, getForumListURL(), "THREAD_LIST", parameters, BUApplication.RETRY_LIMIT, listener, errorListener);
+        makePostRequest(context, getForumListURL(), "THREAD_LIST", parameters, BUApplication.RETRY_LIMIT, listener, errorListener);
     }
 
     /**
@@ -316,6 +372,14 @@ public class BUApi {
         }
     }
 
+    private static void makeGetRequest(final Context context, final String url, final String tag,
+                                       final Response.Listener<String> listener,
+                                       final Response.ErrorListener errorListener) {
+        Log.i(TAG, "Want to make GET request, URL: " + url);
+        StringRequest request = new StringRequest(Request.Method.GET, url, listener, errorListener);
+        RequestQueueManager.getInstance(context).addToRequestQueue(request, tag);
+    }
+
     /**
      * 发送请求，如果 Session 过期则更新 Session，如果失败则多次尝试，直到达到了上限 retryLimit
      *
@@ -327,24 +391,24 @@ public class BUApi {
      * @param listener      response 事件监听器
      * @param errorListener error 事件监听器
      */
-    private static void makeRequest(final Context context, final String url, final String tag,
-                                    final Map<String, String> parameters, final int retryLimit,
-                                    final Response.Listener<JSONObject> listener,
-                                    final Response.ErrorListener errorListener) {
+    private static void makePostRequest(final Context context, final String url, final String tag,
+                                        final Map<String, String> parameters, final int retryLimit,
+                                        final Response.Listener<JSONObject> listener,
+                                        final Response.ErrorListener errorListener) {
         Log.i(TAG, "Want to make request with parameters: " + parameters.toString() + " URL: " + url + " Retry Limit: " + retryLimit);
 
         // 不设置 retryLimit，只尝试一次
         if (retryLimit <= 0) {
-            makeRequest(context, url, tag, parameters, listener, errorListener);
+            makePostRequest(context, url, tag, parameters, listener, errorListener);
         } else {
             // 设置 retryLimit，最多尝试特定次数，直到登录成功为止
-            makeRequest(context, url, tag, parameters,
+            makePostRequest(context, url, tag, parameters,
                     new Response.Listener<JSONObject>() {
                         @Override
                         public void onResponse(JSONObject response) {
                             if (checkIfSessionOutOfData(response)) {
                                 // Success + IP+logged，尝试重新登录
-                                Log.i(TAG, "makeRequest " + tag + ">> Session " +
+                                Log.i(TAG, "makePostRequest " + tag + ">> Session " +
                                         (BUApplication.userSession == null ? "NULL" : BUApplication.userSession.session) +
                                         " 过期，尝试重新登录 " + retryLimit + " " + url);
                                 BUApi.tryLogin(context, BUApplication.username, BUApplication.password, retryLimit - 1,
@@ -356,16 +420,16 @@ public class BUApi {
                                                     try {
                                                         BUApplication.userSession = BUApi.MAPPER.readValue(response.toString(), Session.class);
                                                         BUApplication.setCacheSession(context);
-                                                        CommonUtils.debugToast(context, "makeRequest " + tag + ">> 成功拿到新 Session " + BUApplication.userSession);
-                                                        Log.i(TAG, "makeRequest >> " + tag + "成功拿到新 Session " + BUApplication.userSession);
+                                                        CommonUtils.debugToast(context, "makePostRequest " + tag + ">> 成功拿到新 Session " + BUApplication.userSession);
+                                                        Log.i(TAG, "makePostRequest >> " + tag + "成功拿到新 Session " + BUApplication.userSession);
                                                         parameters.put("session", BUApplication.userSession.session);
-                                                        makeRequest(context, url, tag, parameters, retryLimit - 1, listener, errorListener);
+                                                        makePostRequest(context, url, tag, parameters, retryLimit - 1, listener, errorListener);
                                                     } catch (Exception e) {
                                                         Log.e(TAG, context.getString(R.string.error_parse_json) + "\n" + response, e);
                                                     }
                                                 } else {
                                                     // 登录失败……继续尝试重新登录，直到成功，或者 retryLimit = 0
-                                                    Log.i(TAG, "makeRequest >> 尝试重新登录失败，继续尝试 " + retryLimit + " URL: " + url);
+                                                    Log.i(TAG, "makePostRequest >> 尝试重新登录失败，继续尝试 " + retryLimit + " URL: " + url);
                                                     BUApi.tryLogin(context, BUApplication.username, BUApplication.password,
                                                             retryLimit - 2, listener, errorListener);
                                                 }
@@ -381,13 +445,20 @@ public class BUApi {
     }
 
 
-    private static void makeRequest(final Context context, final String url, final String tag,
-                                    final Map<String, String> parameters,
-                                    final Response.Listener<JSONObject> listener,
-                                    final Response.ErrorListener errorListener) {
+    private static void makePostRequest(final Context context, final String url, final String tag,
+                                        final Map<String, String> parameters,
+                                        final Response.Listener<JSONObject> listener,
+                                        final Response.ErrorListener errorListener) {
         Log.i(TAG, "Want to make request with parameters: " + parameters.toString() + " URL: " + url);
         JsonObjectRequest request = new JsonObjectRequest(url,
-                new JSONObject(parameters), listener, errorListener);
+                new JSONObject(parameters), listener, errorListener) {
+            @Override
+            public Map<String, String> getHeaders() {
+                HashMap<String, String> headers = new HashMap<>();
+                headers.put("Host", "out.bitunion.org");
+                return headers;
+            }
+        };
         RequestQueueManager.getInstance(context).addToRequestQueue(request, tag);
     }
 
@@ -454,7 +525,9 @@ public class BUApi {
         multipartBody = bos.toByteArray();
 
         // Build MultipartRequest
-        MultipartRequest multipartRequest = new MultipartRequest(url, null, mimeType, multipartBody, listener, errorListener);
+        HashMap<String, String> headers = new HashMap<>();
+        headers.put("Host", "out.bitunion.org");
+        MultipartRequest multipartRequest = new MultipartRequest(url, headers, mimeType, multipartBody, listener, errorListener);
 
         // Add to queue
         Log.d(TAG, "makeMultipartRequest >> " + tag + " - " + url + " " + parameters);

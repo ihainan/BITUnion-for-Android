@@ -49,6 +49,25 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+        if (BUApplication.userSession == null ||
+                BUApplication.username == null || "".equals(BUApplication.username) ||
+                BUApplication.password == null || "".equals(BUApplication.password)) {
+            // New user
+            init();
+        } else {
+            // Old user
+            if (BUApplication.outHost != null) {
+                // Just updated to the new version
+                Intent intent = new Intent(mContext, MainActivity.class);
+                startActivity(intent);
+            } else {
+                // Real old user
+                init();
+            }
+        }
+    }
+
+    private void init() {
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
         if (getSupportActionBar() != null) {
             getSupportActionBar().hide();
@@ -71,13 +90,6 @@ public class LoginActivity extends AppCompatActivity {
                     mSwitchCompatOutNetwork.setChecked(true);
                 else mSwitchCompatOutNetwork.setChecked(false);
             }
-        } else {
-            if (mSwitchCompatOutNetwork != null) {
-                BUApi.currentEndPoint =
-                        mSwitchCompatOutNetwork.isChecked() ?
-                                BUApi.OUT_SCHOOL_ENDPOINT :
-                                BUApi.IN_SCHOOL_ENDPOINT;
-            }
         }
 
         mPassword.setOnEditorActionListener(new TextView.OnEditorActionListener() {
@@ -96,7 +108,7 @@ public class LoginActivity extends AppCompatActivity {
             mSwitchCompatOutNetwork.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                    BUApi.currentEndPoint = isChecked ? BUApi.OUT_SCHOOL_ENDPOINT : BUApi.IN_SCHOOL_ENDPOINT;
+                    // BUApi.currentEndPoint = isChecked ? BUApi.OUT_SCHOOL_ENDPOINT : BUApi.IN_SCHOOL_ENDPOINT;
                     BUApplication.networkType = isChecked ? BUApplication.NETWORK_TYPE.OUT_SCHOOL : BUApplication.NETWORK_TYPE.IN_SCHOOL;
                     BUApplication.setCacheNetworkType(mContext);
                 }
@@ -131,8 +143,8 @@ public class LoginActivity extends AppCompatActivity {
         }
 
         // Store values at the time of the login attempt.
-        String username = mUsername.getText().toString();
-        String password = mPassword.getText().toString();
+        final String username = mUsername.getText().toString();
+        final String password = mPassword.getText().toString();
 
         // Check whether the username is empty
         if (TextUtils.isEmpty(username)) {
@@ -153,7 +165,34 @@ public class LoginActivity extends AppCompatActivity {
                 "正在登录…", false);
         mDialog.show();
 
-        checkPassword(username, password);
+        // TODO: getHost before logging in if out of school
+        if (BUApplication.networkType == BUApplication.NETWORK_TYPE.IN_SCHOOL) {
+            // 配置 Picasso 的磁盘缓存（配合  OKHttp）
+            BUApplication.setupPicasso(getApplicationContext());
+
+            // 检查密码
+            checkPassword(username, password);
+        } else {
+            BUApi.getHost(getApplicationContext(), new BUApi.HostListener() {
+                @Override
+                public void onSuccess() {
+                    // 配置 Picasso 的磁盘缓存（配合  OKHttp）
+                    BUApplication.setupPicasso(getApplicationContext());
+
+                    // 检查密码
+                    checkPassword(username, password);
+                }
+
+                @Override
+                public void onError(Throwable exception) {
+                    if (isFinishing()) return;
+                    if (mDialog != null) mDialog.dismiss();
+                    mUsername.setError(getString(R.string.error_network));
+                    mUsername.requestFocus();
+                    Log.e(TAG, getString(R.string.error_network), exception);
+                }
+            });
+        }
     }
 
     /**

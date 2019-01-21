@@ -74,7 +74,11 @@ public class RequestQueueManager {
                     1000 * 10,
                     DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
                     DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-            Log.d(TAG, "addToRequestQueue >> Making Request " + req.getUrl() + " With parameters " + new String(req.getBody()));
+            if (req.getBody() != null) {
+                Log.d(TAG, "addToRequestQueue >> Making Request " + req.getUrl() + " With parameters " + new String(req.getBody()));
+            } else {
+                Log.d(TAG, "addToRequestQueue >> Making Request " + req.getUrl());
+            }
         } catch (AuthFailureError authFailureError) {
             authFailureError.printStackTrace();
             Log.e(TAG, "addToRequestQueue failed >> " + authFailureError);

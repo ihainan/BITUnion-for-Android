@@ -39,6 +39,9 @@ import okhttp3.Response;
  * 系统设置与全局变量
  */
 public class BUApplication extends Application {
+    /* Picasso 相关 */
+    private static boolean initializedPicasso = false;
+
     /* 会话相关 */
     public static Session userSession = null;   // 用户会话实例，向服务器发送请求时候需要附上会话字符串
     public static String username, password;    // 用户名，密码，用于重新登陆
@@ -101,6 +104,7 @@ public class BUApplication extends Application {
     }
 
     // 系统配置
+    public final static String CONF_OUT_HOST = "CONF_OUT_HOST";
     public final static String PREF_USER_NAME = "PREF_USER_NAME";
     public final static String CONF_SESSION_STR = "CONF_SESSION_STR";
     public final static String PREF_PASSWORD = "PREF_PASSWORD";
@@ -149,6 +153,8 @@ public class BUApplication extends Application {
 
     public static Boolean debugMode = true;  // 是否启动 debug 模式
 
+    public static String outHost = null;    // 外网地址
+
     public static boolean hasUpdateFavor = false;
 
     public static Integer fontSize = DEFAULT_FONT_SIZE; // 字体大小
@@ -159,6 +165,7 @@ public class BUApplication extends Application {
     public static String cachedFeedbackEmail = "";
 
     public static void readConfig(Context context) {
+        getConfOutHost(context);
         getCacheUsername(context);
         getCachePassword(context);
         getCacheSession(context);
@@ -428,6 +435,20 @@ public class BUApplication extends Application {
         }
     }
 
+    public static String getConfOutHost(Context context) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        outHost = prefs.getString(CONF_OUT_HOST, null);
+        return outHost;
+    }
+
+    public static void setConfOutHost(Context context) {
+        Log.d(TAG, "setConfOutHost >> " + BUApplication.outHost);
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putString(CONF_OUT_HOST, BUApplication.outHost == null ? "" : BUApplication.outHost);
+        editor.apply();
+    }
+
     public static String getCacheUsername(Context context) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         username = prefs.getString(PREF_USER_NAME, null);
@@ -485,7 +506,10 @@ public class BUApplication extends Application {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         String networkTypeStr = prefs.getString(PREF_NETWORK_TYPE, "");
         networkType = networkTypeStr.equals("") ? NETWORK_TYPE.OUT_SCHOOL : NETWORK_TYPE.valueOf(networkTypeStr);
-        BUApi.currentEndPoint = networkType == NETWORK_TYPE.OUT_SCHOOL ? BUApi.OUT_SCHOOL_ENDPOINT : BUApi.IN_SCHOOL_ENDPOINT;
+        if (networkType == NETWORK_TYPE.IN_SCHOOL) {
+            // Reset outHost
+            outHost = null;
+        }
         return networkType;
     }
 
@@ -896,6 +920,11 @@ public class BUApplication extends Application {
      * @param context 上细纹
      */
     public static void setupPicasso(final Context context) {
+        if (initializedPicasso) {
+            Log.w(TAG, "Picasso was already set");
+            return;
+        }
+
         if (context == null) {
             Log.w(TAG, "context is null");
             return;
@@ -933,7 +962,9 @@ public class BUApplication extends Application {
             built.setIndicatorsEnabled(true);
             built.setLoggingEnabled(true);
         }
+
         Picasso.setSingletonInstance(built);
+        initializedPicasso = true;
     }
 
     /**
@@ -988,8 +1019,5 @@ public class BUApplication extends Application {
         // 从缓存中读取数据
         // migrateCache(this);
         readConfig(this);
-
-        // 配置 Picasso 的磁盘缓存（配合  OKHttp）
-        setupPicasso(getApplicationContext());
     }
 }
