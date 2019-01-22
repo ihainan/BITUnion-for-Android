@@ -77,19 +77,50 @@ public class SettingsActivity extends PreferenceActivity {
     private SwitchPreference prefEnableSilentMode;
     private Preference prefHomePageClick;
     private Preference prefEnableNotifyType;
+    private boolean mIgnoreNetworkCheckedChange = false;
 
     private void loadDefaultValue() {
         BUApplication.readConfig(this);
 
         /* 网络相关 */
-        SwitchPreference prefNetworkType = (SwitchPreference) findPreference("pref_out_school");
+        final SwitchPreference prefNetworkType = (SwitchPreference) findPreference("pref_out_school");
         prefNetworkType.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
             @Override
             public boolean onPreferenceChange(Preference preference, Object newValue) {
+                if (mIgnoreNetworkCheckedChange) return true;
                 Boolean checked = (Boolean) newValue;
                 BUApplication.networkType = checked ? BUApplication.NETWORK_TYPE.OUT_SCHOOL : BUApplication.NETWORK_TYPE.IN_SCHOOL;
-                BUApi.currentEndPoint = checked ? BUApi.OUT_SCHOOL_ENDPOINT : BUApi.IN_SCHOOL_ENDPOINT;
                 BUApplication.setCacheNetworkType(SettingsActivity.this);
+
+                if (BUApplication.networkType == BUApplication.NETWORK_TYPE.IN_SCHOOL) {
+                    BUApplication.outHost = null;
+                    BUApplication.setConfOutHost(SettingsActivity.this);
+                    BUApi.currentEndPoint = BUApi.IN_SCHOOL_ENDPOINT;
+                } else {
+                    final ProgressDialog dialog = ProgressDialog.show(SettingsActivity.this, "",
+                            getString(R.string.message_fetch_host), true);
+                    dialog.show();
+                    BUApi.getHost(SettingsActivity.this, new BUApi.HostListener() {
+                        @Override
+                        public void onSuccess() {
+                            dialog.cancel();
+                            CommonUtils.toast(SettingsActivity.this, "外网地址为：" + BUApplication.outHost);
+                        }
+
+                        @Override
+                        public void onError(Throwable exception) {
+                            dialog.cancel();
+                            CommonUtils.toast(SettingsActivity.this, getString(R.string.error_message_fetch_host));
+
+                            // 恢复网络状态为校内
+                            mIgnoreNetworkCheckedChange = true;
+                            prefNetworkType.setChecked(false);
+                            BUApplication.networkType = BUApplication.NETWORK_TYPE.IN_SCHOOL;
+                            BUApplication.setCacheNetworkType(SettingsActivity.this);
+                            mIgnoreNetworkCheckedChange = false;
+                        }
+                    });
+                }
                 return true;
             }
         });
@@ -185,7 +216,7 @@ public class SettingsActivity extends PreferenceActivity {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 ClipboardManager clipboardManager = (ClipboardManager) SettingsActivity.this.getSystemService(Context.CLIPBOARD_SERVICE);
-                                ClipData clipData = ClipData.newPlainText("alipay", CommonUtils.decode("ihainan72@163.com"));
+                                ClipData clipData = ClipData.newPlainText("alipay", CommonUtils.decode("ihainan72@gmail.com"));
                                 clipboardManager.setPrimaryClip(clipData);
                                 Toast.makeText(SettingsActivity.this, "复制成功", Toast.LENGTH_SHORT).show();
                                 dialog.dismiss();

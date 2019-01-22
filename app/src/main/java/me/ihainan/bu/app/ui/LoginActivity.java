@@ -95,8 +95,10 @@ public class LoginActivity extends AppCompatActivity {
         mPassword.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
-                if (id == R.id.login || id == EditorInfo.IME_NULL
-                        || id == EditorInfo.IME_ACTION_SEARCH) {
+                if ((id == R.id.login || id == EditorInfo.IME_NULL
+                        || id == EditorInfo.IME_ACTION_SEARCH)
+                        && keyEvent.getKeyCode() == KeyEvent.KEYCODE_ENTER
+                        && keyEvent.getAction() == KeyEvent.ACTION_DOWN) {
                     attemptLogin();
                     return true;
                 }
@@ -108,7 +110,7 @@ public class LoginActivity extends AppCompatActivity {
             mSwitchCompatOutNetwork.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                    // BUApi.currentEndPoint = isChecked ? BUApi.OUT_SCHOOL_ENDPOINT : BUApi.IN_SCHOOL_ENDPOINT;
+                    // BUApi.currentEndPoint = isChecked ? null : BUApi.IN_SCHOOL_ENDPOINT;
                     BUApplication.networkType = isChecked ? BUApplication.NETWORK_TYPE.OUT_SCHOOL : BUApplication.NETWORK_TYPE.IN_SCHOOL;
                     BUApplication.setCacheNetworkType(mContext);
                 }
@@ -165,14 +167,19 @@ public class LoginActivity extends AppCompatActivity {
                 "正在登录…", false);
         mDialog.show();
 
-        // TODO: getHost before logging in if out of school
+        // getHost before logging in if out of school
         if (BUApplication.networkType == BUApplication.NETWORK_TYPE.IN_SCHOOL) {
+            // 设置 API 地址
+            BUApi.currentEndPoint = BUApi.IN_SCHOOL_ENDPOINT;
+
             // 配置 Picasso 的磁盘缓存（配合  OKHttp）
             BUApplication.setupPicasso(getApplicationContext());
 
             // 检查密码
             checkPassword(username, password);
         } else {
+            BUApplication.outHost = null;
+            BUApplication.setConfOutHost(getApplicationContext());
             BUApi.getHost(getApplicationContext(), new BUApi.HostListener() {
                 @Override
                 public void onSuccess() {

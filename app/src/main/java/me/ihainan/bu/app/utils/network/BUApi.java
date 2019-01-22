@@ -98,12 +98,12 @@ public class BUApi {
             lock.lock();
             try {
                 // Check again
-                if (BUApplication.outHost == null) {
+                if (BUApplication.outHost == null || BUApplication.outHost.equals("")) {
                     // Get request
-                    makeGetRequest(context, "http://45.76.103.102/host.php", "getHost", new Response.Listener<String>() {
+                    makeGetRequest(context, "https://raw.githubusercontent.com/ftpunion/config/master/hosts", "getHost", new Response.Listener<String>() {
                         @Override
                         public void onResponse(String response) {
-                            BUApplication.outHost = response;
+                            BUApplication.outHost = response.substring(0, response.length() - 1);
                             BUApplication.setConfOutHost(context);
                             BUApi.OUT_SCHOOL_BASE_URL = "http://" + BUApplication.outHost + "/";
                             BUApi.OUT_SCHOOL_ENDPOINT = OUT_SCHOOL_BASE_URL + "open_api/";

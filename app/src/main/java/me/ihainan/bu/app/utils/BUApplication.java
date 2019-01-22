@@ -506,10 +506,6 @@ public class BUApplication extends Application {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         String networkTypeStr = prefs.getString(PREF_NETWORK_TYPE, "");
         networkType = networkTypeStr.equals("") ? NETWORK_TYPE.OUT_SCHOOL : NETWORK_TYPE.valueOf(networkTypeStr);
-        if (networkType == NETWORK_TYPE.IN_SCHOOL) {
-            // Reset outHost
-            outHost = null;
-        }
         return networkType;
     }
 
